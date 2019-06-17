@@ -1,0 +1,5 @@
+instance.class=LtpaTokenGenerator
+cookie.domain=.tahoecndemo.com
+cookie.maxAge=43200000
+domino.security.key=kf0GqqoY27s9yhr2wIkq26odTZs=
+domino.user.key=

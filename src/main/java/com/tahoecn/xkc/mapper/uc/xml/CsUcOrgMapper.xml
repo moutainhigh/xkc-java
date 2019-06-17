@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.opening.mapper.CsUcOrgMapper">
+
+    <select id="findAllOrgInfo" resultType="com.tahoecn.opening.model.vo.OrgInfoVo">
+       SELECT
+			o.id id,
+			o.fd_sid sid,
+			o.fd_name NAME,
+			o.fd_code CODE,
+			o.fd_psid parentSid,
+			o.fd_pname parentName,
+			o.fd_sid_tree sidTree,
+			o.fd_name_tree nameTree,
+			o.fd_order seq,
+			o.fd_available available,
+			o.fd_isdelete isdelete,
+			o.create_date gmtCreate,
+			o.update_date gmtModified
+		FROM
+			cs_uc_org o
+		where o.fd_isdelete = -1
+    </select>
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.opening.mapper.CsUcUserMapper">
+    <select id="findUserByOrgId" resultType="com.tahoecn.opening.model.vo.UserVo">
+        SELECT
+        u.id id,
+        u.fd_sid sid,
+        u.fd_name NAME,
+        u.fd_username username,
+        u.fd_org_id_tree orgIdTree,
+        u.fd_org_name_tree orgNameTree,
+        u.fd_org_id orgId,
+        u.fd_org_name orgName,
+        u.fd_order seq,
+        u.fd_lock lockStatus,
+        u.fd_available available,
+        u.fd_isdelete isdelete,
+        u.fd_update_sign updateSign,
+        u.create_time gmtCreate,
+        u.update_time gmtModified
+        FROM
+        cs_uc_user u
+        where
+        u.fd_isdelete = '-1'
+        <if test="orgId != null and '' != orgId">
+            and u.fd_org_id = #{orgId}
+        </if>
+    </select>
+    
+    <select id="userForm" resultType="com.tahoecn.opening.model.CsUcUser">
+    	select distinct u.* from cs_uc_user u
+    	<if test="isFrom">
+    		left join cs_form_inst f on u.fd_username = f.owner_id
+    	</if>
+    	<where>
+    		<if test="tel != null and tel != ''">
+				and u.fd_tel = #{tel}
+			</if>
+			<if test="username != null and username != ''">
+				and u.fd_username = #{username}
+			</if>
+    		<if test="isFrom">
+    			<if test="project != null and project != ''">
+					and f.project_code = #{project}
+				</if>
+				<if test="processStateCode != null and processStateCode != ''">
+					and f.process_state_code = #{processStateCode}
+				</if>
+				<if test="createDateStart != null">
+		            AND f.creation_date <![CDATA[ >= ]]> #{createDateStart}
+		        </if>
+		        <if test="createDateEnd != null">
+		            AND f.creation_date is not null AND f.creation_date <![CDATA[ <= ]]> #{createDateEnd}
+		        </if>
+    		</if>
+    	</where>
+    </select>
+    <select id="findUsersByUsername" resultType="com.tahoecn.opening.model.vo.UserVo">
+        SELECT
+        u.id id,
+        u.fd_sid sid,
+        u.fd_name NAME,
+        u.fd_username username,
+        u.fd_org_id_tree orgIdTree,
+        u.fd_org_name_tree orgNameTree,
+        u.fd_org_id orgId,
+        u.fd_org_name orgName,
+        u.fd_order seq,
+        u.fd_lock lockStatus,
+        u.fd_available available,
+        u.fd_isdelete isdelete,
+        u.fd_update_sign updateSign,
+        u.create_time gmtCreate,
+        u.update_time gmtModified
+        FROM
+        cs_uc_user u
+        where
+        u.fd_isdelete = '-1'
+        <if test="username != null and '' != username and usercode != null and '' != usercode">
+            and(u.fd_name like concat('%',#{username},'%') or  u.fd_username like concat('%',#{usercode},'%') )
+        </if>
+    </select>
+</mapper>
