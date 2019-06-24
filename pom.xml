@@ -63,6 +63,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.tahoecn</groupId>
+			<artifactId>uc-sso</artifactId>
+			<version>1.0.0-release</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
@@ -245,7 +251,7 @@
 				<directory>src/main/java</directory>
 				<filtering>false</filtering>
 				<includes>
-					<include>**/mapper/xml/*.xml</include>
+					<include>**/mapper/**/*.xml</include>
 				</includes>
 			</resource>
 

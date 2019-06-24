@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SAccountMapper">
+
+    <select id="getUserJob" resultType="java.util.HashMap">
+        SELECT
+        S.ID UserID ,
+        S.UserName ,
+        S.EmployeeName ,
+        S.AuthCompanyID ,
+        AC.AuthCompanyName ,
+        '' AS ProjectID ,
+        (
+        SELECT
+        [JobID] + ','
+        FROM
+        [DBO].[S_JobsUserRel]
+        WHERE
+        AccountID = S.ID FOR XML PATH('') ) JobIds
+        FROM
+        S_Account S
+        INNER JOIN
+        S_AuthCompany AC
+        ON
+        S.AuthCompanyID = AC.ID
+        WHERE
+        S.Status = 1
+        AND S.IsDel = 0
+        AND S.UserName = #{userName}
+    </select>
+
+</mapper>

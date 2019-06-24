@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.opening.mapper.CsUcUserMapper">
-    <select id="findUserByOrgId" resultType="com.tahoecn.opening.model.vo.UserVo">
+<mapper namespace="com.tahoecn.xkc.mapper.uc.CsUcUserMapper">
+    <select id="findUserByOrgId" resultType="com.tahoecn.xkc.model.vo.UserVo">
         SELECT
         u.id id,
         u.fd_sid sid,
@@ -27,7 +27,7 @@
         </if>
     </select>
     
-    <select id="userForm" resultType="com.tahoecn.opening.model.CsUcUser">
+    <select id="userForm" resultType="com.tahoecn.xkc.model.vo.UserVo">
     	select distinct u.* from cs_uc_user u
     	<if test="isFrom">
     		left join cs_form_inst f on u.fd_username = f.owner_id
@@ -55,7 +55,7 @@
     		</if>
     	</where>
     </select>
-    <select id="findUsersByUsername" resultType="com.tahoecn.opening.model.vo.UserVo">
+    <select id="findUsersByUsername" resultType="com.tahoecn.xkc.model.vo.UserVo">
         SELECT
         u.id id,
         u.fd_sid sid,

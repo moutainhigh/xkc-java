@@ -26,7 +26,7 @@ import java.util.List;
  * @since 2019-06-17
  */
 @RestController
-@RequestMapping("/sMenus")
+@RequestMapping("/webapi/sys/sMenus")
 public class SMenusController extends TahoeBaseController {
     private static final Log log = LogFactory.get();
 
@@ -37,10 +37,6 @@ public class SMenusController extends TahoeBaseController {
     @RequestMapping(value = "/menusList", method = {RequestMethod.GET})
     public JSONResult menusList() {
         List<SMenus> list = isMenusService.list();
-        JSONResult jsonResult = new JSONResult();
-        jsonResult.setCode(GlobalConstants.S_CODE);
-        jsonResult.setMsg("SUCCESS");
-        jsonResult.setData(list);
-        return jsonResult;
+        return markSuccess(list);
     }
 }

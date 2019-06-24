@@ -139,5 +139,78 @@ public class TahoeBaseController {
     	String openId = this.request.getHeader(GlobalConstants.OPEN_ID);
     	return openId;
     }
-    
+
+
+    /**
+     * 标记成功Json执行结果
+     * @return
+     */
+    protected JSONResult markSuccess() {
+        return new JSONResult(GlobalConstants.S_CODE,"SUCCESS");
+    }
+
+    /**
+     * 标记成功Json执行结果并携带数据
+     * @param data
+     * @return
+     */
+    protected JSONResult markSuccess(Object data) {
+        JSONResult response = new JSONResult(GlobalConstants.S_CODE,"SUCCESS");
+        response.setData(data);
+        return response;
+    }
+
+    /**
+     * 标记错误Json执行结果
+     * @param message 错误信息
+     * @return
+     */
+    protected JSONResult markError(String message) {
+        JSONResult response = new JSONResult(GlobalConstants.E_CODE);
+        response.setMsg(message);
+        return response;
+    }
+
+    /**
+     * 标记错误Json执行结果并携带数据
+     * @param message 错误信息
+     * @param data 数据
+     * @return
+     */
+    protected JSONResult markError(String message, Object data) {
+        JSONResult response = new JSONResult(GlobalConstants.E_CODE);
+        response.setMsg(message);
+        response.setData(data);
+        return response;
+    }
+
+    /**
+     * 标记错误Json执行结果并携带code
+     * @param message 错误信息
+     * @param code 执行码
+     * @return
+     */
+    protected JSONResult markError(String message, Integer code) {
+        JSONResult response = new JSONResult();
+        response.setMsg(message);
+        response.setCode(code);
+        return response;
+    }
+
+    /**
+     * 标记错误Json执行结果并携带code和数据
+     *
+     * @param message 错误信息
+     * @param code 执行码
+     * @param data 数据
+     * @return
+     */
+    protected JSONResult markError(String message, Integer code, Object data) {
+        JSONResult response = new JSONResult();
+        response.setMsg(message);
+        response.setCode(code);
+        response.setData(data);
+        return response;
+    }
+
 }

@@ -35,21 +35,6 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 
 
 	/**
-	 * sso过滤器
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Bean
-	public FilterRegistrationBean ssoFilterRegistration() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(new EKPSSOClient());
-		registration.setUrlPatterns(Arrays.asList("/webapi/*"));
-		registration.setName("EKPSSOClient");
-		registration.addInitParameter("filterConfigFile", "/sso-config.properties");
-		registration.setOrder(-1);// 过滤器顺序
-		return registration;
-	}
-	
-	/**
 	 * 拦截器配置
 	 */
 	@Override
