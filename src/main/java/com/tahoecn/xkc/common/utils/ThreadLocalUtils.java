@@ -3,7 +3,7 @@
  */
 package com.tahoecn.xkc.common.utils;
 
-import com.tahoecn.xkc.model.CsUcUser;
+import com.tahoecn.xkc.model.sys.SAccount;
 
 /**
  * @author 王胜东--wangsd@t-ark.com
@@ -12,9 +12,9 @@ import com.tahoecn.xkc.model.CsUcUser;
  */
 public class ThreadLocalUtils {
 
-	private static final ThreadLocal<CsUcUser> LOCAL = new ThreadLocal<CsUcUser>();
+	private static final ThreadLocal<SAccount> LOCAL = new ThreadLocal<>();
 
-	public static void setUser(CsUcUser csUcUser) {
+	public static void setUser(SAccount csUcUser) {
 		LOCAL.set(csUcUser);
 	}
 
@@ -23,7 +23,7 @@ public class ThreadLocalUtils {
 	 * 
 	 * @return
 	 */
-	public static CsUcUser get() {
+	public static SAccount get() {
 		return LOCAL.get();
 	}
 
@@ -33,7 +33,7 @@ public class ThreadLocalUtils {
 	 * @return
 	 */
 	public static String getUserName() {
-		return LOCAL.get().getFdUsername();
+		return LOCAL.get().getUserName();
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class ThreadLocalUtils {
 	 * @return
 	 */
 	public static String getRealName() {
-		return LOCAL.get().getFdName();
+		return LOCAL.get().getEmployeeName();
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class ThreadLocalUtils {
 	 * @return
 	 */
 	public static String getUserId() {
-		return LOCAL.get().getFdSid();
+		return LOCAL.get().getId();
 	}
 
 	/**
