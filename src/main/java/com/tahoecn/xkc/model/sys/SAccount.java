@@ -30,66 +30,87 @@ public class SAccount implements Serializable {
     @TableField("CertificatesNo")
     private String CertificatesNo;
 
+    @ApiModelProperty(value = "登录名")
     @TableField("UserName")
     private String userName;
 
+    @ApiModelProperty(value = "编辑时间")
     @TableField("EditTime")
     private Date EditTime;
 
+    @ApiModelProperty(value = "办公电话")
     @TableField("OfficeTel")
     private String OfficeTel;
 
+    @ApiModelProperty(value = "创建人")
     @TableField("Creator")
     private String Creator;
 
+    @ApiModelProperty(value = "工号")
     @TableField("EmployeeCode")
     private String EmployeeCode;
 
+    @ApiModelProperty(value = "")
     @TableField("AuthCompanyID")
     private String AuthCompanyID;
 
+    @ApiModelProperty(value = "密码")
     @TableField("Password")
     private String password;
 
+    @ApiModelProperty(value = "邮编")
     @TableField("PostCode")
     private String PostCode;
 
+    @ApiModelProperty(value = "状态")
     @TableField("Status")
     private Integer status;
 
+    @ApiModelProperty(value = "创建时间")
     @TableField("CreateTime")
     private Date CreateTime;
 
+    @ApiModelProperty(value = "姓名")
     @TableField("EmployeeName")
     private String EmployeeName;
 
+    @ApiModelProperty(value = "编辑人")
     @TableField("Editor")
     private String Editor;
 
+    @ApiModelProperty(value = "项目ID")
     @TableField("ProductID")
     private String ProductID;
 
+    @ApiModelProperty(value = "地址")
     @TableField("Address")
     private String Address;
 
+    @ApiModelProperty(value = "电子邮箱")
     @TableField("OfficeMail")
     private String OfficeMail;
 
+    @ApiModelProperty(value = "移动电话")
     @TableField("Mobile")
     private String Mobile;
 
+    @ApiModelProperty(value = "性别")
     @TableField("Gender")
     private Integer Gender;
 
+    @ApiModelProperty(value = "账号类型")
     @TableField("AccountType")
     private Integer AccountType;
 
+    @ApiModelProperty(value = "ID")
     @TableId("ID")
     private String id;
 
+    @ApiModelProperty(value = "所属组织ID")
     @TableField("UserOrgID")
     private String UserOrgID;
 
+    @ApiModelProperty(value = "是否删除")
     @TableField("IsDel")
     private Integer isDel;
 
