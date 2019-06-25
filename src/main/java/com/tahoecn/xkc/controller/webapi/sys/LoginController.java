@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,7 +62,28 @@ public class LoginController extends TahoeBaseController {
                 return markError("用户不存在");
             }
 
-            HashMap<String,String> userJobs = accountService.getUserJob(userName);
+            HashMap<String,String> userJob = accountService.getUserJob(userName);
+            List<HashMap<String,String>> userProduct = accountService.getUserPorduct(userName);
+            if (userJob == null){
+                return markError("账号无权限登录系统");
+            }else{
+                String productId = userProduct.get(0).get("ID");
+
+                HashMap<String,String> userPorject = accountService.getUserPorject(userJob.get("UserID"),productId);
+                List<HashMap<String,String>> userJobMenus = accountService.getUserJobMenus(userName,productId);
+                if (userJobMenus == null){
+                    return markError("账号无权限登录系统");
+                }
+                List<HashMap<String,String>> userWXApp = accountService.getUserWXApp(userName);
+                List<HashMap<String,String>> userJobs = accountService.getUserJobs(userName,productId);
+                HashMap<String,String> currJob = userJobs.get(0);
+                List<HashMap<String,String>> jobFunctions = accountService.getJobFunctions(userName,productId);
+                List<HashMap<String,String>> jobProject = accountService.getJobProject(userName);
+
+                List<HashMap<String,String>> aaa = userJobMenus.stream().filter(j -> Objects.equals(j.get("JobID"), currJob.get("ID"))).collect(Collectors.toList());
+                System.out.println("啊 = " + aaa);
+                log.debug("adsfasdfasdfasdf");
+            }
         }
         return markSuccess();
     }

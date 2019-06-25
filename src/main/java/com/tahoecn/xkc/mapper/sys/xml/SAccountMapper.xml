@@ -29,4 +29,153 @@
         AND S.UserName = #{userName}
     </select>
 
+    <select id="getUserPorject" resultType="java.util.HashMap">
+        SELECT DISTINCT top 1
+        v.OrgID ,
+        v.OrgName ,
+        v.AuthCompanyID ,
+        v.AuthCompanyName ,
+        v.ProductID ,
+        v.ProductName ,
+        v.Style ,
+        v.Theme
+        FROM    V_Orgs v
+        WHERE   v.ProductID = #{productID}
+        AND EXISTS(
+        SELECT 1 FROM dbo.F_GetAllOrgID(#{userId},'') a WHERE a.ID = v.OrgID
+        )
+    </select>
+
+    <select id="getUserProduct" resultType="java.util.HashMap">
+        <![CDATA[
+            SELECT DISTINCT
+                    p.ID ,
+                    p.ProductName ,
+                    php.Url ,
+                    acod.Theme,
+                    o.OrgCategory
+            FROM    dbo.S_Account a
+                    INNER JOIN dbo.S_JobsUserRel jur ON a.ID = jur.AccountID
+                    INNER JOIN dbo.S_Jobs j ON jur.JobID = j.ID
+                    INNER JOIN dbo.S_Organization o ON j.JobOrgID = o.ID
+                    INNER JOIN dbo.S_Product p ON j.ProductID = p.ID
+                    INNER JOIN dbo.S_AuthCompanyOrderDetail acod ON j.ProductID = acod.ProductID
+                                                                    AND j.AuthCompanyID = acod.AuthCompanyID
+                    INNER JOIN dbo.S_AuthCompany ac ON j.AuthCompanyID = ac.ID
+                    INNER JOIN dbo.V_ProductHomePage php ON j.ProductID = php.ProductID
+            WHERE   a.IsDel = 0
+                    AND a.[Status] = 1
+                    AND a.UserName = #{userName}
+                    AND j.IsDel = 0
+                    AND j.[Status] = 1
+                    AND o.IsDel = 0
+                    AND o.[Status] = 1
+                    AND p.IsDel = 0
+                    AND p.[Status] = 1
+                    AND acod.IsDel = 0
+                    AND acod.[Status] = 1
+                    AND acod.EndTime >= GETDATE()
+                    AND ac.IsDel = 0
+                    AND ac.[Status] = 1
+            ORDER BY p.ProductName DESC
+      ]]>
+    </select>
+
+    <select id="getUserWXApp" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT 1 AS A
+      ]]>
+    </select>
+
+    <select id="getUserJobs" resultType="java.util.HashMap">
+        <![CDATA[
+              SELECT * FROM(
+              SELECT DISTINCT
+                j.* ,
+                o.OrgName AS JobOrgName ,
+                CASE WHEN ( SELECT  COUNT(1)
+                            FROM    dbo.S_Organization s1
+                            WHERE   s1.PID = o.ID
+                                    AND s1.IsDel = 0
+                                    AND s1.[Status] = 1
+                          ) > 0 THEN 0
+                     ELSE 1
+                END AS OrgIsLast ,
+                ( ''
+                ) AS AllOrgID ,
+                o.FullPath
+        FROM    dbo.S_Jobs j
+                INNER JOIN dbo.S_JobsUserRel jur ON j.ID = jur.JobID
+                INNER JOIN dbo.S_Account a ON jur.AccountID = a.ID
+                INNER JOIN dbo.S_Organization o ON j.JobOrgID = o.ID
+        WHERE   j.IsDel = 0
+                AND j.[Status] = 1
+                AND a.IsDel = 0
+                AND a.[Status] = 1
+                AND o.IsDel = 0
+                AND o.[Status] = 1
+                    AND a.UserName = #{userName}
+                  AND j.ProductID = #{productID}
+                   ) z ORDER BY z.OrgIsLast,LEN(z.FullPath)
+      ]]>
+    </select>
+
+    <select id="getUserJobMenus" resultType="java.util.HashMap">
+        <![CDATA[
+            SELECT DISTINCT
+              *
+            FROM [dbo].[F_GetAllJobMenu](#{userName},#{productID})
+            ORDER BY IsHomePage DESC ,
+              Levels ASC ,
+              ListIndex ASC
+        ]]>
+    </select>
+
+    <select id="getJobFunctions" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT DISTINCT
+        	 t.JobID,
+        	 f.ID AS FuncID,
+        	 f.FuncName,
+        	 f.FuncCode,
+        	 f.FuncType
+        FROM 
+        (
+        	SELECT 
+        		j.ID AS JobID,
+        		jfr.FuncID  
+        	FROM dbo.S_Account a 
+        		INNER JOIN dbo.S_JobsUserRel jur ON a.ID = jur.AccountID 
+        		INNER JOIN dbo.S_Jobs j ON jur.JobID = j.ID 
+        		INNER JOIN dbo.S_JobsFunctionsRel jfr ON j.ID = jfr.JobID 
+        	WHERE a.UserName = #{userName}
+        		AND j.IsDel = 0 AND j.[Status] = 1 
+        		AND j.ProductID = #{productID} 
+        	
+        	UNION 
+        	
+        	SELECT 
+        		j.ID,
+        		cjfr.FuncID 
+        	FROM dbo.S_Account a 
+        		INNER JOIN dbo.S_JobsUserRel jur ON a.ID = jur.AccountID 
+        		INNER JOIN dbo.S_Jobs j ON jur.JobID = j.ID 
+        		INNER JOIN dbo.S_CommonJobs cj ON j.CommonJobID = cj.ID 
+        		INNER JOIN dbo.S_CommonJobsFunctionsRel cjfr ON cj.ID = cjfr.JobID 
+        	WHERE a.UserName = #{userName}
+        		AND j.IsDel = 0 AND j.[Status] = 1 
+        		AND j.ProductID = #{productID}
+        		AND cj.IsDel = 0 AND cj.[Status] = 1 
+        		AND cj.ProductID = #{productID}
+        ) t INNER JOIN dbo.S_Functions f ON t.FuncID = f.ID 
+        WHERE f.IsDel = 0 AND f.[Status] = 1 
+      ]]>
+    </select>
+
+    <select id="getJobProject" resultType="java.util.HashMap" statementType="CALLABLE">
+        <![CDATA[
+          {call	 [dbo].[getOrganization](#{userName,mode=IN})}
+        ]]>
+    </select>
+
 </mapper>
