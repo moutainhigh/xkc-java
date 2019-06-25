@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.BChannelorgMapper">
+
+    <select id="getList" resultType="com.tahoecn.xkc.model.dto.ChannelDto">
+
+        SELECT
+        (
+        SELECT UPPER
+        (
+        STUFF((
+        SELECT
+        ',' + ProjectID
+        FROM
+        dbo.B_PojectChannelOrgRel
+        WHERE
+        OrgID = t.ID
+        AND IsDel = 0
+        AND Status = 1 FOR XML PATH ( '' )),
+        1,
+        1,
+        ''
+        ))) ProjectIDs,
+        t.*
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY a.CreateTime DESC ) ID1516,
+        a.ID,
+        a.OrgCode,
+        a.OrgName,
+        a.OrgShortName,
+        a.BizLicense,
+        a.[Status],
+        a.CreateTime,
+        a.ProjectID,
+        CASE
+        a.[Status]
+        WHEN 0 THEN
+        '禁用'
+        WHEN 1 THEN
+        '启用' ELSE ''
+        END AS StatuName,
+        sa.EmployeeName AS CreatorName,
+        b.ID AS LeaderID,
+        b.UserName,
+        b.[Password],
+        b.Name AS OrgLeaderName,
+        STUFF( b.Mobile , 4, 4, '****' ) AS OrgLeaderMobileSt,
+        b.Mobile AS OrgLeaderMobile,
+        b.[Status] AS OrgLeaderStatu,
+        CASE
+        b.[Status]
+        WHEN 0 THEN
+        '禁用'
+        WHEN 1 THEN
+        '启用' ELSE ''
+        END AS OrgLeaderStatuName,
+        a.[Status] AS OrgStatu,
+        CASE
+        a.[Status]
+        WHEN 0 THEN
+        '禁用'
+        WHEN 1 THEN
+        '启用' ELSE ''
+        END AS OrgStatuName,
+        a.ChannelTypeID,
+        [dbo].[F_DictName] ( a.ChannelTypeID ) AS ChannelType
+        FROM
+        [dbo].[B_ChannelOrg] a
+        LEFT JOIN dbo.B_ChannelUser b ON a.ID= b.ChannelOrgID
+        AND b.IsDel= 0
+        AND b.job= 0
+        LEFT JOIN S_Account sa ON a.Creator= sa.id
+        WHERE
+        a.IsDel= 0
+        AND a.OrgCategory= 1
+        AND a.ID IN ( SELECT DISTINCT OrgID FROM [dbo].[B_PojectChannelOrgRel] WHERE IsDel = 0 AND Status = 1 )
+        ) t SELECT COUNT
+        ( 1 ) RecordCount
+        FROM
+        [dbo].[B_ChannelOrg] a
+        LEFT JOIN dbo.B_ChannelUser b ON a.ID= b.ChannelOrgID
+        AND b.IsDel= 0
+        AND b.job= 0
+        LEFT JOIN S_Account sa ON a.Creator= sa.id
+        WHERE
+        a.IsDel= 0
+        AND a.OrgCategory= 1
+        AND a.ID IN ( SELECT DISTINCT OrgID FROM [dbo].[B_PojectChannelOrgRel] WHERE IsDel = 0 AND Status = 1 )
+    </select>
+
+</mapper>
