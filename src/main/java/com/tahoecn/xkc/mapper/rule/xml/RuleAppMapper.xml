@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.BRemindruleMapper">
+
+
+
+
+<select id="getChanelorgList" resultType="com.tahoecn.xkc.model.channel.BChannelorg">
+  SELECT a.* FROM B_ChannelOrg a
+    INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectID}
+     WHERE a.IsDel=0 AND a.OrgCategory=1 and a.Status=1
+</select>
+
+</mapper>
