@@ -5,10 +5,28 @@
 
 
 
-<select id="getChanelorgList" resultType="com.tahoecn.xkc.model.channel.BChannelorg">
-  SELECT a.* FROM B_ChannelOrg a
-    INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectID}
-     WHERE a.IsDel=0 AND a.OrgCategory=1 and a.Status=1
-</select>
+    <select id="getChanelorgList" resultType="com.tahoecn.xkc.model.channel.BChannelorg">
+        SELECT a.* FROM B_ChannelOrg a
+        INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectID}
+        WHERE a.IsDel=0 AND a.OrgCategory=1 and a.Status=1
+  </select>
+
+
+    <select id="getFenxiao" resultType="com.tahoecn.xkc.model.vo.BClueruleGourpVo">
+        select a.id,a.ClueRuleID,a.AdviserGroupID as DictID, b.OrgName DictName
+        from B_ClueRule_AdviserGroup a
+        inner JOIN [B_ChannelOrg] b ON b.ID=a.AdviserGroupID AND b.IsDel=0 and b.Status=1
+        INNER JOIN B_PojectChannelOrgRel c ON b.ID=c.OrgID AND c.IsDel=0 AND c.ProjectID=#{projectId}
+        where a.IsDel=0 and ClueRuleID in (select id from B_ClueRule  where isdel=0 and ProjectID=#{projectId} and ProtectSource=#{protectSource})
+    </select>
+
+    <select id="getZiyouOrTuijian" resultType="com.tahoecn.xkc.model.vo.BClueruleGourpVo">
+        select a.id,a.ClueRuleID,a.AdviserGroupID as DictID, ISNULL(b.DictName,c.OrgName) DictName
+        from B_ClueRule_AdviserGroup a
+        left join [dbo].[S_Dictionary] b on a.AdviserGroupID=b.id and b.IsDel=0 and b.status=1
+        LEFT JOIN [B_ChannelOrg] c ON c.ID=a.AdviserGroupID AND c.IsDel=0
+        where a.IsDel=0 and ClueRuleID in (select id from B_ClueRule  where isdel=0 and ProjectID=#{projectId} and ProtectSource=#{protectSource})
+    </select>
+
 
 </mapper>
