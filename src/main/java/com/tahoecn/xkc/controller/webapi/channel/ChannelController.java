@@ -120,7 +120,6 @@ public class ChannelController extends TahoeBaseController {
         return jsonResult;
     }
 
-    //分销中介、推荐渠道列表-审核人查询
     @ApiOperation(value = "推荐渠道列表-审核人查询", notes = "推荐渠道列表-审核人查询")
     @RequestMapping(value = "/AgenApproverList_SelectN", method = {RequestMethod.GET})
     public JSONResult AgenApproverList_SelectN(){
