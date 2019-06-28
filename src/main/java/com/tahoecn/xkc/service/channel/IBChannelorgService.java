@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.dto.ChannelDto;
+import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,5 +20,11 @@ import java.util.Map;
  */
 public interface IBChannelorgService extends IService<BChannelorg> {
 
-    List<ChannelDto> getList(Page page,String ProjectID,String sqlWhere);
+    Map getList(String ProjectID,String sqlWhere,int pageSize,int pageNum);
+
+    void ChannelDetail_InsertN(ChannelInsertDto channelDto);
+
+    List<Map<String, String>> ChannelOrgAllList_SelectN(String projectID, String pOrgName);
+
+    void ChannelStatus_UpdateN(String id, String userID, String status);
 }

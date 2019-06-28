@@ -1,11 +1,12 @@
 package com.tahoecn.xkc.model.dict;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
-import java.io.Serializable;
 import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableField;
+import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
@@ -13,7 +14,7 @@ import java.util.Date;
  * </p>
  *
  * @author YYY
- * @since 2019-06-26
+ * @since 2019-06-27
  */
 @TableName("S_Dictionary")
 @ApiModel(value="SDictionary对象", description="")

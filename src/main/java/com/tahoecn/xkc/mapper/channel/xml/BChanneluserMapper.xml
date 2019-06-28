@@ -1,5 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.BChanneluserMapper">
+<mapper namespace="com.tahoecn.xkc.mapper.channel.BChanneluserMapper">
 
+    <select id="AgenApproverList" resultType="hashmap">
+        <![CDATA[
+select * from (
+select bc.Approver ID,sa.[EmployeeName] Name from B_ChannelUser bc
+left join [dbo].[S_Account] sa on bc.Approver=sa.id
+where sa.IsDel=0 and sa.[Status]=1 and bc.Approver is not null and bc.Approver<>''
+group by bc.Approver,sa.EmployeeName
+UNION
+SELECT bc1.ID,bc1.Name FROM dbo.B_ChannelUser bc
+INNER JOIN dbo.B_ChannelUser bc1 ON bc.Approver=bc1.ID AND bc1.Status=1 AND bc1.IsDel=0 AND bc1.Job=0
+WHERE bc.IsDel=0 AND bc.Status=1 AND bc.Approver IS NOT NULL AND bc.Approver<>''
+) u where u.name is not null and u.name<>''
+    ]]>
+    </select>
+
+    <insert id="ChannelDetail_InsertN" parameterType="com.tahoecn.xkc.model.dto.ChannelInsertDto">
+        INSERT INTO [dbo].[B_ChannelUser] (
+        ID,
+        UserName,
+        ChannelTypeID,
+        ChannelType,
+        [Password],
+        Mobile,
+        Name,
+        ChannelOrgCode,
+        ChannelOrgID,
+        Job,
+        ApprovalStatus,
+        Approver,
+        ApprovalDate,
+        Creator,
+        CreateTime,
+        IsDel,
+        Status
+        )
+        VALUES
+        (
+        #{LeaderID},
+        #{UserName},
+        '32C92DA0-DA13-4C21-A55E-A1D16955882C',
+        '中介同行',
+        UPPER (
+        SUBSTRING ( sys.fn_sqlvarbasetostr ( HashBytes ( 'MD5', '123321' )), 3, 32 )),
+        #{Mobile},
+        #{Name},
+        #{OrgCode},
+        #{OrgID},
+        0,
+        1,
+        #{UserID},
+        getdate(),
+        #{UserID},
+        getdate(),
+        0,
+        #{Status}
+        )
+    </insert>
+
+    <update id="ChannelStatus_UpdateN">
+        UPDATE [dbo].[B_ChannelUser] SET [Status]=#{Status},Editor=#{UserID},EditeTime=getdate()
+        WHERE ChannelOrgID=#{ID} AND Job=0
+    </update>
 </mapper>

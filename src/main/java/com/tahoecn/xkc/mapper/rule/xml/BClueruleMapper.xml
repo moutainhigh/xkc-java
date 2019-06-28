@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.rule.BClueruleMapper">
+
+	<!-- 删除渠道规则，根据ID -->
+	<update id="delClueruleById" parameterType="java.lang.String">
+		update B_ClueRule set IsDel=1 where ID = #{clueRuleId}
+	</update>
+	
+	<!-- 删除渠道规则，根据ID -->
+	<update id="updateAdviserGroup" parameterType="java.util.Map">
+		update B_ClueRule_AdviserGroup 
+		set ClueRuleID = 
+		(SELECT id FROM dbo.B_ClueRule WHERE IsDel=0 AND Creator='sys' AND ProtectSource=#{ProtectSource} AND ProjectID=#{ProjectID}) 
+		where ClueRuleID = #{clueRuleId}
+	</update>
+	
+	<!-- 设置规则启用禁用状态，根据ID -->
+	<update id="updateClueRuleStatusById" parameterType="java.util.Map">
+		update B_ClueRule set Status = #{status} where ID = #{clueRuleId}
+	</update>
+	
+	<!-- 设置规则群体启用禁用状态，根据ID -->
+	<update id="updateAdviserGroupStatusById" parameterType="java.util.Map">
+		update B_ClueRule_AdviserGroup set Status = #{status} where ClueRuleID = #{clueRuleId}
+	</update>
+	
+	<!-- 设置规则群体启用禁用状态，根据ID -->
+	<update id="updateAdviserGroupById" parameterType="java.util.Map">
+		<!-- UPDATE B_ClueRule_AdviserGroup 
+			SET ClueRuleID = #{id},
+			Editor = '{UserID}',
+			EditTime = getdate( ) 
+		WHERE
+			AdviserGroupID IN ( { grouplist } ) 
+			AND ClueRuleID IN 
+			( SELECT ID FROM B_ClueRule 
+				WHERE ProjectID = '{ProjectID}' 
+				AND ProtectSource = '{ProtectSource}' 
+				AND IsDel = 0 AND Status = 1 
+			)  -->
+	</update>
+</mapper>

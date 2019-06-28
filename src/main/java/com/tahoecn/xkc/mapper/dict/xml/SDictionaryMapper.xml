@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.SDictionaryMapper">
+<mapper namespace="com.tahoecn.xkc.mapper.dict.SDictionaryMapper">
 
+    <select id="AgenCertificatesList_SelectN" resultType="java.util.HashMap">
+        select ID,DictName from [S_Dictionary] where PID='848EBE45-2C03-40C5-AE91-EC72533539BD' and IsDel=0 and [Status]=1 order by ListIndex
+    </select>
 </mapper>

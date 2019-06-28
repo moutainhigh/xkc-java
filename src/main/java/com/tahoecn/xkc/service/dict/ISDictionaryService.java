@@ -1,7 +1,10 @@
 package com.tahoecn.xkc.service.dict;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.dict.SDictionary;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -9,8 +12,9 @@ import com.tahoecn.xkc.model.dict.SDictionary;
  * </p>
  *
  * @author YYY
- * @since 2019-06-26
+ * @since 2019-06-27
  */
 public interface ISDictionaryService extends IService<SDictionary> {
 
+    List<Map<String, String>> AgenCertificatesList_SelectN();
 }

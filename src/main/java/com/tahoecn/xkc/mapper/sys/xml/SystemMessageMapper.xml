@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SystemMessageMapper">
+    <select id="UnreadCountListByMessageType_Select" resultType="com.tahoecn.xkc.model.vo.UnreadCountVo">
+            SELECT
+	T.MessageType,
+	COUNT(1) MessageCount,
+	(
+		SELECT
+			stuff(
+				(
+					SELECT DISTINCT
+						TOP 5 ',' + CustomerName
+					FROM
+						(
+							SELECT
+								MessageType,
+								CASE BizType
+							WHEN 'Opportunity' THEN
+								B.CustomerName
+							WHEN 'Clue' THEN
+								C.Name
+							WHEN 'OpportunityGiveUp' THEN
+								D.CustomerName
+							WHEN NULL THEN
+								''
+							ELSE
+								''
+							END CustomerName
+							FROM
+								S_Message A
+							LEFT JOIN B_Opportunity B ON A.BizID = B.ID
+							AND A.BizType = 'Opportunity'
+							LEFT JOIN B_Clue C ON A.BizID = C.ID
+							AND A.BizType = 'Clue'
+							LEFT JOIN B_OpportunityGiveUp D ON A.BizID = D.ID
+							AND A.BizType = 'OpportunityGiveUp'
+							WHERE
+								A.IsDel = 0
+							AND A.Status = 1
+              AND A.IsApprove = 0
+							AND A.MessageType = T.MessageType
+							AND A.Receiver = T.Receiver
+							AND A.ProjectID = T.ProjectID
+						) TP
+					WHERE
+						TP.CustomerName IS NOT NULL FOR XML PATH('')
+				),
+				1,
+				1,
+				''
+			)
+	) Content
+FROM
+	S_Message T
+WHERE
+	T.IsDel = 0
+AND T.Status = 1
+AND T.IsApprove = 0
+AND T.ProjectID = #{projectId}
+AND T.Receiver = #{userId}
+GROUP BY
+	ProjectID,MessageType,Receiver
+    </select>
+</mapper>
