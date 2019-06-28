@@ -1,6 +1,8 @@
 package com.tahoecn.xkc.model.dto;
 
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,13 +15,28 @@ public class ChannelDto implements Serializable {
 
     private String ID;
 
+    @Excel(name = "机构编码")
     private String OrgCode;
-
+    @Excel(name = "机构名称")
     private String OrgName;
-
+    @Excel(name = "机构简称")
     private String OrgShortName;
-
+    @Excel(name = "资质附件")
     private String BizLicense;
+    @Excel(name = "机构状态")
+    private String OrgStatuName;
+    @Excel(name = "负责人姓名")
+    private String OrgLeaderName;
+    @Excel(name = "负责人手机号")
+    private String OrgLeaderMobile;
+    @Excel(name = "负责人帐号")
+    private String UserName;
+    @Excel(name = "帐号状态")
+    private String OrgLeaderStatuName;
+    @Excel(name = "创建时间")
+    private Date CreateTime;
+    @Excel(name = "创建人")
+    private String CreatorName;
 
     private String Status;
 
@@ -29,32 +46,27 @@ public class ChannelDto implements Serializable {
 
     private String LeaderID;
 
-    private String OrgLeaderName;
-
-    private String OrgLeaderMobile;
-
-    private String UserName;
-
     private String Password;
 
     private String OrgLeaderMobileSt;
 
     private String OrgLeaderStatu;
 
-    private String OrgLeaderStatuName;
-
     private String OrgStatu;
-
-    private String OrgStatuName;
 
     private String ChannelTypeID;
 
     private String ChannelType;
 
+    private Integer RecordCount;
 
-    private Date CreateTime;
+    public Integer getRecordCount() {
+        return RecordCount;
+    }
 
-    private String CreatorName;
+    public void setRecordCount(Integer recordCount) {
+        RecordCount = recordCount;
+    }
 
     public String getProjectIDs() {
         return ProjectIDs;
@@ -248,33 +260,5 @@ public class ChannelDto implements Serializable {
         CreatorName = creatorName;
     }
 
-    @Override
-    public String toString() {
-        return "ChannelDto{" +
-                "ProjectIDs='" + ProjectIDs + '\'' +
-                ", ID1516='" + ID1516 + '\'' +
-                ", ID='" + ID + '\'' +
-                ", OrgCode='" + OrgCode + '\'' +
-                ", OrgName='" + OrgName + '\'' +
-                ", OrgShortName='" + OrgShortName + '\'' +
-                ", BizLicense='" + BizLicense + '\'' +
-                ", Status='" + Status + '\'' +
-                ", StatuName='" + StatuName + '\'' +
-                ", ProjectID='" + ProjectID + '\'' +
-                ", LeaderID='" + LeaderID + '\'' +
-                ", OrgLeaderName='" + OrgLeaderName + '\'' +
-                ", OrgLeaderMobile='" + OrgLeaderMobile + '\'' +
-                ", UserName='" + UserName + '\'' +
-                ", Password='" + Password + '\'' +
-                ", OrgLeaderMobileSt='" + OrgLeaderMobileSt + '\'' +
-                ", OrgLeaderStatu='" + OrgLeaderStatu + '\'' +
-                ", OrgLeaderStatuName='" + OrgLeaderStatuName + '\'' +
-                ", OrgStatu='" + OrgStatu + '\'' +
-                ", OrgStatuName='" + OrgStatuName + '\'' +
-                ", ChannelTypeID='" + ChannelTypeID + '\'' +
-                ", ChannelType='" + ChannelType + '\'' +
-                ", CreateTime=" + CreateTime +
-                ", CreatorName='" + CreatorName + '\'' +
-                '}';
-    }
+
 }

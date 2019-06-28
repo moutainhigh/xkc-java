@@ -21,8 +21,82 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
     ${sqlWhere}
 </if>
 ) t
+        <![CDATA[  WHERE 1=1   and t.ID1516 > ( #{pageNum} - 1 ) * #{pageSize}
+        AND t.ID1516 <= #{pageNum} * #{pageSize}
+]]>
+    </select>
+
+    <select id="getRecordCount" resultType="integer">
+        SELECT COUNT(1) RecordCount
+        FROM [dbo].[B_ChannelOrg] a
+        LEFT JOIN dbo.B_ChannelUser  b ON a.ID=b.ChannelOrgID  AND b.IsDel=0 and b.job=0
+        left join S_Account sa on a.Creator=sa.id
+        WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo].[B_PojectChannelOrgRel] WHERE ProjectID=#{ProjectID} AND  IsDel=0 AND Status=1) ${sqlWhere}
 
     </select>
 
+    <insert id="ChannelDetail_InsertN" parameterType="com.tahoecn.xkc.model.dto.ChannelInsertDto">
+        INSERT INTO [dbo].[B_ChannelOrg] (
+        ID,
+        OrgCode,
+        OrgName,
+        OrgShortName,
+        ChannelTypeID,
+        ProjectID,
+        OrgCategory,
+        Mobile,
+        Responsible,
+        ApprovalStatus,
+        ApprovalDate,
+        Creator,
+        CreateTime,
+        Bizlicense,
+        IsDel,
+        [Status]
+        )
+        VALUES
+        (
+        #{OrgID},
+        #{OrgCode},
+        #{OrgName},
+        #{OrgShortName},
+        '32C92DA0-DA13-4C21-A55E-A1D16955882C',
+        '',
+        1,
+        #{Mobile},
+        #{Name},
+        1,
+        getdate(),
+        #{UserID},
+        getdate(),
+        #{Bizlicense},
+        0,
+        1
+        )
+
+    </insert>
+
+    <select id="ChannelOrgAllList_SelectN" resultType="java.util.HashMap">
+        SELECT
+        ID,
+        OrgCode,
+        OrgName,
+        OrgShortName
+        FROM
+        [dbo].[B_ChannelOrg]
+        WHERE
+        IsDel = 0
+        AND [Status] = 1
+        AND ProjectID = #{ProjectID}
+        <if test="pOrgName!=null and pOrgName!=''">
+            AND OrgName like '%#{pOrgName}%'
+        </if>
+        ORDER BY
+        CreateTime DESC
+    </select>
+
+    <update id="ChannelStatus_UpdateN" >
+        UPDATE [dbo].[B_ChannelOrg] SET [Status]=#{Status},Editor=#{UserID},EditTime=getdate() WHERE ID=#{ID}
+    </update>
 
 </mapper>
