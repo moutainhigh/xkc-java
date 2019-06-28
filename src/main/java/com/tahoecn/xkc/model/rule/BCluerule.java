@@ -1,8 +1,13 @@
 package com.tahoecn.xkc.model.rule;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -43,6 +48,7 @@ public class BCluerule implements Serializable {
     private Integer FollowUpOverdueDays;
 
     @TableField("ID")
+    @TableId(value = "ID",type = IdType.UUID)
     private String id;
 
     @TableField("ProtectVisitTime")
