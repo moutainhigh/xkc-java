@@ -14,6 +14,7 @@ import com.tahoecn.xkc.model.sys.SMenus;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,44 +48,67 @@ public class LoginController extends TahoeBaseController {
 
     @ApiOperation(value = "login", notes = "login")
     @RequestMapping(value = "/login", method = {RequestMethod.GET})
-    public JSONResult login(String userName,String pwd,String isSSO) {
-        if (GlobalConstants.Y.equals(isSSO)){
-            QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
-            wrapper.lambda().eq(SAccount::getStatus, 1);
-            wrapper.lambda().eq(SAccount::getIsDel, 0);
-            wrapper.lambda().eq(SAccount::getUserName, userName);
-            wrapper.lambda().eq(SAccount::getPassword, SecureUtil.md5(pwd));
-            SAccount account = accountService.getOne(wrapper);
-            if (account != null){
-                redisTemplate.opsForValue().set(userName, account, 2, TimeUnit.HOURS);
-                ThreadLocalUtils.setUser(account);
-            }else{
-                return markError("用户不存在");
-            }
-
-            HashMap<String,String> userJob = accountService.getUserJob(userName);
-            List<HashMap<String,String>> userProduct = accountService.getUserPorduct(userName);
-            if (userJob == null){
-                return markError("账号无权限登录系统");
-            }else{
-                String productId = userProduct.get(0).get("ID");
-
-                HashMap<String,String> userPorject = accountService.getUserPorject(userJob.get("UserID"),productId);
-                List<HashMap<String,String>> userJobMenus = accountService.getUserJobMenus(userName,productId);
-                if (userJobMenus == null){
-                    return markError("账号无权限登录系统");
-                }
-                List<HashMap<String,String>> userWXApp = accountService.getUserWXApp(userName);
-                List<HashMap<String,String>> userJobs = accountService.getUserJobs(userName,productId);
-                HashMap<String,String> currJob = userJobs.get(0);
-                List<HashMap<String,String>> jobFunctions = accountService.getJobFunctions(userName,productId);
-                List<HashMap<String,String>> jobProject = accountService.getJobProject(userName);
-
-                List<HashMap<String,String>> aaa = userJobMenus.stream().filter(j -> Objects.equals(j.get("JobID"), currJob.get("ID"))).collect(Collectors.toList());
-                System.out.println("啊 = " + aaa);
-                log.debug("adsfasdfasdfasdf");
-            }
+    public JSONResult login() {
+        String userName = ThreadLocalUtils.getUserName();
+        QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SAccount::getStatus, 1);
+        wrapper.lambda().eq(SAccount::getIsDel, 0);
+        wrapper.lambda().eq(SAccount::getUserName, userName);
+        //wrapper.lambda().eq(SAccount::getPassword, SecureUtil.md5(pwd));
+        SAccount account = accountService.getOne(wrapper);
+        if (account != null){
+            redisTemplate.opsForValue().set(userName, account, 2, TimeUnit.HOURS);
+            ThreadLocalUtils.setUser(account);
+        }else{
+            return markError("用户不存在");
         }
-        return markSuccess();
+
+        HashMap<String,String> userJob = accountService.getUserJob(userName);
+        List<HashMap<String,String>> userProduct = accountService.getUserPorduct(userName);
+        if (userProduct == null){
+            return markError("账号无权限登录系统");
+        }else{
+            String productId = userProduct.get(0).get("ID");
+
+            HashMap<String,String> userProject = accountService.getUserPorject(userJob.get("UserID"),productId);
+            List<HashMap<String,String>> userJobMenus = accountService.getUserJobMenus(userName,productId);
+            if (userJobMenus == null){
+                return markError("账号无权限登录系统");
+            }
+            List<HashMap<String,String>> userWXApp = accountService.getUserWXApp(userName);
+            List<HashMap<String,String>> userJobs = accountService.getUserJobs(userName,productId);
+            HashMap<String,String> currJob = userJobs.get(0);
+            List<HashMap<String,String>> jobFunctions = accountService.getJobFunctions(userName,productId);
+
+            List<HashMap<String,String>> jobProject = accountService.getJobProject(userName);
+
+            List<HashMap<String,String>> userMenu = userJobMenus.stream().filter(j -> Objects.equals(j.get("JobID"), currJob.get("ID"))).collect(Collectors.toList());
+            List<HashMap<String,String>> userFunc = jobFunctions.stream().filter(j -> Objects.equals(j.get("JobID"), currJob.get("ID"))).collect(Collectors.toList());
+            String homeUrl = "";
+            if (userMenu.stream().filter(c -> c.get("Url").equals(userProduct.get(0).get("Url"))).count() > 0){
+                homeUrl = userProduct.get(0).get("Url");
+            }else{
+                homeUrl = userMenu.stream().filter(c -> StringUtils.isNotEmpty(c.get("Url"))).findFirst().get().get("Url");
+            }
+            System.out.println("homeUrl = " + homeUrl);
+            HashMap<String,Object> result = new HashMap<>();
+            result.put("User",account);
+            result.put("UserMenu",userMenu);
+            result.put("UserMenu2",userProject);
+            result.put("UserFunc",userFunc);
+            result.put("UserProductProject",userProject);
+            result.put("UserProductWXApp",userWXApp);
+
+            result.put("UserProduct",userProduct);
+            result.put("CurrProduct",userProduct.get(0));
+            result.put("UserProductJob",userJobs);
+            result.put("CurrJob",currJob);
+            result.put("UserProductJobMenu",userJobMenus);
+            result.put("UserProductJobFunc",jobFunctions);
+            result.put("JobProject",jobProject);
+            result.put("Url",homeUrl);
+            return markSuccess(result);
+        }
+
     }
 }
