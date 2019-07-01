@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.controller.app;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
 import com.tahoecn.xkc.model.sys.BSystemad;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,8 +39,12 @@ public class AppSystemADController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "广告接口", notes = "广告接口")
     @RequestMapping(value = "/SystemAD_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage SystemAD_Select(String ADType) {
+    public ResponseMessage SystemAD_Select(@RequestBody JSONObject jsonParam) {
     	try{
+    		// 直接将json信息打印出来
+            System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String ADType = (String)paramMap.get("ADType");
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ADType", ADType);
     		List<BSystemad> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
