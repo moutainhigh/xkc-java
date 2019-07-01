@@ -5,7 +5,7 @@
 	<!-- 用户切换项目 -->
 	<update id="changeUserProject" parameterType="java.util.Map">
 		UPDATE S_AccountUserProject 
-    	SET ProjectID = #{projectId} 
-    	WHERE UserID = #{userId} 
+    	SET ProjectID = #{ProjectID} 
+    	WHERE UserID = #{UserID} 
 	</update>
 </mapper>

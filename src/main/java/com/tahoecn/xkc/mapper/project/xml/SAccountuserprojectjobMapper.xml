@@ -5,8 +5,8 @@
 	<!-- 用户切换岗位 -->
 	<update id="changeUserProjectJob" parameterType="java.util.Map">
 		UPDATE S_AccountUserProjectJob 
-		SET JobCode = #{jobCode} 
+		SET JobCode = #{JobCode} 
 		WHERE
-		UserID = #{userId}  AND ProjectID = #{projectId}
+		UserID = #{UserID}  AND ProjectID = #{ProjectID}
 	</update>
 </mapper>

@@ -43,26 +43,26 @@ public class ProjectAppController extends TahoeBaseController {
 
     @ResponseBody
     @ApiOperation(value = "用户切换项目", notes = "用户切换项目")
-    @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
-    	@ApiImplicitParam(name = "userId", value = "用户Id", required = true, dataType = "String")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "ProjectID", value = "项目Id", required = true, dataType = "String"),
+    	@ApiImplicitParam(name = "UserID", value = "用户Id", required = true, dataType = "String")})
     @RequestMapping(value = "/mUserProjectChange_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mUserProjectChange_Update(String userId, String projectId) {
-    	if(StringUtil.isNull(projectId) || StringUtil.isNull(userId)){
+    public ResponseMessage mUserProjectChange_Update(String UserID, String ProjectID) {
+    	if(StringUtil.isNull(ProjectID) || StringUtil.isNull(UserID)){
     		return ResponseMessage.error("参数录入不完整，请检查参数信息");
     	}
     	try{
     		QueryWrapper<SAccountuserproject> wrapper = new QueryWrapper<SAccountuserproject>();
-    		wrapper.eq("UserID", userId);
+    		wrapper.eq("UserID", UserID);
     		SAccountuserproject exit = iSAccountuserprojectService.getOne(wrapper);
     		SAccountuserproject userproject = new SAccountuserproject();
     		if(exit == null){
-    			userproject.setUserID(userId);
-    			userproject.setProjectID(projectId);
+    			userproject.setUserID(UserID);
+    			userproject.setProjectID(ProjectID);
     			iSAccountuserprojectService.save(userproject);
     		}else{
     			Map<String,Object> map = new HashMap<String,Object>();
-    			map.put("userId", userId);
-    			map.put("projectId", projectId);
+    			map.put("UserID", UserID);
+    			map.put("ProjectID", ProjectID);
     			iSAccountuserprojectService.changeUserProject(map);
     		}
     		return ResponseMessage.ok("切换成功");
@@ -74,31 +74,31 @@ public class ProjectAppController extends TahoeBaseController {
 
     @ResponseBody
     @ApiOperation(value = "用户切换岗位", notes = "用户切换岗位")
-    @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
-    	@ApiImplicitParam(name = "userId", value = "用户Id", required = true, dataType = "String"),
-    	@ApiImplicitParam(name = "jobCode", value = "岗位编码", required = true, dataType = "String")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "ProjectID", value = "项目Id", required = true, dataType = "String"),
+    	@ApiImplicitParam(name = "UserID", value = "用户Id", required = true, dataType = "String"),
+    	@ApiImplicitParam(name = "JobCode", value = "岗位编码", required = true, dataType = "String")})
     @RequestMapping(value = "/mUserProjectJobChange_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mUserProjectJobChange_Update(String userId, String projectId,String jobCode) {
-    	if(StringUtil.isNull(projectId) || StringUtil.isNull(userId)
-    			|| StringUtil.isNull(jobCode)){
+    public ResponseMessage mUserProjectJobChange_Update(String UserID, String ProjectID,String JobCode) {
+    	if(StringUtil.isNull(ProjectID) || StringUtil.isNull(UserID)
+    			|| StringUtil.isNull(JobCode)){
     		return ResponseMessage.error("参数录入不完整，请检查参数信息");
     	}
     	try{
     		QueryWrapper<SAccountuserprojectjob> wrapper = new QueryWrapper<SAccountuserprojectjob>();
-    		wrapper.eq("UserID", userId);
-    		wrapper.eq("ProjectID", projectId);
+    		wrapper.eq("UserID", UserID);
+    		wrapper.eq("ProjectID", ProjectID);
     		SAccountuserprojectjob exit = iSAccountuserprojectjobService.getOne(wrapper);
     		SAccountuserprojectjob userprojectJob = new SAccountuserprojectjob();
     		if(exit == null){
-    			userprojectJob.setUserID(userId);
-    			userprojectJob.setProjectID(projectId);
-    			userprojectJob.setJobCode(jobCode);
+    			userprojectJob.setUserID(UserID);
+    			userprojectJob.setProjectID(ProjectID);
+    			userprojectJob.setJobCode(JobCode);
     			iSAccountuserprojectjobService.save(userprojectJob);
     		}else{
     			Map<String,Object> map = new HashMap<String,Object>();
-    			map.put("userId", userId);
-    			map.put("projectId", projectId);
-    			map.put("jobCode", jobCode);
+    			map.put("UserID", UserID);
+    			map.put("ProjectID", ProjectID);
+    			map.put("JobCode", JobCode);
     			iSAccountuserprojectjobService.changeUserProjectJob(map);
     		}
     		return ResponseMessage.ok("切换成功");
