@@ -44,7 +44,7 @@ public class AppSystemADController extends TahoeBaseController {
     		// 直接将json信息打印出来
             System.out.println(jsonParam.toJSONString());
             Map paramMap = (HashMap)jsonParam.get("_param");
-            String ADType = (String)paramMap.get("ADType");
+            String ADType = (String)paramMap.get("ADType").toString();
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ADType", ADType);
     		List<BSystemad> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
