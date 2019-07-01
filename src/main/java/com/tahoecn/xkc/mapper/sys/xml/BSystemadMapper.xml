@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.BSystemadMapper">
+
+	<select id="SystemAD_Detail_Find" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.sys.BSystemad">
+		select top 1 * From B_SystemAD where IsDel= 0 and Status = 1 and ADType= #{ADType} 
+	</select>
+	
+</mapper>
