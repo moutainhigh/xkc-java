@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "APP-登录接口", value = "APP-登录接口")
-@RequestMapping("/app/login")
+@RequestMapping("/app")
 public class LoginAppController extends TahoeBaseController {
 
     @Autowired

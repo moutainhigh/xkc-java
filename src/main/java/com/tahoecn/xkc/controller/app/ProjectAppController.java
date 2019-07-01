@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "APP-项目", value = "APP-项目")
-@RequestMapping("/app/project")
+@RequestMapping("/app")
 public class ProjectAppController extends TahoeBaseController {
 
     @Autowired
