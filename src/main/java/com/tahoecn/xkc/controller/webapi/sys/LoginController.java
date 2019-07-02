@@ -2,10 +2,16 @@ package com.tahoecn.xkc.controller.webapi.sys;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.landray.sso.client.EKPSSOContext;
+import com.landray.sso.client.oracle.CookieUtil;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.uc.sso.SSOConfig;
+import com.tahoecn.uc.sso.SSOHelper;
+import com.tahoecn.uc.sso.common.CookieHelper;
+import com.tahoecn.uc.sso.common.util.HttpUtil;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
@@ -21,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -109,6 +118,22 @@ public class LoginController extends TahoeBaseController {
             result.put("Url",homeUrl);
             return markSuccess(result);
         }
+
+    }
+
+    @ApiOperation(value = "logout", notes = "logout")
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET})
+    public JSONResult logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.getSession().invalidate();
+        EKPSSOContext.removeThreadLocal();
+        SSOHelper.logout(request,response);
+        //CookieHelper.
+        String logOutUrl = SSOConfig.getInstance().getLogoutUrl();
+        String ucwebUrl = SSOConfig.getInstance().getUcwebUrl();
+        HashMap<String,String> map = new HashMap<>();
+        map.put("sysId", SSOHelper.getSysId());
+        logOutUrl = HttpUtil.encodeRetURL(logOutUrl,SSOConfig.getInstance().getParamReturl(),ucwebUrl,map);
+        return markSuccess(logOutUrl);
 
     }
 }
