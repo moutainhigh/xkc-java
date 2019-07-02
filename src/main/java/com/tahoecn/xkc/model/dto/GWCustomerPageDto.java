@@ -20,6 +20,9 @@ public class GWCustomerPageDto implements Serializable {
 	public int pageIndex;
 	public int pageSize;
 	public String type;
+	
+	public String where;
+	public String order;
 
 	public String getUserID() {
 		return userID;
@@ -115,6 +118,22 @@ public class GWCustomerPageDto implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getWhere() {
+		return where;
+	}
+
+	public void setWhere(String where) {
+		this.where = where;
+	}
+
+	public String getOrder() {
+		return order;
+	}
+
+	public void setOrder(String order) {
+		this.order = order;
 	}
 
 	public class FilterItem {
