@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper">
+	<select id="">
+		SELECT OpportunityID, CustomerID, CustomerName, CustomerMobile, FollwUpWay, CustomerTag, dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate, TheLatestFollowUpContent, dbo.F_GetDictionaryName(IntentionLevel) IntentionLevel, IsCare, OpportunityStatus, OpportunityStatusValue, IsCustomerFirstEdit,SaleUserName FROM V_CustomerGWList_Select WHERE SaleUserID = '{UserID}' AND ProjectID = '{ProjectID}' {WHERE} {ORDER}
+	</select>
+</mapper>
