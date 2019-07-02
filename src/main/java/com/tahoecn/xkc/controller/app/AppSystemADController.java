@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "APP-广告接口", value = "APP-广告接口")
-@RequestMapping("/app")
+@RequestMapping("/app/systemAD")
 public class AppSystemADController extends TahoeBaseController {
 
     @Autowired
