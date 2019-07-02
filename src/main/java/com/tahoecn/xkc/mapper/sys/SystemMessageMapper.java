@@ -5,8 +5,6 @@ import com.tahoecn.xkc.model.vo.UnreadCountVo;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 /**
  * <p>
  *  Mapper 接口
@@ -17,7 +15,10 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SystemMessageMapper {
 
-    List<UnreadCountVo> UnreadCountListByMessageType_Select(@Param("projectId")String projectId, @Param("userId") String userId);
+	/**
+	 * 未读消息数
+	 */
+    List<UnreadCountVo> UnreadCountListByMessageType_Select(Map<String, Object> map);
 
     /**
      * 消息列表-普通消息
