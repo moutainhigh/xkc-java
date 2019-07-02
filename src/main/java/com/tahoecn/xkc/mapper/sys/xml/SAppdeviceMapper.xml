@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SAppdeviceMapper">
+
+	<!-- app解绑设备信息 -->
+	<update id="SystemAppDeviceDetail_Update" parameterType="java.util.Map">
+		UPDATE S_AppDevice 
+		SET JPushAlias = '',
+		LastUserID = '',
+		LastUserName = '',
+		Editor = #{UserID},
+		EditTime = GETDATE( ) 
+		WHERE
+			LastUserID = #{UserID} 
+			AND DeviceCode = #{DeviceCode} 
+			AND Platform = #{Platform}
+			AND AppName = #{AppName}
+	</update>
+</mapper>

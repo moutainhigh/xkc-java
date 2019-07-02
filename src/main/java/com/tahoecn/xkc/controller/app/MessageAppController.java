@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
+
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
+@Api(tags = "APP-消息", value = "APP-消息")
+@RequestMapping("/app")
 public class MessageAppController extends TahoeBaseController {
 
     @Autowired
@@ -45,6 +49,22 @@ public class MessageAppController extends TahoeBaseController {
         List unreadCountList = iSystemMessageService.UnreadCountListByMessageType_Select(projectId,userId);
 
         return ResponseMessage.ok(unreadCountList);
+    }
+    
+    @ResponseBody
+    @ApiOperation(value = "消息列表", notes = "消息列表")
+    @RequestMapping(value = "/mMessageList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResponseMessage mMessageList_Select(@RequestBody JSONObject jsonParam) {
+    	// 直接将json信息打印出来
+    	System.out.println(jsonParam.toJSONString());
+    	Map paramMap = (HashMap)jsonParam.get("_param");
+    	String TypeID = (String)paramMap.get("TypeID");
+    	
+    	if("".equals(TypeID)){
+    		
+    	}
+    	
+    	return ResponseMessage.ok("");
     }
 
 }
