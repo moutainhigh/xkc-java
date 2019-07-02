@@ -62,4 +62,263 @@ AND T.Receiver = #{userId}
 GROUP BY
 	ProjectID,MessageType,Receiver
     </select>
+    
+    <!-- 消息列表-普通消息  -->
+    <select id="SystemMessageListByMessageType_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT    A.ID ,
+		                    A.[Content] ,
+		                    dbo.F_FormatDate(A.SendTime) SendTime ,
+		                    ISNULL(A.IsRead, 0) IsRead ,
+		                    D.DictName MessageTypeName ,
+		                    ROW_NUMBER() OVER ( ORDER BY A.SendTime DESC ) num
+		          FROM      S_Message A WITH(NOLOCK)
+		                    LEFT JOIN S_Dictionary D WITH(NOLOCK) ON A.MessageType = D.ID
+		          WHERE     A.Receiver = #{UserID}
+		                    AND A.ProjectID = #{ProjectID}
+		                    AND A.IsDel = 0
+		                    AND A.Status = 1 
+							${sqlWhere} 
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 消息列表-普通消息-总数  -->
+    <select id="SystemMessageListByMessageType_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM    S_Message A WITH(NOLOCK)
+		        LEFT JOIN S_Dictionary D WITH(NOLOCK) ON A.MessageType = D.ID
+		WHERE   A.Receiver = #{UserID}
+		        AND A.ProjectID = #{ProjectID}
+		        AND A.IsDel = 0
+		        AND A.Status = 1 
+				${sqlWhere} 
+		]]>		        
+    </select>
+    <!-- 更新消息信息 -->
+    <update id="updMessage" parameterType="java.util.Map">
+    	UPDATE S_Message SET IsRead = 1, ReadTime = getdate(), IsApprove = 1 
+	    WHERE Receiver = #{UserID} AND ProjectID = #{ProjectID} 
+	    AND IsDel = 0 AND Status = 1 AND ISNULL(IsRead, 0) = 0 ${sqlWhere}
+    </update>
+    <!-- 消息列表-渠道任务消息  -->
+    <select id="ListByMessageTypeChannelTask_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+		SELECT  *
+		FROM    ( SELECT    A.ID ,
+		                    A.[Content] ,
+		                    dbo.F_FormatDate(A.SendTime) SendTime ,
+		                    ISNULL(A.IsRead, 0) IsRead ,
+		                    D.DictName MessageTypeName ,
+		                    ROW_NUMBER() OVER ( ORDER BY A.SendTime DESC ) num
+		          FROM      S_Message A WITH(NOLOCK)
+		                    LEFT JOIN S_Dictionary D WITH(NOLOCK) ON A.MessageType = D.ID
+		          WHERE     A.Receiver = #{UserID}
+		                    AND A.ProjectID = #{ProjectID}
+		                    AND A.IsDel = 0
+		                    AND A.Status = 1 
+							${sqlWhere}
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 消息列表-渠道任务消息-总数  -->
+    <select id="ListByMessageTypeChannelTask_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+		SELECT  COUNT(1) recordCount
+		  FROM      S_Message A WITH(NOLOCK)
+		            LEFT JOIN S_Dictionary D WITH(NOLOCK) ON A.MessageType = D.ID
+		  WHERE     A.Receiver = #{UserID}
+		            AND A.ProjectID = #{ProjectID}
+		            AND A.IsDel = 0
+		            AND A.Status = 1 
+					${sqlWhere}
+		]]>		        
+    </select>
+    <!-- 消息列表-机会消息-自渠  -->
+    <select id="SystemMessageListByMessageTypeOpportunityZQ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+		SELECT  *
+		FROM    ( SELECT    A.ID ,
+		                    A.Content ,
+		                    dbo.F_FormatDate(A.SendTime) SendTime ,
+		                    A.OpportunityID ,
+		                    A.CustomerPotentialID CustomerID ,
+		                    A.CustomerName ,
+		                    A.CustomerMobile ,
+		                    A.CreateTime ,
+		                    A.AllocTime ,
+		                    A.IsAlloc ,
+		                    A.IntentProjectName,
+		                    A.ReportUserID ,
+		                    A.ReportUserName ,
+		                    A.MessageType ,
+		                    A.MessageTypeName ,
+		                    A.ClueID,
+		                    ROW_NUMBER() OVER ( ORDER BY A.SendTime DESC ) num,
+		                    A.ClueStatus
+		          FROM      V_MessageClue A
+		          WHERE     A.ProjectID = #{ProjectID} 
+		          			${sqlWhere} 
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+        	AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 消息列表-机会消息-自渠-总数 -->
+    <select id="SystemMessageListByMessageTypeOpportunityZQ_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM    V_MessageClue A
+			WHERE   A.ProjectID = #{ProjectID} ${sqlWhere} 
+		]]>		        
+    </select>
+    <!-- 更新消息信息 -->
+    <update id="updMessageZQ" parameterType="java.util.Map">
+    	UPDATE S_Message SET IsRead = 1, ReadTime = getdate() 
+	    WHERE Receiver = #{UserID} AND ProjectID = #{ProjectID} 
+	    AND IsDel = 0 AND Status = 1 AND ISNULL(IsRead, 0) = 0 ${sqlWhere}
+    </update>
+    <!-- 消息列表-丢失消息 -->
+    <select id="SystemMessageListByMessageTypeKHDS_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+		SELECT  *
+		FROM    ( SELECT    A.ID ,
+		                    A.[Content] ,
+		                    dbo.F_FormatDate(A.SendTime) SendTime ,
+		                    B.OpportunityID ,
+		                    C.CustomerID ,
+		                    C.CustomerName ,
+		                    C.CustomerMobile ,
+		                    B.ID LostID ,
+		                    dbo.F_FormatDate(B.CreateTime) ApplyDate ,
+		                    B.Reason LostCause ,
+		                    C.SaleUserID ,
+		                    dbo.F_GetSaleUserName(C.SaleUserID) SaleUserName ,
+		                    dbo.F_GetSaleMobile(C.SaleUserID) SaleUserMobile ,
+		                    ISNULL(A.IsApprove, 0) IsApprove ,
+		                    ROW_NUMBER() OVER ( ORDER BY B.EditeTime DESC , A.SendTime DESC ) num
+		          FROM      S_Message A WITH(NOLOCK)
+		                    INNER JOIN B_OpportunityGiveUp B WITH(NOLOCK) ON A.BizID = B.ID
+		                    INNER JOIN B_Opportunity C WITH(NOLOCK) ON B.OpportunityID = C.ID
+		          WHERE     A.Receiver = #{UserID}
+		                    AND A.ProjectID = #{ProjectID}
+		                    AND A.IsDel = 0
+		                    AND A.Status = 1 ${sqlWhere} 
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 消息列表-丢失消息-总数 -->
+    <select id="SystemMessageListByMessageTypeKHDS_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM    S_Message A WITH(NOLOCK)
+			        INNER JOIN B_OpportunityGiveUp B WITH(NOLOCK) ON A.BizID = B.ID
+			        INNER JOIN B_Opportunity C WITH(NOLOCK) ON B.OpportunityID = C.ID
+			WHERE   A.Receiver = #{UserID}
+			        AND A.ProjectID = #{ProjectID}
+			        AND A.IsDel = 0
+			        AND A.Status = 1 ${sqlWhere} 
+		]]>		        
+    </select>
+    <!-- 顾问客户消息列表 -->
+    <select id="SystemMessageListByMessageTypeOpportunity_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT    A.ID ,
+		                    Content ,
+		                    dbo.F_FormatDate(SendTime) SendTime ,
+		                    OpportunityID ,
+		                    CustomerID ,
+		                    CustomerName ,
+		                    CustomerMobile ,
+		                    IntentionLevel ,
+		                    CustomerTag ,
+		                    dbo.F_FormatDate(A.TheLatestFollowUpDate) TheLatestFollowUpDate ,
+		                    A.TheLatestFollowUpContent ,
+		                    OpportunityStatus ,
+		                    OpportunityStatusValue ,
+		                    IsCare ,
+		                    AdviserID ,
+		                    AdviserName ,
+		                    AdviserOrgName ,
+		                    AdviserMobile ,
+		                    A.YJTime ,
+		                    A.IsYJ ,
+		                    A.MessageType ,
+		                    A.MessageTypeName ,
+		                    A.IsCustomerFirstEdit ,
+		                    ROW_NUMBER() OVER ( ORDER BY A.YJTimeValue , A.EditTime DESC , A.SendTime DESC ) num
+		          FROM      V_MessageOpportunity A
+		          WHERE     A.Receiver = #{UserID}
+		                    AND A.ProjectID = #{ProjectID} 
+		                    ${sqlWhere}    
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 顾问客户消息列表-总数 -->
+    <select id="SystemMessageListByMessageTypeOpportunity_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM    V_MessageOpportunity A
+			WHERE   A.Receiver = #{UserID}
+			        AND A.ProjectID = #{ProjectID} 
+					${sqlWhere} 
+		]]>		        
+    </select>
+    <!-- 拓客客户消息列表 -->
+    <select id="SystemMessageListByMessageTypeClue_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT    ID ,
+		                    Content ,
+		                    dbo.F_FormatDate(SendTime) SendTime ,
+		                    ProjectID ,
+		                    Receiver ,
+		                    MessageType ,
+		                    OpportunityID ,
+		                    ClueID ,
+		                    CustomerPotentialID ,
+		                    CustomerName ,
+		                    CustomerMobile ,
+		                    CreateTime ,
+		                    ClueStatus ,
+		                    SaleUserID ,
+		                    SaleUserName ,
+		                    IsAlloc ,
+		                    dbo.F_DictName(CustomerLevel) IntentionLevel ,
+		                    dbo.F_DictName(ISNULL(CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+		                    ROW_NUMBER() OVER ( ORDER BY A.EditTime DESC , A.SendTime DESC ) num
+		          FROM      V_MessageClue A
+		          WHERE     A.ProjectID = #{ProjectID} 
+		          			${sqlWhere}  
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 拓客客户消息列表-总数 -->
+    <select id="SystemMessageListByMessageTypeClue_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM    V_MessageClue A
+			WHERE   A.ProjectID = #{ProjectID}
+					${sqlWhere} 
+		]]>		        
+    </select>
+    <!-- 该项目是否有分享项目信息 -->
+    <select id="IsExistsShareProject" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT COUNT(1) Counts FROM dbo.A_ShareProject 
+			WHERE ProjectID = #{ProjectID} AND IsDel = 0 AND Status = 1
+		]]>		        
+    </select>
 </mapper>
