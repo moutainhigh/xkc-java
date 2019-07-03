@@ -48,7 +48,7 @@ public class Result {
         result.setErrmsg(message);
         return result;
     }
-    public static Result errormsg(String message,int errcode) {
+    public static Result errormsg(int errcode,String message) {
         return new Result(message,errcode);
     }
 
