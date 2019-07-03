@@ -73,7 +73,7 @@ WHERE bc.IsDel=0 AND bc.Status=1 AND bc.Approver IS NOT NULL AND bc.Approver<>''
        <![CDATA[ select count(1) ct from B_ChannelUser where Mobile=#{Mobile} and IsDel=0 ${sqlWhere} ]]>
     </select>
 
-    <select id="mLoginTK_SelectN" resultType="java.util.HashMap" parameterType="string">
+    <select id="ChannelUserCurrency_Find" resultType="java.util.HashMap" parameterType="string">
         SELECT *,dbo.F_DictName(ChannelTypeID) 'ChannelType'
         FROM B_ChannelUser where ( UserName=#{Mobile})
         and IsDel=0 and Status=1
@@ -179,4 +179,17 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         UPDATE B_ChannelUser SET Name=#{Name},Gender=#{Gender},Mobile=#{Mobile},ChannelTypeID=#{ChannelTypeID}
         WHERE ID=#{UserID};
     </update>
+
+    <select id="ChannelUser_Find" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *,
+        dbo.F_DictName ( ChannelTypeID ) 'ChannelType'
+        FROM
+        B_ChannelUser
+        WHERE
+        ( UserName = #{Mobile} )
+        AND PASSWORD = upper( substring( sys.fn_sqlvarbasetostr ( HashBytes ( 'MD5', #{Password} ) ), 3, 32 ) )
+        AND IsDel = 0
+        AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
+    </select>
 </mapper>

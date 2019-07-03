@@ -24,7 +24,7 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
     int ChannelAgenMobileIsExist_SelectN(String mobile,String sqlWhere);
 
-    HashMap<String, Object> mLoginTK_SelectN(String mobile);
+    HashMap<String, Object> ChannelUserCurrency_Find(String mobile);
 
     Map<String, Object> BrokerMyCenter_Select(String brokerID);
 
@@ -35,4 +35,6 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     Map<String, Object> mBrokerChannelUserDetail_Select(String userID);
 
     int mBrokerChannelUserDetail_Upate(String userID, String name, String gender, String mobile, String channelTypeID);
+
+    Map<String, Object> ChannelUser_Find(String mobile, String password);
 }

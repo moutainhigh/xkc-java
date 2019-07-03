@@ -38,8 +38,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public HashMap<String, Object> mLoginTK_SelectN(String mobile) {
-        return baseMapper.mLoginTK_SelectN(mobile);
+    public HashMap<String, Object> ChannelUserCurrency_Find(String mobile) {
+        return baseMapper.ChannelUserCurrency_Find(mobile);
     }
 
     @Override
@@ -66,6 +66,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     @Override
     public int mBrokerChannelUserDetail_Upate(String userID, String name, String gender, String mobile, String channelTypeID) {
         return baseMapper.mBrokerChannelUserDetail_Upate(userID, name, gender, mobile, channelTypeID);
+    }
+
+    @Override
+    public Map<String, Object> ChannelUser_Find(String mobile, String password) {
+        return baseMapper.ChannelUser_Find(mobile,password);
     }
 
 

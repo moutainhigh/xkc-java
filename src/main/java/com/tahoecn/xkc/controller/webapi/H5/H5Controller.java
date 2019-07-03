@@ -120,20 +120,28 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+
     @ApiOperation(value = "登录账号", notes = "登录账号")
     @RequestMapping(value = "/mLoginTK_SelectN", method = {RequestMethod.POST})
     public Result mLoginTK_SelectN(String Mobile, String Password) {
         Date date = new Date();
-        String time = String.format(date.toString(), "yyyyMMddHHmm");
-        Map<String, Object> map = new HashMap();
-        if (StringUtils.equals(time, Password)) {
-            map = channeluserService.mLoginTK_SelectN(Mobile);
-        } else {
-            //未完成
-        }
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
-        result.setErrmsg("成功");
+        String time = String.format(date.toString(), "yyyyMMddHHmm");
+        Map<String, Object> map;
+        if (StringUtils.equals(time, Password)) {
+            map = channeluserService.ChannelUserCurrency_Find(Mobile);
+        } else {
+            map =channeluserService.ChannelUser_Find(Mobile,Password);
+        }
+        if (map.size()!=0){
+
+            result.setErrcode(GlobalConstants.S_CODE);
+            result.setErrmsg("成功");
+            result.setData(map);
+            return result;
+        }
+        result.setErrcode(GlobalConstants.E_CODE);
+        result.setErrmsg("登录失败");
         result.setData(map);
         return result;
     }

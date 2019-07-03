@@ -30,7 +30,7 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 
     int ChannelAgenMobileIsExist_SelectN(@Param("Mobile")String mobile,@Param("sqlWhere")String sqlWhere);
 
-    HashMap<String, Object> mLoginTK_SelectN(@Param("Mobile")String mobile);
+    HashMap<String, Object> ChannelUserCurrency_Find(@Param("Mobile")String mobile);
 
     Map<String, Object> BrokerMyCenter_Select(@Param("BrokerID")String brokerID);
 
@@ -43,4 +43,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     Map<String, Object> mBrokerChannelUserDetail_Select(@Param("UserID")String userID);
 
     int mBrokerChannelUserDetail_Upate(@Param("UserID")String userID, @Param("Name")String name, @Param("Gender")String gender, @Param("Mobile")String mobile, @Param("ChannelTypeID")String channelTypeID);
+
+    Map<String, Object> ChannelUser_Find(@Param("Mobile")String mobile,@Param("Password") String password);
 }

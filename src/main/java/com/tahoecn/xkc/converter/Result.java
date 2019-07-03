@@ -28,25 +28,28 @@ public class Result {
         this.errmsg = errmsg;
     }
 
+    public Result(String errmsg, int errcode) {
+        this.errmsg = errmsg;
+        this.errcode = errcode;
+    }
+
     public Result(Object data, int errcode) {
         this.data = data;
         this.errcode = errcode;
     }
 
-    public static ResponseMessage ok(Object data) {
-        return new ResponseMessage(true, data);
+    public static Result ok(Object data) {
+        return new Result(data,0);
     }
 
-    public static ResponseMessage okm(String message) {
-        ResponseMessage responseMessage = new ResponseMessage(true, null);
-        responseMessage.setCode(200);
-        responseMessage.setMessage(message);
-        return responseMessage;
+    public static Result okm(String message) {
+        Result result = new Result();
+        result.setErrcode(0);
+        result.setErrmsg(message);
+        return result;
     }
-
-    public static ResponseMessage error(String message) {
-
-        return new ResponseMessage(message);
+    public static Result errormsg(String message,int errcode) {
+        return new Result(message,errcode);
     }
 
     public Object getData() {
