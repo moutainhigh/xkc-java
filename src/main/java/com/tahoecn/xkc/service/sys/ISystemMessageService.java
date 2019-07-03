@@ -15,6 +15,9 @@ import java.util.Map;
  */
 public interface ISystemMessageService {
 
+	/**
+	 * 未读消息数
+	 */
     List<UnreadCountVo> UnreadCountListByMessageType_Select(Map<String, Object> map);
 
 
@@ -94,4 +97,19 @@ public interface ISystemMessageService {
 	 * 该项目是否有分享项目信息
 	 */
 	int IsExistsShareProject(Map<String, Object> map);
+
+	/**
+	 * 消息详情
+	 */
+	List<Map<String, Object>> SystemMessageDetail_Select(Map<String, Object> map);
+
+	/**
+	 * 消息添加
+	 */
+	void SystemMessageDetail_Insert(Map<String, Object> map);
+
+	/**
+	 * 设消息为已读
+	 */
+	void SystemMessageReadDetail_Update(Map<String, Object> map);
 }

@@ -23,6 +23,9 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
     @Autowired
     private SystemMessageMapper systemMessageMapper;
 
+    /**
+	 * 未读消息数
+	 */
     @Override
     public List<UnreadCountVo> UnreadCountListByMessageType_Select(Map<String, Object> map) {
         return systemMessageMapper.UnreadCountListByMessageType_Select(map);
@@ -146,5 +149,29 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 	@Override
 	public int IsExistsShareProject(Map<String, Object> map){
 		return systemMessageMapper.IsExistsShareProject(map);
+	}
+
+	/**
+	 * 消息详情
+	 */
+	@Override
+	public List<Map<String, Object>> SystemMessageDetail_Select(Map<String, Object> map) {
+		return systemMessageMapper.SystemMessageDetail_Select(map);
+	}
+
+	/**
+	 * 消息添加
+	 */
+	@Override
+	public void SystemMessageDetail_Insert(Map<String, Object> map) {
+		systemMessageMapper.SystemMessageDetail_Insert(map);
+	}
+
+	/**
+	 * 设消息为已读
+	 */
+	@Override
+	public void SystemMessageReadDetail_Update(Map<String, Object> map) {
+		systemMessageMapper.SystemMessageReadDetail_Update(map);
 	}
 }
