@@ -3,8 +3,10 @@ package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.common.utils.ArrayUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.model.vo.UnreadCountVo;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
 import io.swagger.annotations.Api;
@@ -40,36 +42,217 @@ public class MessageAppController extends TahoeBaseController {
     @ApiOperation(value = "未读消息数接口", notes = "未读消息数接口")
     @RequestMapping(value = "/mMessageUnreadCount_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResponseMessage mMessageUnreadCount_Select(@RequestBody JSONObject jsonParam) {
-        // 直接将json信息打印出来
-        System.out.println(jsonParam.toJSONString());
-        Map paramMap = (HashMap)jsonParam.get("_param");
-        String jobCode = (String)paramMap.get("JobCode");
-        String userId = (String)paramMap.get("UserID");
-        String typeCode = (String)paramMap.get("TypeCode");
-        String projectId = (String)paramMap.get("ProjectID");
-
-        List unreadCountList = iSystemMessageService.UnreadCountListByMessageType_Select(projectId,userId);
-
-        return ResponseMessage.ok(unreadCountList);
+    	try{
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+    		String ProjectID = (String)paramMap.get("ProjectID");//项目id
+    		String UserID = (String)paramMap.get("UserID");//用户id
+    		String JobCode = (String)paramMap.get("JobCode");//岗位代码
+    		String TypeCode = (String)paramMap.get("TypeCode");//页签代码
+    		/*GJ(置业顾问--跟进):今日待跟进,到访提醒,跟进将逾期
+    		YQ(置业顾问--逾期):跟进即将逾期,认购即将逾期,签约即将逾期,回款即将逾期
+    		XX(置业顾问--消息):丢失审批通知,客户被回收通知,系统通知,到访通知
+    		CB(置业顾问--催办):跟进逾期催办,认购逾期催办,签约逾期催办,回款逾期催办
+    		YJ(营销经理--预警):跟进逾期,认购逾期,签约逾期,回款逾期
+    		DB(营销经理--待办):客户丢失通知,回收提醒
+    		ZQ(自渠):带看通知，认筹通知，认购通知，签约通知，退房通知，无效通知*/
+    		
+    		Map<String,Object> map = new HashMap<String,Object>();
+	    	map.put("ProjectID", ProjectID);
+	    	map.put("UserID", UserID);
+	    	map.put("JobCode", JobCode);
+	    	map.put("TypeCode", TypeCode);
+	    	//1.该项目是否有分享项目信息
+    		int count = iSystemMessageService.IsExistsShareProject(map);
+    		//2.统计消息类型id
+    		String[] msgType = null;
+    		switch (JobCode.toUpperCase()){
+    		case "FJ":
+    			msgType = new String[]{MessageType.系统通知.getTypeID()};
+    			break;
+    		case "GW":
+    			switch(TypeCode.toUpperCase()){
+    			case "GJ":
+    				if(count == 0){
+    					msgType = new String[]{MessageType.今日待跟进.getTypeID(),
+                                MessageType.分配待跟进.getTypeID(),
+                                MessageType.跟进即将逾期.getTypeID(),
+                                MessageType.认购即将逾期.getTypeID(),
+                                MessageType.签约即将逾期.getTypeID(),
+                                MessageType.回款即将逾期.getTypeID()};
+    				}else{
+    					msgType = new String[]{MessageType.今日待跟进.getTypeID(),
+                                MessageType.分配待跟进.getTypeID(),
+                                MessageType.跟进即将逾期.getTypeID(),
+                                MessageType.认购即将逾期.getTypeID(),
+                                MessageType.签约即将逾期.getTypeID(),
+                                MessageType.回款即将逾期.getTypeID(),
+                                MessageType.楼盘动态.getTypeID(),
+                                MessageType.预约客户.getTypeID()};
+    				}
+    				break;
+    			case "YQ":
+    				msgType = new String[]{MessageType.认购逾期.getTypeID(),
+                            MessageType.签约逾期.getTypeID(),
+                            MessageType.回款逾期.getTypeID(),
+                            MessageType.催办.getTypeID()};
+    				break;
+    			}
+    			break;
+    		case "XSJL":
+    			switch(TypeCode.toUpperCase()){
+    			case "YJ":
+    				msgType = new String[]{MessageType.认购即将逾期.getTypeID(),
+                            MessageType.签约即将逾期.getTypeID(),
+                            MessageType.回款即将逾期.getTypeID()};
+    				break;
+    			case "DB":
+    				msgType = new String[]{MessageType.客户丢失通知.getTypeID()};
+    				break;
+    			case "YQ":
+    				msgType = new String[]{MessageType.认购逾期.getTypeID(),
+    						MessageType.签约逾期.getTypeID(),
+    						MessageType.回款逾期.getTypeID()};
+    				break;
+    			}
+    			break;
+    		case "XSFZR":
+    			switch(TypeCode.toUpperCase()){
+    			case "YJ":
+    				msgType = new String[]{MessageType.认购即将逾期.getTypeID(),
+    						MessageType.签约即将逾期.getTypeID(),
+    						MessageType.回款即将逾期.getTypeID()};
+    				break;
+    			case "DB":
+    				msgType = new String[]{MessageType.客户丢失通知.getTypeID()};
+    				break;
+    			case "YQ":
+    				msgType = new String[]{MessageType.认购逾期.getTypeID(),
+    						MessageType.签约逾期.getTypeID(),
+    						MessageType.回款逾期.getTypeID()};
+    				break;
+    			}
+    			break;
+    		case "YXJL":
+    			switch (TypeCode.toUpperCase()){
+                case "YJ":
+                	msgType = new String[] {MessageType.认购即将逾期.getTypeID(),
+                    		MessageType.签约即将逾期.getTypeID(),
+                            MessageType.回款即将逾期.getTypeID()};
+                        break;
+                case "DB":
+                    msgType = new String[] {MessageType.客户丢失通知.getTypeID()};
+                    break;
+                case "YQ":
+                    msgType = new String[] {MessageType.认购逾期.getTypeID(),
+                    		MessageType.签约逾期.getTypeID(),
+                    		MessageType.回款逾期.getTypeID()};
+                    break;
+                }
+                break;
+    		case "TK":
+    			msgType = new String[] {MessageType.客户丢失通知.getTypeID()};
+                break;
+    		case "DZ":
+    			msgType = new String[] {MessageType.客户丢失通知.getTypeID()};
+                break;
+    		case "ZQFZR":
+    			msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+                        MessageType.带看通知.getTypeID(),
+                        MessageType.认筹通知.getTypeID(),
+                        MessageType.认购通知.getTypeID(),
+                        MessageType.签约通知.getTypeID(),
+                        MessageType.退房通知.getTypeID(),
+                        MessageType.无效通知.getTypeID()};
+                break;
+    		case "ZQJL":
+    			msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+                        MessageType.带看通知.getTypeID(),
+                        MessageType.认筹通知.getTypeID(),
+                        MessageType.认购通知.getTypeID(),
+                        MessageType.签约通知.getTypeID(),
+                        MessageType.退房通知.getTypeID(),
+                        MessageType.无效通知.getTypeID()};
+                break;
+    		case "ZQ":
+    			if(count == 0){
+    				msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+                            MessageType.带看通知.getTypeID(),
+                            MessageType.认筹通知.getTypeID(),
+                            MessageType.认购通知.getTypeID(),
+                            MessageType.签约通知.getTypeID(),
+                            MessageType.退房通知.getTypeID(),
+                            MessageType.无效通知.getTypeID()};
+    			}else{
+    				msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+                            MessageType.带看通知.getTypeID(),
+                            MessageType.认筹通知.getTypeID(),
+                            MessageType.认购通知.getTypeID(),
+                            MessageType.签约通知.getTypeID(),
+                            MessageType.退房通知.getTypeID(),
+                            MessageType.无效通知.getTypeID(),
+                            MessageType.楼盘动态.getTypeID(),
+                            MessageType.预约客户.getTypeID()};
+    			}
+    			break;
+    		case "JZ":
+                msgType = new String[] {MessageType.渠道任务通知.getTypeID()};
+                break;
+            default:
+                msgType = new String[] {MessageType.系统通知.getTypeID()};
+                break;
+    		}
+    		List<UnreadCountVo> unreadCountList = null;
+    		if(msgType != null){
+    			if("GW".equals(JobCode.toUpperCase()) && "YQ".equals(TypeCode.toUpperCase())){
+    				String[] msgTypeTemp = msgType.clone();
+    				String[] temp = new String[] {MessageType.系统通知.getTypeID()};
+    				msgTypeTemp = ArrayUtil.ArrayUnion(msgTypeTemp,temp);
+    				unreadCountList = UnreadCountListByMessageType_Select(msgTypeTemp,map);
+    			}else{
+    				unreadCountList = UnreadCountListByMessageType_Select(msgType,map);
+    			}
+    		}
+    		return ResponseMessage.ok(unreadCountList);
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return ResponseMessage.error("系统异常，请联系管理员");
+    	}
     }
     
-    @ResponseBody
+    /**
+     * 未读消息数
+     */
+    private List<UnreadCountVo> UnreadCountListByMessageType_Select(String[] msgTypeTemp, Map<String, Object> map) {
+    	String strMessageType = "AND ( MessageType = "+String.join("' OR MessageType ='", msgTypeTemp)+" )";
+		map.put("MessageType", strMessageType);
+		String JobCode = (String) map.get("JobCode");
+		
+		String sqlWhere = "";
+		if(!"ZQFZR".equals(JobCode)){
+			sqlWhere = " AND T.Receiver = #{UserID}";
+		}else{
+			sqlWhere = " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+					+ "WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=T.Receiver "
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+		}
+		map.put("sqlWhere", sqlWhere);
+		return iSystemMessageService.UnreadCountListByMessageType_Select(map);
+	}
+
+	@ResponseBody
     @ApiOperation(value = "消息列表", notes = "消息列表")
     @RequestMapping(value = "/mMessageList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResponseMessage mMessageList_Select(@RequestBody JSONObject jsonParam) {
-    	
     	try{
-	    	// 直接将json信息打印出来
-	    	System.out.println(jsonParam.toJSONString());
 	    	Map paramMap = (HashMap)jsonParam.get("_param");
 	    	String UserID = (String)paramMap.get("UserID");
 	    	String ProjectID = (String)paramMap.get("ProjectID");
-	    	String TypeID = (String)paramMap.get("TypeID");
+	    	String TypeID = (String)paramMap.get("TypeID");//消息类型ID
 	    	String PageIndex = (String)paramMap.get("PageIndex");
 	    	String PageSize = (String)paramMap.get("PageSize");
-	    	String IsRead = (String)paramMap.get("IsRead");
-	    	String IsApprove = (String)paramMap.get("IsApprove");
-	    	String JobCode = (String)paramMap.get("JobCode");
+	    	String IsRead = (String)paramMap.get("IsRead");//自渠是否已读（必填）
+	    	String IsApprove = (String)paramMap.get("IsApprove");//是否处理
+	    	String JobCode = (String)paramMap.get("JobCode");//岗位代码
 	    	
 	    	Map<String,Object> map = new HashMap<String,Object>();
 	    	map.put("UserID", UserID);
@@ -89,11 +272,6 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyUnHandleIconType", 0);
 	    		map.put("MessageType", TypeID);
 	    		result = ListByMessageType_Select(result,map);
-//	    		map.put("sqlWhere", "AND MessageType = #{MessageType}");
-//	    		result.put("List", iSystemMessageService.SystemMessageListByMessageType_Select(map));
-//	    		result.put("AllCount", iSystemMessageService.SystemMessageListByMessageType_SelectCount(map));
-//	    		//更新操作
-//	    		iSystemMessageService.updMessage(map);
 	    	}
 	    	if(MessageType.渠道任务通知.getTypeID().equals(TypeID)){
 	    		result.put("EmptyHandleMsg", "暂无通知");
@@ -352,7 +530,7 @@ public class MessageAppController extends TahoeBaseController {
 			sqlWhere += " AND Receiver = #{UserID}";
 		}else{
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
-					+ "WHERE ProjectID='{0}' AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+					+ "WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=Receiver "
 					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
 		}
 		map.put("sqlWhere", sqlWhere);

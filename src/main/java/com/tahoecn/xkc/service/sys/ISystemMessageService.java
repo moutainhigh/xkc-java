@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface ISystemMessageService {
 
-    List<UnreadCountVo> UnreadCountListByMessageType_Select(String projectId, String userId);
+    List<UnreadCountVo> UnreadCountListByMessageType_Select(Map<String, Object> map);
 
 
     /**

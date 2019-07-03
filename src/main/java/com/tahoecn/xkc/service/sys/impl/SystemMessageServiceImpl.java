@@ -24,8 +24,8 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
     private SystemMessageMapper systemMessageMapper;
 
     @Override
-    public List<UnreadCountVo> UnreadCountListByMessageType_Select(String projectId, String userId) {
-        return systemMessageMapper.UnreadCountListByMessageType_Select(projectId, userId);
+    public List<UnreadCountVo> UnreadCountListByMessageType_Select(Map<String, Object> map) {
+        return systemMessageMapper.UnreadCountListByMessageType_Select(map);
     }
 
     /**
