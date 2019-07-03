@@ -1,7 +1,10 @@
 package com.tahoecn.xkc.mapper.sys;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.vo.UnreadCountVo;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -94,4 +97,7 @@ public interface SystemMessageMapper {
 	 * 该项目是否有分享项目信息
 	 */
 	int IsExistsShareProject(Map<String, Object> map);
+
+    List<Map<String, Object>> mMessageAllList_Select(IPage page, @Param("UserID") String userID);
+    int mMessageAllList_Updata(@Param("ID") String ID);
 }

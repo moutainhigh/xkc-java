@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.rule;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -39,7 +40,7 @@ public class BClueruleAdvisergroup implements Serializable {
     @TableField("ClueRuleID")
     private String ClueRuleID;
 
-    @TableId("ID")
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     @TableField("Creator")

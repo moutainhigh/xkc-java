@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.project.ABrokerprojecthouseimgMapper">
+
+    <select id="HouseImgList" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,Name,Url,TypeName,Area,Remark FROM A_BrokerProjectHouseImg
+        WHERE IsDel = 0 AND Status = 1 AND BrokerProjectID=#{BrokerProjectID} ORDER BY ListIndex
+    </select>
+</mapper>

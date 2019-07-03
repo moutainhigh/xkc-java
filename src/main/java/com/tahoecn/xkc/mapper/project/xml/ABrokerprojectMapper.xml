@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.project.ABrokerprojectMapper">
+
+
+    <select id="mBrokerCityList_Select" resultType="hashmap" parameterType="string">
+        SELECT DISTINCT
+        CityID ,
+        dbo.F_CityNameByID(CityID) CityName
+        FROM    dbo.A_BrokerProject
+        WHERE   AppID = #{AppID}
+        ORDER BY dbo.F_CityNameByID(CityID)
+    </select>
+
+    <select id="mBrokerProjectDetail_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        ID,
+        AppID,
+        ProjectID,
+        dbo.F_GetProjectAlias ( ProjectID ) ProjectAlias,
+        dbo.F_BrokerProjectCoverImg ( ID ) CoverUrl,
+        CityID,
+        dbo.F_CityNameByID ( CityID ) CityName,
+        Name,
+        ShortName,
+        CommisionRate,
+        CommisionRule,
+        ProductType,
+        ProductPriceAvg,
+        Discount,
+        Address,
+        LocationX,
+        LocationY,
+        Tel,
+        RecommonedReason,
+        Intro,
+        CoverArea,
+        BuildArea,
+        VolumeRate,
+        ExpectHourse,
+        OpenDiscTime,
+        Bitmap,
+        BirtView,
+        AroundAssort,
+        CASE
+        ISNULL(( SELECT TOP 1 ID FROM dbo.B_PojectChannelOrgRel WHERE OrgID = #{ChannelOrgID} AND ProjectID = A_BrokerProject.ProjectID ), '' )
+        WHEN '' THEN
+        '0' ELSE '1'
+        END IsPreparation
+        FROM
+        A_BrokerProject
+        WHERE
+        IsDel = 0
+        AND Status = 1
+        AND ID = #{BrokerProjectID}
+    </select>
+</mapper>

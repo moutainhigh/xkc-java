@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.project.BProjectcollectionMapper">
+
+    <select id="mBrokerProjectCollectionIsExist_Select" resultType="int" parameterType="string">
+        SELECT count(ProjectId) as total FROM B_ProjectCollection WHERE UserId=#{UserID} AND ProjectId=#{ProjectID}
+    </select>
+
+    <select id="mBrokerProjectCollectionList_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+      SELECT A.ID ,
+      A.Name ,
+      A.ShortName ,
+      A.ProjectID ,
+      dbo.F_GetProjectName(A.ProjectID) ProjectName ,
+      dbo.F_GetProjectAlias(A.ProjectID) ProjectAlias ,
+      A.ProductPriceAvg ,
+      dbo.F_BrokerProjectCoverImg(A.ID) CoverUrl ,
+      dbo.F_CityNameByID(A.CityID) CityName ,
+      A.Address ,
+      A.Discount,
+      b.IsReportOwn
+      FROM  B_ProjectCollection AS pc
+      JOIN A_BrokerProject A ON pc.ProjectId = A.ID
+      LEFT JOIN dbo.B_Project b ON a.ProjectID=b.ID
+      WHERE
+        pc.UserId=#{UserID}
+        AND A.IsDel = 0
+        AND A.Status = 1
+      ORDER BY A.ListIndex
+    ]]>
+    </select>
+
+    <insert id="BrokerProjectCollection_Insert" parameterType="string">
+        INSERT INTO dbo.B_ProjectCollection (UserId, ProjectId, CreateTime)
+        VALUES (#{UserID}, #{ProjectID}, getdate())
+    </insert>
+
+    <delete id="BrokerProjectCollection_Delete" parameterType="string">
+        DELETE B_ProjectCollection WHERE UserId=#{UserID} AND ProjectId=#{ProjectID}
+    </delete>
+</mapper>

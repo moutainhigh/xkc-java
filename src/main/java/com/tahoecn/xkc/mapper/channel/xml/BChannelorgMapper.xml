@@ -99,4 +99,12 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
         UPDATE [dbo].[B_ChannelOrg] SET [Status]=#{Status},Editor=#{UserID},EditTime=getdate() WHERE ID=#{ID}
     </update>
 
+
+    <select id="ChannelOrgNameIsExist_SelectN" resultType="integer" parameterType="string">
+        <![CDATA[ select count(1) ct from B_ChannelOrg where OrgName=#{OrgName} and IsDel=0 ${sqlWhere} ]]>
+    </select>
+
+    <select id="getOrgCode" resultType="string">
+        SELECT MAX(OrgCode) as OrgCode  FROM [B_ChannelOrg]
+    </select>
 </mapper>

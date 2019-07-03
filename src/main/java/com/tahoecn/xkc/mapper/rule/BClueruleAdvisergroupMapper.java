@@ -2,6 +2,7 @@ package com.tahoecn.xkc.mapper.rule;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,11 @@ import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
  */
 public interface BClueruleAdvisergroupMapper extends BaseMapper<BClueruleAdvisergroup> {
 
+    void deleteByOrgID(@Param("orgID") String orgID, @Param("UserID")String UserID, @Param("projectIDWhere")String projectIDWhere);
+
+    int selectDeleteCount(@Param("orgID") String orgID,@Param("rProjectID") String rProjectID);
+
+    String selectID(@Param("orgID")String orgID, @Param("rProjectID")String rProjectID);
+
+    void deleteByID(@Param("UserID")String userID,@Param("ID")String ID);
 }

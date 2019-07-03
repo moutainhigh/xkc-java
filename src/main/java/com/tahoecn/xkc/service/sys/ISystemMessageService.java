@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.sys;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.vo.UnreadCountVo;
 import java.util.List;
 import java.util.Map;
@@ -94,4 +95,8 @@ public interface ISystemMessageService {
 	 * 该项目是否有分享项目信息
 	 */
 	int IsExistsShareProject(Map<String, Object> map);
+    /**
+     * H5消息列表
+     */
+    List<Map<String, Object>> mMessageAllList_Select(IPage page, String userID);
 }

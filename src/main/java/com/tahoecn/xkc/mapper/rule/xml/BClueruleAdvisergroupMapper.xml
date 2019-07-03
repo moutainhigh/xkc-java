@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.BClueruleAdvisergroupMapper">
+<mapper namespace="com.tahoecn.xkc.mapper.rule.BClueruleAdvisergroupMapper">
 
+    <update id="deleteByOrgID" parameterType="string">
+        UPDATE B_ClueRule_AdviserGroup SET IsDel=1,Editor=#{UserID},EditTime=GETDATE() WHERE ID IN (
+        SELECT CRAG.ID FROM dbo.B_ClueRule CR
+        INNER JOIN dbo.B_ClueRule_AdviserGroup CRAG ON CR.ID=CRAG.ClueRuleID AND CRAG.IsDel=0
+        WHERE CR.IsDel=0 AND CRAG.AdviserGroupID=#{OrgID} AND CR.ProjectID NOT IN (${ProjectIDWhere})
+        )
+    </update>
+
+    <select id="selectDeleteCount" resultType="int" parameterType="string">
+        SELECT COUNT
+        ( 1 )
+        FROM
+        dbo.B_ClueRule CR
+        INNER JOIN dbo.B_ClueRule_AdviserGroup CRAG ON CR.ID= CRAG.ClueRuleID
+        WHERE
+        CR.IsDel= 0
+        AND CR.ProjectID= #{rProjectID}
+        AND CRAG.AdviserGroupID= #{OrgID}
+    </select>
+
+    <select id="selectID" resultType="string" parameterType="string">
+        SELECT TOP
+        1 CRAG.ID
+        FROM
+        dbo.B_ClueRule CR
+        INNER JOIN dbo.B_ClueRule_AdviserGroup CRAG ON CR.ID= CRAG.ClueRuleID
+        WHERE
+        CR.IsDel= 0
+        AND CR.ProjectID= #{rProjectID}
+        AND CRAG.AdviserGroupID= #{OrgID}
+    </select>
+
+    <update id="deleteByID" parameterType="string">
+        UPDATE B_ClueRule_AdviserGroup
+        SET IsDel = 1,
+        Editor = #{UserID},
+        EditTime = GETDATE()
+        WHERE
+        ID =#{ID}
+    </update>
 </mapper>

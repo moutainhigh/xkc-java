@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BClueMapper">
+
+
+    <select id="BrokerClueDetail_Select" resultType="java.util.HashMap" >
+        SELECT TOP
+        1 *
+        FROM
+        (
+        SELECT
+        ID,
+        Name,
+        Mobile,
+        dbo.F_GetProjectAlias ( IntentProjectID ) IntentProjectName,
+        Remark,
+        '' AS 'ReportUserID',
+        '' AS 'ReportUserName',
+        '' AS 'ReportUserMobile',
+        CASE
+
+        WHEN Status BETWEEN 1
+        AND 2 THEN
+        CreateTime
+        WHEN Status = 3 THEN
+        InvalidTime
+        WHEN Status = 4 THEN
+        EditeTime
+        END 'CreateTime',
+        CASE
+
+        WHEN Status BETWEEN 1
+        AND 2 THEN
+        '报备'
+        WHEN Status BETWEEN 3
+        AND 4 THEN
+        '无效'
+        END 'statu',
+        SourceType
+        FROM
+        B_Clue ( NOLOCK )
+        WHERE
+        ID = #{ClueID} UNION
+        SELECT
+        cl.ID,
+        ISNULL( cl.Name, bop.CustomerName ) 'Name',
+        bop.CustomerMobile 'Mobile',
+        dbo.F_GetProjectAlias ( bop.ProjectID ) IntentProjectName,
+        cl.Remark,
+        bop.SaleUserID 'ReportUserID',
+        bop.SaleUserName 'ReportUserName',
+        bsu.TelPhone AS 'ReportUserMobile',
+        bop.CreateTime,
+        CASE
+
+        WHEN bop.Status= 1 THEN
+        '报备'
+        WHEN bop.Status= 2 THEN
+        '到访'
+        WHEN bop.Status= 3 THEN
+        '到访'
+        WHEN bop.Status = 4 THEN
+        '认购'
+        WHEN bop.Status= 5 THEN
+        '签约'
+        WHEN bop.Status= 6 THEN
+        '无效'
+        WHEN bop.Status= 7 THEN
+        '退房'
+        END 'statu',
+        cl.SourceType
+        FROM
+        B_Opportunity ( NOLOCK ) bop
+        LEFT JOIN B_SalesUser ( NOLOCK ) bsu ON bop.SaleUserID= bsu.ID
+        LEFT JOIN B_Clue ( NOLOCK ) cl ON bop.ClueID= cl.ID
+        WHERE
+        bop.ClueID= #{ClueID}
+        ) dt
+        ORDER BY
+        dt.CreateTime DESC;
+    </select>
+
+    <select id="TrackList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        1 AS sort,
+        '报备' AS Name,
+        createtime AS TractTime
+        FROM
+        b_clue
+        WHERE
+        id = #{ClueID} UNION
+        SELECT
+        2 AS sort,
+        '到访' AS Name,
+        TheFirstVisitDate AS TractTime
+        FROM
+        B_Opportunity
+        WHERE
+        clueid = #{ClueID} UNION
+        SELECT
+        *
+        FROM
+        (
+        SELECT TOP
+        1 3 AS sort,
+        '认购 ' AS 'Name',
+        ( CASE WHEN d.ChgDate IS NOT NULL THEN d.ChgDate ELSE d.QSDate END ) AS TrackTime
+        FROM
+        B_Opportunity a
+        LEFT JOIN B_CustomerAttach b ON b.OpportunityID = a.ID
+        LEFT JOIN C_MYTrade c ON c.OppGUID = b.ID
+        LEFT JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+        AND d.CloseReason NOT IN ( '退房', '换房', '其它变更', '作废', '特批折扣' )
+        WHERE
+        ClueID = #{ClueID}
+        AND d.OrderGUID IS NOT NULL
+        ORDER BY
+        d.qsdate
+        ) t1 UNION
+        SELECT
+        *
+        FROM
+        (
+        SELECT TOP
+        1 4 AS sort,
+        '签约' AS 'Name',
+        ( CASE WHEN d.ChgDate> d.ZqDate THEN d.ChgDate ELSE d.ZqDate END ) AS TrackTime
+        FROM
+        B_Opportunity bop
+        LEFT JOIN B_CustomerAttach bca ON bca.OpportunityID = bop.ID
+        LEFT JOIN C_MYTrade b ON b.OppGUID = bca.ID
+        LEFT JOIN C_MYContract d ON b.TradeGUID = d.TradeGUID
+        AND d.CloseReason NOT IN ( '退房', '换房', '其它变更', '作废', '特批折扣' )
+        WHERE
+        ClueID = #{ClueID}
+        AND d.ContractGUID IS NOT NULL
+        ORDER BY
+        d.qsdate
+        ) t2 UNION
+        SELECT
+        *
+        FROM
+        (
+        SELECT TOP
+        1 5 AS sort,
+        '退房 ' AS 'Name',
+        CASE
+
+        WHEN d.CloseDate IS NOT NULL THEN
+        d.CloseDate ELSE e.CloseDate
+        END AS TrackTime
+        FROM
+        B_Opportunity a
+        LEFT JOIN B_CustomerAttach b ON b.OpportunityID = a.ID
+        LEFT JOIN C_MYTrade c ON c.OppGUID = b.ID
+        LEFT JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+        LEFT JOIN C_MYContract e ON c.TradeGUID = e.TradeGUID
+        WHERE
+        ClueID = #{ClueID}
+        AND ( d.CloseReason= '退房' OR e.CloseReason= '退房' )
+        ORDER BY
+        d.CloseDate
+        ) t3 UNION
+        SELECT
+        6 AS sort,
+        '无效(' + InvalidReason + ')' AS 'Name',
+        InvalidTime AS 'TrackTime'
+        FROM
+        B_Clue
+        WHERE
+        ID = #{ClueID}
+        AND status = 3
+        ) tt
+        WHERE
+        TractTime IS NOT NULL
+        ORDER BY
+        sort,
+        TractTime
+    </select>
+</mapper>

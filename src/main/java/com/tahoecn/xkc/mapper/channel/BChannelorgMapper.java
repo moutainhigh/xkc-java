@@ -30,4 +30,9 @@ public interface BChannelorgMapper extends BaseMapper<BChannelorg> {
     Integer getRecordCount(@Param("ProjectID")String projectID, @Param("sqlWhere")String sqlWhere);
 
     void ChannelStatus_UpdateN(@Param("ID")String id, @Param("UserID")String userID, @Param("Status")String status);
+
+    int ChannelOrgNameIsExist_SelectN(@Param("OrgName")String orgName,@Param("sqlWhere")String sqlWhere);
+
+    String getOrgCode();
+
 }

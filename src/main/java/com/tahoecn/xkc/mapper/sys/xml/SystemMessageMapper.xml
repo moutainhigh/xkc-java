@@ -324,4 +324,19 @@
 			WHERE ProjectID = #{ProjectID} AND IsDel = 0 AND Status = 1
 		]]>		        
     </select>
+
+
+    <select id="mMessageAllList_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.DictName MessageTypeName FROM S_Message A LEFT JOIN S_Dictionary D ON A.MessageType = D.ID WHERE A.Receiver = #{UserID} AND A.IsDel = 0 AND A.Status = 1  ORDER BY A.SendTime DESC
+     ]]>
+    </select>
+    <update id="mMessageAllList_Updata">
+        UPDATE S_Message
+        SET IsRead = 1,
+        ReadTime = getdate(),
+        IsApprove = 1
+        WHERE
+        ID=#{ID}
+    </update>
 </mapper>

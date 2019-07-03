@@ -64,4 +64,119 @@ WHERE bc.IsDel=0 AND bc.Status=1 AND bc.Approver IS NOT NULL AND bc.Approver<>''
         UPDATE [dbo].[B_ChannelUser] SET [Status]=#{Status},Editor=#{UserID},EditeTime=getdate()
         WHERE ChannelOrgID=#{ID} AND Job=0
     </update>
+
+    <select id="ChannelAgenUserNameIsExist_SelectN" resultType="integer" parameterType="string">
+        <![CDATA[  select count(1) ct from B_ChannelUser where UserName=#{UserName} and IsDel=0 ${sqlWhere} ]]>
+    </select>
+
+    <select id="ChannelAgenMobileIsExist_SelectN" resultType="integer" parameterType="string">
+       <![CDATA[ select count(1) ct from B_ChannelUser where Mobile=#{Mobile} and IsDel=0 ${sqlWhere} ]]>
+    </select>
+
+    <select id="mLoginTK_SelectN" resultType="java.util.HashMap" parameterType="string">
+        SELECT *,dbo.F_DictName(ChannelTypeID) 'ChannelType'
+        FROM B_ChannelUser where ( UserName=#{Mobile})
+        and IsDel=0 and Status=1
+    </select>
+
+    <select id="BrokerMyCenter_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        select
+        case when LJAmount is null then 0 else cast(LJAmount as decimal(15,2)) end as LJAmount
+        ,
+        case when YJAmount is null then 0 else cast(YJAmount as decimal(15,2)) end as YJAmount
+        ,
+        case when DJAmount is null then 0 else cast(DJAmount as decimal(15,2)) end as DJAmount
+        ,
+        case when BBCount is null then 0 else cast(BBCount as decimal(15,2)) end as BBCount
+        ,
+        case when DFCount is null then 0 else cast(DFCount as decimal(15,2)) end as DFCount
+        ,
+        case when RGCount is null then 0 else cast(RGCount as decimal(15,2)) end as RGCount
+        ,
+        case when QYCount is null then 0 else cast(QYCount as decimal(15,2)) end as QYCount
+        ,(select count(*) from S_Message where Receiver = #{BrokerID} and IsRead<>1) as NoReadMesCnt
+        from (select id as BrokerID from B_ChannelUser
+        where id=#{BrokerID}) t
+        left join
+        (
+        select BrokerID,sum(BBCount) as BBCount from (select ReportUserID as BrokerID,count(a.id) as BBCount from B_Clue a left join B_Opportunity b on a.id  = b.clueid
+        group by ReportUserID,a.Status,b.ID,b.Status
+        having a.Status in(1,2) and b.ID is null or (b.id is not null and b.Status=1)) p
+        group by BrokerID
+        ) a on t.BrokerID = a.BrokerID
+
+        left join
+        (select BrokerID, sum(CommissionAmount) as YJAmount from A_CommissionRecords
+        group by BrokerID,Status
+        having Status=3) b
+        on t.BrokerID = b.BrokerID
+        left join
+        (select BrokerID, sum(CommissionAmount) as DJAmount from A_CommissionRecords
+        group by BrokerID,Status
+        having Status=2) c
+        on t.BrokerID = c.BrokerID
+        left join
+        (select BrokerID,sum(CommissionAmount) as LJAmount from A_CommissionRecords
+        group by BrokerID ) d on t.BrokerID = d.BrokerID
+        left join
+        (
+        select a.ReportUserID as BrokerID,count(a.id) as DFCount from B_Clue a inner join B_Opportunity b on a.id  = b.clueid
+        group by a.ReportUserID,b.Status
+        having (b.Status=2  or b.Status=3)
+        ) e on t.BrokerID = e.BrokerID
+        left join
+        (
+        select BrokerID,sum(RGCount) as RGCount from (select a.ReportUserID as BrokerID,count(a.id) as RGCount from B_Clue a inner join B_Opportunity b on a.id  = b.clueid
+        group by a.ReportUserID,b.Status
+        having  b.Status=4) aa
+        group by BrokerID
+        ) f on t.BrokerID = f.BrokerID
+        left join
+        (
+        select a.ReportUserID as BrokerID,count(a.id) as QYCount from B_Clue a inner join B_Opportunity b on a.id  = b.clueid
+        group by a.ReportUserID,b.Status
+        having b.Status=5
+        ) g on t.BrokerID = g.BrokerID
+        ]]>
+    </select>
+
+    <update id="mBrokerChannelUserCardDetail_Update" >
+        UPDATE B_ChannelUser
+        SET CertificatesName = #{CertificatesName},
+        CertificatesType =#{CertificatesType},
+        CertificatesNo = #{CertificatesNo},
+        CertificatesPicFace = #{CertificatesPicFace},
+        CertificatesPicBack = #{CertificatesPicBack}
+        WHERE
+        ID = #{UserID};
+    </update>
+
+    <update id="mBrokerChannelUserBankCardDetail_Update" >
+        UPDATE B_ChannelUser
+        SET BankCardPerson = #{BankCardPerson},
+        BankCardCreate = #{BankCardCreate},
+        BankCard = #{BankCard},
+        BankCardProvince = #{BankCardProvince},
+        BankCardCity = #{BankCardCity},
+        BankCardArea = #{BankCardArea},
+        BankCardBranch = #{BankCardBranch},
+        BankCardPic = #{BankCardPic}
+        WHERE
+        ID = #{UserID};
+    </update>
+
+    <select id="mBrokerChannelUserDetail_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+    SELECT ID,Name,Mobile,dbo.F_DictName(Gender) 'Gender',Gender 'GenderID',dbo.F_DictName(ChannelTypeID) as 'ChannelType',ChannelTypeID,Password,CertificatesName,dbo.F_DictName(CertificatesType) as 'CertificatesTypeName',CertificatesType,
+CertificatesNo,CertificatesPicFace,CertificatesPicBack,BankCardPerson,BankCard,BankCardCreate,HeadImg,
+dbo.F_CityName(BankCardProvince) as 'BankCardProvinceName',BankCardProvince,dbo.F_CityName(BankCardCity) as 'BankCardCityName',BankCardCity,dbo.F_CityName(BankCardArea) as 'BankCardAreaName',BankCardArea,BankCardBranch,BankCardPic
+FROM B_ChannelUser WHERE ID=#{UserID};
+    ]]>
+    </select>
+
+    <update id="mBrokerChannelUserDetail_Upate">
+        UPDATE B_ChannelUser SET Name=#{Name},Gender=#{Gender},Mobile=#{Mobile},ChannelTypeID=#{ChannelTypeID}
+        WHERE ID=#{UserID};
+    </update>
 </mapper>

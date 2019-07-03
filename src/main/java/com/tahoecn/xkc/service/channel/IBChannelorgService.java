@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.channel;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
@@ -27,4 +28,10 @@ public interface IBChannelorgService extends IService<BChannelorg> {
     List<Map<String, String>> ChannelOrgAllList_SelectN(String projectID, String pOrgName);
 
     void ChannelStatus_UpdateN(String id, String userID, String status);
+
+    int ChannelOrgNameIsExist_SelectN(String orgName,String sqlWhere);
+
+    String getOrgCode();
+
+    JSONResult insertOrg(Map<String,String>  map);
 }

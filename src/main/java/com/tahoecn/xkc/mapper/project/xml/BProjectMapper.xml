@@ -2,4 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.project.BProjectMapper">
 
+    <select id="findByOrgID" resultType="java.util.HashMap" parameterType="string">
+        SELECT p.ID ProjectID ,p.Alias as ProjectAlias ,p.Name as ProjectName
+        FROM [B_Project] as p left join B_PojectChannelOrgRel as pj on p.ID=pj.ProjectID
+        where p.IsDel=0 and pj.IsDel=0 and pj.OrgID=#{OrgID}
+    </select>
+
+    <select id="ProjectInfoList_SelectN" resultType="java.util.HashMap" parameterType="string">
+        SELECT A.ID ,
+        A.Name ,
+        A.ShortName ,
+        A.ProjectID ,
+        dbo.F_GetProjectName(A.ProjectID) ProjectName ,
+        dbo.F_GetProjectAlias(A.ProjectID) ProjectAlias ,
+        A.ProductPriceAvg ,
+        dbo.F_BrokerProjectCoverImg(A.ID) CoverUrl ,
+        dbo.F_CityNameByID(A.CityID) CityName ,
+        A.Address ,
+        A.Discount,
+        b.IsReportOwn
+        FROM A_BrokerProject A
+        LEFT JOIN dbo.B_Project b ON a.ProjectID=b.ID
+        WHERE A.IsDel = 0
+        AND A.Status = 1
+        <where>
+            <if test="Name!=null and Name!=''">
+                AND A.Name like '%#{Name}%'
+            </if>
+            <if test="CityID!=null and CityID!=''">
+                AND A.CityID = #{CityID}
+            </if>
+        </where>
+        ORDER BY A.ListIndex
+    </select>
 </mapper>

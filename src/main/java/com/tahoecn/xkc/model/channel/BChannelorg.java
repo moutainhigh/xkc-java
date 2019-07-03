@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.channel;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -111,7 +112,7 @@ public class BChannelorg implements Serializable {
     private String Creator;
 
     @ApiModelProperty(value = "ID")
-    @TableId("ID")
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     @ApiModelProperty(value = "编辑时间")

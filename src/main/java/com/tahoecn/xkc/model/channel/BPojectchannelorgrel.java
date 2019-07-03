@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.channel;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -31,7 +32,7 @@ public class BPojectchannelorgrel implements Serializable {
     @TableField("ProjectID")
     private String ProjectID;
 
-    @TableId("ID")
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     @TableField("EditTime")

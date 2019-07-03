@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.sys.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.mapper.sys.SystemMessageMapper;
 import com.tahoecn.xkc.model.vo.UnreadCountVo;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
@@ -147,4 +148,17 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 	public int IsExistsShareProject(Map<String, Object> map){
 		return systemMessageMapper.IsExistsShareProject(map);
 	}
+
+    /**
+     * H5消息列表
+     */
+    @Override
+    public List<Map<String, Object>> mMessageAllList_Select(IPage page, String userID) {
+        List<Map<String, Object>> list = systemMessageMapper.mMessageAllList_Select(page, userID);
+        for (Map<String, Object> map : list) {
+            Object id = map.get("ID");
+            systemMessageMapper.mMessageAllList_Updata(id.toString());
+        }
+        return systemMessageMapper.mMessageAllList_Select(page, userID);
+    }
 }
