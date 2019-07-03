@@ -98,6 +98,20 @@ public interface SystemMessageMapper {
 	 */
 	int IsExistsShareProject(Map<String, Object> map);
 
+	/**
+	 * 消息详情
+	 */
+	List<Map<String, Object>> SystemMessageDetail_Select(Map<String, Object> map);
+
+	/**
+	 * 消息添加
+	 */
+	void SystemMessageDetail_Insert(Map<String, Object> map);
+	/**
+	 * 设消息为已读
+	 */
+	void SystemMessageReadDetail_Update(Map<String, Object> map);
+
     List<Map<String, Object>> mMessageAllList_Select(IPage page, @Param("UserID") String userID);
     int mMessageAllList_Updata(@Param("ID") String ID);
 }

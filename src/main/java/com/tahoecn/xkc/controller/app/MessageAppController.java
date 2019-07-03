@@ -201,6 +201,7 @@ public class MessageAppController extends TahoeBaseController {
                 msgType = new String[] {MessageType.系统通知.getTypeID()};
                 break;
     		}
+    		//3.查询数据
     		List<UnreadCountVo> unreadCountList = null;
     		if(msgType != null){
     			if("GW".equals(JobCode.toUpperCase()) && "YQ".equals(TypeCode.toUpperCase())){
@@ -604,5 +605,372 @@ public class MessageAppController extends TahoeBaseController {
 		//更新操作
 		iSystemMessageService.updMessageZQ(map);
 		return result;
+	}
+	
+	@ResponseBody
+    @ApiOperation(value = "模块未读消息数", notes = "模块未读消息数")
+    @RequestMapping(value = "/mMessageModelUnreadCount_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResponseMessage mMessageModelUnreadCount_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+    		@SuppressWarnings("unchecked")
+			Map<String,Object> paramMap = (HashMap<String,Object>)jsonParam.get("_param");
+    		String ProjectID = (String) paramMap.get("ProjectID");
+    		String UserID = (String)paramMap.get("UserID");//用户id
+    		String JobCode = (String)paramMap.get("JobCode");//岗位代码
+    		String TypeCode = (String)paramMap.get("TypeCode");//页签代码
+    		/*GJ(置业顾问--跟进):今日待跟进,到访提醒,跟进将逾期
+    		YQ(置业顾问--逾期):跟进即将逾期,认购即将逾期,签约即将逾期,回款即将逾期
+    		XX(置业顾问--消息):丢失审批通知,客户被回收通知,系统通知,到访通知
+    		CB(置业顾问--催办):跟进逾期催办,认购逾期催办,签约逾期催办,回款逾期催办
+    		YJ(营销经理--预警):跟进逾期,认购逾期,签约逾期,回款逾期
+    		DB(营销经理--待办):客户丢失通知,回收提醒
+    		ZQ(自渠):带看通知，认筹通知，认购通知，签约通知，退房通知，无效通知*/
+    		
+    		Map<String,Object> map = new HashMap<String,Object>();
+	    	map.put("ProjectID", ProjectID);
+	    	map.put("UserID", UserID);
+	    	map.put("JobCode", JobCode);
+	    	map.put("TypeCode", TypeCode);
+	    	//1.该项目是否有分享项目信息
+    		int count = iSystemMessageService.IsExistsShareProject(map);
+    		//2.统计消息类型id
+    		String[] msgType = null;
+    		Map<String,Object> res = new HashMap<String,Object>();
+    		switch(JobCode.toUpperCase()){
+    		case "GW":{
+    			res.put("GJCount", 0);
+                res.put("YQCount", 0);
+                res.put("XXCount", 0);
+                res.put("CBCount", 0);
+                res.put("YJCount", 0);
+                res.put("DBCount", 0);
+                if(count == 1){
+                	res.put("DTCount", 0);//动态数
+                    res.put("YYCount", 0);//预约客户数
+                    msgType = new String[]{MessageType.今日待跟进.getTypeID(),
+                            MessageType.分配待跟进.getTypeID(),
+                            MessageType.跟进即将逾期.getTypeID(),
+                            MessageType.认购即将逾期.getTypeID(),
+                            MessageType.签约即将逾期.getTypeID(),
+                            MessageType.回款即将逾期.getTypeID(),
+                            MessageType.跟进逾期.getTypeID(),
+                            MessageType.认购逾期.getTypeID(),
+                            MessageType.签约逾期.getTypeID(),
+                            MessageType.回款逾期.getTypeID(),
+                            MessageType.跟进逾期催办.getTypeID(),
+                            MessageType.认购逾期催办.getTypeID(),
+                            MessageType.签约逾期催办.getTypeID(),
+                            MessageType.回款逾期催办.getTypeID(),
+                            MessageType.到访提醒.getTypeID(),
+                            MessageType.客户丢失通知.getTypeID(),
+                            MessageType.回收提醒.getTypeID(),
+                            MessageType.系统通知.getTypeID(),
+                            MessageType.楼盘动态.getTypeID(),
+                            MessageType.预约客户.getTypeID()};
+                }else{
+                	msgType = new String[] {MessageType.今日待跟进.getTypeID(),
+                            MessageType.分配待跟进.getTypeID(),
+                            MessageType.跟进即将逾期.getTypeID(),
+                            MessageType.认购即将逾期.getTypeID(),
+                            MessageType.签约即将逾期.getTypeID(),
+                            MessageType.回款即将逾期.getTypeID(),
+                            MessageType.跟进逾期.getTypeID(),
+                            MessageType.认购逾期.getTypeID(),
+                            MessageType.签约逾期.getTypeID(),
+                            MessageType.回款逾期.getTypeID(),
+                            MessageType.跟进逾期催办.getTypeID(),
+                            MessageType.认购逾期催办.getTypeID(),
+                            MessageType.签约逾期催办.getTypeID(),
+                            MessageType.回款逾期催办.getTypeID(),
+                            MessageType.到访提醒.getTypeID(),
+                            MessageType.客户丢失通知.getTypeID(),
+                            MessageType.回收提醒.getTypeID(),
+                            MessageType.系统通知.getTypeID()};
+                }
+                List<UnreadCountVo> msgArray = UnreadCountListByMessageType_Select(msgType,map);
+                for(UnreadCountVo msg : msgArray){
+                	String TypeID = msg.getMessageType();
+                    int Count = msg.getMessageCount();
+                    if (MessageType.今日待跟进.getTypeID().equals(TypeID)
+                            || MessageType.分配待跟进.getTypeID().equals(TypeID)
+                            || MessageType.跟进即将逾期.getTypeID().equals(TypeID)
+                            || MessageType.认购即将逾期.getTypeID().equals(TypeID)
+                            || MessageType.签约即将逾期.getTypeID().equals(TypeID)
+                            || MessageType.回款即将逾期.getTypeID().equals(TypeID)){
+                    	int CountTemp = (int) res.get("GJCount");
+                    	res.put("GJCount", CountTemp + Count);
+                    }
+                    if (MessageType.跟进逾期.getTypeID().equals(TypeID)
+                            || MessageType.认购逾期.getTypeID().equals(TypeID)
+                            || MessageType.签约逾期.getTypeID().equals(TypeID)
+                            || MessageType.回款逾期.getTypeID().equals(TypeID)
+                            || MessageType.跟进逾期催办.getTypeID().equals(TypeID)
+                            || MessageType.认购逾期催办.getTypeID().equals(TypeID)
+                            || MessageType.签约逾期催办.getTypeID().equals(TypeID)
+                            || MessageType.回款逾期催办.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("YQCount");
+                        res.put("YQCount", CountTemp + Count);
+                    }
+                    if(MessageType.到访提醒.getTypeID().equals(TypeID)
+                    		|| MessageType.客户丢失通知.getTypeID().equals(TypeID)
+                    		|| MessageType.回收提醒.getTypeID().equals(TypeID)
+                    		|| MessageType.系统通知.getTypeID().equals(TypeID)){
+                    	int CountTemp = (int) res.get("XXCount");
+                        res.put("XXCount", CountTemp + Count);
+                    }
+                    if (count > 0){ //该项目是否有分享项目
+                        if (MessageType.楼盘动态.getTypeID().equals(TypeID)){
+                        	int CountTemp = (int) res.get("DTCount");
+                            res.put("DTCount", CountTemp + Count);
+                        }
+                        if (MessageType.预约客户.getTypeID().equals(TypeID)){
+                            int CountTemp = (int) res.get("YYCount");
+                            res.put("YYCount", CountTemp + Count);
+                        }
+                    }
+                }
+    		}
+    		break;
+    		case "YXJL":{
+    			res.put("GJCount", 0);
+                res.put("YQCount", 0);
+                res.put("XXCount", 0);
+                res.put("CBCount", 0);
+                res.put("YJCount", 0);
+                res.put("DBCount", 0);
+                msgType = new String[] {
+                        MessageType.跟进逾期.getTypeID(),
+                        MessageType.认购逾期.getTypeID(),
+                        MessageType.签约逾期.getTypeID(),
+                        MessageType.回款逾期.getTypeID(),
+                        MessageType.客户丢失通知.getTypeID(),
+                        MessageType.回收提醒.getTypeID(),
+                        MessageType.系统通知.getTypeID()};
+                List<UnreadCountVo> msgArray = UnreadCountListByMessageType_Select(msgType,map);
+                for(UnreadCountVo msg : msgArray){
+                	String TypeID = msg.getMessageType();
+                    int Count = msg.getMessageCount();
+                    if (MessageType.跟进逾期.getTypeID().equals(TypeID)
+                        || MessageType.认购逾期.getTypeID().equals(TypeID)
+                        || MessageType.签约逾期.getTypeID().equals(TypeID)
+                        || MessageType.回款逾期.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("YJCount");
+                        res.put("YJCount", CountTemp + Count);
+                    }
+                    if (MessageType.客户丢失通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("DBCount");
+                        res.put("DBCount", CountTemp + Count);
+                    }
+                    if (MessageType.回收提醒.getTypeID().equals(TypeID)
+                        || MessageType.系统通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("XXCount");
+                        res.put("XXCount", CountTemp + Count);
+                    }
+                }
+    		}
+    		break;
+    		case "ZQFZR":{
+    			res.put("GJCount", 0);
+                res.put("XXCount", 0);
+                msgType = new String[] {
+                        MessageType.带看通知.getTypeID(),
+                        MessageType.认筹通知.getTypeID(),
+                        MessageType.认购通知.getTypeID(),
+                        MessageType.签约通知.getTypeID(),
+                        MessageType.退房通知.getTypeID(),
+                        MessageType.无效通知.getTypeID(),
+                        MessageType.系统通知.getTypeID()};
+                List<UnreadCountVo> msgArray = UnreadCountListByMessageType_Select(msgType,map);
+                for(UnreadCountVo msg : msgArray){
+                	String TypeID = msg.getMessageType();
+                    int Count = msg.getMessageCount();
+                    if (MessageType.带看通知.getTypeID().equals(TypeID)
+                        || MessageType.认筹通知.getTypeID().equals(TypeID)
+                        || MessageType.认购通知.getTypeID().equals(TypeID)
+                        || MessageType.签约通知.getTypeID().equals(TypeID)
+                        || MessageType.退房通知.getTypeID().equals(TypeID)
+                        || MessageType.无效通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("GJCount");
+                        res.put("GJCount", CountTemp + Count);
+                    }
+                    if (MessageType.系统通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("XXCount");
+                        res.put("XXCount", CountTemp + Count);
+                    }
+                }
+    		}
+    		break;
+    		case "ZQJL":{
+    			res.put("GJCount", 0);
+                res.put("XXCount", 0);
+                msgType = new String[] {
+                        MessageType.带看通知.getTypeID(),
+                        MessageType.认筹通知.getTypeID(),
+                        MessageType.认购通知.getTypeID(),
+                        MessageType.签约通知.getTypeID(),
+                        MessageType.退房通知.getTypeID(),
+                        MessageType.无效通知.getTypeID(),
+                        MessageType.系统通知.getTypeID()};
+                List<UnreadCountVo> msgArray = UnreadCountListByMessageType_Select(msgType,map);
+                for(UnreadCountVo msg : msgArray){
+                	String TypeID = msg.getMessageType();
+                    int Count = msg.getMessageCount();
+                    if (MessageType.带看通知.getTypeID().equals(TypeID)
+                        || MessageType.认筹通知.getTypeID().equals(TypeID)
+                        || MessageType.认购通知.getTypeID().equals(TypeID)
+                        || MessageType.签约通知.getTypeID().equals(TypeID)
+                        || MessageType.退房通知.getTypeID().equals(TypeID)
+                        || MessageType.无效通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("GJCount");
+                        res.put("GJCount", CountTemp + Count);
+                    }
+                    if (MessageType.系统通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("XXCount");
+                        res.put("XXCount", CountTemp + Count);
+                    }
+                }
+    		}
+    		break;
+    		case "ZQ":{
+    			res.put("GJCount", 0);
+                res.put("XXCount", 0);
+                if(count == 1){
+                	res.put("DTCount", 0);//动态数
+                    res.put("YYCount", 0);//预约客户数
+                    msgType = new String[] {
+                            MessageType.带看通知.getTypeID(),
+                            MessageType.认筹通知.getTypeID(),
+                            MessageType.认购通知.getTypeID(),
+                            MessageType.签约通知.getTypeID(),
+                            MessageType.退房通知.getTypeID(),
+                            MessageType.无效通知.getTypeID(),
+                            MessageType.系统通知.getTypeID(),
+                            MessageType.楼盘动态.getTypeID(),
+                            MessageType.预约客户.getTypeID()};
+                }else{
+                	msgType = new String[] {
+                            MessageType.带看通知.getTypeID(),
+                            MessageType.认筹通知.getTypeID(),
+                            MessageType.认购通知.getTypeID(),
+                            MessageType.签约通知.getTypeID(),
+                            MessageType.退房通知.getTypeID(),
+                            MessageType.无效通知.getTypeID(),
+                            MessageType.系统通知.getTypeID()};
+                }
+                List<UnreadCountVo> msgArray = UnreadCountListByMessageType_Select(msgType,map);
+                for(UnreadCountVo msg : msgArray){
+                	String TypeID = msg.getMessageType();
+                    int Count = msg.getMessageCount();
+                    if (MessageType.带看通知.getTypeID().equals(TypeID)
+                        || MessageType.认筹通知.getTypeID().equals(TypeID)
+                        || MessageType.认购通知.getTypeID().equals(TypeID)
+                        || MessageType.签约通知.getTypeID().equals(TypeID)
+                        || MessageType.退房通知.getTypeID().equals(TypeID)
+                        || MessageType.无效通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("GJCount");
+                        res.put("GJCount", CountTemp + Count);
+                    }
+                    if (MessageType.系统通知.getTypeID().equals(TypeID)){
+                        int CountTemp = (int) res.get("XXCount");
+                        res.put("XXCount", CountTemp + Count);
+                    }
+                    if(count == 1){
+                    	if (MessageType.楼盘动态.getTypeID().equals(TypeID)){
+                            int CountTemp = (int) res.get("DTCount");
+                            res.put("DTCount", CountTemp + Count);
+                        }
+                        if (MessageType.预约客户.getTypeID().equals(TypeID)){
+                            int CountTemp = (int) res.get("YYCount");
+                            res.put("YYCount", CountTemp + Count);
+                        }
+                    }
+                }
+    		}
+    		break;
+    		}
+    		return ResponseMessage.ok(res);
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return ResponseMessage.error("系统异常，请联系管理员");
+    	}
+	}
+	
+	@ResponseBody
+    @ApiOperation(value = "催办消息添加", notes = "催办消息添加")
+    @RequestMapping(value = "/mMessageCBDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResponseMessage mMessageCBDetail_Insert(@RequestBody JSONObject jsonParam) {
+    	try{
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+    		String MessageID = (String) paramMap.get("MessageID");
+    		String UserID = (String) paramMap.get("UserID");
+    		
+    		Map<String,Object> map = new HashMap<String,Object>();
+    		map.put("MessageID", MessageID);
+    		//1.消息详情
+    		List<Map<String,Object>> info = iSystemMessageService.SystemMessageDetail_Select(map);
+    		if(info != null && info.size() > 0){
+    			String ProjectID = (String) info.get(0).get("ProjectID");
+    			String BizID = (String) info.get(0).get("BizID");
+    			String BizType = (String) info.get(0).get("BizType");
+    			String Receiver = (String) info.get(0).get("CBReceiver");
+                int IsNeedPush = 1;
+                String MessType = MessageType.催办.getTypeID();
+                String strMessageType = (String) info.get(0).get("MessageType");
+                
+                if (strMessageType.equals(MessageType.首访信息录入逾期.getTypeID())){
+                	MessType = MessageType.首访信息录入逾期催办.getTypeID();
+                }
+                if (strMessageType.equals(MessageType.跟进逾期.getTypeID())){
+                	MessType = MessageType.跟进逾期催办.getTypeID();
+                }
+                if (strMessageType.equals(MessageType.认购逾期.getTypeID())){
+                	MessType = MessageType.认购逾期催办.getTypeID();
+                }
+                if (strMessageType.equals(MessageType.签约逾期.getTypeID())){
+                	MessType = MessageType.签约逾期催办.getTypeID();
+                }
+                if (strMessageType.equals(MessageType.回款逾期.getTypeID())){
+                	MessType = MessageType.回款逾期催办.getTypeID();
+                }
+                map.put("ProjectID", ProjectID);
+                map.put("BizID", BizID);
+                map.put("BizType", BizType);
+                map.put("Subject", MessType);
+                map.put("Content", MessType);
+                map.put("Receiver", Receiver);
+                map.put("MessageType", MessType);
+                map.put("Sender", UserID);
+                map.put("Creator", UserID);
+                map.put("IsNeedPush", IsNeedPush);
+                iSystemMessageService.SystemMessageDetail_Insert(map);
+                return ResponseMessage.ok("消息添加成功");
+    		}else{
+    			return ResponseMessage.error("消息信息无效");
+    		}
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return ResponseMessage.error("系统异常，请联系管理员");
+    	}
+	}
+	
+	@ResponseBody
+	@ApiOperation(value = "设消息为已读", notes = "设消息为已读")
+	@RequestMapping(value = "/mMessageReadDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public ResponseMessage mMessageReadDetail_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String MessageID = (String) paramMap.get("MessageID");
+			String UserID = (String) paramMap.get("UserID");
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("MessageID", MessageID);
+			map.put("UserID", UserID);
+			//设消息为已读
+			iSystemMessageService.SystemMessageReadDetail_Update(map);
+			return ResponseMessage.ok("设置已读成功");
+		}catch(Exception e){
+			e.printStackTrace();
+			return ResponseMessage.error("系统异常，请联系管理员");
+		}
 	}
 }

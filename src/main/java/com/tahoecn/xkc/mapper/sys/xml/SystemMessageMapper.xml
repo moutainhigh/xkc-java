@@ -324,6 +324,42 @@
 			WHERE ProjectID = #{ProjectID} AND IsDel = 0 AND Status = 1
 		]]>		        
     </select>
+    <!-- 消息详情 -->
+    <select id="SystemMessageDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+			SELECT A.*,
+				CASE
+				WHEN A.BizType = 'Opportunity' THEN ISNULL(B.SaleUserID, A.Sender)
+				WHEN A.BizType = 'Clue' THEN ISNULL(C.ReportUserID, A.Sender)
+				ELSE
+					A.Sender
+				END CBReceiver
+			FROM
+				S_Message A WITH(NOLOCK)
+			LEFT JOIN B_Opportunity B WITH(NOLOCK) ON A.BizID = B.ID
+			AND A.BizType = 'Opportunity'
+			LEFT JOIN B_Clue C ON A.BizID = C.ID
+			AND A.BizType = 'Clue'
+			WHERE
+				A.IsDel = 0
+			AND A.Status = 1
+			AND A.ID = #{MessageID}
+		]]>
+    </select>
+    <!-- 消息添加 -->
+    <insert id="SystemMessageDetail_Insert" parameterType="java.util.Map">
+    INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status)
+    VALUES( NEWID(), #{ProjectID}, #{BizID}, #{BizType}, #{Subject}, #{Content}, #{Sender}, GETDATE(), #{MessageType}, #{Receiver}, 0, 0, #{IsNeedPush}, #{Creator}, GETDATE(), 0, 1)
+    </insert>
+    <!-- 设消息为已读 -->
+    <update id="SystemMessageReadDetail_Update" parameterType="java.util.Map">
+	    UPDATE  S_Message
+		SET     IsRead = 1 ,
+		        IsApprove=1,
+		        Editor = #{UserID} ,
+		        EditTime = GETDATE()
+		WHERE   ID = #{MessageID}
+    </update>
 
 
     <select id="mMessageAllList_Select" resultType="java.util.HashMap" parameterType="string">
