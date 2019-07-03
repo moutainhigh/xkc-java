@@ -10,6 +10,12 @@ import java.util.List;
  */
 public class ArrayUtil {
 	
+	/**
+	 * 数组合并
+	 * @param befor
+	 * @param now
+	 * @return
+	 */
     public static String[] ArrayUnion(String[] befor,String[] now) {
         List<String> list = new ArrayList<String>(Arrays.asList(befor));
         list.addAll(Arrays.asList(now));

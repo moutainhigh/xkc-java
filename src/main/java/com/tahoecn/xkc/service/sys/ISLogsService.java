@@ -1,5 +1,9 @@
 package com.tahoecn.xkc.service.sys;
 
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.sys.SLogs;
 
@@ -13,5 +17,9 @@ import com.tahoecn.xkc.model.sys.SLogs;
  */
 public interface ISLogsService extends IService<SLogs> {
 
+	/**
+	 * 记录日志
+	 */
+	void SystemLogsDetail_Insert(Map<String, Object> logMap, HttpServletRequest request);
 
 }

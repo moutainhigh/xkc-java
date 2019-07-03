@@ -1,18 +1,14 @@
 package com.tahoecn.xkc.controller.app;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tahoecn.core.util.NetUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
-import com.tahoecn.xkc.model.sys.SLogs;
 import com.tahoecn.xkc.service.sys.ISAppdeviceService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,24 +54,16 @@ public class LoginAppController extends TahoeBaseController {
     		//1.解绑设备信息
     		iSAppdeviceService.SystemAppDeviceDetail_Update(map);
     		//2.登出日志记录
-    		SLogs log = new SLogs();
-    		log.setBizID("");
-    		log.setBizType("LogoutACSuccess");
-    		log.setBizDesc("案场登出成功,账号:" + (String)paramMap.get("UserName"));
-    		log.setIp(NetUtil.localIpv4s().toString());
-    		log.setExt1((String)paramMap.get("Model"));
-    		log.setExt2((String)paramMap.get("DeviceCode"));
-    		log.setExt3((String)paramMap.get("UserName"));
-    		log.setExt4((String)paramMap.get("AppName"));
-    		log.setData(JSON.toJSONString(paramMap));
-    		log.setOrgID((String)paramMap.get("OrgID"));
-    		log.setAuthCompanyID("17BA4307-D05A-4A57-8729-FC1BD45302B6");
-    		log.setProductID("10A9328C-2ADF-4797-A666-92E2E4CD92A1");
-    		log.setCreator((String)paramMap.get("UserID"));
-    		log.setCreateTime(new Date());
-    		log.setStatus(1);
-    		log.setIsDel(0);
-    		iSLogsService.save(log);
+    		Map<String,Object> logMap = new HashMap<String,Object>();
+            logMap.put("BizType", "LogoutACSuccess");
+            logMap.put("BizDesc", "案场登出成功,账号:" + (String)paramMap.get("UserName"));
+            logMap.put("Ext1", (String)paramMap.get("Model"));
+            logMap.put("Ext2", (String)paramMap.get("DeviceCode"));
+            logMap.put("Ext3", (String)paramMap.get("UserName"));
+            logMap.put("Ext4", (String)paramMap.get("AppName"));
+            logMap.put("Data", jsonParam);
+            iSLogsService.SystemLogsDetail_Insert(logMap, request);
+            
     		return ResponseMessage.ok("案场登出成功,账号:" + (String)paramMap.get("UserName"));
     	}catch (Exception e) {
 			e.printStackTrace();
