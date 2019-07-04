@@ -1,7 +1,428 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper">
-	<select id="">
-		SELECT OpportunityID, CustomerID, CustomerName, CustomerMobile, FollwUpWay, CustomerTag, dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate, TheLatestFollowUpContent, dbo.F_GetDictionaryName(IntentionLevel) IntentionLevel, IsCare, OpportunityStatus, OpportunityStatusValue, IsCustomerFirstEdit,SaleUserName FROM V_CustomerGWList_Select WHERE SaleUserID = '{UserID}' AND ProjectID = '{ProjectID}' {WHERE} {ORDER}
+	<select id="sCustomerGWListNew_Select" resultType="com.tahoecn.xkc.model.vo.GWCustomerPageVo" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
+		<![CDATA[
+	SELECT  OpportunityID ,
+        CustomerID ,
+        CustomerName ,
+        CustomerMobile ,
+        dbo.F_DictName(t.TheLatestFollowUpWay) AS FollwUpWay ,
+        dbo.F_GetSaleCustomerTag(t.CustomerID, t.SaleUserID) AS CustomerTag  ,
+        dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate ,
+        TheLatestFollowUpContent ,
+        dbo.F_DictName(t.CustomerLevel) IntentionLevel ,
+        dbo.F_DictName(ISNULL(t.CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+        IsCare ,
+        dbo.F_GetStatusName(t.OpportunityStatusValue) AS OpportunityStatus ,
+        OpportunityStatusValue ,
+        IsCustomerFirstEdit ,
+        SaleUserName ,
+        IsCooperat
+FROM    ( SELECT m.*, ROW_NUMBER() OVER ( ${order} ) num FROM (SELECT    t.ID AS OpportunityID ,
+                    t.CustomerID ,
+                    t.CustomerName ,
+                    t.CustomerMobile ,
+                    t.CustomerLevel ,
+                    t.CustomerRank ,
+                    t.Status OpportunityStatusValue ,
+                    t.IsCustomerFirstEdit ,
+                    dbo.F_FormatDate(ISNULL(t.TheLatestFollowUpDate,
+                                            t.AllotTime)) AS TheLatestFollowUpDate ,
+                    CASE WHEN t.TheLatestFollowUpDate IS NULL THEN '无跟进信息'
+                         ELSE t.TheLatestFollowUpContent
+                    END TheLatestFollowUpContent ,
+                    t.TheLatestFollowUpWay ,
+                    t.SaleUserID ,
+                    t.SaleUserName ,
+                    dbo.F_GetSaleIsCare(t.ID, t.SaleUserID) IsCare,
+                    t.CreateTime,
+                    (CASE WHEN ISNULL(t.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
+          FROM      dbo.B_Opportunity AS t
+          WHERE     t.IsDel = 0
+                    AND t.Status > 0
+                    AND t.Status <> 6
+                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
+                    AND ISNULL(t.SaleUserID,'') != '' 
+                    AND t.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899' 
+                    AND t.ProjectID = #{projectID}
+					) m WHERE 1=1 ${where}
+        ) t
+WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
+        AND t.num <= #{pageIndex} * #{pageSize}
+
+    ]]>
 	</select>
+	
+	<select id="sCustomerGWListNew_Select_count" resultType="java.lang.Long" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
+		<![CDATA[
+		SELECT count(1) 
+		FROM ( SELECT    t.ID AS OpportunityID ,
+		                    t.CustomerID ,
+		                    t.CustomerName ,
+		                    t.CustomerMobile ,
+		                    t.CustomerLevel ,
+		                    t.CustomerRank ,
+		                    t.Status OpportunityStatusValue ,
+		                    dbo.F_GetSaleIsCare(t.ID, t.SaleUserID) IsCare
+		          FROM      dbo.B_Opportunity AS t
+		          WHERE     t.IsDel = 0
+		                    AND t.Status > 0
+		                    AND t.Status <> 6
+		                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
+		                    AND t.ProjectID = #{projectID}
+		        ) t
+		WHERE 1 = 1 ${where}
+		]]>
+	</select>
+	
+	<select id="sCustomerGWBase_Select" resultType="java.util.HashMap">
+		 <![CDATA[
+	   SELECT *,(CASE WHEN ISNULL(SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat FROM V_CustomerGWBase_Select
+	   WHERE  OpportunityID =#{opportunityID} and  ProjectID=#{projectID}
+	      ]]>
+	</select>
+	
+	<select id="sCustomerGWBaseSalerInfo_Select" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  su.Name ,
+		        su.TelPhone Mobile,
+		        sg.Name GroupName ,
+		        #{siteUrl} + su.HeadImg HeadImg ,
+		        0 IsCooperat
+		FROM    dbo.B_Opportunity AS o
+		        LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		        LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
+		                                                AND sgm.IsDel = 0
+		                                                AND sgm.Status = 1
+		                                                AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                AND sgm.ProjectID = #{projectID}
+		        LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		WHERE  o.ID = #{opportunityID} AND o.ProjectID = #{projectID}
+		UNION ALL
+		SELECT  su.Name ,
+		        su.TelPhone Mobile,
+		        sg.Name GroupName ,
+		        #{siteUrl} + su.HeadImg HeadImg ,
+		        1 IsCooperat
+		FROM    dbo.B_Opportunity AS o
+		        LEFT JOIN dbo.B_SalesUser su ON o.SalePartnerID = su.ID
+		        LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SalePartnerID = sgm.MemberID
+		                                                AND sgm.IsDel = 0
+		                                                AND sgm.Status = 1
+		                                                AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                AND sgm.ProjectID = #{projectID}
+		        LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		WHERE   o.ID = #{opportunityID} AND o.ProjectID = #{projectID}
+      ]]>
+	</select>
+	
+	<select id="mCustomerFollowUpList_Select" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  T.*
+		FROM    ( SELECT    ClueID ,
+		                    CustomerPotentialID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerPotentialFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND ProjectID = #{projectID}
+		                    AND CustomerPotentialMobile = ( SELECT TOP 1
+		                                                            CustomerMobile
+		                                                    FROM    dbo.B_Opportunity
+		                                                    WHERE   ID = #{opportunityID}
+		                                                  )
+		          UNION ALL
+		          SELECT    OpportunityID ,
+		                    CustomerID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND ProjectID = #{projectID}
+		                    AND CustomerMobile = ( SELECT TOP 1
+		                                                    CustomerMobile
+		                                           FROM     dbo.B_Opportunity
+		                                           WHERE    ID = #{opportunityID}
+		                                         )
+		        ) T
+    ]]>
+	</select>
+	
+	<select id="sCustomerTrackList_Select" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT *
+	    FROM  V_CustomerTrackList_Select
+	    where  OpportunityID =#{opportunityID} ORDER BY createtime DESC
+	    ]]>
+	</select>
+	
+	<select id="mCustomerSalePartnerIsCanOperate_Select" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  og.OpportunityID
+		FROM    dbo.B_Opportunity o
+		        INNER JOIN dbo.B_OpportunityGiveUp og ON o.ID = og.OpportunityID
+		        INNER JOIN dbo.B_Project p ON o.ProjectID = p.ID
+		WHERE   o.IsDel = 0
+		        AND o.Status <> 6
+		        AND o.ID = #{opportunityID}
+		        AND o.SalePartnerID = #{userID}
+		        AND p.IsOffSiteSale = 1
+		        AND og.ApprovalStatus = 0
+		]]>
+	</select>
+	
+	
+	<insert id="mCustomerFollowUpDetail_Insert" statementType="CALLABLE">
+		<if test="mode=='EEB32C04-5B7C-4676-A5DC-5F95E56370EB' or mode=='44775694-7C97-455C-B48E-154C6BFE2D94'">
+			{call dbo.P_OpportunityCustomerRank(#{opportunityID},#{customerID},'FC420696-6F6C-40B1-BE17-96FCEC75B0F2',#{userID},1)}
+		</if>
+		<if test="mode=='E30825AA-B894-4A5F-AF55-24CAC34C8F1F'">
+			{call dbo.P_OpportunityCustomerRank(#{opportunityID},#{customerID},'ED0AD9E6-AF72-424C-9EE0-9884FF31FA42',#{userID},1)}
+		</if>
+	</insert>
+	
+	<select id="CFGetClueRule_Select" resultType="java.util.HashMap">
+		<![CDATA[
+		select a.*,b.RuleType,b.ProtectVisitTime,b.ProtectTime,b.FollowUpOverdueDays from b_clue a 
+		inner join b_cluerule b on a.ruleid = b.id  and b.Status=1 and b.IsDel=0
+		where a.id =#{clueID}
+   	 	]]>
+	</select>
+	
+	<select id="CFGetOppRule_Select" resultType="java.util.HashMap">
+		<![CDATA[
+		select a.*,b.OwnerReleasePeriod,b.AgentReleasePeriod from B_Opportunity a 
+		inner join B_SalesCenterRule b on a.ProjectID = b.ProjectID and b.IsDel=0 and b.Status=1
+		where a.id =#{opportunityID}
+    	]]>
+	</select>
+	
+	<select id="CFIsOwnerChannel_Select" resultType="java.util.HashMap">
+		<![CDATA[
+		  SELECT ID FROM dbo.S_Dictionary WHERE PID='5316B9EF-2AA7-43BA-A8C8-14A5CA368C95'
+		  AND id NOT IN ('32C92DA0-DA13-4C21-A55E-A1D16955882C','46830C26-0E01-4041-8054-3865CCDD26AD','725FA5F6-EC92-4DC6-8D47-A8E74B7829AD','EB4AD331-F4AD-46D6-889A-D45575ECEE66')
+		  AND Status=1 AND IsDel=0 AND id= #{channelTypeID}
+	    ]]>
+	</select>
+	
+	<insert id="CFCreateClueFollowUp_Insert" parameterType="com.tahoecn.xkc.model.vo.CustomerActionVo">
+		<![CDATA[
+	INSERT  INTO dbo.B_CustomerPotentialFollowUp
+        ( ID ,
+          CustomerPotentialID ,
+          CustomerPotentialMobile ,
+          CustomerPotentialName ,
+          ClueID ,
+          FollwUpUserID ,
+          FollwUpUserName ,
+          FollwUpUserMobile ,
+          FollwUpType ,
+          FollwUpWay ,
+          FollowUpContent ,
+          IntentionLevel ,
+          OrgID ,
+          Creator ,
+          CreateTime ,
+          Editor ,
+          EditeTime ,
+          IsDel ,
+          Status ,
+          FollwUpUserRole ,
+          CustomerRank ,
+          ProjectID ,
+          NextFollowUpDate
+        )
+        SELECT  NEWID() ,
+                CustomerPotentialID ,
+                Mobile ,
+                Name ,
+                ID ,
+                ReportUserID ,
+                ReportUserName ,
+                ReportUserMobile ,
+                #{follwUpTypeID},
+                #{follwUpWay},
+                #{followUpContent},
+                #{intentionLevel},
+                #{orgID},
+                #{creator},
+                GETDATE() ,
+                #{editor},
+                GETDATE() ,
+                0 ,
+                1 ,
+                #{follwUpUserRole},
+                CustomerRank ,
+                IntentProjectID ,
+                #{nextFollowUpDate}
+        FROM    B_Clue
+        WHERE   ID = #{clueID}
+    ]]>
+	</insert>
+	
+	<insert id="CFCreateOppFollowUp_Insert" parameterType="com.tahoecn.xkc.model.vo.CustomerActionVo">
+		<![CDATA[
+	INSERT  INTO dbo.B_CustomerFollowUp
+	        ( ID ,
+	          CustomerID ,
+	          CustomerMobile ,
+	          CustomerName ,
+	          OpportunityID ,
+	          FollwUpUserID ,
+	          FollwUpUserName ,
+	          FollwUpUserMobile ,
+	          FollwUpType ,
+	          FollwUpWay ,
+	          FollowUpContent ,
+	          IntentionLevel ,
+	          OrgID ,
+	          Creator ,
+	          CreateTime ,
+	          Editor ,
+	          EditeTime ,
+	          IsDel ,
+	          Status ,
+	          FollwUpUserRole ,
+	          CustomerRank ,
+	          ProjectID ,
+	          NextFollowUpDate
+	        )
+	        SELECT  NEWID() ,
+	                CustomerID ,
+	                CustomerMobile ,
+	                CustomerName ,
+	                ID ,
+	                #{follwUpUserID},
+	                dbo.F_GetSaleUserName(#{follwUpUserID}) ,
+	                dbo.F_GetSaleMobile(#{follwUpUserID}) ,
+	                #{follwUpTypeID},
+	                #{follwUpWay},
+	                #{followUpContent},
+	                #{intentionLevel},
+	                #{orgID},
+	                #{creator},
+	                GETDATE() ,
+	                #{editor},
+	                GETDATE() ,
+	                0 ,
+	                1 ,
+	                #{follwUpUserRole},
+	                CustomerRank ,
+	                ProjectID ,
+	                #{nextFollowUpDate}
+	        FROM    dbo.B_Opportunity
+	        WHERE   ID = #{opportunityID}
+	    ]]>
+	</insert>
+	
+	<select id="RemindRuleArriveDetail_Select" resultType="java.util.HashMap">
+		<if test="opportunityID!=''">
+			SELECT c.ID clueID ,c.ReportUserID reportuserID,cr.ProtectSource protectSource FROM dbo.B_Opportunity o LEFT JOIN dbo.B_Clue c ON o.ClueID=c.ID LEFT JOIN dbo.B_ClueRule cr ON c.RuleID=cr.ID
+			WHERE o.ID=#{opportunityID}
+		</if>
+		<if test="opportunityID==null or opportunityID=='' ">
+			SELECT c.ID clueID,c.ReportUserID reportuserID,cr.ProtectSource protectSource FROM dbo.B_Clue c INNER JOIN dbo.B_ClueRule cr ON c.RuleID=cr.ID WHERE c.ID=#{clueID}
+		</if>
+	</select>
+	
+	<select id="RemindRuleArriveDetail_Select_f" resultType="java.util.HashMap">
+		SELECT ISNULL(rc.CustomerVisitsRemind,0) customerVisitsRemind FROM dbo.B_RemindChannel rc WHERE rc.ProjectID=#{projectID} AND rc.IsDel=0 AND rc.ChannelSource=#{protectSource}
+	</select>
+	
+	<select id="RemindRuleArriveDetail_Select_s" resultType="java.util.HashMap">
+		SELECT LastName,FirstName,Mobile FROM dbo.B_Clue WHERE ID=#{clueID}
+	</select>
+	
+	<select id="CustomerOpportunityFollowUpDetail_Update_insert">
+		<![CDATA[
+		SELECT  OpportunityID ,
+		        IntentionLevel ,
+		        FollwUpWay ,
+		        FollowUpContent ,
+		        NextFollowUpDate ,
+		        CreateTime
+		INTO    #FollowUpList
+		FROM    dbo.B_CustomerFollowUp
+		WHERE   OpportunityID = #{opportunityID}
+		        AND LEN(FollwUpWay) > 0
+		        AND LEN(IntentionLevel) > 0
+		 ]]>
+	</select>
+	
+	<update id="CustomerOpportunityFollowUpDetail_Update">
+		<![CDATA[
+		UPDATE  A
+		SET     A.CustomerLevel = B.IntentionLevel ,
+		        A.TheLatestFollowUpDate = B.CreateTime ,
+		        A.TheLatestFollowUpContent = B.FollowUpContent ,
+		        A.TheLatestFollowUpWay = B.FollwUpWay ,
+		        A.NextFollowUpDate = B.NextFollowUpDate ,
+		        A.FollowupCount = ( SELECT  COUNT(1)
+		                            FROM    #FollowUpList
+		                          ) ,
+		        A.TheFirstVisitDate = C.CreateTime ,
+		        A.TheLatestVisitDate = D.CreateTime ,
+		        A.VisitsCount = ( SELECT    COUNT(1)
+		                          FROM      #FollowUpList
+		                          WHERE     FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F'
+		                        ) ,
+		        A.Editor = #{userID} ,
+		        A.EditeTime = GETDATE()
+		        ,A.Status = (CASE WHEN A.Status>1 THEN A.Status ELSE (
+				        CASE B.FollwUpWay WHEN 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' THEN 2 ELSE 1 END 
+							) END) 
+		FROM    dbo.B_Opportunity A
+		        JOIN ( SELECT TOP 1
+		                        OpportunityID ,
+		                        IntentionLevel ,
+		                        FollwUpWay ,
+		                        FollowUpContent ,
+		                        NextFollowUpDate ,
+		                        CreateTime
+		               FROM     #FollowUpList
+		               ORDER BY CreateTime DESC
+		             ) B ON A.ID = B.OpportunityID
+		        LEFT JOIN ( SELECT TOP 1
+		                            OpportunityID ,
+		                            CreateTime
+		                    FROM    #FollowUpList
+		                    WHERE   FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F'
+		                    ORDER BY CreateTime
+		                  ) C ON A.ID = C.OpportunityID
+		        LEFT JOIN ( SELECT TOP 1
+		                            OpportunityID ,
+		                            CreateTime
+		                    FROM    #FollowUpList
+		                    WHERE   FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F'
+		                    ORDER BY CreateTime DESC
+		                  ) D ON A.ID = D.OpportunityID
+		WHERE   A.ID = #{opportunityID}
+		]]>
+	</update>
+	
+	<update id="mClueTradeOverdueTime_Update">
+		<![CDATA[
+		UPDATE B_Clue SET TradeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,cr.ProtectTime+1,o.TheFirstVisitDate),23)
+		FROM dbo.B_Opportunity o  
+		INNER JOIN dbo.B_Clue c ON c.ID = o.ClueID
+		INNER JOIN dbo.B_ClueRule cr ON cr.ID = c.RuleID
+		WHERE o.ID = #{opportunityID} AND (c.TradeOverdueTime IS NULL OR CONVERT(DATE, c.TradeOverdueTime) = '1900-01-01')
+		AND cr.ProtectSource IN (0,2) AND cr.IsPermanent = 0
+   		]]>
+	</update>
 </mapper>

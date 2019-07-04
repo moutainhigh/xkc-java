@@ -20,6 +20,12 @@ public class GWCustomerPageDto implements Serializable {
 	public int pageIndex;
 	public int pageSize;
 	public String type;
+	private String orgID;
+	private String appVersion;
+	private String jobId;
+	private String deviceCode;
+	private String platform;
+	private String appName;
 	
 	public String where;
 	public String order;
@@ -157,4 +163,53 @@ public class GWCustomerPageDto implements Serializable {
 		}
 
 	}
+
+	public String getOrgID() {
+		return orgID;
+	}
+
+	public void setOrgID(String orgID) {
+		this.orgID = orgID;
+	}
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
+	}
+
+	public String getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
+	}
+
+	public String getDeviceCode() {
+		return deviceCode;
+	}
+
+	public void setDeviceCode(String deviceCode) {
+		this.deviceCode = deviceCode;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+	
 }
