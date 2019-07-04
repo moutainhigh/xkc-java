@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.channel;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dto.ChannelDto;
 
@@ -37,4 +38,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     int mBrokerChannelUserDetail_Upate(String userID, String name, String gender, String mobile, String channelTypeID);
 
     Map<String, Object> ChannelUser_Find(String mobile, String password);
+
+    Result  register(Map paramMap);
+
+    boolean checkMobile(String mobile);
+
+    Result registerN(Map paramMap);
 }

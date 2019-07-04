@@ -1,21 +1,31 @@
 package com.tahoecn.xkc.controller.webapi.H5;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
+import com.tahoecn.xkc.common.utils.NetUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.channel.BChanneluser;
+import com.tahoecn.xkc.model.sys.BVerificationcode;
+import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
 import com.tahoecn.xkc.service.project.IABrokerprojectService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBProjectcollectionService;
+import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
+import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,24 +58,34 @@ public class H5Controller extends TahoeBaseController {
     private ISystemMessageService messageService;
     @Autowired
     private IBClueService clueService;
+    @Autowired
+    private IBVerificationcodeService verificationcodeService;
+    @Autowired
+    private ISFormsessionService formsessionService;
 
-    //已测
+    //已测  AppID=5D4D7079-D294-4204-BD51-C3AB420C6C2F
     @ApiOperation(value = "获取城市", notes = "获取城市")
     @RequestMapping(value = "/mBrokerCityList_Select", method = {RequestMethod.POST})
-    public Result mBrokerCityList_Select(String AppID) {
-        List<HashMap<String, String>> list = brokerprojectService.mBrokerCityList_Select(AppID);
+    public Result mBrokerCityList_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        List<HashMap<String, String>> list = brokerprojectService.mBrokerCityList_Select((String) paramMap.get("AppID"));
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(list);
         return result;
         //前两条空,数据问题
     }
-//已测
+    //已测 OrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
     @ApiOperation(value = "获取房源项目列表", notes = "获取房源项目列表")
     @RequestMapping(value = "/mBrokerProjectList_SelectN", method = {RequestMethod.POST})
-    public Result mBrokerProjectList_SelectN(String OrgID, String Name, String CityID,
-                                             int PageIndex, int PageSize) {
+    public Result mBrokerProjectList_SelectN(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String OrgID=(String) paramMap.get("OrgID");
+        String Name=(String) paramMap.get("Name");
+        String CityID=(String) paramMap.get("CityID");
+        int PageIndex=(int) paramMap.get("PageIndex");
+        int PageSize=(int) paramMap.get("PageSize");
         //获取是否是机构的人
         //不为空表示登录进来的肯定是机构的人
         List<Map<String, Object>> list;
@@ -78,16 +98,19 @@ public class H5Controller extends TahoeBaseController {
         Map<String, Object> map=new HashMap<>();
         map.put("List",list);
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(map);
         return result;
     }
 
-    //已测
-    @ApiOperation(value = "首页-房源详情列表", notes = "首页-房源详情列表")
+    //已测   BrokerProjectID=90DCFD49-0AE6-4F1E-A0CB-0EAC1151600E       ChannelOrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
+        @ApiOperation(value = "首页-房源详情列表", notes = "首页-房源详情列表")
     @RequestMapping(value = "/mBrokerProjectDetail_Select", method = {RequestMethod.POST})
-    public Result mBrokerProjectDetail_Select(String BrokerProjectID, String ChannelOrgID) {
+    public Result mBrokerProjectDetail_Select(@RequestBody JSONObject jsonParam) {
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String BrokerProjectID=(String) paramMap.get("BrokerProjectID");
+            String ChannelOrgID=(String) paramMap.get("ChannelOrgID");
         HashMap<String, Object> map = brokerprojectService.mBrokerProjectDetail_Select(BrokerProjectID, ChannelOrgID);
         Result result = new Result();
         result.setErrcode(GlobalConstants.S_CODE);
@@ -96,25 +119,28 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
-    //已测
+    //已测 ProjectID     UserID
     @ApiOperation(value = "当前项目是否被收藏", notes = "当前项目是否被收藏")
     @RequestMapping(value = "/mBrokerProjectCollectionIsExist_Select", method = {RequestMethod.POST})
-    public Result mBrokerProjectCollectionIsExist_Select(String ProjectID, String UserID) {
+    public Result mBrokerProjectCollectionIsExist_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String ProjectID=(String) paramMap.get("ProjectID");
+        String UserID=(String) paramMap.get("UserID");
         Result result = new Result();
         if (StringUtils.isBlank(ProjectID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("项目ID不可以为空");
             return result;
         }
         if (StringUtils.isBlank(UserID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("用户ID不可以为空");
             return result;
         }
         int total = projectcollectionService.mBrokerProjectCollectionIsExist_Select(ProjectID, UserID);
         Map map = new HashMap();
         map.put("total", total);
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(map);
         return result;
@@ -123,7 +149,10 @@ public class H5Controller extends TahoeBaseController {
 
     @ApiOperation(value = "登录账号", notes = "登录账号")
     @RequestMapping(value = "/mLoginTK_SelectN", method = {RequestMethod.POST})
-    public Result mLoginTK_SelectN(String Mobile, String Password) {
+    public Result mLoginTK_SelectN(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String Mobile=(String) paramMap.get("Mobile");
+        String Password=(String) paramMap.get("Password");
         Date date = new Date();
         Result result = new Result();
         String time = String.format(date.toString(), "yyyyMMddHHmm");
@@ -135,12 +164,12 @@ public class H5Controller extends TahoeBaseController {
         }
         if (map.size()!=0){
 
-            result.setErrcode(GlobalConstants.S_CODE);
+            result.setErrcode(0);
             result.setErrmsg("成功");
             result.setData(map);
             return result;
         }
-        result.setErrcode(GlobalConstants.E_CODE);
+        result.setErrcode(0);
         result.setErrmsg("登录失败");
         result.setData(map);
         return result;
@@ -148,11 +177,13 @@ public class H5Controller extends TahoeBaseController {
 
     @ApiOperation(value = "微信-JSAPI包信息", notes = "微信-JSAPI包信息")
     @RequestMapping(value = "/mWeixinJsApiPackage_Select", method = {RequestMethod.POST})
-    public Result mWeixinJsApiPackage_Select(String BrokerProjectID, String ChannelOrgID) {
-
+    public Result mWeixinJsApiPackage_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String BrokerProjectID=(String) paramMap.get("BrokerProjectID");
+        String ChannelOrgID=(String) paramMap.get("ChannelOrgID");
 
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
 //        result.setData(map);
         return result;
@@ -161,10 +192,12 @@ public class H5Controller extends TahoeBaseController {
     //已测
     @ApiOperation(value = "获取个人中心的统计数据", notes = "获取个人中心的统计数据")
     @RequestMapping(value = "/mBrokerMyCenter_Select", method = {RequestMethod.POST})
-    public Result mBrokerMyCenter_Select(String BrokerID) {
+    public Result mBrokerMyCenter_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String BrokerID=(String) paramMap.get("BrokerID");
         Map<String, Object> map = channeluserService.BrokerMyCenter_Select(BrokerID);
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(map);
         return result;
@@ -174,12 +207,18 @@ public class H5Controller extends TahoeBaseController {
     //已测
     @ApiOperation(value = "获取我的客户列表", notes = "获取我的客户列表")
     @RequestMapping(value = "/mGetMyCustomers_Select", method = {RequestMethod.POST})
-    public Result mGetMyCustomers_Select(int Sort, String Filter, String CustomerInfo, String BrokerID,
-                                         int PageIndex, int PageSize) {
+    public Result mGetMyCustomers_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        int Sort=(int) paramMap.get("Sort");
+        String Filter=(String) paramMap.get("Filter");
+        String CustomerInfo=(String) paramMap.get("CustomerInfo");
+        String BrokerID=(String) paramMap.get("BrokerID");
+        int PageIndex=(int) paramMap.get("PageIndex");
+        int PageSize=(int) paramMap.get("PageSize");
         IPage page = new Page(PageIndex, PageSize);
         List<Map<String, Object>> list = mycustomersService.mGetMyCustomers_Select(page, Sort, Filter, CustomerInfo, BrokerID);
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(list);
         return result;
@@ -188,10 +227,12 @@ public class H5Controller extends TahoeBaseController {
     //已测
     @ApiOperation(value = "获取渠道人员", notes = "获取渠道人员")
     @RequestMapping(value = "/mBrokerChannelUserDetail_Select", method = {RequestMethod.POST})
-    public Result mBrokerChannelUserDetail_Select(String UserID) {
+    public Result mBrokerChannelUserDetail_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
         Result result = new Result();
         Map<String, Object> map = channeluserService.mBrokerChannelUserDetail_Select(UserID);
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setData(map);
         result.setErrmsg("成功");
         return result;
@@ -200,11 +241,17 @@ public class H5Controller extends TahoeBaseController {
     //未测,需完成上传
     @ApiOperation(value = "修改个人证件信息", notes = "修改个人证件信息")
     @RequestMapping(value = "/mBrokerChannelUserCardDetail_Update", method = {RequestMethod.POST})
-    public Result mBrokerChannelUserCardDetail_Update(String UserID, String CertificatesName, String CertificatesType,
-                                                      String CertificatesNo, String CertificatesPicFace, String CertificatesPicBack) {
+    public Result mBrokerChannelUserCardDetail_Update(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        String CertificatesName=(String) paramMap.get("CertificatesName");
+        String CertificatesType=(String) paramMap.get("CertificatesType");
+        String CertificatesNo=(String) paramMap.get("CertificatesNo");
+        String CertificatesPicFace=(String) paramMap.get("CertificatesPicFace");
+        String CertificatesPicBack=(String) paramMap.get("CertificatesPicBack");
         int i = channeluserService.mBrokerChannelUserCardDetail_Update(UserID, CertificatesName, CertificatesType, CertificatesNo, CertificatesPicFace, CertificatesPicBack);
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
 //        result.setData(list);
         return result;
@@ -213,12 +260,15 @@ public class H5Controller extends TahoeBaseController {
     //已测 但IsRead 值待确定
     @ApiOperation(value = "消息列表", notes = "消息列表")
     @RequestMapping(value = "/mMessageAllList_Select", method = {RequestMethod.POST})
-    public Result mMessageAllList_Select(String UserID, int PageIndex, int PageSize) {
-
+    public Result mMessageAllList_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        int PageIndex=(int) paramMap.get("PageIndex");
+        int PageSize=(int) paramMap.get("PageSize");
         IPage page = new Page(PageIndex, PageSize);
         List<Map<String, Object>> list = messageService.mMessageAllList_Select(page, UserID);
         Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(list);
         return result;
@@ -226,16 +276,20 @@ public class H5Controller extends TahoeBaseController {
 
     @ApiOperation(value = "查询用户收藏的所有项目", notes = "查询用户收藏的所有项目")
     @RequestMapping(value = "/mBrokerProjectCollectionList_Select", method = {RequestMethod.POST})
-    public Result mBrokerProjectCollectionList_Select(String UserID, int PageIndex, int PageSize) {
+    public Result mBrokerProjectCollectionList_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        int PageIndex=(int) paramMap.get("PageIndex");
+        int PageSize=(int) paramMap.get("PageSize");
         Result result = new Result();
         if (StringUtils.isBlank(UserID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("用户ID不可以为空");
             return result;
         }
         IPage page = new Page(PageIndex, PageSize);
         List<Map<String, Object>> list = projectcollectionService.mBrokerProjectCollectionList_Select(page, UserID);
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(1);
         result.setErrmsg("成功");
         result.setData(list);
         return result;
@@ -244,42 +298,61 @@ public class H5Controller extends TahoeBaseController {
     //未测
     @ApiOperation(value = "修改个人银行卡信息", notes = "修改个人银行卡信息")
     @RequestMapping(value = "/mBrokerChannelUserBankCardDetail_Update", method = {RequestMethod.POST})
-    public Result mBrokerChannelUserBankCardDetail_Update(String UserID, String BankCardPerson, String BankCardCreate, String BankCard, String BankCardProvince,
-                                                          String BankCardCity, String BankCardArea, String BankCardBranch, String BankCardPic) {
-
+    public Result mBrokerChannelUserBankCardDetail_Update(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String BankCardPerson=(String) paramMap.get("BankCardPerson");
+        String BankCardCreate=(String) paramMap.get("BankCardCreate");
+        String UserID=(String) paramMap.get("UserID");
+        String BankCard=(String) paramMap.get("BankCard");
+        String BankCardProvince=(String) paramMap.get("BankCardProvince");
+        String BankCardCity=(String) paramMap.get("BankCardCity");
+        String BankCardArea=(String) paramMap.get("BankCardArea");
+        String BankCardBranch=(String) paramMap.get("BankCardBranch");
+        String BankCardPic=(String) paramMap.get("BankCardPic");
         int i = channeluserService.mBrokerChannelUserBankCardDetail_Update(UserID, BankCardPerson, BankCardCreate, BankCard, BankCardProvince,
                 BankCardCity, BankCardArea, BankCardBranch, BankCardPic);
         Result result = new Result();
         if (i == 1) {
-            result.setErrcode(GlobalConstants.S_CODE);
+            result.setErrcode(0);
             result.setErrmsg("成功");
             return result;
         }
-        result.setErrcode(GlobalConstants.E_CODE);
+        result.setErrcode(1);
         result.setErrmsg("修改失败");
         return result;
     }
 
-    //
+    //未完成
     @ApiOperation(value = "生成FormSessionID", notes = "生成FormSessionID")
     @RequestMapping(value = "/mSystemFormSession_Insert", method = {RequestMethod.POST})
-    public Result mSystemFormSession_Insert(String UserID, int PageIndex, int PageSize) {
+    public Result mSystemFormSession_Insert(@RequestBody JSONObject jsonParam) {
         //将FormSessionID IP Data存入表S_FormSession 其中Data为传入参数  ID为生成
-
-        Result result = new Result();
-        result.setErrcode(GlobalConstants.S_CODE);
-        result.setErrmsg("成功");
-//        result.setData(list);
-        return result;
+        String data = jsonParam.get("_param").toString();
+        data=data.replace("'","%27");
+        String ip= NetUtil.getClientIp(request);
+        SFormsession formsession=new SFormsession();
+        formsession.setIp(ip);
+        formsession.setData(data);
+        formsession.setCreateTime(new Date());
+        formsession.setStatus(1);
+        boolean save = formsessionService.save(formsession);
+        Map map=new HashMap();
+        map.put("FormSessionID",formsession.getId());
+        if (save){
+           return Result.ok(map);
+        }
+        return Result.errormsg(99,"生成FormSession失败");
     }
 
     //未完成
     @ApiOperation(value = "渠道报备客户--提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
-    public Result mBrokerReport_Insert(String UserID) {
+    public Result mBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
         Result result = new Result();
 
-        result.setErrcode(GlobalConstants.S_CODE);
+        result.setErrcode(0);
 //        result.setData(map);
         result.setErrmsg("成功");
         return result;
@@ -288,10 +361,18 @@ public class H5Controller extends TahoeBaseController {
     //未测  第二条语句卡住
     @ApiOperation(value = "获取客户详情", notes = "获取客户详情")
     @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = {RequestMethod.POST})
-    public Result mBrokerCustomerDetail_Select(String UserID, String ClueID) {
+    public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        String ClueID=(String) paramMap.get("ClueID");
         Result result = new Result();
         Map<String, Object> map = clueService.mBrokerCustomerDetail_Select(ClueID);
-        result.setErrcode(GlobalConstants.S_CODE);
+        if (map.size()==0){
+            result.setErrcode(99);
+            result.setErrmsg("失败");
+            return result;
+        }
+        result.setErrcode(0);
         result.setData(map);
         result.setErrmsg("成功");
         return result;
@@ -300,16 +381,22 @@ public class H5Controller extends TahoeBaseController {
     //未测
     @ApiOperation(value = "修改个人基本信息", notes = "修改个人基本信息")
     @RequestMapping(value = "/mBrokerChannelUserDetail_Upate", method = {RequestMethod.POST})
-    public Result mBrokerChannelUserDetail_Upate(String UserID, String Name, String Gender, String Mobile, String ChannelTypeID) {
+    public Result mBrokerChannelUserDetail_Upate(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        String Name=(String) paramMap.get("Name");
+        String Gender=(String) paramMap.get("Gender");
+        String Mobile=(String) paramMap.get("Mobile");
+        String ChannelTypeID=(String) paramMap.get("ChannelTypeID");
         Result result = new Result();
         int i = channeluserService.mBrokerChannelUserDetail_Upate(UserID, Name, Gender, Mobile, ChannelTypeID);
         if (i == 1) {
             result.setData(true);
-            result.setErrcode(GlobalConstants.S_CODE);
+            result.setErrcode(0);
             result.setErrmsg("成功");
             return result;
         } else {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setData(false);
             result.setErrmsg("修改失败");
             return result;
@@ -319,26 +406,29 @@ public class H5Controller extends TahoeBaseController {
     //已测
     @ApiOperation(value = "项目收藏", notes = "项目收藏")
     @RequestMapping(value = "/BrokerProjectCollection_Insert", method = {RequestMethod.POST})
-    public Result BrokerProjectCollection_Insert(String UserID, String ProjectID) {
+    public Result BrokerProjectCollection_Insert(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        String ProjectID=(String) paramMap.get("ProjectID");
         //ProjectID：这里目前前台传了A_BrokerProject表的主键ID，注意一下，不是项目表的ID
         Result result = new Result();
         if (StringUtils.isBlank(UserID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("用户ID不可以为空");
             return result;
         }
         if (StringUtils.isBlank(ProjectID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("项目ID不可以为空");
             return result;
         }
         int i = projectcollectionService.BrokerProjectCollection_Insert(UserID, ProjectID);
         if (i > 0) {
-            result.setErrcode(GlobalConstants.S_CODE);
+            result.setErrcode(0);
             result.setErrmsg("成功");
             return result;
         } else {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("项目收藏失败");
             return result;
         }
@@ -347,29 +437,95 @@ public class H5Controller extends TahoeBaseController {
     //已测
     @ApiOperation(value = "取消项目收藏", notes = "取消项目收藏")
     @RequestMapping(value = "/mBrokerProjectCollection_Delete", method = {RequestMethod.POST})
-    public Result mBrokerProjectCollection_Delete(String UserID, String ProjectID) {
+    public Result mBrokerProjectCollection_Delete(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        String ProjectID=(String) paramMap.get("ProjectID");
         //ProjectID：这里目前前台传了A_BrokerProject表的主键ID，注意一下，不是项目表的ID
         Result result = new Result();
         if (StringUtils.isBlank(UserID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("用户ID不可以为空");
             return result;
         }
         if (StringUtils.isBlank(ProjectID)) {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("项目ID不可以为空");
             return result;
         }
         int i = projectcollectionService.BrokerProjectCollection_Delete(UserID, ProjectID);
         if (i > 0) {
-            result.setErrcode(GlobalConstants.S_CODE);
+            result.setErrcode(0);
             result.setErrmsg("成功");
             return result;
         } else {
-            result.setErrcode(GlobalConstants.E_CODE);
+            result.setErrcode(1);
             result.setErrmsg("项目收藏失败");
             return result;
         }
+    }
+
+    //未完成,还差发送短信
+    @ApiOperation(value = "获取验证码", notes = "获取验证码")
+    @RequestMapping(value = "/mVerificationCode_Select", method = {RequestMethod.POST})
+    public Result mVerificationCode_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String Mobile=(String) paramMap.get("Mobile");
+        //生成验证码
+        StringBuilder verificationCode = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            verificationCode.append(random.nextInt(10));
+        }
+        //存入数据库记录,并发送短信
+        verificationcodeService.getCodeAndSendsmg(Mobile,verificationCode.toString());
+        Result result = new Result();
+        result.setErrcode(0);
+        result.setErrmsg("成功");
+//        result.setData(list);
+        return result;
+    }
+
+    //未测
+    @ApiOperation(value = "拓客人员与全民经济人同一注册接口", notes = "拓客人员与全民经济人同一注册接口")
+    @RequestMapping(value = "/mLoginTKUser_InsertN", method = {RequestMethod.POST})
+    public Result mLoginTKUser_InsertN(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String orgcode=(String) paramMap.get("ChannelOrgCode");
+        if (StringUtils.isNotBlank(orgcode)){
+             return channeluserService.register(paramMap);
+        }else {
+            //经纪人注册
+            return channeluserService.registerN(paramMap);
+        }
+    }
+
+    @ApiOperation(value = "全民经纪人忘记密码--修改密码", notes = "全民经纪人忘记密码--修改密码")
+    @RequestMapping(value = "/mBrokerLoginForgetPwd_Update", method = {RequestMethod.POST})
+    public Result mBrokerLoginForgetPwd_Update(@RequestBody JSONObject jsonParam) {
+
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String mobile=(String) paramMap.get("Mobile");
+        String authCode=(String) paramMap.get("AuthCode");
+        String password=(String) paramMap.get("Password");
+        String rePassword=(String) paramMap.get("RePassword");
+       if (StringUtils.equals(password,rePassword)){
+           return Result.errormsg(2,"密码不一致");
+       }
+        BVerificationcode vc = verificationcodeService.checkAuthCode(mobile);
+
+        if (vc == null || !StringUtils.equals(authCode, vc.getVerificationCode())) {
+            return Result.errormsg(1,"验证码验证失败");
+        }
+        QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
+        wrapper.eq("Mobile",mobile);
+        BChanneluser one = channeluserService.getOne(wrapper);
+        one.setPassword(SecureUtil.md5(rePassword));
+        if (channeluserService.updateById(one)){
+            return Result.ok(null);
+        }
+        return Result.errormsg(99,"修改密码失败");
+
     }
 
 
