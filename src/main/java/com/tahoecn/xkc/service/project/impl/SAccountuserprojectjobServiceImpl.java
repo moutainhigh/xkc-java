@@ -29,8 +29,8 @@ public class SAccountuserprojectjobServiceImpl extends ServiceImpl<SAccountuserp
 	 * @param map
 	 */
 	@Override
-	public void changeUserProjectJob(Map<String, Object> map) {
-		sAccountuserprojectjobMapper.changeUserProjectJob(map);
+	public void mUserProjectJobChange_Update(Map<String, Object> map) {
+		sAccountuserprojectjobMapper.mUserProjectJobChange_Update(map);
 	}
 
 }

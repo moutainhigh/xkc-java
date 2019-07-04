@@ -50,4 +50,13 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	 * 用户信息查询
 	 */
 	List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map);
+
+	/**
+	 * 修改密码-判断原密码是否正确
+	 */
+	List<BChanneluser> ChannelUserPassWord_Select(Map<String, Object> map);
+	/**
+	 * 修改密码
+	 */
+	boolean ChannelUserPassWord_Update(Map<String, Object> map);
 }

@@ -6,7 +6,7 @@ import com.tahoecn.xkc.common.enums.MessageCate;
 import com.tahoecn.xkc.common.enums.MessageType;
 import com.tahoecn.xkc.common.utils.ArrayUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
-import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.vo.UnreadCountVo;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
@@ -48,7 +48,7 @@ public class MessageAppController extends TahoeBaseController {
     @ResponseBody
     @ApiOperation(value = "未读消息数接口", notes = "未读消息数接口")
     @RequestMapping(value = "/mMessageUnreadCount_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mMessageUnreadCount_Select(@RequestBody JSONObject jsonParam) {
+    public Result mMessageUnreadCount_Select(@RequestBody JSONObject jsonParam) {
     	try{
     		Map paramMap = (HashMap)jsonParam.get("_param");
     		String ProjectID = (String)paramMap.get("ProjectID");//项目id
@@ -220,10 +220,10 @@ public class MessageAppController extends TahoeBaseController {
     				msgArray = UnreadCountListByMessageType_Select(msgType,map);
     			}
     		}
-    		return ResponseMessage.ok(GetUnreadMessageTypeList(msgArray,msgType,JobCode));
+    		return Result.ok(GetUnreadMessageTypeList(msgArray,msgType,JobCode));
     	}catch(Exception e){
     		e.printStackTrace();
-    		return ResponseMessage.error("系统异常，请联系管理员");
+    		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
     }
     
@@ -562,7 +562,7 @@ public class MessageAppController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "消息列表", notes = "消息列表")
     @RequestMapping(value = "/mMessageList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mMessageList_Select(@RequestBody JSONObject jsonParam) {
+    public Result mMessageList_Select(@RequestBody JSONObject jsonParam) {
     	try{
 	    	Map paramMap = (HashMap)jsonParam.get("_param");
 	    	String UserID = (String)paramMap.get("UserID");
@@ -805,10 +805,10 @@ public class MessageAppController extends TahoeBaseController {
 	    		}
 	    	}
 	    	result.put("PageSize", PageSize);
-	    	return ResponseMessage.ok(result);
+	    	return Result.ok(result);
     	}catch(Exception e){
     		e.printStackTrace();
-    		return ResponseMessage.error("系统异常，请联系管理员");
+    		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
     }
 
@@ -930,7 +930,7 @@ public class MessageAppController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "模块未读消息数", notes = "模块未读消息数")
     @RequestMapping(value = "/mMessageModelUnreadCount_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mMessageModelUnreadCount_Select(@RequestBody JSONObject jsonParam) {
+    public Result mMessageModelUnreadCount_Select(@RequestBody JSONObject jsonParam) {
     	try{
     		@SuppressWarnings("unchecked")
 			Map<String,Object> paramMap = (HashMap<String,Object>)jsonParam.get("_param");
@@ -1210,17 +1210,17 @@ public class MessageAppController extends TahoeBaseController {
     		}
     		break;
     		}
-    		return ResponseMessage.ok(res);
+    		return Result.ok(res);
     	}catch(Exception e){
     		e.printStackTrace();
-    		return ResponseMessage.error("系统异常，请联系管理员");
+    		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
 	}
 	
 	@ResponseBody
     @ApiOperation(value = "催办消息添加", notes = "催办消息添加")
     @RequestMapping(value = "/mMessageCBDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mMessageCBDetail_Insert(@RequestBody JSONObject jsonParam) {
+    public Result mMessageCBDetail_Insert(@RequestBody JSONObject jsonParam) {
     	try{
     		Map paramMap = (HashMap)jsonParam.get("_param");
     		String MessageID = (String) paramMap.get("MessageID");
@@ -1265,20 +1265,20 @@ public class MessageAppController extends TahoeBaseController {
                 map.put("Creator", UserID);
                 map.put("IsNeedPush", IsNeedPush);
                 iSystemMessageService.SystemMessageDetail_Insert(map);
-                return ResponseMessage.ok("消息添加成功");
+                return Result.ok("消息添加成功");
     		}else{
-    			return ResponseMessage.error("消息信息无效");
+    			return Result.errormsg(1,"消息信息无效");
     		}
     	}catch(Exception e){
     		e.printStackTrace();
-    		return ResponseMessage.error("系统异常，请联系管理员");
+    		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
 	}
 	
 	@ResponseBody
 	@ApiOperation(value = "设消息为已读", notes = "设消息为已读")
 	@RequestMapping(value = "/mMessageReadDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public ResponseMessage mMessageReadDetail_Update(@RequestBody JSONObject jsonParam) {
+	public Result mMessageReadDetail_Update(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
 			String MessageID = (String) paramMap.get("MessageID");
@@ -1289,10 +1289,10 @@ public class MessageAppController extends TahoeBaseController {
 			map.put("UserID", UserID);
 			//设消息为已读
 			iSystemMessageService.SystemMessageReadDetail_Update(map);
-			return ResponseMessage.ok("设置已读成功");
+			return Result.ok("设置已读成功");
 		}catch(Exception e){
 			e.printStackTrace();
-			return ResponseMessage.error("系统异常，请联系管理员");
+			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
 }

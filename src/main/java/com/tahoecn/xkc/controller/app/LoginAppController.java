@@ -3,6 +3,7 @@ package com.tahoecn.xkc.controller.app;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.sys.ISAppdeviceService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
 
@@ -40,7 +41,7 @@ public class LoginAppController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "登出", notes = "登出")
     @RequestMapping(value = "/mUserLogout_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseMessage mUserLogout_Insert(@RequestBody JSONObject jsonParam) {
+    public Result mUserLogout_Insert(@RequestBody JSONObject jsonParam) {
     	try{
     		// 直接将json信息打印出来
             System.out.println(jsonParam.toJSONString());
@@ -64,10 +65,10 @@ public class LoginAppController extends TahoeBaseController {
             logMap.put("Data", jsonParam);
             iSLogsService.SystemLogsDetail_Insert(logMap, request);
             
-    		return ResponseMessage.ok("案场登出成功,账号:" + (String)paramMap.get("UserName"));
+    		return Result.ok("案场登出成功,账号:" + (String)paramMap.get("UserName"));
     	}catch (Exception e) {
 			e.printStackTrace();
-			return ResponseMessage.error("系统异常，请联系管理员");
+			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
 }

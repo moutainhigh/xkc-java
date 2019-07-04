@@ -87,4 +87,20 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 		return bChanneluserMapper.ChannelUser_Detail_FindById(map);
 	}
 
+	/**
+	 * 修改密码-判断原密码是否正确
+	 */
+	@Override
+	public List<BChanneluser> ChannelUserPassWord_Select(Map<String, Object> map) {
+		return bChanneluserMapper.ChannelUserPassWord_Select(map);
+	}
+	
+	/**
+	 * 修改密码
+	 */
+	@Override
+	public boolean ChannelUserPassWord_Update(Map<String, Object> map){
+		return bChanneluserMapper.ChannelUserPassWord_Update(map);
+	}
+
 }

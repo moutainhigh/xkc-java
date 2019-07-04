@@ -19,6 +19,6 @@ public interface SAccountuserprojectjobMapper extends BaseMapper<SAccountuserpro
 	 * 用户切换岗位
 	 * @param map
 	 */
-	void changeUserProjectJob(Map<String, Object> map);
+	void mUserProjectJobChange_Update(Map<String, Object> map);
 
 }
