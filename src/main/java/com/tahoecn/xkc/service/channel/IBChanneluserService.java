@@ -37,4 +37,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     int mBrokerChannelUserDetail_Upate(String userID, String name, String gender, String mobile, String channelTypeID);
 
     Map<String, Object> ChannelUser_Find(String mobile, String password);
+
+    /*
+	 * 用户信息查询
+	 * 
+	 */
+	List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map);
 }
