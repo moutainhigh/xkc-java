@@ -375,4 +375,11 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
         WHERE
         ID=#{ID}
     </update>
+    
+    <update id="SystemMessageDetailByHandle_Update">
+    	<![CDATA[
+		UPDATE S_Message SET IsApprove = 1, Editor = '99', EditTime = GETDATE() ${SetStatus} WHERE BizType = #{BizType} AND ISNULL(IsApprove,0) = 0 ${Where}
+	    ]]>
+    </update>
+  
 </mapper>

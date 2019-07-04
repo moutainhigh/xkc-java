@@ -45,4 +45,18 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     int mBrokerChannelUserDetail_Upate(@Param("UserID")String userID, @Param("Name")String name, @Param("Gender")String gender, @Param("Mobile")String mobile, @Param("ChannelTypeID")String channelTypeID);
 
     Map<String, Object> ChannelUser_Find(@Param("Mobile")String mobile,@Param("Password") String password);
+    
+    /*
+	 * 用户信息查询
+	 */
+	List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map);
+
+	/**
+	 * 修改密码-判断原密码是否正确
+	 */
+	List<BChanneluser> ChannelUserPassWord_Select(Map<String, Object> map);
+	/**
+	 * 修改密码
+	 */
+	boolean ChannelUserPassWord_Update(Map<String, Object> map);
 }

@@ -12,6 +12,8 @@ import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,9 @@ import java.util.Map;
  */
 @Service
 public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BChanneluser> implements IBChanneluserService {
+
+	@Autowired
+    private BChanneluserMapper bChanneluserMapper;
 
     @Autowired
     private IBVerificationcodeService verificationcodeService;
@@ -98,6 +103,30 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return baseMapper.ChannelUser_Find(mobile,password);
     }
 
+    /*
+	 * 用户信息查询
+	 *
+	 */
+	@Override
+	public List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map) {
+		return bChanneluserMapper.ChannelUser_Detail_FindById(map);
+	}
+
+	/**
+	 * 修改密码-判断原密码是否正确
+	 */
+	@Override
+	public List<BChanneluser> ChannelUserPassWord_Select(Map<String, Object> map) {
+		return bChanneluserMapper.ChannelUserPassWord_Select(map);
+	}
+
+	/**
+	 * 修改密码
+	 */
+	@Override
+	public boolean ChannelUserPassWord_Update(Map<String, Object> map){
+		return bChanneluserMapper.ChannelUserPassWord_Update(map);
+	}
     /**
      * H5注册
      * @param paramMap

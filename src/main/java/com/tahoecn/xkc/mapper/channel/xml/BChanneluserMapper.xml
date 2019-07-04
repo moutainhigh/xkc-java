@@ -192,4 +192,29 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         AND IsDel = 0
         AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
     </select>
+    
+    <select id="ChannelUser_Detail_FindById" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+	    SELECT 	'1' as ProjectID, OrgCode,pid ,OrgName, [B_ChannelUser].* 
+	    FROM 	[B_ChannelUser]
+				left join B_ChannelOrg on [B_ChannelUser].ChannelOrgID=B_ChannelOrg.id
+		where 	[B_ChannelUser].id=#{ID}  order by  createtime  desc
+		
+	    ]]>
+	</select>
+	
+	<!-- 修改密码-判断原密码是否正确 -->
+	<select id="ChannelUserPassWord_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.channel.BChanneluser">
+		<![CDATA[
+		    SELECT * FROM B_ChannelUser 
+		    WHERE ID=#{UserID} and Password = #{OldPassword}
+	    ]]>
+	</select>
+	<!-- 修改密码 -->
+	<update id="ChannelUserPassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+		    UPDATE B_ChannelUser SET Password = #{Password} 
+    		WHERE ID=#{UserID} and Password = #{OldPassword}
+	    ]]>
+	</update>
 </mapper>

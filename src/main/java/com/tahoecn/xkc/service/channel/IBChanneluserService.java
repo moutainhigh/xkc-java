@@ -3,7 +3,6 @@ package com.tahoecn.xkc.service.channel;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
-import com.tahoecn.xkc.model.dto.ChannelDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +37,22 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     int mBrokerChannelUserDetail_Upate(String userID, String name, String gender, String mobile, String channelTypeID);
 
     Map<String, Object> ChannelUser_Find(String mobile, String password);
+
+    /*
+	 * 用户信息查询
+	 *
+	 */
+	List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map);
+
+	/**
+	 * 修改密码-判断原密码是否正确
+	 */
+	List<BChanneluser> ChannelUserPassWord_Select(Map<String, Object> map);
+
+	/**
+	 * 修改密码
+	 */
+	boolean ChannelUserPassWord_Update(Map<String, Object> map);
 
     Result  register(Map paramMap);
 

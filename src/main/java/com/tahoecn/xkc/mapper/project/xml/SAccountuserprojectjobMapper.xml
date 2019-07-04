@@ -3,7 +3,7 @@
 <mapper namespace="com.tahoecn.xkc.mapper.project.SAccountuserprojectjobMapper">
 
 	<!-- 用户切换岗位 -->
-	<update id="changeUserProjectJob" parameterType="java.util.Map">
+	<update id="mUserProjectJobChange_Update" parameterType="java.util.Map">
 		UPDATE S_AccountUserProjectJob 
 		SET JobCode = #{JobCode} 
 		WHERE
