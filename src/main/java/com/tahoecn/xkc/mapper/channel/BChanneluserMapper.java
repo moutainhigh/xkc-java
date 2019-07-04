@@ -45,4 +45,9 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     int mBrokerChannelUserDetail_Upate(@Param("UserID")String userID, @Param("Name")String name, @Param("Gender")String gender, @Param("Mobile")String mobile, @Param("ChannelTypeID")String channelTypeID);
 
     Map<String, Object> ChannelUser_Find(@Param("Mobile")String mobile,@Param("Password") String password);
+    
+    /*
+	 * 用户信息查询
+	 */
+	List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map);
 }

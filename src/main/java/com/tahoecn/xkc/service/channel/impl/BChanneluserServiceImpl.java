@@ -5,6 +5,8 @@ import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,6 +24,9 @@ import java.util.Map;
 @Service
 public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BChanneluser> implements IBChanneluserService {
 
+	@Autowired
+    private BChanneluserMapper bChanneluserMapper;
+	
     @Override
     public List<Map<String, String>> AgenApproverList() {
         return baseMapper.AgenApproverList();
@@ -73,5 +78,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return baseMapper.ChannelUser_Find(mobile,password);
     }
 
+    /*
+	 * 用户信息查询
+	 *
+	 */
+	@Override
+	public List<BChanneluser> ChannelUser_Detail_FindById(Map<String, Object> map) {
+		return bChanneluserMapper.ChannelUser_Detail_FindById(map);
+	}
 
 }
