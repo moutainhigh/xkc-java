@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "APP-系统接口", value = "APP-系统接口")
-@RequestMapping("/app/systemAD")
+@RequestMapping("/app/system")
 public class AppSystemController extends TahoeBaseController {
 
     @Autowired
