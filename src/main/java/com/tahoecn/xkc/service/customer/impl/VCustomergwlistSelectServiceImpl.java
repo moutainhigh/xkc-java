@@ -244,8 +244,11 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             return re;
 		}
 		//客户跟进记录新增
-		vCustomergwlistSelectMapper.mCustomerFollowUpDetail_Insert(opportunityID, customerID, userID, mode);
-		
+		if(!StringUtils.isEmpty(mode)){
+			if(mode.equals("EEB32C04-5B7C-4676-A5DC-5F95E56370EB") || mode.equals("44775694-7C97-455C-B48E-154C6BFE2D94") || mode.equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F")){
+				vCustomergwlistSelectMapper.mCustomerFollowUpDetail_Insert(opportunityID, customerID, userID, mode);
+			}
+		}
 		String follwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(mode);
 		if(!StringUtils.isEmpty(follwUpType)){
 			CustomerActionVo customerActionVo = new CustomerActionVo();
@@ -336,13 +339,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 	public Result CustomerOpportunityFollowUpDetail_Update(String opportunityID,String userID){
 		Result re = new Result();
 		try {
-			//step1
-			if (!StringUtils.isEmpty(opportunityID)){
-				vCustomergwlistSelectMapper.CustomerOpportunityFollowUpDetail_Update_insert(opportunityID);
-	        }
-	        //step2
 	        vCustomergwlistSelectMapper.CustomerOpportunityFollowUpDetail_Update(opportunityID, userID);
-
 	        if (!StringUtils.isEmpty(opportunityID)){
 	            vCustomergwlistSelectMapper.mClueTradeOverdueTime_Update(opportunityID);
 	        }

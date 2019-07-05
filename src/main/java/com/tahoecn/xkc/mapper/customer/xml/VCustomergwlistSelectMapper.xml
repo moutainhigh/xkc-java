@@ -348,70 +348,28 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		SELECT LastName,FirstName,Mobile FROM dbo.B_Clue WHERE ID=#{clueID}
 	</select>
 	
-	<select id="CustomerOpportunityFollowUpDetail_Update_insert">
-		<![CDATA[
-		SELECT  OpportunityID ,
-		        IntentionLevel ,
-		        FollwUpWay ,
-		        FollowUpContent ,
-		        NextFollowUpDate ,
-		        CreateTime
-		INTO    #FollowUpList
-		FROM    dbo.B_CustomerFollowUp
-		WHERE   OpportunityID = #{opportunityID}
-		        AND LEN(FollwUpWay) > 0
-		        AND LEN(IntentionLevel) > 0
-		 ]]>
-	</select>
-	
 	<update id="CustomerOpportunityFollowUpDetail_Update">
 		<![CDATA[
-		UPDATE  A
-		SET     A.CustomerLevel = B.IntentionLevel ,
-		        A.TheLatestFollowUpDate = B.CreateTime ,
-		        A.TheLatestFollowUpContent = B.FollowUpContent ,
-		        A.TheLatestFollowUpWay = B.FollwUpWay ,
-		        A.NextFollowUpDate = B.NextFollowUpDate ,
-		        A.FollowupCount = ( SELECT  COUNT(1)
-		                            FROM    #FollowUpList
-		                          ) ,
-		        A.TheFirstVisitDate = C.CreateTime ,
-		        A.TheLatestVisitDate = D.CreateTime ,
-		        A.VisitsCount = ( SELECT    COUNT(1)
-		                          FROM      #FollowUpList
-		                          WHERE     FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F'
-		                        ) ,
-		        A.Editor = #{userID} ,
-		        A.EditeTime = GETDATE()
-		        ,A.Status = (CASE WHEN A.Status>1 THEN A.Status ELSE (
-				        CASE B.FollwUpWay WHEN 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' THEN 2 ELSE 1 END 
-							) END) 
-		FROM    dbo.B_Opportunity A
-		        JOIN ( SELECT TOP 1
-		                        OpportunityID ,
-		                        IntentionLevel ,
-		                        FollwUpWay ,
-		                        FollowUpContent ,
-		                        NextFollowUpDate ,
-		                        CreateTime
-		               FROM     #FollowUpList
-		               ORDER BY CreateTime DESC
-		             ) B ON A.ID = B.OpportunityID
-		        LEFT JOIN ( SELECT TOP 1
-		                            OpportunityID ,
-		                            CreateTime
-		                    FROM    #FollowUpList
-		                    WHERE   FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F'
-		                    ORDER BY CreateTime
-		                  ) C ON A.ID = C.OpportunityID
-		        LEFT JOIN ( SELECT TOP 1
-		                            OpportunityID ,
-		                            CreateTime
-		                    FROM    #FollowUpList
-		                    WHERE   FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F'
-		                    ORDER BY CreateTime DESC
-		                  ) D ON A.ID = D.OpportunityID
-		WHERE   A.ID = #{opportunityID}
+		UPDATE A 
+		SET A.CustomerLevel = B.IntentionLevel ,
+		A.TheLatestFollowUpDate = B.CreateTime ,
+		A.TheLatestFollowUpContent = B.FollowUpContent ,
+		A.TheLatestFollowUpWay = B.FollwUpWay ,
+		A.NextFollowUpDate = B.NextFollowUpDate ,
+		A.FollowupCount = ( SELECT COUNT ( 1 ) FROM V_FollowUpList WHERE OpportunityID = #{opportunityID} ),
+		A.TheFirstVisitDate = C.CreateTime ,
+		A.TheLatestVisitDate = D.CreateTime ,
+		A.VisitsCount = ( SELECT COUNT ( 1 ) FROM V_FollowUpList WHERE OpportunityID = #{opportunityID} AND FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' ),
+		A.Editor = #{userID} ,
+		A.EditeTime = GETDATE(),
+		A.Status = ( CASE WHEN A.Status> 1 THEN A.Status ELSE ( CASE B.FollwUpWay WHEN 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' THEN 2 ELSE 1 END ) END ) 
+		FROM
+			dbo.B_Opportunity A
+			JOIN ( SELECT TOP 1 OpportunityID, IntentionLevel, FollwUpWay, FollowUpContent, NextFollowUpDate, CreateTime FROM V_FollowUpList WHERE OpportunityID = #{opportunityID} ORDER BY CreateTime DESC ) B ON A.ID = B.OpportunityID
+			LEFT JOIN ( SELECT TOP 1 OpportunityID, CreateTime FROM V_FollowUpList WHERE FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND OpportunityID = #{opportunityID} ORDER BY CreateTime ) C ON A.ID = C.OpportunityID
+			LEFT JOIN ( SELECT TOP 1 OpportunityID, CreateTime FROM V_FollowUpList WHERE FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND OpportunityID = #{opportunityID} ORDER BY CreateTime DESC ) D ON A.ID = D.OpportunityID 
+		WHERE
+			A.ID = #{ opportunityID}
 		]]>
 	</update>
 	
