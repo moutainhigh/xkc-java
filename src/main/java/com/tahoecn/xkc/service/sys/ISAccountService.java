@@ -64,4 +64,15 @@ public interface ISAccountService extends IService<SAccount> {
      * @return
      */
     List<HashMap<String,String>> getJobProject(String userName);
+
+    HashMap<String,Object> mLoginSelectByAccount(String userName);
+    HashMap<String,Object> mLoginSelectByChannelUser(String userName);
+
+    String checkUCUser(String userName, String password);
+
+    List<HashMap<String,String>> salesUserProjectList(String userID);
+
+    List<HashMap<String,String>> userProjectJobList(String userID, String projectID);
+
+    List<HashMap<String,String>> GetMenuAndFunList_Select(String jobCode, String projectID);
 }
