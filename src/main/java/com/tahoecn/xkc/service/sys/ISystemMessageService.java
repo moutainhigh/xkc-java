@@ -1,10 +1,12 @@
 package com.tahoecn.xkc.service.sys;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.tahoecn.xkc.model.vo.UnreadCountVo;
 import java.util.List;
 import java.util.Map;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.vo.UnreadCountVo;
 
 /**
  * <p>
@@ -117,4 +119,13 @@ public interface ISystemMessageService {
      * H5消息列表
      */
     List<Map<String, Object>> mMessageAllList_Select(IPage page, String userID);
+    
+    /**
+     * 消息处理状态更新
+     * @param BizIDs
+     * @param BizType
+     * @param msgHandType
+     * @return
+     */
+    public Result DetailByHandle_Update(String[] BizIDs, String BizType,int msgHandType);
 }

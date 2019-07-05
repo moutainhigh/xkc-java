@@ -39,7 +39,7 @@ public class Result {
     }
 
     public static Result ok(Object data) {
-        return new Result(data,0);
+        return new Result(data,"成功",0);
     }
 
     public static Result okm(String message) {

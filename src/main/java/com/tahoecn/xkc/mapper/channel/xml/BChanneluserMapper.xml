@@ -202,4 +202,19 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 		
 	    ]]>
 	</select>
+	
+	<!-- 修改密码-判断原密码是否正确 -->
+	<select id="ChannelUserPassWord_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.channel.BChanneluser">
+		<![CDATA[
+		    SELECT * FROM B_ChannelUser 
+		    WHERE ID=#{UserID} and Password = #{OldPassword}
+	    ]]>
+	</select>
+	<!-- 修改密码 -->
+	<update id="ChannelUserPassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+		    UPDATE B_ChannelUser SET Password = #{Password} 
+    		WHERE ID=#{UserID} and Password = #{OldPassword}
+	    ]]>
+	</update>
 </mapper>

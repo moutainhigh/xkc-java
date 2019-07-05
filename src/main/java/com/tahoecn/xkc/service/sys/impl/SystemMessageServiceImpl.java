@@ -1,14 +1,17 @@
 package com.tahoecn.xkc.service.sys.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.tahoecn.xkc.mapper.sys.SystemMessageMapper;
-import com.tahoecn.xkc.model.vo.UnreadCountVo;
-import com.tahoecn.xkc.service.sys.ISystemMessageService;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.sys.SystemMessageMapper;
+import com.tahoecn.xkc.model.vo.UnreadCountVo;
+import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
 /**
  * <p>
@@ -188,4 +191,62 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
         }
         return systemMessageMapper.mMessageAllList_Select(page, userID);
     }
+
+	@Override
+	public Result DetailByHandle_Update(String[] BizIDs, String BizType,int msgHandType) {
+		Result re = new Result();
+		try {
+			String SetStatus = "";
+			String Where = "";
+			String[] msgType = null;
+			String strMessageType = "";
+			String strBizID = "";
+	        strBizID = String.join("' OR BizID ='", BizIDs);
+	        Where += String.format(" AND ( BizID='%s' )", strBizID);
+	        switch (msgHandType){
+	            case 1:
+	                msgType = new String[] {MessageType.待完善首访客户资料.getTypeID(),MessageType.首访信息录入逾期.getTypeID(),MessageType.首访信息录入逾期催办.getTypeID()};
+	                strMessageType = String.join("' OR MessageType ='", msgType);
+	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
+	                break;
+	            case 2:
+	                msgType = new String[] {MessageType.分配待跟进.getTypeID(),MessageType.跟进即将逾期.getTypeID(),MessageType.跟进逾期.getTypeID(),MessageType.跟进逾期催办.getTypeID(),MessageType.今日待跟进.getTypeID()};
+	                strMessageType = String.join("' OR MessageType ='", msgType);
+	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
+	                break;
+	            case 3:
+	                msgType = new String[] {MessageType.待完善首访客户资料.getTypeID(),MessageType.分配待跟进.getTypeID(),MessageType.跟进即将逾期.getTypeID(),MessageType.跟进逾期.getTypeID(),MessageType.跟进逾期催办.getTypeID(),MessageType.今日待跟进.getTypeID(),MessageType.认购即将逾期.getTypeID(),MessageType.认购逾期.getTypeID(),MessageType.认购逾期催办.getTypeID()};
+	                strMessageType = String.join("' OR MessageType ='", msgType);
+	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
+	                break;
+	            case 4:
+	                msgType = new String[] {MessageType.签约即将逾期.getTypeID(),MessageType.签约逾期.getTypeID(),MessageType.签约逾期催办.getTypeID()};
+	                strMessageType = String.join("' OR MessageType ='", msgType);
+	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
+	                break;
+	            case 5:
+	                msgType = new String[] {MessageType.回款即将逾期.getTypeID(),MessageType.回款逾期.getTypeID(),MessageType.回款逾期催办.getTypeID()};
+	                strMessageType = String.join("' OR MessageType ='", msgType);
+	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
+	                break;
+	            case 6:
+	                SetStatus = ",Sataus=0";
+	                Where += "";
+	                break;
+	            case 7:
+	                Where += "";
+	                break;
+	            default:
+	                break;
+	        }
+	        systemMessageMapper.SystemMessageDetailByHandle_Update(BizType, SetStatus, Where);
+	        re.setErrmsg("成功");
+	        re.setErrcode(0);
+		} catch (Exception e) {
+			re.setErrmsg("失败");
+	        re.setErrcode(9);
+			e.printStackTrace();
+		}
+        return re;
+	}
 }
