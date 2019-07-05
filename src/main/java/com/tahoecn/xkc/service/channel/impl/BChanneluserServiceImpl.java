@@ -277,5 +277,15 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return result;
     }
 
+    
+    /*
+   	 * 删除兼职成员
+   	 *
+   	 */
+	@Override
+	public void mChannelTempPerson_Delete(Map<String, Object> map) {
+		bChanneluserMapper.mChannelTempPerson_Delete(map);
+	}
+
 
 }

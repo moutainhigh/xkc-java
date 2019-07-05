@@ -59,4 +59,10 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	 * 修改密码
 	 */
 	boolean ChannelUserPassWord_Update(Map<String, Object> map);
+
+	/*
+   	 * 删除兼职成员
+   	 *
+   	 */
+	void mChannelTempPerson_Delete(Map<String, Object> map);
 }
