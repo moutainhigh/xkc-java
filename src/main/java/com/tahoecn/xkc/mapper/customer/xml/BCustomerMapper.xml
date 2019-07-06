@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerMapper">
+
+    <select id="customerChangePageList_Select" resultType="java.util.HashMap">
+        <![CDATA[
+            SELECT
+            m.ClueID,
+            m.CustomerID,
+            m.CustomerName,
+            m.CustomerMobile,
+            CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+            dbo.F_GetClueStatusName(m.Status, 0)                                                             Status,
+            m.InvalidReason,
+            m.ComeOverdueTime,
+            m.TradeOverdueTime,
+            dbo.F_GetSaleUserName(m.ConfirmUserId)                                                           ConfirmUserName,
+            m.ConfirmTime,
+            m.ProjectID,
+            dbo.F_DictName(m.SourceType)                                                                     SourceType,
+            m.ReportTime,
+            m.TheFirstVisitDate,
+            m.ReportUserID,
+            m.ReportUserName,
+            m.ReportUserMobile,
+            m.ChannelName,
+            m.OpportunityID,
+            dbo.F_GetZJDF(m.OpportunityID)                                                                   ZJDF,
+            STUFF((SELECT ',' + r.RoomCode
+            FROM dbo.B_Room r
+            INNER JOIN dbo.B_Building b ON r.BuildingID = b.ID
+            WHERE r.ID
+            IN
+            (SELECT mt.RoomGUID
+            FROM dbo.B_Opportunity o
+            INNER JOIN dbo.B_CustomerAttach ca ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID = ca.ID
+            WHERE o.ID = m.OpportunityID)
+            AND r.ProjectID in (select ID from B_Project where PID = #{projectID}) FOR XML PATH ('')), 1, 1,
+            '')                                                                                        Room,
+            dbo.F_GetClueStatusName('', m.OpportunityStatus)                                                 OpportunityStatus
+            FROM (
+            SELECT *
+            FROM (
+            SELECT DISTINCT b.ID                        ClueID,
+            b.CustomerPotentialID       CustomerID,
+            b.Name                      CustomerName,
+            b.Mobile                    CustomerMobile,
+            CASE
+            WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank
+            ELSE b.CustomerRank END CustomerRank,
+            b.Status,
+            b.InvalidReason,
+            b.ComeOverdueTime,
+            b.TradeOverdueTime,
+            b.ConfirmUserId,
+            b.ConfirmTime,
+            b.IntentProjectID           ProjectID,
+            b.SourceType,
+            b.SourceType                SourceTypeID,
+            b.ReportUserID,
+            b.ReportUserName,
+            b.ReportUserMobile,
+            b.CreateTime AS             ReportTime,
+            o.TheFirstVisitDate,
+            CO.OrgName                  ChannelName,
+            b.ReportUserOrg,
+            o.ID                        OpportunityID,
+            o.Status                    OpportunityStatus
+            FROM B_Clue b
+            LEFT JOIN dbo.B_Opportunity o
+            ON b.ID = o.ClueID AND o.IsDel = 0 AND o.ProjectID = #{projectID}
+            LEFT JOIN B_ChannelOrg CO ON CO.ID = b.ReportUserOrg AND CO.IsDel = 0
+            LEFT JOIN dbo.B_CustomerAttach A
+            ON A.OpportunityID = o.ID AND A.IsDel = 0 AND A.ProjectID = #{projectID}
+            WHERE b.IsDel = 0
+            AND b.IntentProjectID = #{projectID}
+            AND b.SourceType IS NOT NULL
+            AND b.SourceType <> '0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+            ) t   where 1=1 ${sqlWhere}
+            ) m
+        ]]>
+    </select>
+</mapper>
