@@ -8,6 +8,7 @@ import com.tahoecn.xkc.service.customer.IBCustomerService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -22,7 +23,7 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
 
 
     @Override
-    public IPage<HashMap<String, Object>> customerChangePageList_Select(IPage page,String projectID, String sqlWhere) {
+    public IPage<Map<String, Object>> customerChangePageList_Select(IPage page, String projectID, String sqlWhere) {
         return baseMapper.customerChangePageList_Select(page,projectID,sqlWhere);
     }
 }

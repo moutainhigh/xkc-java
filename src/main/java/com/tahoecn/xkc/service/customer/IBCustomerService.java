@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.customer.BCustomer;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,5 +18,5 @@ import java.util.HashMap;
  */
 public interface IBCustomerService extends IService<BCustomer> {
 
-    IPage<HashMap<String,Object>> customerChangePageList_Select(IPage page,String projectID,String sqlWhere);
+    IPage<Map<String,Object>> customerChangePageList_Select(IPage page, String projectID, String sqlWhere);
 }

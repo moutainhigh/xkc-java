@@ -7,6 +7,7 @@ import com.tahoecn.xkc.model.customer.BCustomer;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -18,5 +19,5 @@ import java.util.HashMap;
  */
 public interface BCustomerMapper extends BaseMapper<BCustomer> {
 
-    IPage<HashMap<String, Object>> customerChangePageList_Select(IPage page,@Param("projectID") String projectID, @Param("sqlWhere") String sqlWhere);
+    IPage<Map<String, Object>> customerChangePageList_Select(IPage page, @Param("projectID") String projectID, @Param("sqlWhere") String sqlWhere);
 }

@@ -1,24 +1,36 @@
 package com.tahoecn.xkc.controller.webapi.customer;
 
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
+import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.ExcelUtilsTest;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
+import javax.servlet.ServletOutputStream;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -52,7 +64,7 @@ public class CustomerController extends TahoeBaseController {
                                                 String ReportTime_End,
                                                 String TheFirstVisitDate_Start,
                                                 String TheFirstVisitDate_End,
-                                                    Integer OpportunityStatus) {
+                                                    Integer OpportunityStatus,String isExcel,ModelMap modelMap) {
         StringBuffer sqlWhere = new StringBuffer();
 
 
@@ -117,8 +129,50 @@ public class CustomerController extends TahoeBaseController {
         }
 
         IPage page = new Page(pageNum,pageSize);
-        IPage<HashMap<String,Object>> result = customerService.customerChangePageList_Select(page,projectID,sqlWhere.toString());
+        IPage<Map<String,Object>> result = customerService.customerChangePageList_Select(page,projectID,sqlWhere.toString());
+
+        if (StringUtils.isNotEmpty(isExcel)){
+            List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+            ExcelExportEntity excelentity = new ExcelExportEntity("姓名", "name");
+            excelentity.setNeedMerge(true);
+            entity.add(excelentity);
+            entity.add(new ExcelExportEntity("性别", "sex"));
+            excelentity = new ExcelExportEntity(null, "students");
+            List<ExcelExportEntity> temp = new ArrayList<ExcelExportEntity>();
+            temp.add(new ExcelExportEntity("姓名", "name"));
+            temp.add(new ExcelExportEntity("性别", "sex"));
+            excelentity.setList(temp);
+            entity.add(excelentity);
+
+            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+            Map<String, Object> map;
+            for (int i = 0; i < 10; i++) {
+                map = new HashMap<String, Object>();
+                map.put("name", "1" + i);
+                map.put("sex", "2" + i);
+
+                List<Map<String, Object>> tempList = new ArrayList<Map<String, Object>>();
+                tempList.add(map);
+                tempList.add(map);
+                map.put("students", tempList);
+
+                list.add(map);
+            }
+
+            ExportParams params = new ExportParams("2412312", "测试", ExcelType.XSSF);
+            params.setFreezeCol(2);
+
+            try {
+                ExcelUtil.exportExcel(entity,list,"aaa.xlsx",response);
+                return null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
         return Result.ok(result);
     }
+
+
 
 }
