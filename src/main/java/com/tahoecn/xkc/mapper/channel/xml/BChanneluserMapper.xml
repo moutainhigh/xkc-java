@@ -217,4 +217,15 @@ FROM B_ChannelUser WHERE ID=#{UserID};
     		WHERE ID=#{UserID} and Password = #{OldPassword}
 	    ]]>
 	</update>
+	
+	<!-- 删除兼职成员 -->
+	<delete id="mChannelTempPerson_Delete" parameterType="java.util.Map" >
+		<![CDATA[
+		    UPDATE B_ChannelTask_ChannelUser
+			SET IsDel=1,Status = 3
+			WHERE ChannelUserID=#{ChannelUserID} AND  ChannelTaskID IN (
+				SELECT ID FROM dbo.B_ChannelTask WHERE Creator=#{UserID}
+			)
+	    ]]>
+	</delete>
 </mapper>

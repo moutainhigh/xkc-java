@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.VOpportunityMapper">
+
+	<!-- 机会信息 -->
+	<select id="OpportunityDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT * FROM V_Opportunity WHERE 1 = 1 ${sqlWhere}
+	    ]]>
+	</select>
+	<!-- 项目列表 -->
+	<select id="sProject_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  t.ID ,t.Name    FROM  B_Project  t  where isdel=0 and status=1  ${sqlWhere}  ORDER BY t.Code asc
+	    ]]>
+	</select>
+	<!-- 获取销售认知途径 -->
+	<select id="SystemDictionaryXSRZTJList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  A.ID ID ,
+		        A.DictName Name
+			FROM    dbo.S_Dictionary A
+			WHERE   A.PID = 'F1725D6B-D1F7-4BC3-8C35-20FAB53A1602'
+		        AND A.Status = 1
+		        AND A.IsDel = 0
+	    ]]>
+	</select>
+	<!-- 获取认知媒体及媒体子类 -->
+	<select id="SystemDictionaryXSRZTJList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  A.ID PID ,
+		        A.Name PName ,
+		        B.ID ID ,
+		        B.Name
+		FROM    dbo.B_MediaLarge A
+		        LEFT JOIN dbo.B_MediaChild B ON A.ID = B.MediaLargeID
+		                                        AND B.ProjectID = #{ProjectID}
+		                                        AND B.Status = 1
+		                                        AND B.IsDel = 0
+		WHERE   A.Status = 1
+		        AND A.IsDel = 0
+		ORDER BY A.ListIndex ,
+		        B.ListIndex
+	    ]]>
+	</select>
+	<!-- 获取顾问客户基本信息 -->
+	<select id="sCustomerPotentialClue" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT AdviserGroupID, RuleType, clueID ID, clueName Name, IsChoose FROM V_CustomerPotentialClue
+   			WHERE  1=1   ${sqlWhere}
+	    ]]>
+	</select>
+</mapper>

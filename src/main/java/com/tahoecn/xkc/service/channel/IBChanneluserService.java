@@ -59,4 +59,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     boolean checkMobile(String mobile);
 
     Result registerN(Map paramMap);
+
+    /*
+	 * 删除兼职成员
+	 *
+	 */
+	void mChannelTempPerson_Delete(Map<String, Object> map);
 }
