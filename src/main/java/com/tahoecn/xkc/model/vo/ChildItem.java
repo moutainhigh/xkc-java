@@ -6,31 +6,31 @@ import java.util.List;
 public class ChildItem implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-    public String ID;
+    private String ID;
     // 姓(必填)
-    public String Name;
+    private String Name;
     // 请输入姓氏
-    public String Placeholder;
-    public String Type;
-    public String Value;
-    public String ValueID;
-    public int ListIndex;
-    public int IsMust;
-    public int IsHide;
-    public int IsMustShow;
-    public int IsEdit;
-    public int IsMulti;
-    public int IsFullLine;
-    public int MaxLength;
-    public int MaxSelectedNum;
-    public String MinDate;
-    public String MaxDate;
-    public String NormalColor;
-    public String SelectedColor;
-    public String Partner;
-    public String SubPartner;
-    public List<VerifyItem> Verify;
-    public List<OptionItem> Option;
+    private String Placeholder;
+    private String Type;
+    private String Value;
+    private String ValueID;
+    private int ListIndex;
+    private int IsMust;
+    private int IsHide;
+    private int IsMustShow;
+    private int IsEdit;
+    private int IsMulti;
+    private int IsFullLine;
+    private int MaxLength;
+    private int MaxSelectedNum;
+    private String MinDate;
+    private String MaxDate;
+    private String NormalColor;
+    private String SelectedColor;
+    private String Partner;
+    private String SubPartner;
+    private List<VerifyItem> Verify;
+    private List<OptionItem> Option;
     
     public String getID() {
 		return ID;

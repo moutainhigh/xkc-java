@@ -7,19 +7,19 @@ public class OptionItem implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
     // 主键
-    public String ID;
+    private String ID;
     // 名称
-    public String Name;
+    private String Name;
     // 是否可以选择
-    public int IsChoose;
+    private int IsChoose;
     // 是否子集必填
-    public int IsSubMust;
+    private int IsSubMust;
     // 可以选择颜色
-    public String SelectedColor;
+    private String SelectedColor;
     // 不可以选择颜色
-    public String UnSelectedColor;
+    private String UnSelectedColor;
     // 子集
-    public List<OptionItem> Child;
+    private List<OptionItem> Child;
 
     public OptionItem()
     {

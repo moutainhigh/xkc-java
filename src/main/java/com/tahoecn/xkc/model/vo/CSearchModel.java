@@ -9,21 +9,21 @@ import java.io.Serializable;
 public class CSearchModel implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	public String UserID;
-    public String ProjectID;
-    public String JobCode;
-    public String ChannelTaskID;
-    public String ClueID;// 线索ID
-    public String OpportunityID;// 机会ID
-    public String LostID;// 丢失ID
-    public String CustomerID;// 客户ID
-    public String OrgID;// 组织
-    public String JobID;// 角色
-    public String Mobile;// 手机号
-    public String IsEquity;// 是否为关联权益人
-    public String IsCustomerFirstEdit;// 是否首次访问
-    public String CustomerPotentialID;// 潜在客户ID
-    public String ChannelTypeID;// 渠道身份ID
+	private String UserID;
+    private String ProjectID;
+    private String JobCode;
+    private String ChannelTaskID;
+    private String ClueID;// 线索ID
+    private String OpportunityID;// 机会ID
+    private String LostID;// 丢失ID
+    private String CustomerID;// 客户ID
+    private String OrgID;// 组织
+    private String JobID;// 角色
+    private String Mobile;// 手机号
+    private String IsEquity;// 是否为关联权益人
+    private String IsCustomerFirstEdit;// 是否首次访问
+    private String CustomerPotentialID;// 潜在客户ID
+    private String ChannelTypeID;// 渠道身份ID
 	public String getUserID() {
 		return UserID;
 	}

@@ -7,14 +7,14 @@ public class DicInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
     // 字典ID
-    public String DicID;
+    private String DicID;
     // 字典名称
-    public String DicName;
-    public String Value;
-    public String ValueID;
-    public String FieldName;
-    public String TableName;
-    public String Type;
+    private String DicName;
+    private String Value;
+    private String ValueID;
+    private String FieldName;
+    private String TableName;
+    private String Type;
 	public String getDicID() {
 		return DicID;
 	}

@@ -6,12 +6,12 @@ import java.util.List;
 public class CustomerModel implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	public String ClueID;
-    public String OpportunityID;
-    public String CustomerID;
-    public String OrgID;
-    public int IsNew;
-    public List<PanelItem> Panel;
+	private String ClueID;
+    private String OpportunityID;
+    private String CustomerID;
+    private String OrgID;
+    private int IsNew;
+    private List<PanelItem> Panel;
 	public String getClueID() {
 		return ClueID;
 	}
