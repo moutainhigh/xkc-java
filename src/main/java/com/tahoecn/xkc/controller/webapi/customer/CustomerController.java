@@ -166,9 +166,6 @@ public class CustomerController extends TahoeBaseController {
 
         List<Map<String,Object>> result = customerService.setExcelToCustomerChangeList(projectID,sqlWhere);
 
-        ExportParams params = new ExportParams("客户信息", "客户信息", ExcelType.XSSF);
-        params.setFreezeCol(2);
-
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
