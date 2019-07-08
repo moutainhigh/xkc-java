@@ -6,8 +6,6 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.project.VProjectroom;
 
-import io.lettuce.core.dynamic.annotation.Param;
-
 /**
  * <p>
  *  Mapper 接口

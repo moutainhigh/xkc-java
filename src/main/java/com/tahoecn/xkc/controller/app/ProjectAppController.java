@@ -5,6 +5,7 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.vo.FrVo;
 import com.tahoecn.xkc.model.vo.UnitVo;
+import com.tahoecn.xkc.service.project.IBRoomService;
 import com.tahoecn.xkc.service.project.IVProjectbuildingService;
 import com.tahoecn.xkc.service.project.IVProjectroomService;
 
@@ -41,6 +42,8 @@ public class ProjectAppController extends TahoeBaseController {
 	private IVProjectbuildingService iVProjectbuildingService;
 	@Autowired 
 	private IVProjectroomService iVProjectroomService;
+	@Autowired 
+	private IBRoomService iBRoomService;
 	
 	@ResponseBody
     @ApiOperation(value = "房源列表GW", notes = "房源列表GW")
@@ -98,7 +101,7 @@ public class ProjectAppController extends TahoeBaseController {
                 room.put("RoomSaleStatus", item.get("RoomSaleStatus"));
                 //单元楼层处理
                 if (unit.get(RoomUnit).getRoomFloorObj().get(RoomFloorName) == null){
-                    List<Map<String,Object>> roomlist = new ArrayList();
+                    List<Map<String,Object>> roomlist = new ArrayList<Map<String,Object>>();
                     roomlist.add(room);
                     FrVo fr = new FrVo();
                     fr.setRoomFloorName(item.get("RoomFloorName").toString());
@@ -200,5 +203,30 @@ public class ProjectAppController extends TahoeBaseController {
 		}
     }
 
-    
+	@ResponseBody
+    @ApiOperation(value = "房源详情GW", notes = "房源详情GW")
+    @RequestMapping(value = "/mProjectHouseDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mProjectHouseDetail_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+    		@SuppressWarnings("unchecked")
+			Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+    		List<Map<String,Object>> re = iBRoomService.RoomDetail_Select(paramMap);
+            String UserID = (String) paramMap.get("UserID");
+            String ProjectID = (String) paramMap.get("ProjectID");
+            if(re != null && re.size() > 0){
+            	if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
+            			&& UserID.toUpperCase().equals("06C66C64-B490-4A44-B928-98009CD671F4")){
+            		re.get(0).put("BldPrice","****元");
+            		re.get(0).put("TnPrice","****元");
+            		re.get(0).put("Total","****元"); 
+            	}
+            	return Result.ok(re.get(0));
+            }else{
+            	return Result.ok("");
+            }
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return Result.errormsg(1, "系统异常，请联系管理员");
+    	}
+	}
 }
