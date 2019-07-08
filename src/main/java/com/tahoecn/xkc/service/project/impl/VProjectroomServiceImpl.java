@@ -56,5 +56,12 @@ public class VProjectroomServiceImpl extends ServiceImpl<VProjectroomMapper, VPr
         map.put("BuildingID", BuildingID);
         return vProjectroomMapper.ProjectRoomList_Select(map);
 	}
+	/**
+	 * 获取项目房间列表信息(营销经理)
+	 */
+	@Override
+	public List<Map<String, Object>> RoomListYXJL_Select(Map<String, Object> paramMap) {
+		return vProjectroomMapper.ProjectRoomListYXJL_Select(paramMap);
+	}
 
 }

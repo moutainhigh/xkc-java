@@ -19,5 +19,9 @@ public interface VProjectroomMapper extends BaseMapper<VProjectroom> {
 	 * 获取项目房间列表信息
 	 */
 	List<Map<String, Object>> ProjectRoomList_Select(Map<String,Object> map);
+	/**
+	 * 获取项目房间列表信息(营销经理)
+	 */
+	List<Map<String, Object>> ProjectRoomListYXJL_Select(Map<String, Object> paramMap);
 
 }

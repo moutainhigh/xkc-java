@@ -26,4 +26,28 @@
 			        RoomIndex
     ]]>
 	</select>
+	<!-- 获取项目房间列表信息(营销经理) -->
+	<select id="ProjectRoomListYXJL_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  RoomID ,
+		        RoomStatus ,
+		        RoomSaleStatus ,
+		        ProjectName ,
+		        BuildingName ,
+		        RoomUnit ,
+		        FloorNum ,
+		        FloorIndex ,
+		        RoomFloorName ,
+		        RoomName ,
+		        RoomArea ,
+		        RoomPrice ,
+		        RoomTotal ,
+		        RoomType
+		FROM    [V_ProjectRoom]
+		WHERE   BuildingID = #{BuildingID}
+		ORDER BY RoomUnit ,
+		        FloorIndex DESC ,
+		        RoomIndex
+    ]]>
+	</select>
 </mapper>

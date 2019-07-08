@@ -21,4 +21,9 @@ public interface IVProjectroomService extends IService<VProjectroom> {
 	 */
 	List<Map<String,Object>> RoomList_Select(Map<String, Object> paramMap);
 
+	/**
+	 * 获取项目房间列表信息(营销经理)
+	 */
+	List<Map<String, Object>> RoomListYXJL_Select(Map<String, Object> paramMap);
+
 }
