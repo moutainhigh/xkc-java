@@ -89,7 +89,7 @@ public class ExcelUtil {
     }
 
     public static void exportExcel(List<ExcelExportEntity> entity,List<Map<String, Object>> list, String fileName, HttpServletResponse response) throws Exception {
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(fileName, "SheetData"), entity,list);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), entity,list);
         downLoadExcel(fileName, response, workbook);
     }
 

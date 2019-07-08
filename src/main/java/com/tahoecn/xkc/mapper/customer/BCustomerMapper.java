@@ -7,6 +7,7 @@ import com.tahoecn.xkc.model.customer.BCustomer;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,4 +21,6 @@ import java.util.Map;
 public interface BCustomerMapper extends BaseMapper<BCustomer> {
 
     IPage<Map<String, Object>> customerChangePageList_Select(IPage page, @Param("projectID") String projectID, @Param("sqlWhere") String sqlWhere);
+
+    List<Map<String,Object>> excelToCustomerChangeList(@Param("projectID")String projectID, @Param("sqlWhere")String sqlWhere);
 }

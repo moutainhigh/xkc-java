@@ -81,4 +81,76 @@
             ) m
         ]]>
     </select>
+    <select id="excelToCustomerChangeList" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+					m.num,
+					m.ClueID,
+					m.CustomerID,
+					m.CustomerName,
+					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+					--dbo.F_DictName(m.CustomerRank) CustomerRank,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName(m.Status,0) Status,
+					m.InvalidReason,--原因
+					CASE WHEN m.ComeOverdueTime ='1900-01-01 00:00:00.000' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,--到访逾期时间
+					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,--成交逾期时间
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,--确认人
+					m.ConfirmTime,--确认时间
+					m.ProjectID,--项目ID
+            m.ProjectName,--项目名称
+					dbo.F_DictName(m.SourceType) SourceType,--渠道类型
+					m.ReportTime,--报备时间
+					CASE WHEN DATEDIFF(day,m.TheFirstVisitDate,'1900-01-01')=0 THEN NULL ELSE m.TheFirstVisitDate END TheFirstVisitDate,--首次到访时间
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF,--最近到访时间
+                STUFF(( SELECT    ',' + r.RoomCode FROM dbo.B_Room r INNER JOIN dbo.B_Building b ON r.BuildingID=b.ID WHERE r.ID
+                        IN
+														(SELECT mt.RoomGUID FROM dbo.B_Opportunity o INNER JOIN dbo.B_CustomerAttach ca ON o.ID=ca.OpportunityID
+														INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID=ca.ID WHERE o.ID=m.OpportunityID)
+                AND r.ProjectID in (select ID from B_Project where PID=#{projectID}) FOR XML PATH('') ), 1, 1, '') Room
+					 FROM (
+					 SELECT ROW_NUMBER() OVER(ORDER BY t.ReportTime DESC) num,* FROM (
+						SELECT
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,--客户ID
+                                b.Name CustomerName ,--客户姓名
+                                b.Mobile CustomerMobile ,--客户手机号
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,--客储等级
+                                b.Status,--线索状态
+								                b.InvalidReason,--原因
+								                b.ComeOverdueTime,--到访逾期时间
+								                b.TradeOverdueTime,--成交逾期时间
+								                b.ConfirmUserId,--确认人
+								                b.ConfirmTime,--确认时间
+                                b.IntentProjectID ProjectID ,--意向项目ID
+								                b.IntentProjectName ProjectName,--项目名称
+                                b.SourceType SourceTypeID,--渠道类型
+                                b.SourceType,--渠道类型
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime , --报备时间
+								o.TheFirstVisitDate , --首访时间
+                                CO.OrgName ChannelName,
+                                b.ReportUserOrg,
+								o.ID OpportunityID
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID}
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+								LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID}
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{projectID}
+                                AND b.SourceType IS NOT NULL AND b.SourceType<>'0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+								) t  WHERE 1=1 ${sqlWhere}
+                                ) m
+
+								WHERE 1=1
+
+  ]]>
+    </select>
 </mapper>

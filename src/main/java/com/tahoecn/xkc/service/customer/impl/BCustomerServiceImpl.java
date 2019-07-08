@@ -8,6 +8,7 @@ import com.tahoecn.xkc.service.customer.IBCustomerService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,5 +26,10 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     @Override
     public IPage<Map<String, Object>> customerChangePageList_Select(IPage page, String projectID, String sqlWhere) {
         return baseMapper.customerChangePageList_Select(page,projectID,sqlWhere);
+    }
+
+    @Override
+    public List<Map<String, Object>> setExcelToCustomerChangeList(String projectID, String sqlWhere) {
+        return baseMapper.excelToCustomerChangeList(projectID,sqlWhere);
     }
 }

@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletOutputStream;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,46 +134,52 @@ public class CustomerController extends TahoeBaseController {
         IPage<Map<String,Object>> result = customerService.customerChangePageList_Select(page,projectID,sqlWhere.toString());
 
         if (StringUtils.isNotEmpty(isExcel)){
-            List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
-            ExcelExportEntity excelentity = new ExcelExportEntity("姓名", "name");
-            excelentity.setNeedMerge(true);
-            entity.add(excelentity);
-            entity.add(new ExcelExportEntity("性别", "sex"));
-            excelentity = new ExcelExportEntity(null, "students");
-            List<ExcelExportEntity> temp = new ArrayList<ExcelExportEntity>();
-            temp.add(new ExcelExportEntity("姓名", "name"));
-            temp.add(new ExcelExportEntity("性别", "sex"));
-            excelentity.setList(temp);
-            entity.add(excelentity);
-
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-            Map<String, Object> map;
-            for (int i = 0; i < 10; i++) {
-                map = new HashMap<String, Object>();
-                map.put("name", "1" + i);
-                map.put("sex", "2" + i);
-
-                List<Map<String, Object>> tempList = new ArrayList<Map<String, Object>>();
-                tempList.add(map);
-                tempList.add(map);
-                map.put("students", tempList);
-
-                list.add(map);
-            }
-
-            ExportParams params = new ExportParams("2412312", "测试", ExcelType.XSSF);
-            params.setFreezeCol(2);
-
-            try {
-                ExcelUtil.exportExcel(entity,list,"aaa.xlsx",response);
-                return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            customerExcel(projectID,sqlWhere.toString());
+            return null;
         }
         return Result.ok(result);
     }
+
+
+
+    private void customerExcel(String projectID, String sqlWhere){
+        List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+        entity.add(new ExcelExportEntity("客户姓名", "CustomerName"));
+        entity.add(new ExcelExportEntity("手机号", "CustomerMobile"));
+        entity.add(new ExcelExportEntity("客储等级", "CustomerRank"));
+        entity.add(new ExcelExportEntity("客户状态", "Status"));
+        entity.add(new ExcelExportEntity("原因", "InvalidReason"));
+        entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
+        entity.add(new ExcelExportEntity("到访逾期时间", "ComeOverdueTime"));
+        entity.add(new ExcelExportEntity("成交逾期时间", "TradeOverdueTime"));
+        entity.add(new ExcelExportEntity("确认人", "ConfirmUserName"));
+        entity.add(new ExcelExportEntity("确认时间", "ConfirmTime"));
+        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
+        entity.add(new ExcelExportEntity("渠道类型", "SourceType"));
+        entity.add(new ExcelExportEntity("报备人", "ReportUserName"));
+        entity.add(new ExcelExportEntity("报备人手机号", "ReportUserMobile"));
+        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
+        entity.add(new ExcelExportEntity("所属机构", "ChannelName"));
+        entity.add(new ExcelExportEntity("首访时间", "TheFirstVisitDate"));
+        entity.add(new ExcelExportEntity("最近到访", "ZJDF"));
+        entity.add(new ExcelExportEntity("成交记录", "Room"));
+
+        List<Map<String,Object>> result = customerService.setExcelToCustomerChangeList(projectID,sqlWhere);
+
+        ExportParams params = new ExportParams("客户信息", "客户信息", ExcelType.XSSF);
+        params.setFreezeCol(2);
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 
