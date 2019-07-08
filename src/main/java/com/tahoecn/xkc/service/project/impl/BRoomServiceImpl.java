@@ -30,5 +30,12 @@ public class BRoomServiceImpl extends ServiceImpl<BRoomMapper, BRoom> implements
 	public List<Map<String, Object>> RoomDetail_Select(Map<String, Object> paramMap) {
 		return bRoomMapper.ProjectRoomDetail_Select(paramMap);
 	}
+	/**
+	 * 获取项目房源信息(营销经理)
+	 */
+	@Override
+	public List<Map<String, Object>> RoomDetailYXJL_Select(Map<String, Object> paramMap) {
+		return bRoomMapper.ProjectRoomDetailYXJL_Select(paramMap);
+	}
 
 }

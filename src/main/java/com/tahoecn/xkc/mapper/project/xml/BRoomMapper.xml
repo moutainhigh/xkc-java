@@ -31,4 +31,54 @@
 			AND A.IsDel = 0
 		]]>
 	</select>
+	<!-- 获取项目房源信息(营销经理) -->
+	<select id="ProjectRoomDetailYXJL_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT TOP 1
+		        A.ID RoomID ,
+		        A.Room RoomName ,
+		        A.RoomCode ,
+		        A.HuXing RoomType ,
+		        A.DjArea ,
+		        A.Price BldPrice ,
+		        A.TnPrice TnPrice ,
+		        A.Total ,
+		        '-' PriceTimeLimit ,
+		        A.YsBldArea ,
+		        A.YsTnArea ,
+		        A.ScBldArea ,
+		        A.ScTnArea ,
+		        E.CustomerName CustomerName ,
+		        STUFF(E.CustomerMobile,4,4,'****') CustomerPhone ,
+		        A.Price BldDealPrice ,
+		        A.TnPrice TnDealPrice ,
+		        A.Total DealTotal ,
+		        CASE WHEN G.chgdate >= G.ZqDate THEN G.chgdate
+		             ELSE G.ZqDate
+		        END DealTime ,
+		        G.ContractNo ,
+		        dbo.F_GetSaleUserName(E.SaleUserID) SaleUserNmae ,
+		        CASE WHEN A.EditTime IS NULL
+		             THEN CONVERT(VARCHAR(100), A.CreateTime, 120)
+		             ELSE CONVERT(VARCHAR(100), A.EditTime, 120)
+		        END UpdateTime ,
+		        A.SaleStatus RoomStatusName
+		FROM    B_Room A
+		        LEFT JOIN dbo.C_MYOrder B ON A.ID = B.RoomGUID
+		                                     AND B.OrderType = '认购'
+		                                     AND B.CloseReason NOT IN ( '退房', '换房',
+		                                                              '其它变更', '作废',
+		                                                              '特批折扣' )
+		        LEFT JOIN dbo.C_MYTrade C ON B.TradeGUID = C.TradeGUID
+		        LEFT JOIN dbo.B_CustomerAttach D ON C.OppGUID = D.ID
+		        LEFT JOIN dbo.B_Opportunity E ON D.OpportunityID = E.ID
+		        LEFT JOIN dbo.C_MYContract G ON G.TradeGUID = C.TradeGUID
+		                                        AND ( G.ConStatus = '正签'
+		                                              OR ISNULL(G.ConStatus, '') = ''
+		                                            )
+		WHERE   A.ID = #{RoomID}
+		        AND A.Status = 1
+		        AND A.IsDel = 0
+		]]>
+	</select>
 </mapper>

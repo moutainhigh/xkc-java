@@ -406,4 +406,17 @@ public class ProjectAppController extends TahoeBaseController {
 			return Result.errormsg(1, "系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+    @ApiOperation(value = "项目房源详情(营销经理)", notes = "项目房源详情(营销经理)")
+    @RequestMapping(value = "/mProjectHouseDetailYXJL_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mProjectHouseDetailYXJL_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+    		@SuppressWarnings("unchecked")
+			Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+            return Result.ok(iBRoomService.RoomDetailYXJL_Select(paramMap));
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return Result.errormsg(1, "系统异常，请联系管理员");
+    	}
+	}
 }

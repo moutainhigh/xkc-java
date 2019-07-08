@@ -21,4 +21,9 @@ public interface IBRoomService extends IService<BRoom> {
 	 */
 	List<Map<String, Object>> RoomDetail_Select(Map<String, Object> paramMap);
 
+	/**
+	 * 获取项目房源信息(营销经理)
+	 */
+	List<Map<String, Object>> RoomDetailYXJL_Select(Map<String, Object> paramMap);
+
 }

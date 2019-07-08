@@ -20,5 +20,9 @@ public interface BRoomMapper extends BaseMapper<BRoom> {
 	 * 获取项目房源信息
 	 */
 	List<Map<String, Object>> ProjectRoomDetail_Select(Map<String, Object> paramMap);
+	/**
+	 * 获取项目房源信息(营销经理)
+	 */
+	List<Map<String, Object>> ProjectRoomDetailYXJL_Select(Map<String, Object> paramMap);
 
 }
