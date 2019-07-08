@@ -153,4 +153,11 @@
 
   ]]>
     </select>
+    <select id="getDistributionList_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT co.ID,co.OrgName FROM dbo.B_ChannelOrg co
+            INNER JOIN dbo.B_PojectChannelOrgRel pc ON co.ID=pc.OrgID AND pc.IsDel=0 AND pc.Status=1  AND pc.ProjectID=#{projectID}
+            WHERE co.IsDel=0 AND co.Status=1  AND co.OrgCategory=1
+        ]]>
+    </select>
 </mapper>

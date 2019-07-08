@@ -23,4 +23,5 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
     IPage<Map<String, Object>> customerChangePageList_Select(IPage page, @Param("projectID") String projectID, @Param("sqlWhere") String sqlWhere);
 
     List<Map<String,Object>> excelToCustomerChangeList(@Param("projectID")String projectID, @Param("sqlWhere")String sqlWhere);
+    List<Map<String,Object>> getDistributionList_Select(@Param("projectID")String projectID);
 }

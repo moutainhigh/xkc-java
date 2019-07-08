@@ -22,4 +22,6 @@ public interface IBCustomerService extends IService<BCustomer> {
     IPage<Map<String,Object>> customerChangePageList_Select(IPage page, String projectID, String sqlWhere);
 
     List<Map<String,Object>> setExcelToCustomerChangeList(String projectID, String sqlWhere);
+
+    List<Map<String,Object>> GetDistributionList_Select(String project);
 }

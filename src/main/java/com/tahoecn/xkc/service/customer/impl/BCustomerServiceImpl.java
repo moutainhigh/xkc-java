@@ -32,4 +32,9 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     public List<Map<String, Object>> setExcelToCustomerChangeList(String projectID, String sqlWhere) {
         return baseMapper.excelToCustomerChangeList(projectID,sqlWhere);
     }
+
+    @Override
+    public List<Map<String, Object>> GetDistributionList_Select(String project) {
+        return baseMapper.getDistributionList_Select(project);
+    }
 }

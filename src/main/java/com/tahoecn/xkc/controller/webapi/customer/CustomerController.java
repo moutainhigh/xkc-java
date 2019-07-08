@@ -176,6 +176,12 @@ public class CustomerController extends TahoeBaseController {
         }
     }
 
+    @ApiOperation(value = "渠道客户列表查询参数")
+    @RequestMapping(value = "/GetDistributionList_Select", method = {RequestMethod.GET})
+    public Result GetDistributionList_Select(String project) {
+        List<Map<String,Object>> result = customerService.GetDistributionList_Select(project);
+        return Result.ok(result);
+    }
 
 
 
