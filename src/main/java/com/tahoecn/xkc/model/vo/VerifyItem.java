@@ -5,11 +5,11 @@ import java.io.Serializable;
 public class VerifyItem implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-    public String ID;
+	private String ID;
     /// 身份证
-    public String Name;
-    public String Type;
-    public int MaxLength;
+    private String Name;
+    private String Type;
+    private int MaxLength;
 	public String getID() {
 		return ID;
 	}

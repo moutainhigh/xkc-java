@@ -1,7 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
@@ -20,12 +19,9 @@ import com.tahoecn.xkc.model.vo.OptionItem;
 import com.tahoecn.xkc.model.vo.PanelItem;
 import com.tahoecn.xkc.service.customer.IVOpportunityService;
 
-import springfox.documentation.spring.web.json.Json;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +99,7 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
             	int childIndex = 0;
             	for (ChildItem childItem : panelItem.getChild()){
             		//处理选项项目
-            		if (childItem.Type == "Option" || childItem.Type == "OptionTag" || childItem.Type == "OptionCity" || childItem.Type == "OptionRadio" || childItem.Type == "OptionTextArea"){
+            		if ("Option".equals(childItem.getType()) || "OptionTag".equals(childItem.getType()) || "OptionCity".equals(childItem.getType()) || "OptionRadio".equals(childItem.getType()) || "OptionTextArea".equals(childItem.getType())){
             			//初始化option值
             			switch (childItem.getID()){
             			case "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D":{//意向项目
@@ -168,16 +164,16 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                                 customerModeType.equals(CustomerModeType.顾问_新机会_老客户.getTypeID()) ||
                                 customerModeType.equals(CustomerModeType.顾问_新机会_新客户_老潜在客户.getTypeID()) ||
                                 customerModeType.equals(CustomerModeType.顾问_新机会_新客户_新潜在客户.getTypeID())){
-                                childItem.IsEdit = 1;
+                                childItem.setIsEdit(1);
                             }
                         }
                         break;
             			case "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0":{//认知媒体
-                            childItem.setOption(GetRZMTOptionList(model.ProjectID));
+                            childItem.setOption(GetRZMTOptionList(model.getProjectID()));
                         }
                         break;
             			case "480B60B2-1EE1-4A31-A810-072184A1E9D7":{//跟进方式
-	                        List<OptionItem> itemList = GetOptionList(childItem.ID,false);
+	                        List<OptionItem> itemList = GetOptionList(childItem.getID(),false);
 	                        if(itemList != null && itemList.size() > 0 && jobCode =="GW" && IsNoAllotRole == 0){//开启分接置业顾问只能录入来电、去电、问询、外展接待
 	                            List<String> followIdList = new ArrayList<String>();
 	                            followIdList.add("A79A1057-D4DC-497C-8C81-8F93E422C819");
@@ -193,11 +189,11 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
 	                            }
 	                            itemList = temp;
 	                        }
-	                        childItem.Option = itemList;
+	                        childItem.setOption(itemList);
             			}
                         break;
             			default:
-            				childItem.Option = GetOptionList(childItem.ID,false);
+            				childItem.setOption(GetOptionList(childItem.getID(),false));
                         break;
             			}
             		}
@@ -213,7 +209,7 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                         childItem.setValueID(StringUtils.isEmpty(dicInfo.getValueID()) ? childItem.getValueID() : dicInfo.getValueID());
                         //通用处理信息
                         if ("8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36".equals(childItem.getID())){//来访时间
-                            if (StringUtils.isEmpty(childItem.Value)){
+                            if (StringUtils.isEmpty(childItem.getValue())){
                             	SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                                 childItem.setValue(sdf.format(new Date()));
                                 childItem.setValueID(sdf.format(new Date()));
@@ -221,10 +217,10 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                         }
                         if ("21685728-54C5-4268-8371-62413CE42841".equals(childItem.getID())){//电话
                             if (IsNoMobileVerify == 1){
-                                childItem.Type = "Text";
+                                childItem.setType("Text");
                             }
-                            if (StringUtils.isEmpty(childItem.Value)){
-                                childItem.Value = model.Mobile;
+                            if (StringUtils.isEmpty(childItem.getValue())){
+                                childItem.setValue(model.getMobile());
                             }
                         }
                         if ("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC".equals(childItem.getID())){//客户级别
@@ -272,13 +268,13 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                                 //客户渠道处理
                                 if ("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602".equals(childItem.getID())){//渠道客户初始化 
                                 	Map<String,Object> map = new HashMap<String,Object>();
-                                	map.put("sqlWhere", " and ClueID='" + customerModel.ClueID + "'");
+                                	map.put("sqlWhere", " and ClueID='" + customerModel.getClueID() + "'");
                                     List<Map<String,Object>> ClueObj = vOpportunityMapper.sCustomerPotentialClue(map);
                                     if (ClueObj != null && ClueObj.size() > 0){
                                         childItem.setValue(ClueObj.get(0).get("Name").toString());
                                         childItem.setValueID(ClueObj.get(0).get("ID").toString());
                                     }
-                                    childItem.IsEdit = 0;
+                                    childItem.setIsEdit(0);
                                 }
                                 break;
                             case "23"://CustomerModeType.分接_老机会_老客户_公共客户.getTypeID():
@@ -351,9 +347,9 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                                 }
                                 if ("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602".equals(childItem.getID())){//渠道客户初始化 
                                     ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
-                                    childItem.Option = clueOpportunitySource.Option;
-                                    childItem.Value = clueOpportunitySource.Value;
-                                    childItem.ValueID = clueOpportunitySource.ValueID;
+                                    childItem.setOption(clueOpportunitySource.getOption());
+                                    childItem.setValue(clueOpportunitySource.getValue());
+                                    childItem.setValueID(clueOpportunitySource.getValueID());
                                 }
                                 break;
                             case "13"://CustomerModeType.顾问_新机会_新客户_老潜在客户.getTypeID():
@@ -363,16 +359,16 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                                 }
                                 if ("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602".equals(childItem.getID())){//渠道客户初始化 
                                     ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
-                                    childItem.Option = clueOpportunitySource.Option;
-                                    childItem.Value = clueOpportunitySource.Value;
-                                    childItem.ValueID = clueOpportunitySource.ValueID;
+                                    childItem.setOption(clueOpportunitySource.getOption());
+                                    childItem.setValue(clueOpportunitySource.getValue());
+                                    childItem.setValueID(clueOpportunitySource.getValueID());
                                 }
                                 break;
                             case "14"://CustomerModeType.顾问_新机会_新客户_新潜在客户.getTypeID():
                                 break;
                             case "82"://CustomerModeType.顾问_客户_更新.getTypeID():
                                 if ("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC".equals(childItem.getID())){//客户级别处理,如果是3级,是否收小筹,不可以编辑 
-                                    childItem.IsEdit = 0;
+                                    childItem.setIsEdit(0);
                                 }
                                 break;
                             case "99"://CustomerModeType.无.getTypeID():
@@ -382,7 +378,7 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                         }
                         //关联权益人处理
                         //关联权益人时
-                        if (model.IsEquity == "1"){
+                        if (model.getIsEquity().equals("1")){
                             //初始化手机号
                             if ("21685728-54C5-4268-8371-62413CE42841".equals(childItem.getID())){
                                 childItem.setValue(StringUtils.isEmpty(childItem.getValue()) ? model.getMobile() : childItem.getValue());
@@ -394,17 +390,17 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                                 childItem.setIsMust(1);
                                 childItem.setPlaceholder("必填");
                             }else{
-                                childItem.IsMust = 0;
+                                childItem.setIsMust(0);
                             }
-                            childItem.IsHide = 0;
+                            childItem.setIsHide(0);
                             switch (customerModeType){
                                 case "82"://CustomerModeType.顾问_客户_更新.getTypeID():
                                     if (!"480B60B2-1EE1-4A31-A810-072184A1E9D7".equals(childItem.getID())
                                     && !"08289FD5-999A-4A9F-94D5-B85507575404".equals(childItem.getID())
                                     && !"600DEB36-F5E0-4BA3-B7FA-1A244F0773AB".equals(childItem.getID())
                                     && !"7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10".equals(childItem.getID())){
-                                        if (childItem.IsMustShow == 0){//非必有
-                                            if (!StringUtils.isEmpty(childItem.ValueID) && !StringUtils.isEmpty(childItem.Value)){//隐藏已填写选项
+                                        if (childItem.getIsMustShow() == 0){//非必有
+                                            if (!StringUtils.isEmpty(childItem.getValueID()) && !StringUtils.isEmpty(childItem.getValue())){//隐藏已填写选项
                                                 childItem.setIsHide(1);
                                             }else{
                                                 childItem.setIsHide(0);
@@ -424,7 +420,7 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                                             && !"08289FD5-999A-4A9F-94D5-B85507575404".equals(childItem.getID())
                                             && !"600DEB36-F5E0-4BA3-B7FA-1A244F0773AB".equals(childItem.getID())
                                             && !"7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10".equals(childItem.getID())){
-                                            if (childItem.IsMustShow == 0){//非必有
+                                            if (childItem.getIsMustShow() == 0){//非必有
                                                 if (!StringUtils.isEmpty(childItem.getValueID()) && !StringUtils.isEmpty(childItem.getValue())){//隐藏已填写选项
                                                     childItem.setIsHide(1);
                                                 }else{
@@ -516,7 +512,7 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                 childItem.setValue("");
                 childItem.setValueID("");
                 if (RuleType != 1){
-                    for (OptionItem item : childItem.Option){
+                    for (OptionItem item : childItem.getOption()){
                         if (item.getID().equals("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2")){//增加自然到访
                             ClueList.add(0, item);
                             childItem.setValue(item.getName());
@@ -526,7 +522,7 @@ public class VOpportunityServiceImpl extends ServiceImpl<VOpportunityMapper, VOp
                     }
                 }
             }
-            childItem.Option = ClueList;
+            childItem.setOption(ClueList);
         }
         return childItem;
 	}

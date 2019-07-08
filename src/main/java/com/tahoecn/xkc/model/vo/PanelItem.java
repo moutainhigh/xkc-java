@@ -6,10 +6,10 @@ import java.util.List;
 public class PanelItem implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-    public String Name;
-    public String Type;
-    public int ListIndex;
-    public List<ChildItem> Child;
+	private String Name;
+	private String Type;
+	private int ListIndex;
+	private List<ChildItem> Child;
 	public String getName() {
 		return Name;
 	}

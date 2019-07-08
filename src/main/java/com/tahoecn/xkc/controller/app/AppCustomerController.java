@@ -49,7 +49,7 @@ public class AppCustomerController extends TahoeBaseController {
     		
     		CSearchModel model = JSON.parseObject(JSON.toJSONString(paramMap), CSearchModel.class);
             CustomerModel customerModel = new CustomerModel();
-            List<Map<String,Object>> CustomerObj = iVOpportunityService.OpportunityInfo(model.OpportunityID);
+            List<Map<String,Object>> CustomerObj = iVOpportunityService.OpportunityInfo(model.getOpportunityID());
             if (CustomerObj != null  && CustomerObj.size() > 0){
                 String customerModeType = CustomerModeType.顾问_客户_详情.getTypeID();
                 customerModel = iVOpportunityService.InitCustomerModeData(model, "GWGiveUpCustomer.json", CustomerObj.get(0), customerModeType);
