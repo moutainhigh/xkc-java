@@ -229,4 +229,43 @@ public class ProjectAppController extends TahoeBaseController {
     		return Result.errormsg(1, "系统异常，请联系管理员");
     	}
 	}
+	@ResponseBody
+    @ApiOperation(value = "楼栋选择列表", notes = "楼栋选择列表")
+    @RequestMapping(value = "/mProjectBuildingList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mProjectBuildingList_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+    		@SuppressWarnings("unchecked")
+			Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+            List<Map<String,Object>> buildArray = iVProjectbuildingService.BuildingList_Select(paramMap);
+            Map<String,Object> project = new HashMap<String, Object>();
+            for(Map<String,Object> item : buildArray){
+                String ProjectID = (String) item.get("ProjectID");
+                Map<String,Object> bd = new HashMap<String, Object>();
+                bd.put("BuildingID", (String) item.get("BuildingID"));
+                bd.put("BuildingName", (String) item.get("BuildingName"));
+                bd.put("BuildingUnSaleCount", (int) item.get("BuildingUnSaleCount"));
+                bd.put("BuildingSaleCount", (int) item.get("BuildingSaleCount"));
+                if (project.get(ProjectID) == null)
+                {
+                    List<Map<String,Object>> bdl = new ArrayList<Map<String,Object>>();
+                    bdl.add(bd);
+                    Map<String,Object> pj = new HashMap<String,Object>();
+                    pj.put("ProjectID", (String) item.get("ProjectID"));
+                    pj.put("ProjectName", (String) item.get("ProjectName"));
+                    pj.put("BuildingList", bdl);
+                    project.put(ProjectID, pj);
+                }else{
+                	((List)((Map)project.get(ProjectID)).get("BuildingList")).add(bd);
+                }
+            }
+            List<Object> projectArray = new ArrayList<Object>();
+            for(Object item : project.keySet()){
+                projectArray.add(project.get(item));
+            }
+            return Result.ok(projectArray);
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return Result.errormsg(1, "系统异常，请联系管理员");
+    	}
+	}
 }

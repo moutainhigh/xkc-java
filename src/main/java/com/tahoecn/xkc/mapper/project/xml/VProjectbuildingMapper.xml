@@ -41,4 +41,21 @@
 				BuildingName
 	    ]]>
 	  </select>
+	<!-- 获取项目楼栋列表信息 -->
+	<select id="ProjectBuildingList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT
+				ProjectID,
+				ProjectName,
+				BuildingID,
+				BuildingName,
+				BuildingUnSaleCount,
+				BuildingSaleCount
+			FROM
+				[V_ProjectBuilding]
+			WHERE
+				ProjectPID = #{ProjectID}
+			ORDER BY BuildingName
+	    ]]>
+	  </select>
 </mapper>

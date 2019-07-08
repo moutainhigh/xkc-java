@@ -38,5 +38,12 @@ public class VProjectbuildingServiceImpl extends ServiceImpl<VProjectbuildingMap
 	public List<Map<String, Object>> BuildingDetail_Select(Map<String, Object> paramMap) {
 		return vProjectbuildingMapper.ProjectBuildingDetail_Select(paramMap);
 	}
+	/**
+	 * 获取项目楼栋列表信息
+	 */
+	@Override
+	public List<Map<String, Object>> BuildingList_Select(Map<String, Object> paramMap) {
+		return vProjectbuildingMapper.ProjectBuildingList_Select(paramMap);
+	}
 
 }

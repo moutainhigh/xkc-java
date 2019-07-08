@@ -26,4 +26,9 @@ public interface IVProjectbuildingService extends IService<VProjectbuilding> {
 	 */
 	List<Map<String, Object>> BuildingDetail_Select(Map<String, Object> paramMap);
 
+	/**
+	 * 获取项目楼栋列表信息
+	 */
+	List<Map<String, Object>> BuildingList_Select(Map<String, Object> paramMap);
+
 }
