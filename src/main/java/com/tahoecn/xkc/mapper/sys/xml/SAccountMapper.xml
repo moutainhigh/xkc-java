@@ -124,7 +124,7 @@
         <![CDATA[
             SELECT DISTINCT
               *
-            FROM [dbo].[F_GetAllJobMenu](#{userName},#{productID})
+            FROM [dbo].[F_GetAllJobMenu_xkc](#{userName},#{productID})
             ORDER BY IsHomePage DESC ,
               Levels ASC ,
               ListIndex ASC
@@ -175,6 +175,289 @@
     <select id="getJobProject" resultType="java.util.HashMap" statementType="CALLABLE">
         <![CDATA[
           {call	 [dbo].[getOrganization](#{userName,mode=IN})}
+        ]]>
+    </select>
+    <select id="mLoginSelectByAccount" resultType="java.util.HashMap" >
+        <![CDATA[
+            SELECT TOP 1
+           *
+    FROM
+    (
+        SELECT A.ID UserID,
+               A.Name,
+               A.TelPhone Mobile,
+               A.HeadImg,
+               CASE ISNULL(B.ReceptionGroupID, '')
+                   WHEN '' THEN
+                       B.ProjectID
+                   ELSE
+                       B.ReceptionGroupID
+               END OrgID,
+               CASE ISNULL(C.Name, '')
+                   WHEN '' THEN
+                       P.Name
+                   ELSE
+                       C.Name
+               END OrgPath,
+               B.ProjectID,
+               P.Name ProjectName,
+               B.RoleID JobID,
+               dbo.F_DictCode(B.RoleID) JobCode,
+               dbo.F_DictName(B.RoleID) JobName,
+               ISNULL(U.AccountType, S.AccountType) AccountType,
+               CASE C.Nature
+                   WHEN 3 THEN
+                       '0E88065E-AF3E-4905-8809-7BD30610323F'
+                   WHEN 4 THEN
+                       'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A'
+                   WHEN 5 THEN
+                       '8D70D821-3BD4-46D1-8342-8B16C4BE642A'
+                   WHEN 6 THEN
+                       'FC09F0DF-D3DF-4378-91C0-7146EC451F43'
+                   WHEN 7 THEN
+                       'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'
+                   ELSE
+                       ''
+               END ChannelTypeID,
+               CASE C.Nature
+                   WHEN 1 THEN
+                       '自销'
+                   WHEN 2 THEN
+                       '代理'
+                   WHEN 3 THEN
+                       '外展'
+                   WHEN 4 THEN
+                       '外呼'
+                   WHEN 5 THEN
+                       '拦截'
+                   WHEN 6 THEN
+                       '圈层'
+                   WHEN 7 THEN
+                       '外拓'
+                   ELSE
+                       ''
+               END ChannelType,
+               ISNULL(U.Password, S.Password) Password,
+               P.IsNoAllotRole,
+               P.AllowDeviceType,
+               (CASE
+                    WHEN P.AllowDeviceType = 1
+                         OR P.AllowDeviceType = 3 THEN
+                        0
+                    ELSE
+                        1
+                END
+               ) AllowDeviceTypeSort,
+               P.IsNoMobileVerify,
+               CASE
+                   WHEN UP.ProjectID = B.ProjectID THEN
+               (CASE
+                    WHEN UPJ.JobCode = (dbo.F_DictCode(B.RoleID)) THEN
+                        0
+                    ELSE
+                        1
+                END
+               )
+                   ELSE
+               (CASE
+                    WHEN UPJ.JobCode = (dbo.F_DictCode(B.RoleID)) THEN
+                        2
+                    ELSE
+                        3
+                END
+               )
+               END PSort,
+               S.Status AccountStatus,
+               P.OutUserAllowModifyPwd,
+               P.OutUserIsShowHouseStyle,
+               P.HouseStyle,
+               P.IsOffSiteSale,
+               P.IsLocationValidate,
+               P.SelfSoldTeamIsShowHouseStyle,
+               P.AgentTeamIsShowHouseStyle,
+               ISNULL(P.TwoRankAllowSubscribe, 0) TwoRankAllowSubscribe,
+               dbo.F_GetIsCustomerGrabSheet(P.ID, B.RoleID, 1) IsGGCCustomerGrabSheet,
+               dbo.F_GetIsCustomerGrabSheet(P.ID, B.RoleID, 2) IsFXCBCustomerGrabSheet,
+               CWXU.ID WXUserID,
+               CWXU.UnionID,
+               ASP.ID ShareProjectID
+        FROM B_SalesUser A
+            INNER JOIN B_SalesGroupMember B
+                ON A.ID = B.MemberID
+                   AND B.IsDel = 0
+                   AND B.Status = 1
+            INNER JOIN B_Project P
+                ON P.ID = B.ProjectID
+                   AND P.IsDel = 0
+                   AND P.Status = 1
+            INNER JOIN S_Account S
+                ON A.ID = S.ID
+                   AND S.IsDel = 0
+            LEFT JOIN B_SalesGroup C
+                ON C.ID = B.ReceptionGroupID
+                   AND C.IsDel = 0
+                   AND C.Status = 1
+            LEFT JOIN S_AccountUserType U
+                ON S.UserName = U.UserName
+            LEFT JOIN S_AccountUserProject UP
+                ON UP.UserID = S.ID
+            LEFT JOIN S_AccountUserProjectJob UPJ
+                ON UPJ.UserID = S.ID
+                   AND UPJ.ProjectID = B.ProjectID
+            LEFT JOIN dbo.C_WXUser CWXU
+                ON CWXU.BindChannelUserID = A.ID
+                   AND CWXU.IsDel = 0
+                   AND CWXU.Status = 1
+            LEFT JOIN dbo.A_ShareProject ASP
+                ON ASP.ProjectID = P.ID
+                   AND ASP.IsDel = 0
+                   AND ASP.Status = 1
+        WHERE A.IsDel = 0
+              AND A.Status = 1
+              AND S.UserName = LTRIM(RTRIM(#{userName}))
+              AND (CASE
+                       WHEN dbo.F_DictCode(B.RoleID) IN ( 'XSZC', 'FJ' )
+                            AND P.IsNoAllotRole = 1 THEN
+                           0
+                       ELSE
+                           1
+                   END
+                  ) = 1
+    ) T
+    ORDER BY T.PSort,
+             T.IsNoAllotRole,
+             T.AllowDeviceTypeSort,
+             T.Name
+        ]]>
+    </select>
+
+    <select id="mLoginSelectByChannelUser" resultType="java.util.HashMap" >
+        <![CDATA[
+               SELECT TOP 1
+               A.ID UserID,
+               A.Name,
+               A.Mobile,
+               A.HeadImg,
+               '' OrgID,
+               '' OrgPath,
+               ISNULL(C.ProjectID, '') ProjectID,
+               dbo.F_GetProjectName(ISNULL(C.ProjectID, '')) ProjectName,
+               '48FC928F-6EB5-4735-BF2B-29B1F591A582' JobID,
+               'JZ' JobCode,
+               '兼职' JobName,
+               3 AccountType,
+               ISNULL(C.TaskType, A.ChannelTypeID) ChannelTypeID,
+               Password,
+               0 IsNoAllotRole,
+               0 IsNoMobileVerify,
+               0 PSort,
+               1 OutUserAllowModifyPwd,
+               0 OutUserIsShowHouseStyle,
+               0 HouseStyle,
+               P.AllowDeviceType,
+               1 AccountStatus
+        FROM dbo.B_ChannelUser A
+            LEFT JOIN B_ChannelTask_ChannelUser B
+                ON A.ID = B.ChannelUserID
+                   AND B.IsDel = 0
+                   AND B.Status < 3
+            LEFT JOIN B_ChannelTask C
+                ON C.ID = B.ChannelTaskID
+                   AND C.IsDel = 0
+                   AND C.Status < 3
+            LEFT JOIN dbo.B_Project P
+                ON C.ProjectID = P.ID
+        WHERE A.ChannelType = '兼职'
+              AND A.UserName = #{userName}
+        ORDER BY C.ID DESC
+        ]]>
+    </select>
+    <select id="salesUserProjectList" resultType="java.util.HashMap" >
+        SELECT DISTINCT
+        B.ProjectID,
+        P.Name ProjectName
+        FROM B_SalesUser A
+        INNER JOIN B_SalesGroupMember B
+        ON A.ID = B.MemberID
+        AND B.IsDel = 0
+        AND B.Status = 1
+        INNER JOIN B_Project P
+        ON P.ID = B.ProjectID
+        AND P.IsDel = 0
+        AND P.Status = 1
+        WHERE A.IsDel = 0
+        AND A.Status = 1
+        AND A.ID = #{userId}
+        AND (CASE
+        WHEN dbo.F_DictCode(B.RoleID) IN ( 'XSZC', 'FJ' )
+        AND P.IsNoAllotRole = 1 THEN
+        0
+        ELSE
+        1
+        END
+        ) = 1
+        ORDER BY P.Name;
+    </select>
+    <select id="userProjectJobList" resultType="java.util.HashMap">
+        <![CDATA[
+            SELECT B.RoleID JobID,
+                   dbo.F_DictCode(B.RoleID) JobCode,
+                   dbo.F_DictName(B.RoleID) JobName
+            FROM B_SalesUser A
+                JOIN B_SalesGroupMember B
+                    ON A.ID = B.MemberID
+                       AND B.IsDel = 0
+                       AND B.Status = 1
+                INNER JOIN B_Project P
+                    ON P.ID = B.ProjectID
+                       AND P.IsDel = 0
+                       AND P.Status = 1
+            WHERE A.IsDel = 0
+                  AND A.Status = 1
+                  AND A.ID = #{userId}
+                  AND B.ProjectID = #{projectID}
+                  AND (CASE
+                           WHEN dbo.F_DictCode(B.RoleID) IN ( 'XSZC', 'FJ' )
+                                AND P.IsNoAllotRole = 1 THEN
+                               0
+                           ELSE
+                               1
+                       END
+                      ) = 1;
+        ]]>
+    </select>
+    <select id="GetMenuAndFunList_Select" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT b.MenuName ,
+              b.Url
+        FROM   dbo.S_CommonJobsMenuRel a
+              JOIN dbo.S_Dictionary s ON a.JobID = s.ID
+              INNER JOIN dbo.S_Menus b ON a.MenuID = b.ID
+                                          AND b.IsDel = 0
+                                          AND b.Creator = '99'
+        WHERE  s.DictCode = #{jobCode}
+              AND a.IsDel = 0
+        UNION ALL
+        SELECT b.FuncName ,
+              b.FuncCode
+        FROM   dbo.S_CommonJobsFunctionsRel a
+              JOIN dbo.S_Dictionary s ON a.JobID = s.ID
+              INNER JOIN dbo.S_Functions b ON a.FuncID = b.ID
+                                              AND b.IsDel = 0
+                                              AND b.Creator = '99'
+        WHERE  s.DictCode = #{jobCode}
+              AND a.IsDel = 0
+        UNION ALL
+        SELECT
+            b.MenuName,
+            b.Url
+         FROM dbo.A_ShareCommonJobsMenuRel a
+            JOIN dbo.S_Dictionary s ON a.JobID = s.ID
+            INNER JOIN dbo.S_Menus b ON a.MenuID = b.ID
+                                        AND b.IsDel = 0
+            WHERE a.ProjectID = #{projectID}
+                AND s.DictCode = #{jobCode}
+                AND a.IsDel = 0
         ]]>
     </select>
 

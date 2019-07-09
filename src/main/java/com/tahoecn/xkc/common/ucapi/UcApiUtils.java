@@ -23,18 +23,31 @@ import com.tahoecn.security.SecureUtil;
 public class UcApiUtils {
 	private static final Log log = LogFactory.get();
 
+	private static String baseUrl;
+
+	private static String sysId;
+
+	private static String privKey;
+
+	private static String bindHost;
+
 	@Value("${uc_api_url}")
-	private String baseUrl;
+	public void setBaseUrl(String baseUrl) {
+		UcApiUtils.baseUrl = baseUrl;
+	}
+
 	@Value("${uc_sysId}")
-	private String sysId;
+	public void setSysId(String sysId) {
+		UcApiUtils.sysId = sysId;
+	}
+
 	@Value("${uc_priv_key}")
-	private String privKey;
-	@Value("${bind_host}")
-	private String bindHost;
+	public void setPrivKey(String privKey) {
+		UcApiUtils.privKey = privKey;
+	}
 
 	/**
 	 * 获取用户权限接口
-	 * @param userName
 	 */
 	public Integer getSyspriv() {
 		String url = String.format(setUrl("/v1/userStandardRole/list") + "&userName=%s", ThreadLocalUtils.getUserName());
@@ -55,10 +68,10 @@ public class UcApiUtils {
 	 * @param api
 	 * @return
 	 */
-	private String setUrl(String api) {
+	public static String setUrl(String api) {
 		String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
-		String token = SecureUtil.md5(timestamp + this.privKey);
-		return String.format(this.baseUrl + api + "?sysId=%s&timestamp=%s&token=%s", this.sysId, timestamp, token);
+		String token = SecureUtil.md5(timestamp + privKey);
+		return String.format(baseUrl + api + "?sysId=%s&timestamp=%s&token=%s", sysId, timestamp, token);
 	}
 	public static void main(String[] args) {
 		String timestamp = String.valueOf(System.currentTimeMillis() / 1000);

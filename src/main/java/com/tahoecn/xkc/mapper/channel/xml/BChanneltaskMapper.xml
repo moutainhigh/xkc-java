@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.channel.BChanneltaskMapper">
+
+	<!-- 新建任务 -->
+    <select id="mChannelTask_Insert" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT  #{TaskCode} = CONVERT(VARCHAR, ( ISNULL(MAX(TaskCode), '100000') + 1 ))
+		FROM    dbo.B_ChannelTask
+	    ]]>
+	</select>   
+	 
+    <select id="mChannelTask_Insert2" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO dbo.B_ChannelTask
+		        ( ID ,
+		          ProjectID ,
+		          Name ,
+		          TaskType ,
+		          TaskCode ,
+		          StartTime ,
+		          EndTime ,
+		          TaskAreaID ,
+		          TaskAreaName ,
+		          WorkStartTime ,
+		          WorkEndTime ,
+		          WorkRange ,
+		          CustomerTarget ,
+		          Creator ,
+		          CreateTime ,
+		          IsDel ,
+		          Status
+		        )
+		VALUES  ( #{ChannelTaskID} , 
+		          #{ProjectID} , 
+		          #{Name} , 
+		          #{ChannelTypeID} , 
+		          #{TaskCode} , 
+		          #{StartTime} , 
+		          #{EndTime} , 
+		          #{TaskAreaID} , 
+		          #{TaskAreaName} ,
+		          #{WorkStartTime} , 
+		          #{WorkEndTime} , 
+		          #{WorkRange} , 
+		          #{CustomerTarget} , 
+		          #{UserID} , 
+		          GETDATE() , 
+		          0 , 
+		          1  
+		        )
+	
+	    ]]>	    
+	</select>  
+	 
+    <select id="mChannelTask_Insert3" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO dbo.B_ChannelTask_TaskArea
+		        ( ChannelTaskID ,
+		          TaskAreaID ,
+		          IsDel ,
+		          Status
+		        )
+		VALUES  ( #{ChannelTaskID} , 
+		          #{TaskAreaID} , 
+		          0 ,
+		          1 
+		        )
+	    ]]>
+	</select>
+	    
+    <select id="mChannelTask_Insert4" parameterType="java.util.Map" >
+		<![CDATA[
+		SELECT  TaskCode
+		FROM    dbo.B_ChannelTask
+		WHERE   ID = #{ChannelTaskID}
+	    ]]>
+	    	    	    
+	</select>
+	
+	<!-- 结束任务 -->
+	<delete id="mChannelTaskClose_Update" parameterType="java.util.Map" >
+		<![CDATA[
+		UPDATE  dbo.B_ChannelTask
+		SET     Status = 3 ,
+		        Editor = #{UserID} ,
+		        EditTime = GETDATE()
+		WHERE   ID = #{ChannelTaskID};
+		
+    	]]>
+    </delete>
+    
+    <delete id="mChannelTaskClose_Update2" parameterType="java.util.Map" >
+		<![CDATA[
+		UPDATE B_ChannelTask_ChannelUser SET Status = 3 WHERE ChannelTaskID = #{ChannelTaskID};
+    	]]>
+    </delete>
+    <select id="mChannelTaskClose_Update3" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush,IsApprove, Creator, CreateTime, IsDel, Status) 
+		SELECT NEWID(),'',#{ChannelTaskID},'ChannelTask','任务提前结束通知','任务:['+b.Name +'] 已被渠道专员提前结束',b.Creator,GETDATE(),'7D7663A7-2867-43D1-89E8-73459A137A1B',a.ChannelUserID,0,0,1,0,'sys',GETDATE(),0,1
+		FROM dbo.B_ChannelTask_ChannelUser a
+		INNER JOIN dbo.B_ChannelTask b ON a.ChannelTaskID=b.ID AND b.IsDel=0
+		WHERE a.ChannelTaskID=#{ChannelTaskID} AND a.IsDel=0;
+    	]]>
+    </select>
+    
+    <select id="mChannelTaskIsHaveUndoneZQ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT * FROM dbo.B_ChannelTask WHERE ProjectID = #{ProjectID} AND Creator = #{UserID} AND Status = 2
+    	]]>
+    </select>
+    
+    <select id="mChannelTaskIsHaveUndoneJZ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT * FROM dbo.B_ChannelTask_ChannelUser a
+		        INNER JOIN dbo.B_ChannelTask b ON a.ChannelTaskID = b.ID AND b.IsDel = 0 AND b.Status = 2
+		WHERE   a.IsDel = 0 AND a.Status = 2 AND ChannelUserID = #{UserID} 
+    	]]>
+    </select>
+</mapper>

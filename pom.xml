@@ -214,10 +214,17 @@
 		</dependency>
 
 		<dependency>
-		   <groupId>javax.persistence</groupId>
-		   <artifactId>persistence-api</artifactId>
-		   <version>1.0.2</version>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.47</version>
+		</dependency>
+
 	</dependencies>
 
 
@@ -251,6 +258,10 @@
 			<resource>
 				<directory>src/main/resources/${package.environment}</directory>
 				<filtering>true</filtering>
+				<includes>
+					<!--包含文件夹以及子文件夹下所有资源 -->
+					<include>**/*.*</include>
+				</includes>
 			</resource>
 			<resource>
 				<directory>src/main/java</directory>

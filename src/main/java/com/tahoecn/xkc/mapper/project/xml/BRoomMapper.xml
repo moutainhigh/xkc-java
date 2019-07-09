@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.project.BRoomMapper">
+	<!-- 获取项目房源信息 -->
+	<select id="ProjectRoomDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT
+				A.ID RoomID,
+				A.Room RoomName,
+				A.RoomCode,
+				A.HuXing RoomType,
+				A.Floor RommFloor,
+				IsNull(A.West, '') RoomOrientation,
+				CONVERT(VARCHAR(20), A.BldArea) + '㎡' BldArea,
+				CONVERT(VARCHAR(20), A.TnArea) + '㎡' TnArea,
+				CONVERT(VARCHAR(20), A.Price, 1) + '元' BldPrice,
+				CONVERT(VARCHAR(20), A.TnPrice, 1) + '元' TnPrice,
+				CONVERT(VARCHAR(20), A.Total, 1) + '元' Total,
+				CASE
+			WHEN EditTime IS NULL THEN
+				CONVERT(VARCHAR(100), CreateTime, 120)
+			ELSE
+				CONVERT(VARCHAR(100), EditTime, 120)
+			END UpdateTime
+			FROM
+				B_Room A
+			WHERE
+				A.ID = #{RoomID}
+			AND A.SaleStatus = '未售'
+			AND A.Status = 1
+			AND A.IsDel = 0
+		]]>
+	</select>
+	<!-- 获取项目房源信息(营销经理) -->
+	<select id="ProjectRoomDetailYXJL_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT TOP 1
+		        A.ID RoomID ,
+		        A.Room RoomName ,
+		        A.RoomCode ,
+		        A.HuXing RoomType ,
+		        A.DjArea ,
+		        A.Price BldPrice ,
+		        A.TnPrice TnPrice ,
+		        A.Total ,
+		        '-' PriceTimeLimit ,
+		        A.YsBldArea ,
+		        A.YsTnArea ,
+		        A.ScBldArea ,
+		        A.ScTnArea ,
+		        E.CustomerName CustomerName ,
+		        STUFF(E.CustomerMobile,4,4,'****') CustomerPhone ,
+		        A.Price BldDealPrice ,
+		        A.TnPrice TnDealPrice ,
+		        A.Total DealTotal ,
+		        CASE WHEN G.chgdate >= G.ZqDate THEN G.chgdate
+		             ELSE G.ZqDate
+		        END DealTime ,
+		        G.ContractNo ,
+		        dbo.F_GetSaleUserName(E.SaleUserID) SaleUserNmae ,
+		        CASE WHEN A.EditTime IS NULL
+		             THEN CONVERT(VARCHAR(100), A.CreateTime, 120)
+		             ELSE CONVERT(VARCHAR(100), A.EditTime, 120)
+		        END UpdateTime ,
+		        A.SaleStatus RoomStatusName
+		FROM    B_Room A
+		        LEFT JOIN dbo.C_MYOrder B ON A.ID = B.RoomGUID
+		                                     AND B.OrderType = '认购'
+		                                     AND B.CloseReason NOT IN ( '退房', '换房',
+		                                                              '其它变更', '作废',
+		                                                              '特批折扣' )
+		        LEFT JOIN dbo.C_MYTrade C ON B.TradeGUID = C.TradeGUID
+		        LEFT JOIN dbo.B_CustomerAttach D ON C.OppGUID = D.ID
+		        LEFT JOIN dbo.B_Opportunity E ON D.OpportunityID = E.ID
+		        LEFT JOIN dbo.C_MYContract G ON G.TradeGUID = C.TradeGUID
+		                                        AND ( G.ConStatus = '正签'
+		                                              OR ISNULL(G.ConStatus, '') = ''
+		                                            )
+		WHERE   A.ID = #{RoomID}
+		        AND A.Status = 1
+		        AND A.IsDel = 0
+		]]>
+	</select>
+</mapper>

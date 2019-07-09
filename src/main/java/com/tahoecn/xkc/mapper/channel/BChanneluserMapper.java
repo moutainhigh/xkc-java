@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.mapper.channel;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
@@ -63,4 +64,47 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     String getChannelOrgID(@Param("UserID") String userID);
 
     Map<String, Object> GetReportUserInfo_Select(@Param("UserID")String userID, @Param("IntentProjectID")String intentProjectID, @Param("UserID")String ChannelIdentify);
+
+	/*
+   	 * 删除兼职成员
+   	 */
+	void mChannelTempPerson_Delete(Map<String, Object> map);
+
+	/*
+	 * 专员考勤
+	 */
+	List<Map<String, Object>> mChannelCheckClockTotal_Select(IPage page, String ChannelTaskID, String CheckDate);
+
+	/*
+	 * 详细考勤
+	 *
+	 */
+	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, String ChannelTaskID, String CheckDate);
+
+	/*
+	 * 详细考勤数量
+	 */
+	int mChannelTaskCheckClockList_SelectAllCount(Map<String, Object> map);
+
+	/*
+	 * 打卡状态查询
+	 */
+	List<Map<String, Object>> mChannelCheckClockPage_Select(Map<String, Object> map);
+
+	/*
+	 * 考勤信息查询
+	 */
+	List<Map<String, Object>> mChannelCheckClockPerson_Select(IPage page, String UserID, String CheckDate);
+
+	/*
+	 * 考勤信息数量统计
+	 */
+	int mChannelCheckClockPerson_SelectAllCount(Map<String, Object> map);
+
+	/*
+	 *  兼职考勤日历打卡信息
+	 */
+	List<Map<String, Object>> mChannelCheckClockCountDaily_Select(Map<String, Object> map);
+
+
 }

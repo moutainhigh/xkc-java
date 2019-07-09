@@ -111,14 +111,9 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	Map<String,Object> RemindRuleArriveDetail_Select_f(@Param("projectID")String projectID,@Param("protectSource")String protectSource);
 	
 	Map<String,Object> RemindRuleArriveDetail_Select_s(@Param("clueID")String clueID);
-	/**
-	 * 置业顾问 客户机会跟进信息更新1
-	 * @param opportunityID
-	 */
-	void CustomerOpportunityFollowUpDetail_Update_insert(@Param("opportunityID")String opportunityID);
 	
 	/**
-	 * 置业顾问 客户机会跟进信息更新2
+	 * 置业顾问 客户机会跟进信息更新
 	 * @param opportunityID
 	 */
 	void CustomerOpportunityFollowUpDetail_Update(@Param("opportunityID")String opportunityID,@Param("userID")String userID);

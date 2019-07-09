@@ -88,6 +88,11 @@ public class ExcelUtil {
         defaultExport(list, fileName, response);
     }
 
+    public static void exportExcel(List<ExcelExportEntity> entity,List<Map<String, Object>> list, String fileName, HttpServletResponse response) throws Exception {
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), entity,list);
+        downLoadExcel(fileName, response, workbook);
+    }
+
     private static void defaultExport(List<?> list, Class<?> pojoClass, String fileName, HttpServletResponse response, ExportParams exportParams) throws Exception {
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams,pojoClass,list);
         if (workbook != null);
