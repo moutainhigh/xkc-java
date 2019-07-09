@@ -8,6 +8,7 @@ import com.tahoecn.xkc.model.customer.BSalesgroup;
 import com.tahoecn.xkc.model.dict.BTag;
 import com.tahoecn.xkc.model.sys.SCity;
 import com.tahoecn.xkc.model.sys.SMenus;
+import com.tahoecn.xkc.service.channel.IBSalesuserService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBSalesgroupService;
 import com.tahoecn.xkc.service.dict.IBTagService;
@@ -51,6 +52,9 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
 
     @Autowired
     private IBSalesgroupService salesgroupService;
+
+    @Autowired
+    private IBSalesuserService salesuserService;
 
     @Override
     public Result SystemDictionaryDetail(HashMap<String,Object> param) {
@@ -355,7 +359,7 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
             dictTop.put(DictNameAlias,"全部");
             dictTop.put(ChildAlias,new ArrayList<>());
             res.put("FPGWSXGZYXJL",dictTop);
-            if ("YXJL".equals(param.get("JobCode"))){
+            if ("YXJL".equals((String) param.get("JobCode"))){
                 QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
                 wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
                 wrapper.gt("Nature",0);
@@ -369,22 +373,149 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
                 }
             }
             if ("XSJL".equals(param.get("JobCode"))){
+               String ProjectID= (String) param.get("ProjectID");
+               String TeamID= (String) param.get("OrgID");
+                List<Map<String,Object>> saleArray=null;
+                if (!StringUtils.isAllBlank(ProjectID,TeamID)){
+                    saleArray=salesuserService.UserSalesList_Select(ProjectID,TeamID);
+                    for (Map<String, Object> map : saleArray) {
+                        Map<String,Object> dict = new HashMap<>();
+                        dict.put(IDAlias,map.get("ID"));
+                        dict.put(DictNameAlias,map.get("Name"));
+                        res.put("FPGWSXGZYXJL",dict);
+                    }
+                }
 
             }
 
+        }
+//            处理公共池客户筛选规则(营销经理)数据
+        if (isGGCKHSXGZYXJL)
+        {
+            Map<String,Object> dictTop=new HashMap<>();
+            dictTop.put(IDAlias,"");
+            dictTop.put(DictNameAlias,"全部");
+            dictTop.put(ChildAlias,new ArrayList<>());
+            res.put("GGCKHSXGZYXJL",dictTop);
+            if ("YXJL".equals(param.get("JobCode"))){
+                QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
+                wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
+                wrapper.gt("Nature",0);
+                List<BSalesgroup> groupArray = salesgroupService.list(wrapper);
+                for (BSalesgroup bSalesgroup : groupArray) {
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,bSalesgroup.getId());
+                    dict.put(DictNameAlias,bSalesgroup.getName());
+                    dict.put(ChildAlias,new ArrayList<>());
+                    res.put("GGCKHSXGZYXJL",dict);
+                }
+            }
+            if ("XSJL".equals(param.get("JobCode"))){
+                String ProjectID= null;
+                String TeamID= (String) param.get("OrgID");
+                List<Map<String,Object>> saleArray=null;
+                if (!StringUtils.isAllBlank(ProjectID,TeamID)){
+                    saleArray=salesuserService.UserSalesList_Select(ProjectID,TeamID);
+                    for (Map<String, Object> map : saleArray) {
+                        Map<String,Object> dict = new HashMap<>();
+                        dict.put(IDAlias,map.get("ID"));
+                        dict.put(DictNameAlias,map.get("Name"));
+                        res.put("GGCKHSXGZYXJL",dict);
+                    }
+                }
+            }
+        }
+//        处理顾问跟进客户筛选规则(销售经理)数据
+        if (isGWGJKHSXGZXSJL)
+        {
+            String TeamID=null;
+            if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
+                 TeamID= (String) param.get("OrgID");
+            }
+            List<Map<String,Object>> saleArray=null;
+            if (StringUtils.isNotBlank(TeamID)){
+                saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                for (Map<String, Object> map : saleArray) {
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,map.get("ID"));
+                    dict.put(DictNameAlias,map.get("Name"));
+                    List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWGJKHSXGZXSJL");
+                    Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(2);
+                    objectMap.put("Child",dict);
+                    gwgjkhsxgzxsjl.add(2,objectMap);
+                }
+            }
 
         }
+//        处理顾问公共客户筛选规则(销售经理)数据
+        if (isGWGGKHSXGZXSJL)
+        {
+            String TeamID=null;
+            if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
+                TeamID= (String) param.get("OrgID");
+                List<Map<String,Object>> saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                for (Map<String, Object> map : saleArray) {
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,map.get("ID"));
+                    dict.put(DictNameAlias,map.get("Name"));
+                    List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWGJKHSXGZXSJL");
+                    Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(2);
+                    objectMap.put("Child",dict);
+                    gwgjkhsxgzxsjl.add(2,objectMap);
+                }
+            }
+        }
+//        处理顾问公共客户筛选规则(销售经理)数据
+        if (isGWGGKHSXGZXSJL)
+        {
+            String TeamID=null;
+            if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
+                TeamID= (String) param.get("OrgID");
+                List<Map<String,Object>> saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                for (Map<String, Object> map : saleArray) {
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,map.get("ID"));
+                    dict.put(DictNameAlias,map.get("Name"));
+                    List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWGGKHSXGZXSJL");
+                    Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(0);
+                    objectMap.put("Child",dict);
+                    gwgjkhsxgzxsjl.add(0,objectMap);
+                }
+            }
+        }
+//        处理顾问丢失客户筛选规则(销售经理)数据
+        if (isGWDSKHSXGZXSJL)
+        {
+            String TeamID=null;
+            if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
+                TeamID= (String) param.get("OrgID");
+                List<Map<String,Object>> saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                for (Map<String, Object> map : saleArray) {
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,map.get("ID"));
+                    dict.put(DictNameAlias,map.get("Name"));
+                    List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWDSKHSXGZXSJL");
+                    Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(0);
+                    objectMap.put("Child",dict);
+                    gwgjkhsxgzxsjl.add(0,objectMap);
+                }
+            }
+        }
+//        处理盘客筛选规则(销售经理) 数据
+        if (isPKSXGZXSJL)
+        {
+            Map<String,Object> dictTop=new HashMap<>();
+            dictTop.put(IDAlias,"");
+            dictTop.put(DictNameAlias,"全部");
+            dictTop.put(ChildAlias,new ArrayList<>());
+//            ((JArray)res["PKSXGZXSJL"]).AddFirst(dictTop);  AddFirst插入到list第一位置??
+            res.put("PKSXGZXSJL",dictTop);
+        }
+//        处理房间户型数据
+        if (isFJHX)
+        {
 
-
-
-
-
-
-
-
-
-
-
+        }
 
 
 
