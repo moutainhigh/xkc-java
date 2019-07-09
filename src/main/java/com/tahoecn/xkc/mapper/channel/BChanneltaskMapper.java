@@ -31,6 +31,14 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	void mChannelTaskClose_Update(Map<String, Object> map);
 	void mChannelTaskClose_Update2(Map<String, Object> map);
 	List<BChanneltask> mChannelTaskClose_Update3(Map<String, Object> map);
-
+	
+	/*
+	 * 专员-是否有进行中的任务
+	 */
+	List<Map<String, Object>> mChannelTaskIsHaveUndoneZQ_Select(Map<String, Object> map);
+	/*
+	 *  兼职考勤日历打卡信息
+	 */
+	List<Map<String, Object>> mChannelTaskIsHaveUndoneJZ_Select(Map<String, Object> map);
 
 }

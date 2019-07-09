@@ -71,4 +71,22 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 		return bChanneltaskMapper.mChannelTaskClose_Update3(map);
 	}
 
+	/*
+	 * 专员-是否有进行中的任务
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelTaskIsHaveUndoneZQ_Select(Map<String, Object> map) {
+		return bChanneltaskMapper.mChannelTaskIsHaveUndoneZQ_Select(map);
+		
+	}
+
+	/*
+	 *  兼职考勤日历打卡信息
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelTaskIsHaveUndoneJZ_Select(Map<String, Object> map) {
+		return bChanneltaskMapper.mChannelTaskIsHaveUndoneJZ_Select(map);
+		
+	}
+
 }

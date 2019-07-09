@@ -228,4 +228,111 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 			)
 	    ]]>
 	</delete>
+	
+	<!-- 专员考勤 -->
+	<select id="mChannelCheckClockTotal_Select" parameterType="String" resultType="java.util.Map">
+		<![CDATA[
+		SELECT
+		SUM((CASE WHEN CheckType=0 THEN 1 ELSE 0 END)) CheckIn, 
+		SUM((CASE WHEN CheckType=1 THEN 1 ELSE 0 END)) CheckOut 
+		FROM dbo.B_CheckClockRecord a
+		LEFT JOIN dbo.B_ChannelUser b ON a.Creator = b.ID
+		WHERE a.IsDel = 0 AND a.Status = 1 AND b.ReportUserID IS NOT NULL 
+		AND a.ChannelTaskID=#{ChannelTaskID}
+		AND a.CheckDate =#{CheckDate}
+	    ]]>
+	</select>
+	
+	<!-- 详细考勤 -->
+	<select id="mChannelTaskCheckClockList_Select" parameterType="String" resultType="java.util.Map">
+		<![CDATA[
+		SELECT  ct.TaskAreaID ID ,
+	            a.ChannelUserName Name ,
+	            a.ChannelUserMobile Mobile ,
+	            cu.HeadImg HeadImg ,
+	            ic.CheckInTime,
+	            oc.CheckOutTime ,
+	            dbo.GetPYFirst(a.ChannelUserName) FirstChar
+	    FROM    dbo.B_ChannelTask_ChannelUser a
+	            LEFT JOIN dbo.B_ChannelUser cu ON a.ChannelUserID = cu.ID
+	            LEFT JOIN dbo.B_ChannelTask ct ON a.ChannelTaskID = ct.ID AND ct.IsDel = 0
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckInTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 0
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) ic ON a.ChannelUserID = ic.Creator
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckOutTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 1
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) oc ON a.ChannelUserID = oc.Creator AND oc.CheckOutTime > ic.CheckInTime
+	    WHERE a.IsDel = 0  AND ChannelTaskID = #{ChannelTaskID} 
+	    ]]>
+	</select>
+	
+	<!-- 打卡状态查询 -->
+	<select id="mChannelCheckClockPage_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT MAX(CreateTime) LastCheckTime,COUNT(1) AllCount,TaskAreaName
+		FROM dbo.B_CheckClockRecord
+		WHERE ChannelTaskID=#{ChannelTaskID} 
+			  AND CheckDate=#{CheckDate} 
+			  AND Creator=  #{UserID}
+		GROUP BY TaskAreaName 
+	    ]]>
+	</select>
+	
+	<!-- 详细考勤数量统计 -->
+	<select id="mChannelTaskCheckClockList_SelectAllCount" parameterType="java.util.Map" resultType="int" >
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+	    FROM    dbo.B_ChannelTask_ChannelUser a
+	            LEFT JOIN dbo.B_ChannelUser cu ON a.ChannelUserID = cu.ID
+	            LEFT JOIN dbo.B_ChannelTask ct ON a.ChannelTaskID = ct.ID AND ct.IsDel = 0
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckInTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 0
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) ic ON a.ChannelUserID = ic.Creator
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckOutTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 1
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) oc ON a.ChannelUserID = oc.Creator AND oc.CheckOutTime > ic.CheckInTime
+	    WHERE a.IsDel = 0  AND ChannelTaskID = #{ChannelTaskID}   
+    ]]>
+    </select>
+    
+    <!-- 考勤信息查询 -->
+	<select id="mChannelCheckClockPerson_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT CreateTime,TaskAreaName,CheckType FROM dbo.B_CheckClockRecord
+		WHERE CheckDate=#{CheckDate} AND Creator=#{UserID} ORDER BY CreateTime ASC
+	    ]]>
+	</select>
+	
+	<!-- 考勤信息数量统计 -->
+	<select id="mChannelCheckClockPerson_SelectAllCount" parameterType="java.util.Map" resultType="int">
+		<![CDATA[
+		SELECT COUNT(1) recordCount FROM dbo.B_CheckClockRecord
+		WHERE CheckDate=#{CheckDate} AND Creator=#{UserID}
+	    ]]>
+	</select>
+	
+	<!-- 兼职考勤日历打卡信息 -->
+		<select id="mChannelCheckClockCountDaily_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT CONVERT(VARCHAR(100), CheckDate,111) CheckDate,COUNT(1) CheckCount FROM dbo.B_CheckClockRecord
+		WHERE Creator=#{UserID} AND YEAR(CreateTime) = LEFT(#{CurrentMonth},4)  AND MONTH(CreateTime)=RIGHT(#{CurrentMonth},2)
+		GROUP BY CheckDate
+	    ]]>
+	</select>
 </mapper>
