@@ -25,5 +25,7 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
     List<Map<String,Object>> getDistributionList_Select(@Param("projectID")String projectID);
     IPage<Map<String,Object>> CustomerChange_BakPageList_Select(IPage page, @Param("projectID") String projectID, @Param("sqlWhere") String sqlWhere);
     List<Map<String,Object>> SetExcelToCustomerChange_BakList(@Param("projectID")String projectID, @Param("sqlWhere")String sqlWhere);
-    Map<String,Object> CustomerChangeDetailAll_Select(@Param("projectID")String projectID, @Param("customerID")String customerID, @Param("clueID")String clueID);
+    Map<String,Object> CustomerChangeDetailAll_Select(@Param("projectID")String projectID, @Param("customerID")String customerID, @Param("clueID")String clueID,@Param("CustomerID")String CustomerID);
+    Map<String,Object> CustomerChangeDetailAll_Select2(@Param("projectID")String projectID, @Param("customerID")String customerID, @Param("clueID")String clueID);
+    Map<String,Object> getB_OpportunityByClueID(@Param("clueID")String clueID);
 }

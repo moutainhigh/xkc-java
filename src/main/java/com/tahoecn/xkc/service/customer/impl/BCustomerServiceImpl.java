@@ -50,6 +50,13 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
 
     @Override
     public Map<String, Object> CustomerChangeDetailAll_Select(String projectId, String customerID, String clueID) {
-        return baseMapper.CustomerChangeDetailAll_Select(projectId,customerID,clueID);
+        Map<String, Object> opportunity = baseMapper.getB_OpportunityByClueID(clueID);
+        Map<String, Object> customerChangeDetail;
+        if (opportunity != null){
+            customerChangeDetail = baseMapper.CustomerChangeDetailAll_Select(projectId,customerID,clueID,opportunity.get("CustomerID").toString());
+        }else{
+            customerChangeDetail = baseMapper.CustomerChangeDetailAll_Select2(projectId,customerID,clueID);
+        }
+        return customerChangeDetail;
     }
 }
