@@ -371,4 +371,36 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         WHERE
         id = #{UserID}
     </select>
+    
+    <!-- 考勤异常 -->
+    <select id="mChannelUserAbnormal_Select" parameterType="java.util.Map" resultType="String">
+	SELECT  Name,AbnormalDesc,Mobile,HeadImg
+	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
+	                    ChannelUserName Name ,
+	                    AbnormalDesc ,
+	                    ChannelUserMobile Mobile,
+	                    #{SiteUrl}+ HeadImg HeadImg
+	          FROM      B_ChannelUserAbnormal cua
+	          LEFT JOIN dbo.B_SalesUser su ON su.ID = cua.ChannelUserID 
+	          WHERE     ChannelTaskID = #{ChannelTaskID}
+	        ) n
+	WHERE   n.RowNum = 1
+        
+    </select>
+    
+    <!-- 考勤异常数量统计 -->
+    <select id="mChannelUserAbnormal_SelectAllCount" parameterType="java.util.Map" resultType="int">
+	SELECT  COUNT(1) recordCount
+	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
+	                    ChannelUserName Name ,
+	                    AbnormalDesc ,
+	                    ChannelUserMobile Mobile,
+	                    #{SiteUrl}+ HeadImg HeadImg
+	          FROM      B_ChannelUserAbnormal cua
+	          LEFT JOIN dbo.B_SalesUser su ON su.ID = cua.ChannelUserID 
+	          WHERE     ChannelTaskID = #{ChannelTaskID}
+	        ) n
+	WHERE   n.RowNum = 1
+        
+    </select>
 </mapper>

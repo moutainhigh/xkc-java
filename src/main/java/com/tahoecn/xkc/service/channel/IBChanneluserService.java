@@ -111,4 +111,16 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     String getChannelOrgID(String userID,String adviserGroupID);
 
     Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify);
+
+	/*
+	 * 考勤异常
+	 */
+	List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, String ChannelTaskID, String SiteUrl);
+	
+    /*
+     * 考勤异常数量统计
+     */
+	int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map);
+	
+
 }
