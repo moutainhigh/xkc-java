@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.H5;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -19,6 +20,7 @@ import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
 import com.tahoecn.xkc.service.project.IABrokerprojectService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBProjectcollectionService;
+import com.tahoecn.xkc.service.rule.IBClueruleService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
@@ -62,6 +64,8 @@ public class H5Controller extends TahoeBaseController {
     private IBVerificationcodeService verificationcodeService;
     @Autowired
     private ISFormsessionService formsessionService;
+    @Autowired
+    private IBClueruleService clueruleService;
 
     //已测  AppID=5D4D7079-D294-4204-BD51-C3AB420C6C2F
     @ApiOperation(value = "获取城市", notes = "获取城市")
@@ -327,7 +331,7 @@ public class H5Controller extends TahoeBaseController {
     @RequestMapping(value = "/mSystemFormSession_Insert", method = {RequestMethod.POST})
     public Result mSystemFormSession_Insert(@RequestBody JSONObject jsonParam) {
         //将FormSessionID IP Data存入表S_FormSession 其中Data为传入参数  ID为生成
-        String data = jsonParam.get("_param").toString();
+        String data = JSON.toJSONString(jsonParam.get("_param"));
         data=data.replace("'","%27");
         String ip= NetUtil.getClientIp(request);
         SFormsession formsession=new SFormsession();
@@ -345,26 +349,84 @@ public class H5Controller extends TahoeBaseController {
     }
 
     //未完成
-    @ApiOperation(value = "渠道报备客户--提交", notes = "渠道报备客户--提交")
+    @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
     public Result mBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
-        String UserID=(String) paramMap.get("UserID");
+        String userID=(String) paramMap.get("UserID");
+        String mobile=(String) paramMap.get("Mobile");
+        String projectId =(String) paramMap.get("IntentProjectID");
+        String formSessionID =(String) paramMap.get("FormSessionID");
+        String adviserGroupID =(String) paramMap.get("AdviserGroupID");
         Result result = new Result();
-
-        result.setErrcode(0);
-//        result.setData(map);
-        result.setErrmsg("成功");
+        //验证是否重复请求
+        if (StringUtils.isBlank(formSessionID)){
+            return Result.errormsg(1,"FormSessionID不可为null");
+        }
+        //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
+        int RowCount =formsessionService.checkFormSessionID(formSessionID);
+        if (RowCount==1){
+            Result.errormsg(1,"不能重复请求！");
+        }
+        if (StringUtils.isBlank(adviserGroupID)){
+            Result.errormsg(1,"未能识别报备人的身份");
+        }
+        //1.不允许报备自己 0.允许报备自己  IsReportOwn
+        int IsReportOwn=projectService.isReport(projectId,userID,mobile);
+        if (IsReportOwn==1){
+            Result.errormsg(1,"不允许报备自己");
+        }
+        //没有ChannelOrgID 的不能报备
+        int IsReport=channeluserService.isReport(userID);
+        //没有ChannelOrgID 的不能报备
+        if (IsReport==-2){
+            Result.errormsg(1,"没有所属机构的人员，不能报备");
+        }
+        //ChannelOrgID禁用状态的不能报备
+        if (IsReport==0){
+            Result.errormsg(1,"所属机构在禁用状态，不能报备");
+        }
+        //获取报备用户所适用的规则
+        //未测 目前map无值
+        Map<String,Object> userRule=clueruleService.getRegisterRule(projectId,adviserGroupID);
+        if (userRule.get("RuleID")==null){
+            Result.errormsg(1,"未找到该渠道的报备规则");
+        }
+        //验证报备客户是否有效
+        Map<String, Object> ruleValidate = clueService.ValidateForReport(userID, mobile, projectId, userRule);
+        String channelOrgId=channeluserService.getChannelOrgID(userID,adviserGroupID);
+        String msg=clueService.getMessage((int)ruleValidate.get("InvalidType"),userRule);
+        ruleValidate.put("Message",msg);
+        String errMsg=clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),userRule);
+        //通过有效验证
+        int status = 0;
+        if ((boolean)ruleValidate.get("Tag")){
+            //竞争带看
+            if ((int) userRule.get("RuleType") == 1 ){
+                //创建新线索，线索状态是待确认
+                status = 1;
+            }else//报备保护
+            {
+                //创建新线索，线索状态是待分配，插入到访逾期时间
+                status = 2;
+            }
+        } else//验证不通过
+        {
+            //创建新线索，状态是无效，无效时间是当前时间，无效类型取，无效原因取
+            status = 3;
+        }
+        //线索报备验证后，创建线索信息
+            boolean b=clueService.createClue(channelOrgId,ruleValidate,userRule,status,paramMap);
         return result;
     }
 
-    //未测  第二条语句卡住
+    //已测
     @ApiOperation(value = "获取客户详情", notes = "获取客户详情")
     @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String UserID=(String) paramMap.get("UserID");
-        String ClueID=(String) paramMap.get("ClueID");
+            String ClueID=(String) paramMap.get("ClueID");
         Result result = new Result();
         Map<String, Object> map = clueService.mBrokerCustomerDetail_Select(ClueID);
         if (map.size()==0){

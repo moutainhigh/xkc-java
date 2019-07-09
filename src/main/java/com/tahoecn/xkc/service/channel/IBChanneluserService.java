@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.channel;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
@@ -65,4 +66,61 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	 *
 	 */
 	void mChannelTempPerson_Delete(Map<String, Object> map);
+
+	/*
+	 * 专员考勤
+	 *
+	 */
+	List<Map<String, Object>> mChannelCheckClockTotal_Select(IPage page, String ChannelTaskID, String CheckDate);
+
+	/*
+	 * 详细考勤
+	 */
+	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, String ChannelTaskID, String CheckDate);
+
+	/*
+	 * 打卡状态查询
+	 */
+	List<Map<String, Object>> mChannelCheckClockPage_Select(Map<String, Object> map);
+
+	/*
+	 * 详细考勤数量
+	 */
+	int mChannelTaskCheckClockList_SelectAllCount(Map<String, Object> map);
+
+	/*
+	 * 考勤信息查询
+	 */
+	List<Map<String, Object>> mChannelCheckClockPerson_Select(IPage page, String UserID, String CheckDate);
+
+	/*
+	 * 考勤信息数量统计
+	 */
+	int mChannelCheckClockPerson_SelectAllCount(Map<String, Object> map);
+
+	/*
+	 * 兼职考勤日历打卡信息
+	 */
+	List<Map<String, Object>> mChannelCheckClockCountDaily_Select(Map<String, Object> map);
+
+
+
+
+    int isReport(String userID);
+
+    String getChannelOrgID(String userID,String adviserGroupID);
+
+    Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify);
+
+	/*
+	 * 考勤异常
+	 */
+	List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, String ChannelTaskID, String SiteUrl);
+	
+    /*
+     * 考勤异常数量统计
+     */
+	int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map);
+	
+
 }

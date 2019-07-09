@@ -1,10 +1,14 @@
 package com.tahoecn.xkc.service.project.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
+import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +25,8 @@ import java.util.Map;
 @Service
 public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> implements IBProjectService {
 
+    @Autowired
+    private IBChanneluserService channeluserService;
     @Override
     public List<Map<String,Object>> findByOrgID(IPage page,String orgID) {
         return baseMapper.findByOrgID(page,orgID);
@@ -29,6 +35,24 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     @Override
     public List<Map<String,Object>> ProjectInfoList_SelectN(IPage page,String name, String cityID) {
         return baseMapper.ProjectInfoList_SelectN(page,name,cityID);
+    }
+
+    @Override
+    public int isReport(String projectId, String userID, String mobile) {
+        //电话和用户id相同 表示自己报备自己  返回1为不可 0表示可以
+        BProject project = baseMapper.selectById(projectId);
+        BChanneluser channeluser = channeluserService.getById(userID);
+        if (channeluser!=null&&project!=null){
+            if (StringUtils.equals(mobile,channeluser.getMobile())&&project.getIsReportOwn()==0){
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int ProjectIsNoAllot_Select(String projectID) {
+        return baseMapper.ProjectIsNoAllot_Select(projectID);
     }
 
 }

@@ -2,6 +2,7 @@ package com.tahoecn.xkc.mapper.dict;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.dict.SDictionary;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +18,6 @@ import java.util.Map;
 public interface SDictionaryMapper extends BaseMapper<SDictionary> {
 
     List<Map<String, String>> AgenCertificatesList_SelectN();
+
+    List<Map<String,Object>> ListByCode_Select(@Param("DictCodes") String dictCodes);
 }

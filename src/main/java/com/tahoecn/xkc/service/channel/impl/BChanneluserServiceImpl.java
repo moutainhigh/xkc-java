@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.channel.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.converter.Result;
@@ -277,7 +278,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return result;
     }
 
-    
+
     /*
    	 * 删除兼职成员
    	 *
@@ -285,6 +286,128 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 	@Override
 	public void mChannelTempPerson_Delete(Map<String, Object> map) {
 		bChanneluserMapper.mChannelTempPerson_Delete(map);
+	}
+
+	/*
+	 * 专员考勤
+	 *
+	 */
+	@Override
+	public List<Map<String,Object>>  mChannelCheckClockTotal_Select(IPage page, String ChannelTaskID, String CheckDate) {
+		return bChanneluserMapper.mChannelCheckClockTotal_Select(page, ChannelTaskID, CheckDate);
+
+	}
+
+	/*
+	 * 详细考勤
+	 *
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, String ChannelTaskID,
+			String CheckDate) {
+		return bChanneluserMapper.mChannelTaskCheckClockList_Select(page, ChannelTaskID, CheckDate);
+
+	}
+
+	/*
+	 * 打卡状态查询
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelCheckClockPage_Select(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelCheckClockPage_Select(map);
+
+	}
+
+
+	/*
+	 * 详细考勤数量统计
+	 */
+	@Override
+	public int mChannelTaskCheckClockList_SelectAllCount(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelTaskCheckClockList_SelectAllCount(map);
+	}
+
+	/*
+	 * 考勤信息查询
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelCheckClockPerson_Select(IPage page, String UserID, String CheckDate) {
+		return bChanneluserMapper.mChannelCheckClockPerson_Select(page, UserID, CheckDate);
+
+	}
+
+	/*
+	 * 考勤信息数量统计
+	 */
+	@Override
+	public int mChannelCheckClockPerson_SelectAllCount(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelCheckClockPerson_SelectAllCount(map);
+
+	}
+
+	/*
+	 * 兼职考勤日历打卡信息
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelCheckClockCountDaily_Select(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelCheckClockCountDaily_Select(map);
+
+	}
+    @Override
+    public int isReport(String userID) {
+        QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
+        wrapper.eq("ID",userID).eq("Job",2);
+        BChanneluser channeluser = this.getOne(wrapper);
+        if (channeluser==null) {
+            //自渠
+            return -1;
+        }
+            if (channeluser.getChannelOrgID()==null){
+                //没有ChannelOrgID 的不能报备
+                return -2;
+            }
+            BChannelorg channelorg = channelorgService.getById(channeluser.getChannelOrgID());
+            if (channelorg.getStatus()==0){
+                //ChannelOrgID禁用状态的不能报备
+                return 0;
+            }else {
+                //有ChannelOrgID存在并且在启用状态，可以报备
+                return 1;
+            }
+    }
+
+    @Override
+    public String getChannelOrgID(String userID,String adviserGroupID) {
+        String channelOrgID= baseMapper.getChannelOrgID(userID);
+        //如果渠道是分销中介，则把渠道身份赋值成机构ID
+        if (StringUtils.isBlank(channelOrgID)){
+            channelOrgID=adviserGroupID;
+        }
+
+        return channelOrgID;
+    }
+
+    @Override
+    public Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify) {
+        return baseMapper.GetReportUserInfo_Select(userID,intentProjectID,channelIdentify);
+    }
+
+	/*
+	 * 考勤异常
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, String ChannelTaskID, String SiteUrl) {
+		return bChanneluserMapper.mChannelUserAbnormal_Select(page,ChannelTaskID,SiteUrl);
+		
+	}
+
+	/*
+	 * 考勤异常数量统计
+	 */
+	@Override
+	public int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelUserAbnormal_SelectAllCount(map);
+		
 	}
 
 

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.rule.BCluerule;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -44,4 +45,6 @@ public interface BClueruleMapper extends BaseMapper<BCluerule> {
 	 * @param bCluerule
 	 */
 	void updateAdviserGroupById(Map<String, Object> map);
+
+    Map<String, Object> getRegisterRule(@Param("ProjectID") String projectId, @Param("AdviserGroupID") String adviserGroupID);
 }

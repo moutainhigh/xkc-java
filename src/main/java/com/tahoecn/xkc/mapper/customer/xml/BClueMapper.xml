@@ -181,4 +181,24 @@
         sort,
         TractTime
     </select>
+
+    <select id="IsExistReportProtectClue_Select" resultType="java.util.HashMap" parameterType="string">
+            <![CDATA[
+    select a.ID from B_Clue a
+    inner join B_ClueRule b on a.RuleID = b.ID
+    where b.RuleType=0 and (a.Status=1 or a.Status=2) and a.IsDel=0
+    and a.IntentProjectID=#{IntentProjectID} and a.Mobile=#{Mobile}
+    ]]>
+    </select>
+
+    <select id="RuleClueList_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+select a.*,b.RuleType from B_Clue a
+inner join B_ClueRule b
+on a.RuleID = b.ID
+where
+a.Status in (1,2) and b.Status=1
+and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID<>'{ReportUserID}'
+    ]]>
+    </select>
 </mapper>

@@ -17,4 +17,6 @@ import java.util.Map;
 public interface ISDictionaryService extends IService<SDictionary> {
 
     List<Map<String, String>> AgenCertificatesList_SelectN();
+
+    List<Map<String,Object>> ListByCode_Select(String dictCodes);
 }

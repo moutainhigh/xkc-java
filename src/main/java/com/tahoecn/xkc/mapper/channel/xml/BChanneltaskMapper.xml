@@ -104,4 +104,18 @@
 		WHERE a.ChannelTaskID=#{ChannelTaskID} AND a.IsDel=0;
     	]]>
     </select>
+    
+    <select id="mChannelTaskIsHaveUndoneZQ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT * FROM dbo.B_ChannelTask WHERE ProjectID = #{ProjectID} AND Creator = #{UserID} AND Status = 2
+    	]]>
+    </select>
+    
+    <select id="mChannelTaskIsHaveUndoneJZ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT * FROM dbo.B_ChannelTask_ChannelUser a
+		        INNER JOIN dbo.B_ChannelTask b ON a.ChannelTaskID = b.ID AND b.IsDel = 0 AND b.Status = 2
+		WHERE   a.IsDel = 0 AND a.Status = 2 AND ChannelUserID = #{UserID} 
+    	]]>
+    </select>
 </mapper>

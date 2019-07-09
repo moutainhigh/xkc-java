@@ -24,4 +24,9 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
     public List<Map<String, String>> AgenCertificatesList_SelectN() {
         return baseMapper.AgenCertificatesList_SelectN();
     }
+
+    @Override
+    public List<Map<String,Object>> ListByCode_Select(String dictCodes) {
+        return baseMapper.ListByCode_Select(dictCodes);
+    }
 }

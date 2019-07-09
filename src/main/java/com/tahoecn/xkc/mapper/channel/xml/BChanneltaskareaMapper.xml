@@ -38,6 +38,7 @@
     ]]>
     </insert>
     
+    <!-- 任务地点数量 -->
     <select id="mChannelTaskAreaList_SelectAllCount" parameterType="java.util.Map" resultType="int" >
 		<![CDATA[
 		SELECT  COUNT(1) recordCount

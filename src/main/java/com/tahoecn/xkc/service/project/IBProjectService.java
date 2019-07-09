@@ -21,4 +21,8 @@ public interface IBProjectService extends IService<BProject> {
 
     List<Map<String,Object>> ProjectInfoList_SelectN(IPage page,String name, String cityID);
 
+    int isReport(String projectId, String userID, String mobile);
+
+    int ProjectIsNoAllot_Select(String projectID);
+
 }

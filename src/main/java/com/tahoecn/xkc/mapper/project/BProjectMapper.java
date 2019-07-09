@@ -22,4 +22,5 @@ public interface BProjectMapper extends BaseMapper<BProject> {
 
     List<Map<String,Object>> ProjectInfoList_SelectN(IPage page,@Param("Name")String Name, @Param("CityID")String cityID);
 
+    int ProjectIsNoAllot_Select(@Param("ProjectID") String projectID);
 }

@@ -69,4 +69,9 @@ public class BClueruleServiceImpl extends ServiceImpl<BClueruleMapper, BCluerule
 		bClueruleMapper.updateAdviserGroupById(map);
 	}
 
+    @Override
+    public Map<String, Object> getRegisterRule(String projectId, String adviserGroupID) {
+        return baseMapper.getRegisterRule(projectId,adviserGroupID);
+    }
+
 }
