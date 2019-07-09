@@ -6,10 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class UpLoadUtils {
-
-
-
-
     //链接url下载图片到服务器 返回数据库地址
     public static String downloadPicture(String urlList,String activityId,String webPath,String path) {
         URL url = null;

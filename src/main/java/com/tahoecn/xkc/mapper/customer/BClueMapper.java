@@ -20,4 +20,8 @@ public interface BClueMapper extends BaseMapper<BClue> {
     Map<String, Object> BrokerClueDetail_Select(@Param("ClueID") String clueID);
 
     List<Map<String, Object>> TrackList_Select(@Param("ClueID")String clueID);
+
+    Map<String, Object> IsExistReportProtectClue_Select(@Param("IntentProjectID")String projectId, @Param("Mobile")String mobile);
+
+    List<Map<String, Object>> RuleClueList_Select(@Param("IntentProjectID")String projectId, @Param("Mobile")String mobile, @Param("ReportUserID")String userID);
 }

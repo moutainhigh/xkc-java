@@ -5,4 +5,55 @@
     <select id="AgenCertificatesList_SelectN" resultType="java.util.HashMap">
         select ID,DictName from [S_Dictionary] where PID='848EBE45-2C03-40C5-AE91-EC72533539BD' and IsDel=0 and [Status]=1 order by ListIndex
     </select>
+
+    <select id="ListByCode_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        A.ID,
+        A.PID,
+        A.DictCode,
+        B.DictCode PDictCode,
+        A.DictName,
+        A.DictType,
+        A.Levels,
+        A.ListIndex
+        FROM
+        [S_Dictionary] A
+        INNER JOIN S_Dictionary B ON B.IsDel = 0
+        AND B.Status = 1
+        AND B.ID = A.PID
+        AND ( B.DictCode = '-1' ${DictCodes} )
+        WHERE
+        A.IsDel = 0
+        AND A.Status = 1 UNION ALL
+        SELECT
+        C.ID,
+        C.PID,
+        C.DictCode,
+        A.DictCode PDictCode,
+        C.DictName,
+        C.DictType,
+        C.Levels,
+        C.ListIndex
+        FROM
+        [S_Dictionary] A
+        INNER JOIN S_Dictionary B ON B.IsDel = 0
+        AND B.Status = 1
+        AND B.ID = A.PID
+        AND ( B.DictCode = '-1' ${DictCodes} )
+        INNER JOIN S_Dictionary C ON C.IsDel = 0
+        AND C.Status = 1
+        AND A.ID = C.PID
+        WHERE
+        A.IsDel = 0
+        AND A.Status = 1
+        ) T
+        ORDER BY
+        Levels,
+        DictCode,
+        ListIndex
+    </select>
 </mapper>

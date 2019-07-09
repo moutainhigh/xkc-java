@@ -45,4 +45,5 @@ public interface IBClueruleService extends IService<BCluerule> {
 	 */
 	void updateAdviserGroupById(Map<String, Object> map);
 
+    Map<String, Object> getRegisterRule(String projectId, String adviserGroupID);
 }

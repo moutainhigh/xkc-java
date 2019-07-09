@@ -277,5 +277,44 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return result;
     }
 
+    @Override
+    public int isReport(String userID) {
+        QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
+        wrapper.eq("ID",userID).eq("Job",2);
+        BChanneluser channeluser = this.getOne(wrapper);
+        if (channeluser==null) {
+            //自渠
+            return -1;
+        }
+            if (channeluser.getChannelOrgID()==null){
+                //没有ChannelOrgID 的不能报备
+                return -2;
+            }
+            BChannelorg channelorg = channelorgService.getById(channeluser.getChannelOrgID());
+            if (channelorg.getStatus()==0){
+                //ChannelOrgID禁用状态的不能报备
+                return 0;
+            }else {
+                //有ChannelOrgID存在并且在启用状态，可以报备
+                return 1;
+            }
+    }
+
+    @Override
+    public String getChannelOrgID(String userID,String adviserGroupID) {
+        String channelOrgID= baseMapper.getChannelOrgID(userID);
+        //如果渠道是分销中介，则把渠道身份赋值成机构ID
+        if (StringUtils.isBlank(channelOrgID)){
+            channelOrgID=adviserGroupID;
+        }
+
+        return channelOrgID;
+    }
+
+    @Override
+    public Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify) {
+        return baseMapper.GetReportUserInfo_Select(userID,intentProjectID,channelIdentify);
+    }
+
 
 }

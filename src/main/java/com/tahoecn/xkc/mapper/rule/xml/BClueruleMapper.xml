@@ -40,4 +40,18 @@
 				AND IsDel = 0 AND Status = 1 
 			)  -->
 	</update>
+
+    <select id="getRegisterRule" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        a.*,
+        b.AdviserGroupID
+        FROM
+        B_ClueRule a
+        INNER JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID
+        WHERE
+        a.IsDel= 0
+        AND a.Status= 1
+        AND a.ProjectID= #{ProjectID}
+        AND b.AdviserGroupID= #{AdviserGroupID}
+    </select>
 </mapper>

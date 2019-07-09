@@ -2,7 +2,10 @@ package com.tahoecn.xkc.service.sys;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SMenus;
+
+import java.util.HashMap;
 
 /**
  * <p>
@@ -14,4 +17,5 @@ import com.tahoecn.xkc.model.sys.SMenus;
  */
 public interface ISMenusService extends IService<SMenus> {
 
+    Result SystemDictionaryDetail(HashMap<String,Object> param);
 }

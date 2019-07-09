@@ -59,4 +59,8 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	 * 修改密码
 	 */
 	boolean ChannelUserPassWord_Update(Map<String, Object> map);
+
+    String getChannelOrgID(@Param("UserID") String userID);
+
+    Map<String, Object> GetReportUserInfo_Select(@Param("UserID")String userID, @Param("IntentProjectID")String intentProjectID, @Param("UserID")String ChannelIdentify);
 }

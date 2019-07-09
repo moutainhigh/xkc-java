@@ -59,4 +59,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     boolean checkMobile(String mobile);
 
     Result registerN(Map paramMap);
+
+    int isReport(String userID);
+
+    String getChannelOrgID(String userID,String adviserGroupID);
+
+    Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify);
 }

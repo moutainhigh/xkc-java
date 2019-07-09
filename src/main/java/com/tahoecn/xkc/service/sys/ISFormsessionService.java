@@ -13,4 +13,10 @@ import com.tahoecn.xkc.model.sys.SFormsession;
  */
 public interface ISFormsessionService extends IService<SFormsession> {
 
+    /**
+     * 查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
+     * @param formSessionID
+     * @return
+     */
+    int checkFormSessionID(String formSessionID);
 }
