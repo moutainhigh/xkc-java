@@ -116,5 +116,8 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	 */
 	int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map);
 
-
+	/**
+	 * 获取分销渠道所属机构ID
+	 */
+	List<Map<String, Object>> GetChannelOrgID_Select(Map<String, Object> obj);
 }

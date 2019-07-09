@@ -403,4 +403,15 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 	WHERE   n.RowNum = 1
         
     </select>
+    <!-- 获取分销渠道所属机构ID -->
+    <select id="GetChannelOrgID_Select" resultType="java.util.Map" parameterType="java.util.Map">
+    <![CDATA[
+		select CASE WHEN LEN(b.PID)>0 THEN b.PID else ChannelOrgID END ChannelOrgID from B_ChannelUser a
+		inner join B_ChannelOrg b on a.ChannelOrgID = b.ID
+		 where 
+		 a.ID=#{UserID} and 
+		 a.ChannelTypeID='32C92DA0-DA13-4C21-A55E-A1D16955882C'
+
+    ]]>
+    </select>
 </mapper>

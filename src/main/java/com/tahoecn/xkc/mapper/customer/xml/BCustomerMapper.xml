@@ -299,4 +299,11 @@
     <select id="CustomerChangeDetailAll_Select" resultType="java.util.Map">
 
     </select>
+    <!-- 验证是否是本项目老业主 -->
+    <select id="IsProjectOwner_Select" resultType="java.util.Map">
+        <![CDATA[
+          select a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+ 			and a.IsOwner=1 and b.ProjectID=#{ProjectID} and  Mobile=#{Mobile}
+        ]]>
+    </select>
 </mapper>

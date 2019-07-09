@@ -465,7 +465,7 @@ public class LoginAppController extends TahoeBaseController {
             logMap.put("Ext2", (String)paramMap.get("DeviceCode"));
             logMap.put("Ext3", (String)paramMap.get("UserName"));
             logMap.put("Ext4", (String)paramMap.get("AppName"));
-            logMap.put("Data", jsonParam);
+            logMap.put("Data", jsonParam.toJSONString());
             iSLogsService.SystemLogsDetail_Insert(logMap, request);
             
     		return Result.ok("案场登出成功,账号:" + (String)paramMap.get("UserName"));
