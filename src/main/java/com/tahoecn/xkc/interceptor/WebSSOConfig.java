@@ -29,8 +29,8 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	ApplInterceptor applInterceptor(){
-		return new ApplInterceptor();
+	JwtInterceptor applInterceptor(){
+		return new JwtInterceptor();
 	}
 
 
@@ -43,7 +43,7 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		// addPathPatterns 用于添加拦截规则
 		// excludePathPatterns 用户排除拦截
 		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
-		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/house/**","/app/auth/**");
+		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").excludePathPatterns("/app/login/**");
 
 	}
 

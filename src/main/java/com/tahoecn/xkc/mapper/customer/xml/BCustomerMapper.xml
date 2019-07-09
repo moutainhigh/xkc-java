@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerMapper">
 
-    <select id="customerChangePageList_Select" resultType="java.util.HashMap">
+    <select id="customerChangePageList_Select" resultType="java.util.Map">
         <![CDATA[
             SELECT
             m.ClueID,
@@ -159,5 +159,144 @@
             INNER JOIN dbo.B_PojectChannelOrgRel pc ON co.ID=pc.OrgID AND pc.IsDel=0 AND pc.Status=1  AND pc.ProjectID=#{projectID}
             WHERE co.IsDel=0 AND co.Status=1  AND co.OrgCategory=1
         ]]>
+    </select>
+    <select id="CustomerChange_BakPageList_Select" resultType="java.util.Map">
+        <![CDATA[
+  
+					SELECT 
+					m.ClueID,
+					m.CustomerID,
+					m.CustomerName,
+					m.CustomerMobile,
+					--dbo.F_DictName(m.CustomerRank) CustomerRank,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName(m.Status,0) Status,
+					m.InvalidReason,
+					m.ComeOverdueTime,
+					m.TradeOverdueTime,
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,
+					m.ConfirmTime,
+					m.ProjectID,
+					dbo.F_DictName(m.SourceType) SourceType,
+					m.ReportTime,
+					m.TheFirstVisitDate,
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF
+					 FROM (
+					 SELECT * FROM (
+						SELECT  
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+
+
+
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,
+                                b.Status,
+								b.InvalidReason,
+								b.ComeOverdueTime,
+								b.TradeOverdueTime,
+								b.ConfirmUserId,
+								b.ConfirmTime,
+                                b.IntentProjectID ProjectID ,
+                                b.SourceType,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+								o.TheFirstVisitDate ,
+                                CO.OrgName ChannelName,
+								o.ID OpportunityID,
+                b.Status Statu
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID}
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+								LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID} 
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{projectID} 
+
+
+
+								) t  WHERE 1=1 ${sqlWhere}
+                                ) m
+
+        ]]>
+    </select>
+    <select id="SetExcelToCustomerChange_BakList" resultType="java.util.Map">
+        <![CDATA[
+            SELECT 
+					m.num,
+					m.CustomerID,
+					m.CustomerName,
+					m.CustomerMobile,
+					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+					--dbo.F_DictName(m.CustomerRank) CustomerRank,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName(m.Status,0) Status,
+					m.InvalidReason,
+					CASE WHEN m.ComeOverdueTime ='1900-01-01' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,
+					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,
+					m.ConfirmTime,
+					m.ProjectID,
+            m.ProjectName,
+					dbo.F_DictName(m.SourceType) SourceType,
+					m.ReportTime,
+					CASE WHEN DATEDIFF(day,m.TheFirstVisitDate,'1900-01-01')=0 THEN NULL ELSE m.TheFirstVisitDate END TheFirstVisitDate,
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF
+					 FROM (
+					 SELECT ROW_NUMBER() OVER(ORDER BY t.ReportTime DESC) num,* FROM (
+						SELECT  
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+
+
+
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,
+                                b.Status,
+                                b.Status Statu,
+								                b.InvalidReason,
+								                b.ComeOverdueTime,
+								                b.TradeOverdueTime,
+								                b.ConfirmUserId,
+								                b.ConfirmTime,
+                                b.IntentProjectID ProjectID ,
+								                b.IntentProjectName ProjectName,
+                                b.SourceType,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+								o.TheFirstVisitDate ,
+                                CO.OrgName ChannelName,
+								o.ID OpportunityID
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID} 
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{projectID}  
+
+
+
+                                AND b.Status<>3
+								) t  WHERE 1=1 ${sqlWhere}
+                                ) m
+
+            ]]>
+    </select>
+    <select id="CustomerChangeDetailAll_Select" resultType="java.util.Map">
+
     </select>
 </mapper>

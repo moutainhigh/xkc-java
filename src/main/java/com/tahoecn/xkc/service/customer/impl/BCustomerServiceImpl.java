@@ -37,4 +37,19 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     public List<Map<String, Object>> GetDistributionList_Select(String project) {
         return baseMapper.getDistributionList_Select(project);
     }
+
+    @Override
+    public IPage<Map<String, Object>> CustomerChange_BakPageList_Select(IPage page, String projectID, String sqlWhere) {
+        return baseMapper.CustomerChange_BakPageList_Select(page,projectID,sqlWhere);
+    }
+
+    @Override
+    public List<Map<String, Object>> SetExcelToCustomerChange_BakList(String projectID, String sqlWhere) {
+        return baseMapper.SetExcelToCustomerChange_BakList(projectID,sqlWhere);
+    }
+
+    @Override
+    public Map<String, Object> CustomerChangeDetailAll_Select(String projectId, String customerID, String clueID) {
+        return baseMapper.CustomerChangeDetailAll_Select(projectId,customerID,clueID);
+    }
 }

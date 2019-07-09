@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.xkc.common.utils.JwtTokenUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SAccount;
@@ -151,6 +152,10 @@ public class LoginAppController extends TahoeBaseController {
         map.remove("OutUserAllowModifyPwd");
         map.remove("OutUserIsShowHouseStyle");
         map.remove("AccountStatus");
+
+        String token = JwtTokenUtil.createToken(UserID, UserName, false);
+        //放到响应头部
+        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
 
         return Result.ok(map);
     }
