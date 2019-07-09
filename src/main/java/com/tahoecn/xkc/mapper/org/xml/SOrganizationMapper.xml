@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.SOrganizationMapper">
+    <insert id="userOrgInsert" >
+        INSERT INTO dbo.S_Organization
+			( ID ,
+			  PID ,
+			  OrgCode ,
+			  OrgName ,
+			  OrgShortName ,
+			  OrgCategory ,
+			  ListIndex ,
+			  Levels ,
+			  FullPath ,
+			  AuthCompanyID ,
+			  ProductID ,
+			  Creator ,
+			  CreateTime ,
+			  Editor ,
+			  EditTime ,
+			  Status ,
+			  IsDel ,
+			  CurrentPoint
+			)
+	    SELECT id,'7270113E-8134-413F-98B9-6BA40AFB82F5',Code,Name,ShortName,5,1,5,'第三方组织/泰禾/泰禾移动营销管理平台/'+Name,'17BA4307-D05A-4A57-8729-FC1BD45302B6','9E0FADFF-31F0-4EC5-B35D-EE5BC5F4E622',#{UserID},GETDATE(),NULL,NULL,1,0,0 FROM dbo.B_Project WHERE ID=#{ProjectID}
+    </insert>
+</mapper>

@@ -414,4 +414,24 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 
     ]]>
     </select>
+
+    <insert id="insertBChannelUser" parameterType="java.util.Map">
+        INSERT INTO dbo.B_ChannelUser
+        ( ID ,
+        UserName ,
+        Password ,
+        Mobile ,
+        Name ,
+        Gender ,
+        ChannelTypeID,
+        Creator ,
+        CreateTime ,
+        IsDel ,
+        Status
+        )
+        SELECT id,UserName,Password,Mobile,EmployeeName,Gender,(
+        SELECT CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
+        INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID AND b.ID=#{ID}
+        WHERE a.IsDel=0),#{UserID},GETDATE(),0,1 FROM dbo.S_Account WHERE id=#{MemberID}
+    </insert>
 </mapper>
