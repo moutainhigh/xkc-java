@@ -59,4 +59,11 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
         }
         return customerChangeDetail;
     }
-}
+    /**
+     * 验证是否是本项目老业主
+     */
+        @Override
+        public List<Map<String, Object>> IsProjectOwner_Select(String projectId, String phone) {
+        	return baseMapper.IsProjectOwner_Select(projectId,phone);
+        }
+    }

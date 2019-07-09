@@ -201,4 +201,156 @@ a.Status in (1,2) and b.Status=1
 and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID<>'{ReportUserID}'
     ]]>
     </select>
+        <!-- 案场助手统计 -->
+    <select id="CaseFieDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    <![CDATA[
+		SELECT  ( SELECT    COUNT(*)
+		          FROM      [B_Clue]
+		          WHERE     Status = 1
+		                    AND IsDel = 0
+		                    AND IntentProjectID = #{ProjectID}
+		        ) AS ToBeConfirmed ,
+		        ( SELECT    COUNT(*)
+		          FROM      [B_Clue]
+		          WHERE     Status = 3
+		                    AND IsDel = 0
+		                    AND IntentProjectID = #{ProjectID}
+		        ) AS Invalid ,
+		        ( SELECT    COUNT(*)
+		          FROM      [B_Clue] AS c
+		                    LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		                    LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+		                    LEFT JOIN dbo.B_ClueRule r ON c.RuleID = r.ID
+		                                      AND r.ProtectSource = 0
+		          WHERE     ( o.ID IS NULL
+		                      OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    )
+		                    AND c.Status = 2
+		                    AND c.IsDel = 0
+		                    AND c.IntentProjectID = #{ProjectID}
+		                    AND ( CASE WHEN r.IsPreIntercept = 1
+		                     THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
+		                                              c.CreateTime) < GETDATE() THEN 1
+		                                 ELSE 0
+		                            END )
+		                     ELSE 1
+		              END ) = 1 
+		        ) AS ToBeDistribution ,
+		        ( SELECT    COUNT(*)
+		          FROM      [B_Clue] AS c
+		                    LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		                    LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+		          WHERE     o.SaleUserID IS NOT NULL
+		                    AND c.Status = 2
+		                    AND c.IsDel = 0
+		                    AND c.IntentProjectID = #{ProjectID}
+		        ) AS Distribution ,
+		        0 AS Call
+     ]]>
+    </select>
+    <!-- 客户信息 -->
+    <select id="CaseFieCustomerDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT  c.[ID] ,
+			        c.[CustomerPotentialID] ,
+			        c.[Name] ,
+			        c.[LastName] ,
+			        c.[FirstName] ,
+			        ISNULL(c.[Gender],'50827B18-5BCC-454C-B658-09AF4328D2A0') Gender ,
+			        c.[Mobile] ,
+			        c.[IntentProjectID] ,
+			        c.[IntentProjectName] ,
+			        c.[Remark] ,
+			        c.[SourceType] ,
+			        c.[ReportUserID] ,
+			        c.[ReportUserName] ,
+			        c.[ReportUserMobile] ,
+			        c.[ReportUserOrg] ,
+			        c.[RuleID] ,
+			        c.[InvalidType] ,
+			        c.[InvalidTime] ,
+			        c.[InvalidReason] ,
+			        c.[ComeOverdueTime] ,
+			        c.[TradeOverdueTime] ,
+			        c.[UserBehaviorID] ,
+			        c.[AdviserGroupID] ,
+			        c.[IsSelect] ,
+			        c.[ConfirmTime] ,
+			        c.[Creator] ,
+			        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+			        c.[Editor] ,
+			        c.[EditeTime] ,
+			        c.[IsDel] ,
+			        c.[Status] ,
+			        c.[ConfirmUserId] ,
+			        u.name AS TokerUserName ,
+			        ISNULL(d.DictName,'自然访客') AS SourceName ,
+			        o.SaleUserID ,
+			        CASE WHEN o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+			             THEN NULL
+			             ELSE o.SaleUserName
+			        END SaleUserName ,
+			        '{SiteUrl}' + su.HeadImg SaleHeadImg ,
+			        dbo.F_GetSaleGroupName(o.SaleUserID, o.ProjectID) GroupName ,
+			        dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) CustomerTag ,  
+			        co.OrgName AS SourceTypeName ,
+			        TheFirstVisitDate FirstComeTime ,
+			        o.FirstVisitAddress VisitAddress
+			FROM    [B_Clue] AS c
+			        LEFT JOIN B_ChannelUser u ON c.reportuserid = u.id
+			        LEFT JOIN B_Opportunity o ON o.clueid = c.id
+			        LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+			        LEFT JOIN B_ChannelOrg co ON co.id = u.ChannelOrgID
+			        LEFT JOIN B_ChannelOrg co1 ON co1.id = co.PID
+			        LEFT JOIN S_Dictionary d ON c.SourceType = d.id
+			WHERE   c.id = #{ClueID}
+	     ]]>
+    </select>
+    <!-- 客户无效信息 -->
+    <select id="CaseFieInvalDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT  ul.name AS ClCreator ,
+			        CONVERT(VARCHAR(16), cl.CreateTime, 20) AS ClCreateTime ,
+			        o.SaleUserName AS ClSaleUserName
+			FROM    [B_Clue] cl
+			        LEFT JOIN B_ChannelUser ul ON cl.reportuserid = ul.id
+			        LEFT JOIN B_Opportunity o ON o.clueid = cl.id
+			WHERE   cl.Mobile = #{Mobile}
+			        AND cl.status = 2
+			        AND cl.IsDel = 0
+	     ]]>
+     </select>
+     <!-- 验证是否存超过到访保护期 -->
+    <select id="IsOverdueCome_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT dbo.F_IsVisit(b.id,getdate(),a.ComeOverdueTime) as IsOverdueCome
+                 FROM   b_clue a
+                        INNER JOIN B_Opportunity b ON a.id = b.ClueID
+                 WHERE  a.Status IN ( 1, 2 )
+                        AND b.Status = 2
+						and a.id=#{ClueID}
+	     ]]>
+     </select>
+     <!-- 扫码确认线索无效后，更新线索信息 -->
+     <update id="ClueConfirmInvalid_Update" parameterType="java.util.Map">
+	     UPDATE  B_Clue
+		SET     InvalidType = #{InvalidType} ,
+		        InvalidReason = #{InvalidReason} ,
+		        InvalidTime = #{VisitTime} ,
+		        ConfirmTime = #{VisitTime} ,
+		        ConfirmUserId = #{ConfirmUserId} ,
+		        Status = 3
+		WHERE   id = #{ClueID}
+     </update>
+     <!-- 根据手机号、项目id获取有效线索 -->
+     <select id="RuleClueList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+     	<![CDATA[
+			select a.*,b.RuleType from B_Clue a
+			inner join B_ClueRule b
+			on a.RuleID = b.ID
+			where 
+			a.Status in (1,2) and b.Status=1
+			and IntentProjectID = #{IntentProjectID} and Mobile=#{Mobile} and ReportUserID <> #{ReportUserID}
+		]]>
+     </select>
 </mapper>
