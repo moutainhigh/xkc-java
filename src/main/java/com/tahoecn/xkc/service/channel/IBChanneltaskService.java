@@ -47,4 +47,25 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	 */
 	List<Map<String, Object>> mChannelTaskIsHaveUndoneJZ_Select(Map<String, Object> map);
 
+	/*
+	 * 打卡
+	 */
+	boolean mChannelCheckClock_Insert(Map<String, Object> map);
+
+	/*
+	 * 获取当天第一条打卡记录
+	 */
+	List<Map<String, Object>> mChannelCheckClockTopOne_Select(Map<String, Object> map);
+
+	/*
+	 * 获取当天第一条打卡记录
+	 */
+	List<Map<String, Object>> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map);
+
+	/*
+	 * 分配专员客户
+	 */
+	void mChannelTempPersonQuitCus_Update(Map<String, Object> map);
+	void mChannelTempPersonQuitCus_Update2(Map<String, Object> map);
+	void mChannelTempPersonQuitCus_Update3(Map<String, Object> map);
 }
