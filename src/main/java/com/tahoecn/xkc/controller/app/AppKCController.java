@@ -445,62 +445,62 @@ public class AppKCController extends TahoeBaseController {
 		}
     }
 	
-//	@ResponseBody
-//    @ApiOperation(value = "打卡", notes = "打卡")
-//    @RequestMapping(value = "/mChannelCheckClock_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//    public Result mChannelCheckClock_Insert(@RequestBody JSONObject jsonParam) {
-//		Result re=new Result();
-//    	try{
-//    		// 直接将json信息打印出来
-//    		System.out.println(jsonParam.toJSONString());
-//    		Map paramMap = (HashMap)jsonParam.get("_param");
-//    		//String ID = (String)paramMap.get("ID").toString();//
-//            String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//任务ID
-//            String Longitude = (String)paramMap.get("Longitude").toString();//
-//            String Dimension = (String)paramMap.get("Dimension").toString();//
-//            String Photo = (String)paramMap.get("Photo").toString();//
-//            String DeviceCode = (String)paramMap.get("DeviceCode").toString();//设备序列号
-//            String CheckType = (String)paramMap.get("CheckType").toString();//
-//            String TaskAreaID = (String)paramMap.get("TaskAreaID").toString();//
-//            String TaskAreaName = (String)paramMap.get("TaskAreaName").toString();//
-//            String UserID = (String)paramMap.get("UserID").toString();//用户ID
-//            Map<String,Object> map = new HashMap<String,Object>();
-//            //map.put("ID", ID);
-//    		map.put("ChannelTaskID", ChannelTaskID);
-//    		map.put("Longitude", Longitude);
-//    		map.put("Dimension", Dimension);
-//    		map.put("Photo", Photo);
-//    		map.put("DeviceCode", DeviceCode);
-//    		map.put("CheckType", CheckType);
-//    		map.put("TaskAreaID", TaskAreaID);
-//    		map.put("TaskAreaName", TaskAreaName);
-//    		map.put("UserID", UserID);
-//    		
-//    		if(ChannelTaskID == null) {
-//    			return re.ok("任务ID参数为空");
-//    		}
-//    		if(UserID == null) {
-//    			return re.ok("用户ID参数为空");
-//    		}
-//    		List<Map<String,Object>> obj = iBChanneltaskService.mChannelCheckClockTopOne_Select(map);
-//    		//修改
-//    		if(obj != null && obj.size() > 0 && obj.get(0).get(DeviceCode).toString() != DeviceCode) {
-//    			return Result.ok("一台手机当天仅支持一个账号打卡");
-//    		}
-//    		List<Map<String,Object>> obj2 = iBChanneltaskService.mChannelCheckClockByDeviceCode_Select(map);
-//    		if(obj2 != null && obj2.size() > 0 && obj2.get(0).get(UserID).toString() != UserID) {
-//    			return Result.ok("一台手机当天仅支持一个账号打卡");
-//    		}
-//    		map.put("ID", 12345);
-//    		boolean res = iBChanneltaskService.mChannelCheckClock_Insert(map);
-//    		
-//    		return re.ok(res);
-//    	}catch (Exception e) {
-//			e.printStackTrace();
-//			return Result.errormsg(1, "系统异常，请联系管理员");
-//			
-//		}
-//    }
+	@ResponseBody
+    @ApiOperation(value = "打卡", notes = "打卡")
+    @RequestMapping(value = "/mChannelCheckClock_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelCheckClock_Insert(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+            String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//任务ID
+            String Longitude = (String)paramMap.get("Longitude").toString();//
+            String Dimension = (String)paramMap.get("Dimension").toString();//
+            String Photo = (String)paramMap.get("Photo").toString();//
+            String DeviceCode = (String)paramMap.get("DeviceCode").toString();//设备序列号
+            String CheckType = (String)paramMap.get("CheckType").toString();//
+            String TaskAreaID = (String)paramMap.get("TaskAreaID").toString();//
+            String TaskAreaName = (String)paramMap.get("TaskAreaName").toString();//
+            String UserID = (String)paramMap.get("UserID").toString();//用户ID
+            Map<String,Object> map = new HashMap<String,Object>();
+            //map.put("ID", ID);
+    		map.put("ChannelTaskID", ChannelTaskID);
+    		map.put("Longitude", Longitude);
+    		map.put("Dimension", Dimension);
+    		map.put("Photo", Photo);
+    		map.put("DeviceCode", DeviceCode);
+    		map.put("CheckType", CheckType);
+    		map.put("TaskAreaID", TaskAreaID);
+    		map.put("TaskAreaName", TaskAreaName);
+    		map.put("UserID", UserID);
+    		
+    		if(ChannelTaskID == null) {
+    			return Result.errormsg(1, "用户ID参数为空");
+    		}
+    		if(UserID == null) {
+    			return Result.errormsg(1, "用户ID参数为空");
+    		}
+    		Map<String,Object> obj = iBChanneltaskService.mChannelCheckClockTopOne_Select(map);
+    		//修改 
+    		if(obj != null && obj.size() > 0 && obj.get("DeviceCode").toString().contentEquals(DeviceCode) == false) {
+    			return Result.errormsg(2, "一台手机当天仅支持一个账号打卡");
+    		}
+    		Map<String,Object> obj2 = iBChanneltaskService.mChannelCheckClockByDeviceCode_Select(map);
+    		if(obj2 != null && obj2.size() > 0 && obj2.get("Creator").toString().equals(UserID) == false) {
+    			return Result.errormsg(2, "一台手机当天仅支持一个账号打卡");
+    		}
+    		String ID = getUUID();
+    		map.put("ID", ID);
+    		boolean res = iBChanneltaskService.mChannelCheckClock_Insert(map);
+    		
+    		return re.ok(res);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1, "系统异常，请联系管理员");
+			
+		}
+    }
 	
 	@ResponseBody
     @ApiOperation(value = "分配专员客户", notes = "分配专员客户")

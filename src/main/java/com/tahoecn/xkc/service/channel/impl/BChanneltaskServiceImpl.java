@@ -94,7 +94,7 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 * 获取当天第一条打卡记录
 	 */
 	@Override
-	public List<Map<String, Object>> mChannelCheckClockTopOne_Select(Map<String, Object> map) {
+	public Map<String, Object> mChannelCheckClockTopOne_Select(Map<String, Object> map) {
 		return bChanneltaskMapper.mChannelCheckClockTopOne_Select(map);
 	}
 
@@ -102,7 +102,7 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 * 获取当天第一条打卡记录
 	 */
 	@Override
-	public List<Map<String, Object>> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map) {
+	public Map<String, Object> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map) {
 		return bChanneltaskMapper.mChannelCheckClockByDeviceCode_Select(map);
 	}
 

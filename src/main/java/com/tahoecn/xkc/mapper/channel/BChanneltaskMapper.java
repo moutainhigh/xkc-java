@@ -49,12 +49,12 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	/*
 	 * 获取当天第一条打卡记录
 	 */
-	List<Map<String, Object>> mChannelCheckClockTopOne_Select(Map<String, Object> map);
+	Map<String, Object> mChannelCheckClockTopOne_Select(Map<String, Object> map);
 
 	/*
 	 * 获取当天第一条打卡记录
 	 */
-	List<Map<String, Object>> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map);
+	Map<String, Object> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map);
 
 	
 	/*
