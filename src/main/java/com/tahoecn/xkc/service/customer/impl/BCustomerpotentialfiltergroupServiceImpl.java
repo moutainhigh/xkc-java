@@ -6,6 +6,7 @@ import com.tahoecn.xkc.model.customer.BCustomerpotentialfiltergroup;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -48,6 +49,13 @@ public class BCustomerpotentialfiltergroupServiceImpl extends ServiceImpl<BCusto
 		baseMapper.insert(group);
 		group.setCreator(group.getId());
 		baseMapper.updateById(group);
+	}
+	/**
+	 * 潜在客户筛选分组列表
+	 */
+	@Override
+	public List<Map<String,Object>> mCustomerPotentialFilterGroupList_Select(Map<String,Object> paramMap) {
+		return baseMapper.mCustomerPotentialFilterGroupList_Select(paramMap);
 	}
 
 }

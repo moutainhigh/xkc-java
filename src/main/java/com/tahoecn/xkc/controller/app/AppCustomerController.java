@@ -92,4 +92,16 @@ public class AppCustomerController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+	@ApiOperation(value = "潜在客户分组列表", notes = "潜在客户分组列表")
+	@RequestMapping(value = "/mCustomerPotentialFilterGroupList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerPotentialFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			return Result.ok(iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

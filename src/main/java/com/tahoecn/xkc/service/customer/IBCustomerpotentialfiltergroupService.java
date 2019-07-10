@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer;
 
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -24,5 +25,9 @@ public interface IBCustomerpotentialfiltergroupService extends IService<BCustome
 	 * 潜在客户分组新增
 	 */
 	void mCustomerPotentialFilterGroupDetail_Insert(Map<String,Object> paramMap);
+	/**
+	 * 潜在客户筛选分组列表
+	 */
+	List<Map<String,Object>> mCustomerPotentialFilterGroupList_Select(Map<String,Object> paramMap);
 
 }
