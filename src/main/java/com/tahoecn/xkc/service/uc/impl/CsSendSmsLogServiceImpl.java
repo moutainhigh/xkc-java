@@ -116,13 +116,6 @@ public class CsSendSmsLogServiceImpl extends ServiceImpl<CsSendSmsLogMapper, CsS
         params.put("extno", extno);
         //String result = HttpClient.httpPost(uri+"HttpSendSM", params);
         String result = HttpUtil.post(uri+"HttpSendSM", params);
-        CsSendSmsLog csSendSmsLog = new CsSendSmsLog();
-    	csSendSmsLog.setUserName(userName);
-    	csSendSmsLog.setCreateDate(new Date());
-    	csSendSmsLog.setSendMobiles(mobiles);
-    	csSendSmsLog.setContentDesc(content);
-    	csSendSmsLog.setSendResult(result);
-    	this.baseMapper.insert(csSendSmsLog);
         return result;
     }
     

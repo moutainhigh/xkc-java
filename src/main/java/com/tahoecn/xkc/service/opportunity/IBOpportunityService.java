@@ -1,7 +1,8 @@
-package com.tahoecn.xkc.service.customer;
+package com.tahoecn.xkc.service.opportunity;
+
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.tahoecn.xkc.model.customer.BOpportunity;
+import com.tahoecn.xkc.model.opportunity.BOpportunity;
 
 /**
  * <p>

@@ -7,16 +7,16 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomer;
-import com.tahoecn.xkc.model.customer.BOpportunity;
 import com.tahoecn.xkc.model.customer.VCustomerfjlistSelect;
+import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
-import com.tahoecn.xkc.service.customer.IBOpportunityService;
 import com.tahoecn.xkc.service.customer.IVCustomerfjlistSelectService;
 import com.tahoecn.xkc.service.customer.impl.VCustomergwlistSelectServiceImpl;
+import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
 
 import cn.hutool.core.date.DateTime;

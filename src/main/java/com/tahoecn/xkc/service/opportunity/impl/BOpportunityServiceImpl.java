@@ -1,9 +1,10 @@
-package com.tahoecn.xkc.service.customer.impl;
+package com.tahoecn.xkc.service.opportunity.impl;
+
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tahoecn.xkc.mapper.customer.BOpportunityMapper;
-import com.tahoecn.xkc.model.customer.BOpportunity;
-import com.tahoecn.xkc.service.customer.IBOpportunityService;
+import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
+import com.tahoecn.xkc.model.opportunity.BOpportunity;
+import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import org.springframework.stereotype.Service;
 
 /**

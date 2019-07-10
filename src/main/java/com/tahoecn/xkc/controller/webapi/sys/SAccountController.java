@@ -77,5 +77,16 @@ public class SAccountController extends TahoeBaseController {
         accountService.save(account);
         return Result.okm("成功");
     }
+    @ApiOperation(value = "全部组织(用户管理)", notes = "全部组织(用户管理)")
+    @RequestMapping(value = "/SystemOrganization_Select", method = {RequestMethod.POST})
+    public Result SystemOrganization_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String OrgID=(String) paramMap.get("OrgID");
+        String AuthCompanyID=(String) paramMap.get("AuthCompanyID");
+        String ProductID=(String) paramMap.get("ProductID");
+        String Status=(String) paramMap.get("Status");
+        String PID=(String) paramMap.get("PID");
+        return Result.okm("");
+    }
 
 }
