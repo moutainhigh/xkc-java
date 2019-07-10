@@ -195,4 +195,42 @@
 	WHERE ID=#{OldChannelUserID}
     </update>
     
+    <!-- 领取任务 -->
+    <select id="mChannelTaskAccept_Insert" parameterType="java.util.Map" resultType="int">
+		<![CDATA[
+		SELECT COUNT(1) a FROM dbo.B_ChannelTask_ChannelUser WHERE ChannelTaskID=#{ChannelTaskID} AND ChannelUserID=#{UserID}
+	    ]]>
+	</select>
+	<insert id="mChannelTaskAccept_Insert2" parameterType="java.util.Map">
+        <![CDATA[
+	    INSERT  INTO dbo.B_ChannelTask_ChannelUser
+		        ( ChannelTaskID ,
+		          ChannelUserID ,
+		          ChannelUserName ,
+		          ChannelUserMobile ,
+		          IsDel ,
+		          Status
+		        )
+		VALUES  ( #{ChannelTaskID} , -- ChannelTaskID - varchar(36)
+		          #{UserID} , -- ChannelUserID - varchar(36)
+		          dbo.F_GetReportUserName(#{UserID}) , -- ChannelUserName - varchar(50)
+		          dbo.F_GetReportUserMobile(#{UserID}) , -- ChannelUserMobile - varchar(50)
+		          0 , -- IsDel - tinyint
+		          1  -- Status - tinyint
+		        )
+    ]]>
+    </insert>
+    <update id="mChannelTaskAccept_Insert3" parameterType="java.util.Map">
+		UPDATE B_ChannelTask_ChannelUser SET IsDel=0,Status = 1 WHERE ChannelTaskID=#{ChannelTaskID} AND ChannelUserID=#{UserID}
+	</update>
+	<!-- 更新兼职归属关系 -->
+	<update id="mChannelTaskAccept_Update" parameterType="java.util.Map">
+		UPDATE dbo.B_ChannelUser
+		SET ChannelTypeID=#{TaskType},ReportUserID=#{ReportUserID}
+		WHERE ID=#{UserID};
+	</update>
+	<!-- 领取的任务状态 -->
+	<select id="mChannelTaskAccept_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT Status FROM dbo.B_ChannelTask WHERE ID=#{ChannelTaskID}
+	</select>
 </mapper>

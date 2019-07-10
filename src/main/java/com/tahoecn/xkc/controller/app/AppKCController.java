@@ -529,35 +529,42 @@ public class AppKCController extends TahoeBaseController {
 		}
     }
 	
-//	@ResponseBody
-//    @ApiOperation(value = "领取任务", notes = "领取任务")
-//    @RequestMapping(value = "/mChannelTaskAccept_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//    public Result mChannelTaskAccept_Insert(@RequestBody JSONObject jsonParam) {
-//		Result re=new Result();
-//    	try{
-//    		// 直接将json信息打印出来
-//    		System.out.println(jsonParam.toJSONString());
-//    		Map paramMap = (HashMap)jsonParam.get("_param");
-//    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
-//            String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//
-//            String TaskType = (String)paramMap.get("TaskType").toString();//
-//            String ReportUserID = (String)paramMap.get("ReportUserID").toString();//
-//            Map<String,Object> map = new HashMap<String,Object>();
-//            map.put("UserID", UserID);
-//            map.put("ChannelTaskID", ChannelTaskID);
-//            map.put("TaskType", TaskType);
-//            map.put("ReportUserID", ReportUserID);
-//            iBChanneltaskService.mChannelTaskAccept_Insert(map);
-//            iBChanneltaskService.mChannelTaskAccept_Insert2(map);
-//            iBChanneltaskService.mChannelTaskAccept_Insert3(map);
-//            iBChanneltaskService.mChannelTaskAccept_Insert4(map);
-//    		return re.ok(1);
-//    	}catch (Exception e) {
-//			e.printStackTrace();
-//			return Result.errormsg(1, "系统异常，请联系管理员");
-//			
-//		}
-//    }
+	@ResponseBody
+    @ApiOperation(value = "领取任务", notes = "领取任务")
+    @RequestMapping(value = "/mChannelTaskAccept_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelTaskAccept_Insert(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
+            String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//
+            String TaskType = (String)paramMap.get("TaskType").toString();//
+            String ReportUserID = (String)paramMap.get("ReportUserID").toString();//
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("UserID", UserID);
+            map.put("ChannelTaskID", ChannelTaskID);
+            map.put("TaskType", TaskType);
+            map.put("ReportUserID", ReportUserID);
+            int has = iBChanneltaskService.mChannelTaskAccept_Insert(map);
+            System.out.println(has);
+            if(has == 0) {
+            	iBChanneltaskService.mChannelTaskAccept_Insert2(map);
+            }
+            else {
+            	iBChanneltaskService.mChannelTaskAccept_Insert3(map);
+            }
+            iBChanneltaskService.mChannelTaskAccept_Update(map);
+            List<Map<String, Object>> obj = iBChanneltaskService.mChannelTaskAccept_Select(map);
+            
+    		return re.ok(obj);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1, "系统异常，请联系管理员");
+			
+		}
+    }
 	
 	/*
 	 * 生成UUID

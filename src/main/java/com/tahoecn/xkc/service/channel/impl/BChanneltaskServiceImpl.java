@@ -30,25 +30,21 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 */
 	@Override
 	public String mChannelTask_Insert(Map<String, Object> map) {
-	
 		return bChanneltaskMapper.mChannelTask_Insert(map);
 	}
 	
 	@Override
 	public void mChannelTask_Insert2(Map<String, Object> map) {
-	
 		bChanneltaskMapper.mChannelTask_Insert2(map);
 	}
 	
 	@Override
 	public void mChannelTask_Insert3(Map<String, Object> map) {
-	
 		bChanneltaskMapper.mChannelTask_Insert3(map);
 	}
 	
 	@Override
 	public List<Map<String, Object>> mChannelTask_Insert4(Map<String, Object> map) {
-	
 		return bChanneltaskMapper.mChannelTask_Insert4(map);
 	}
 
@@ -57,17 +53,14 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 */
 	@Override
 	public void mChannelTaskClose_Update(Map<String, Object> map) {
-		
 		 bChanneltaskMapper.mChannelTaskClose_Update(map);
 	}
 	@Override
 	public void mChannelTaskClose_Update2(Map<String, Object> map) {
-		
 		 bChanneltaskMapper.mChannelTaskClose_Update2(map);
 	}
 	@Override
 	public List<BChanneltask> mChannelTaskClose_Update3(Map<String, Object> map) {
-		
 		return bChanneltaskMapper.mChannelTaskClose_Update3(map);
 	}
 
@@ -94,7 +87,6 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 */
 	@Override
 	public boolean mChannelCheckClock_Insert(Map<String, Object> map) {
-		
 		return bChanneltaskMapper.mChannelCheckClock_Insert(map);
 	}
 
@@ -103,7 +95,6 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 */
 	@Override
 	public List<Map<String, Object>> mChannelCheckClockTopOne_Select(Map<String, Object> map) {
-	
 		return bChanneltaskMapper.mChannelCheckClockTopOne_Select(map);
 	}
 
@@ -112,7 +103,6 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 */
 	@Override
 	public List<Map<String, Object>> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map) {
-
 		return bChanneltaskMapper.mChannelCheckClockByDeviceCode_Select(map);
 	}
 
@@ -131,5 +121,36 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	public void mChannelTempPersonQuitCus_Update3(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelTempPersonQuitCus_Update3(map);
 	}
+
+	/*
+	 * 领取任务
+	 */
+	@Override
+	public int mChannelTaskAccept_Insert(Map<String, Object> map) {
+		return bChanneltaskMapper.mChannelTaskAccept_Insert(map);
+	}
+	@Override
+	public void mChannelTaskAccept_Insert2(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelTaskAccept_Insert2(map);
+	}
+	@Override
+	public void mChannelTaskAccept_Insert3(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelTaskAccept_Insert3(map);
+	}
+	/*
+	 * 更新兼职归属关系
+	 */
+	@Override
+	public void mChannelTaskAccept_Update(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelTaskAccept_Update(map);
+	}
+	/*
+	 * 领取的任务状态
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelTaskAccept_Select(Map<String, Object> map) {
+		return bChanneltaskMapper.mChannelTaskAccept_Select(map);
+	}
+
 	
 }

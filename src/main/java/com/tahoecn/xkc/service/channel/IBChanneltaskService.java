@@ -68,4 +68,21 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	void mChannelTempPersonQuitCus_Update(Map<String, Object> map);
 	void mChannelTempPersonQuitCus_Update2(Map<String, Object> map);
 	void mChannelTempPersonQuitCus_Update3(Map<String, Object> map);
+
+	/*
+	 * 领取任务
+	 */
+	int mChannelTaskAccept_Insert(Map<String, Object> map);
+	void mChannelTaskAccept_Insert2(Map<String, Object> map);
+	void mChannelTaskAccept_Insert3(Map<String, Object> map);
+	/*
+	 * 更新兼职归属关系
+	 */
+	void mChannelTaskAccept_Update(Map<String, Object> map);
+	/*
+	 * 领取的任务状态
+	 */
+	List<Map<String, Object>> mChannelTaskAccept_Select(Map<String, Object> map);
+
+
 }
