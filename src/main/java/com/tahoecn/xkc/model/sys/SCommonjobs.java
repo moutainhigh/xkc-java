@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.sys;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -55,7 +56,7 @@ public class SCommonjobs implements Serializable {
     @TableField("IsDel")
     private Integer IsDel;
 
-    @TableId("ID")
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     public Date getEditTime() {

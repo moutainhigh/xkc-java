@@ -426,7 +426,7 @@ public class H5Controller extends TahoeBaseController {
     public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String UserID=(String) paramMap.get("UserID");
-            String ClueID=(String) paramMap.get("ClueID");
+        String ClueID=(String) paramMap.get("ClueID");
         Result result = new Result();
         Map<String, Object> map = clueService.mBrokerCustomerDetail_Select(ClueID);
         if (map.size()==0){

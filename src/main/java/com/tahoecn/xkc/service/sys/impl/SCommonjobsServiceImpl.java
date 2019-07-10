@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.sys.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.service.sys.ISCommonjobsService;
 import com.tahoecn.xkc.mapper.sys.SCommonjobsMapper;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
@@ -28,8 +29,8 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 	private SCommonjobsMapper SCommonjobsMapper;
 
 	@Override
-	public List<SCommonjobs> SystemCommonJobsList_Select(Map<String, Object> map) {
-		List<SCommonjobs> list = SCommonjobsMapper.SystemCommonJobsList_Select(map);
+	public List<SCommonjobs> SystemCommonJobsList_Select(IPage page, String AuthCompanyID, String ProductID, String JobName) {
+		List<SCommonjobs> list = SCommonjobsMapper.SystemCommonJobsList_Select(page, AuthCompanyID, ProductID, JobName);
 		return list;
 	}
 

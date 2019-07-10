@@ -9,14 +9,14 @@
               [Status]
       FROM    [S_CommonJobs]
        WHERE  IsDel = 0 
-		<if test="authCompanyID != null and authCompanyID != ''">
-			and AuthCompanyID =#{authCompanyID}
+		<if test="AuthCompanyID != null and AuthCompanyID != ''">
+			and AuthCompanyID =#{AuthCompanyID}
 		</if>
-		<if test="productID != null and productID != ''">
-			and ProductID = #{productID}
+		<if test="ProductID != null and ProductID != ''">
+			and ProductID = #{ProductID}
 		</if>
-		<if test="jobName != null and jobName != ''">
-			AND JobName LIKE  '%'+ #{jobName} +'%'
+		<if test="ProductID != null and ProductID != ''">
+			AND JobName LIKE  '%'+ #{JobName} +'%'
 		</if>		
       ORDER BY JobName 
   </select>
@@ -34,24 +34,24 @@
   	<select  id="SystemCommonJobNameIsExists_Select" parameterType="java.util.HashMap" resultType="String">
       SELECT COUNT(1) AS A FROM dbo.S_CommonJobs 
        WHERE  IsDel = 0 
-		<if test="authCompanyID != null and authCompanyID != ''">
-			and AuthCompanyID =#{authCompanyID}
+		<if test="AuthCompanyID != null and AuthCompanyID != ''">
+			and AuthCompanyID =#{AuthCompanyID}
 		</if>
-		<if test="productID != null and productID != ''">
-			and ProductID = #{productID}
+		<if test="ProductID != null and ProductID != ''">
+			and ProductID = #{ProductID}
 		</if>
-		<if test="jobName != null and jobName != ''">
-			and JobName = #{jobName}
+		<if test="JobName != null and JobName != ''">
+			and JobName = #{JobName}
 		</if>		
 	</select>
 	
 	<update id="SystemCommonJobStatus_Update" parameterType="java.util.HashMap">
-		UPDATE S_CommonJobs SET [Status] = #{status} 
-		WHERE ID = #{id} 
+		UPDATE S_CommonJobs SET [Status] = #{Status}
+		WHERE ID = #{ID}
 	</update>
 	
 	<update id="SystemCommonJob_Delete" parameterType="java.util.HashMap">
-	     UPDATE S_CommonJobs SET IsDel = 1 WHERE ID = #{id}
+	     UPDATE S_CommonJobs SET IsDel = 1 WHERE ID = #{ID}
 	</update>
 	
 	<insert id="SystemCommonJob_Insert" parameterType="java.util.HashMap" >
@@ -88,13 +88,13 @@
 	<update id="SystemCommonJob_Update" parameterType="java.util.HashMap">
 		  UPDATE dbo.S_CommonJobs 
       SET 
-          JobCode =  #{jobCode}, 
-          JobName = #{jobName},
-          JobDesc = #{jobDesc},
-          Editor = #{editor},
+          JobCode =  #{JobCode},
+          JobName = #{JobName},
+          JobDesc = #{JobDesc},
+          Editor = #{Editor},
           EditTime = GETDATE(),
-          Status = #{status}
-      WHERE ID = #{id}
+          Status = #{Status}
+      WHERE ID = #{ID}
 	</update>	
 	
 </mapper>

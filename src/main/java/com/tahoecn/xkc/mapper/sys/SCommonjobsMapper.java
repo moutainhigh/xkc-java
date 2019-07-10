@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -16,7 +18,7 @@ import com.tahoecn.xkc.model.sys.SCommonjobs;
  */
 public interface SCommonjobsMapper extends BaseMapper<SCommonjobs> {
 	
-	List<SCommonjobs> SystemCommonJobsList_Select(Map<String, Object> map);
+	List<SCommonjobs> SystemCommonJobsList_Select(IPage page,@Param("AuthCompanyID")String AuthCompanyID, @Param("ProductID")String ProductID, @Param("JobName")String JobName);
 	
 	List<SCommonjobs> SystemCommonJobsList_SelectList();
 	

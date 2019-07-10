@@ -89,7 +89,7 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
         AND [Status] = 1
         AND ProjectID = #{ProjectID}
         <if test="pOrgName!=null and pOrgName!=''">
-            AND OrgName like '%#{pOrgName}%'
+            AND OrgName like concat('%',#{pOrgName},'%')
         </if>
         ORDER BY
         CreateTime DESC

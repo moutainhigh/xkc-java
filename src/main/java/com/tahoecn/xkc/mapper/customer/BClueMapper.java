@@ -50,4 +50,8 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	List<Map<String, Object>> RuleClueList_Select(Map<String, Object> obj);
 
 	Object ClueConfirm_Update(Map parameter);
+	/**
+	 * 待确认查询
+	 */
+	List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> parameter);
 }

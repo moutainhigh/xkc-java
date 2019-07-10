@@ -2,6 +2,8 @@ package com.tahoecn.xkc.controller.webapi.sys;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
@@ -39,21 +41,32 @@ public class SMenusController extends TahoeBaseController {
     private ISMenusService isMenusService;
 
     @ApiOperation(value = "sample menus", notes = "menus")
-    @RequestMapping(value = "/menusList", method = {RequestMethod.GET})
-    public JSONResult menusList() {
+    @RequestMapping(value = "/menusList", method = {RequestMethod.POST})
+    public Result menusList() {
         List<SMenus> list = isMenusService.list();
-        return markSuccess(list);
+        return Result.ok(list);
     }
 
     /**
      * 数据字典
      */
     @ApiOperation(value = "数据字典", notes = "数据字典")
-    @RequestMapping(value = "/mSystemDictionaryDetail_Select", method = {RequestMethod.GET})
+    @RequestMapping(value = "/mSystemDictionaryDetail_Select", method = {RequestMethod.POST})
     public Result mSystemDictionaryDetail_Select(@RequestBody JSONObject jsonParam) {
         HashMap<String,Object> param=(HashMap)jsonParam.get("_param");
         Result result=isMenusService.SystemDictionaryDetail(param);
-        return Result.ok("");
+        return result;
+    }
+
+    @ApiOperation(value = "获取所有菜单信息", notes = "获取所有菜单信息")
+    @RequestMapping(value = "/SystemMenusList_Select", method = {RequestMethod.POST})
+    public Result SystemMenusList_Select(@RequestBody JSONObject jsonParam) {
+        Map map = (HashMap)jsonParam.get("_param");
+        int PageIndex=(int) map.get("Pageindex");
+        int PageSize=(int) map.get("Pagesize");
+        IPage page = new Page(PageIndex, PageSize);
+        List<Map<String,Object>> list=isMenusService.SystemMenusList_Select(page);
+        return Result.ok(list);
     }
 
 }

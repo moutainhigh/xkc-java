@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.salegroup.BSalesuserMapper">
+
+
+    <select id="UserSalesList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        b.ID,
+        a.Name,
+        c.Name,
+        c.ID
+        FROM
+        B_SalesUser a
+        LEFT JOIN dbo.B_SalesGroupMember b ON a.ID= b.MemberID
+        AND b.IsDel= 0
+        AND b.Status= 1
+        LEFT JOIN dbo.B_SalesGroup c ON b.ReceptionGroupID= c.ID
+        AND c.IsDel= 0
+        AND c.Status= 1
+        <where>
+            a.IsDel= 0
+            AND a.Status= 1
+            AND b.RoleID= '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+            <if test="projectID!=null and projectID!=''">
+                AND b.ProjectID =#{projectID}
+            </if>
+            <if test="teamID!=null and teamID!=''">
+                AND c.ID =#{teamID}
+            </if>
+        </where>
+    </select>
+</mapper>

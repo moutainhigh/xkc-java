@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.sys.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.http.HttpUtil;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.ucapi.UcApiUtils;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -126,5 +128,10 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     @Override
     public List<HashMap<String, String>> GetMenuAndFunList_Select(String jobCode, String projectID) {
         return sAccountMapper.GetMenuAndFunList_Select(jobCode,projectID);
+    }
+
+    @Override
+    public List<Map<String, Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String orgID, String key) {
+        return baseMapper.SystemUserListByOrgID_Select(page,authCompanyID,orgID,key);
     }
 }

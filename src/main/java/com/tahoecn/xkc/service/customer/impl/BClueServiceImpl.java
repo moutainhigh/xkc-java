@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
-import com.tahoecn.xkc.model.customer.BOpportunity;
+import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
-import com.tahoecn.xkc.service.customer.IBOpportunityService;
+import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -407,7 +407,14 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		return baseMapper.RuleClueList_Select(obj);
 	}
 	@Override
-	public Object ClueConfirm_Update(Map parameter){
+	public Object ClueConfirm_Update(Map<String, Object> parameter){
 		return baseMapper.ClueConfirm_Update(parameter);
+	}
+	/**
+	 * 待确认查询
+	 */
+	@Override
+	public List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> parameter){
+		return baseMapper.CaseFieToBeConfirmedList_Select(parameter);
 	}
 }

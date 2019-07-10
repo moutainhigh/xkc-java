@@ -1,27 +1,27 @@
 package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.sys.SMenusMapper;
-import com.tahoecn.xkc.model.customer.BSalesgroup;
 import com.tahoecn.xkc.model.dict.BTag;
+import com.tahoecn.xkc.model.salegroup.BSalesgroup;
 import com.tahoecn.xkc.model.sys.SCity;
 import com.tahoecn.xkc.model.sys.SMenus;
-import com.tahoecn.xkc.service.channel.IBSalesuserService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
-import com.tahoecn.xkc.service.customer.IBSalesgroupService;
 import com.tahoecn.xkc.service.dict.IBTagService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.project.IBProjectService;
+import com.tahoecn.xkc.service.project.IVProjectroomService;
+import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
+import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISCityService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlbeans.impl.jam.JProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.print.attribute.standard.PrinterURI;
 import java.util.*;
 
 /**
@@ -56,8 +56,14 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
     @Autowired
     private IBSalesuserService salesuserService;
 
+    @Autowired
+    private IVProjectroomService projectroomService;
+
     @Override
     public Result SystemDictionaryDetail(HashMap<String,Object> param) {
+        try {
+
+
         String IDAlias = "ID";
         String ChildAlias = "Child";
         String DictNameAlias = "DictName";
@@ -514,11 +520,149 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
 //        处理房间户型数据
         if (isFJHX)
         {
-
+            List<Map<String,Object>> list=projectroomService.RoomTypeList_Select((String)param.get("BuildingID"));
+            for (Map<String, Object> map : list) {
+                Map<String,Object> dict = new HashMap<>();
+                dict.put(IDAlias,map.get("RoomType"));
+                dict.put(DictNameAlias,map.get("RoomType"));
+                dict.put(ChildAlias,new ArrayList<>());
+                res.put("FJHX",dict);
+            }
         }
+//        处理客户筛选规则(自渠)数据
+        if (isKHSXGZZQ)
+        {
+            String userID = (String) param.get("UserID");
+            QueryWrapper<BTag> wrapper=new QueryWrapper<>();
+            wrapper.eq("IsDel",0).eq("Status",1).eq("Creator",userID);
+            wrapper.orderByAsc("Name");
+            List<BTag> list= tagService.list(wrapper);
 
+            if ("JZ".equals(param.get("JobCode"))){
+                List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
+                Map<String, Object> map = khsxgzgw.get(3);
+                map.put("Child",list);
+                khsxgzgw.add(3,map);
+                res.put("KHSXGZZQ",khsxgzgw);
+            }
+//            客户分组集合查询
+            List<Map<String,Object>> arr=customerfiltergroupService.groupList((String) param.get("JobCode"),(String)param.get("ProjectID"),(String)param.get("UserID"));
+            List groupArr=new ArrayList();
+            for (int j = 0; j < arr.size(); j++)
+            {
+                HashMap<String,Object> dat = new HashMap<>();
+                dat.put("ID",arr.get(j).get("ID"));
+                dat.put("DictName",arr.get(j).get("DictName"));
+                dat.put("Type","group");
+                dat.put("Filter",arr.get(i).get("Filter"));
+                List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                List FilterDesc=new ArrayList();
+                for (Map<String, Object> map : dct) {
+                    for (String key : map.keySet()) {
+                        Map<String, Object> filterobj=new HashMap<>();
+                        filterobj.put("DictName",key);
+                        filterobj.put("ID",map.get(key));
+                        filterobj.put("Type","group");
+                        FilterDesc.add(filterobj);
+                    }
+                }
+                dat.put("FilterDesc",FilterDesc);
+                groupArr.add(dat);
+            }
+            if ("JZ".equals(param.get("JobCode")))
+            {
+                List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
+                Map<String, Object> map = khsxgzgw.get(4);
+                map.put("Child",list);
+                khsxgzgw.add(4,map);
+                res.put("KHSXGZZQ",khsxgzgw);
+            }else {
+                List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
+                Map<String, Object> map = khsxgzgw.get(2);
+                map.put("Child",list);
+                khsxgzgw.add(2,map);
+                res.put("KHSXGZZQ",khsxgzgw);
+            }
+        }
+//        处理客户公共池筛选规则(顾问)
+        if (isKHGGCSXGZGW) {
+//            客户分组集合查询
+            List<Map<String, Object>> arr = customerfiltergroupService.groupList((String) param.get("JobCode"), (String) param.get("ProjectID"), (String) param.get("UserID"));
+            List groupArr = new ArrayList();
+            for (int j = 0; j < arr.size(); j++) {
+                HashMap<String, Object> dat = new HashMap<>();
+                dat.put("ID", arr.get(j).get("ID"));
+                dat.put("DictName", arr.get(j).get("DictName"));
+                dat.put("Type", "group");
+                dat.put("Filter", arr.get(i).get("Filter"));
+                List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
+                List FilterDesc = new ArrayList();
+                for (Map<String, Object> map : dct) {
+                    for (String key : map.keySet()) {
+                        Map<String, Object> filterobj = new HashMap<>();
+                        filterobj.put("DictName", key);
+                        filterobj.put("ID", map.get(key));
+                        filterobj.put("Type", "group");
+                        FilterDesc.add(filterobj);
+                    }
+                }
+                dat.put("FilterDesc", FilterDesc);
+                groupArr.add(dat);
+            }
+            List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHGGCSXGZGW");
+            Map<String, Object> map = khsxgzgw.get(2);
+            map.put("Child",groupArr);
+            khsxgzgw.add(2,map);
+            res.put("KHSXGZZQ",khsxgzgw);
+        }
+//        处理客户公共池筛选规则(自渠)
+        if (isKHGGCSXGZZQ)
+        {
+//            客户分组集合查询
+            List<Map<String, Object>> arr = customerfiltergroupService.groupList((String) param.get("JobCode"), (String) param.get("ProjectID"), (String) param.get("UserID"));
+            List groupArr = new ArrayList();
+            for (int j = 0; j < arr.size(); j++) {
+                HashMap<String, Object> dat = new HashMap<>();
+                dat.put("ID", arr.get(j).get("ID"));
+                dat.put("DictName", arr.get(j).get("DictName"));
+                dat.put("Type", "group");
+                dat.put("Filter", arr.get(i).get("Filter"));
+                List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
+                List FilterDesc = new ArrayList();
+                for (Map<String, Object> map : dct) {
+                    for (String key : map.keySet()) {
+                        Map<String, Object> filterobj = new HashMap<>();
+                        filterobj.put("DictName", key);
+                        filterobj.put("ID", map.get(key));
+                        filterobj.put("Type", "group");
+                        FilterDesc.add(filterobj);
+                    }
+                }
+                dat.put("FilterDesc", FilterDesc);
+                groupArr.add(dat);
+            }
+            List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHGGCSXGZZQ");
+            Map<String, Object> map = khsxgzgw.get(2);
+            map.put("Child",groupArr);
+            khsxgzgw.add(2,map);
+            res.put("KHGGCSXGZZQ",khsxgzgw);
+        }
+        List<Map<String, Object>> data=new ArrayList<>();
+        if (res.size() >= 1)
+        {
+            for (String key : res.keySet()) {
+            data.add((Map<String, Object>) res.get(key));
+            }
+        }
+        return Result.ok(data);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.errormsg(99,"数据字典错误");
+        }
+    }
 
-
-        return null;
+    @Override
+    public List<Map<String, Object>> SystemMenusList_Select(IPage page) {
+        return baseMapper.SystemMenusList_Select(page);
     }
 }

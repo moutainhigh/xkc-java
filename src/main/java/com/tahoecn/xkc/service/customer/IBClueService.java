@@ -57,5 +57,10 @@ public interface IBClueService extends IService<BClue> {
 	 */
 	List<Map<String, Object>> getClueList(Map<String, Object> obj);
 
-	Object ClueConfirm_Update(Map parameter);
+	Object ClueConfirm_Update(Map<String, Object> parameter);
+
+	/**
+	 * 待确认查询
+	 */
+	List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> paramMap);
 }
