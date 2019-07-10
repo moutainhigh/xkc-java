@@ -2,6 +2,10 @@ package com.tahoecn.xkc.mapper.salegroup;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,4 +17,5 @@ import com.tahoecn.xkc.model.salegroup.BSalesuser;
  */
 public interface BSalesuserMapper extends BaseMapper<BSalesuser> {
 
+    List<Map<String, Object>> UserSalesList_Select(@Param("projectID") String projectID, @Param("teamID") String teamID);
 }

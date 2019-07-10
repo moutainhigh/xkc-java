@@ -6,6 +6,9 @@ import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  服务实现类
@@ -17,4 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class BSalesuserServiceImpl extends ServiceImpl<BSalesuserMapper, BSalesuser> implements IBSalesuserService {
 
+    @Override
+    public List<Map<String, Object>> UserSalesList_Select(String projectID, String teamID) {
+        return baseMapper.UserSalesList_Select(projectID,teamID);
+    }
 }

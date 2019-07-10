@@ -5,25 +5,23 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.sys.SMenusMapper;
-import com.tahoecn.xkc.model.customer.BSalesgroup;
 import com.tahoecn.xkc.model.dict.BTag;
+import com.tahoecn.xkc.model.salegroup.BSalesgroup;
 import com.tahoecn.xkc.model.sys.SCity;
 import com.tahoecn.xkc.model.sys.SMenus;
-import com.tahoecn.xkc.service.channel.IBSalesuserService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
-import com.tahoecn.xkc.service.customer.IBSalesgroupService;
 import com.tahoecn.xkc.service.dict.IBTagService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IVProjectroomService;
+import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
+import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISCityService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlbeans.impl.jam.JProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.print.attribute.standard.PrinterURI;
 import java.util.*;
 
 /**

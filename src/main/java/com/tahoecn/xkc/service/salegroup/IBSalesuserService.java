@@ -3,6 +3,9 @@ package com.tahoecn.xkc.service.salegroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +16,5 @@ import com.tahoecn.xkc.model.salegroup.BSalesuser;
  */
 public interface IBSalesuserService extends IService<BSalesuser> {
 
+    List<Map<String, Object>> UserSalesList_Select(String projectID, String teamID);
 }
