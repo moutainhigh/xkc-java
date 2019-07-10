@@ -1,11 +1,13 @@
 package com.tahoecn.xkc.mapper.sys;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -35,4 +37,6 @@ public interface SAccountMapper extends BaseMapper<SAccount> {
     List<HashMap<String,String>> userProjectJobList(@Param("userId") String userID, @Param("projectID") String projectID);
 
     List<HashMap<String,String>> GetMenuAndFunList_Select(@Param("jobCode") String jobCode, @Param("projectID") String projectID);
+
+    List<Map<String, Object>> SystemUserListByOrgID_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("OrgID")String orgID, @Param("Key")String key);
 }

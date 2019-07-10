@@ -2,4 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.sys.SMenusMapper">
 
+
+    <select id="SystemMenusList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        ID ,
+        PID ,
+        MenuName ,
+        MenuSysName ,
+        Url ,
+        ImageUrl ,
+        IconClass ,
+        IsHomePage ,
+        IsShow ,
+        Levels ,
+        ListIndex ,
+        IsLast ,
+        [Status]
+        FROM  [S_Menus]
+        WHERE IsDel = 0
+        ORDER BY Levels,ListIndex
+    </select>
 </mapper>

@@ -26,4 +26,5 @@ public interface IVProjectroomService extends IService<VProjectroom> {
 	 */
 	List<Map<String, Object>> RoomListYXJL_Select(Map<String, Object> paramMap);
 
+    List<Map<String, Object>> RoomTypeList_Select(String buildingID);
 }

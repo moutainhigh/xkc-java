@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.project.VProjectroom;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -24,4 +25,5 @@ public interface VProjectroomMapper extends BaseMapper<VProjectroom> {
 	 */
 	List<Map<String, Object>> ProjectRoomListYXJL_Select(Map<String, Object> paramMap);
 
+    List<Map<String, Object>> RoomTypeList_Select(@Param("BuildingID") String buildingID);
 }

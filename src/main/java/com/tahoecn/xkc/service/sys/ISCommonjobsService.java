@@ -3,8 +3,10 @@ package com.tahoecn.xkc.service.sys;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -16,7 +18,7 @@ import com.tahoecn.xkc.model.sys.SCommonjobs;
  */
 public interface ISCommonjobsService extends IService<SCommonjobs> {
 
-	List<SCommonjobs> SystemCommonJobsList_Select(Map<String, Object> map);
+	List<SCommonjobs> SystemCommonJobsList_Select(IPage page,String AuthCompanyID,String ProductID,String JobName);
 	
 	List<SCommonjobs> SystemCommonJobsList_SelectList();
 	

@@ -1,10 +1,12 @@
 package com.tahoecn.xkc.service.sys;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -75,4 +77,6 @@ public interface ISAccountService extends IService<SAccount> {
     List<HashMap<String,String>> userProjectJobList(String userID, String projectID);
 
     List<HashMap<String,String>> GetMenuAndFunList_Select(String jobCode, String projectID);
+
+    List<Map<String, Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String orgID, String key);
 }

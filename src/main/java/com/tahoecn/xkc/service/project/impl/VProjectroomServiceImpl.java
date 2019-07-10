@@ -64,4 +64,9 @@ public class VProjectroomServiceImpl extends ServiceImpl<VProjectroomMapper, VPr
 		return vProjectroomMapper.ProjectRoomListYXJL_Select(paramMap);
 	}
 
+    @Override
+    public List<Map<String, Object>> RoomTypeList_Select(String buildingID) {
+        return baseMapper.RoomTypeList_Select(buildingID);
+    }
+
 }

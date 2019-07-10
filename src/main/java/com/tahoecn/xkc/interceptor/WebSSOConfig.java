@@ -42,7 +42,7 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		// 多个拦截器组成一个拦截器链
 		// addPathPatterns 用于添加拦截规则
 		// excludePathPatterns 用户排除拦截
-		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
+//		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
 		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/house/**","/app/auth/**");
 
 	}

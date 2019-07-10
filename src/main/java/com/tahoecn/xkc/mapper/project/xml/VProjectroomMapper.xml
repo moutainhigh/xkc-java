@@ -50,4 +50,16 @@
 		        RoomIndex
     ]]>
 	</select>
+
+    <select id="RoomTypeList_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        SELECT DISTINCT
+        RoomType
+        FROM
+        V_ProjectRoom
+        WHERE
+        RoomType <> ''
+        AND BuildingID = #{BuildingID}
+        ]]>
+    </select>
 </mapper>
