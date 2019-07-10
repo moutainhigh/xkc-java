@@ -152,5 +152,38 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 		return bChanneltaskMapper.mChannelTaskAccept_Select(map);
 	}
 
+	/*
+	 * 写入任务结束消息
+	 */
+	@Override
+	public void mChannelLeaderQuit_Update(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelLeaderQuit_Update(map);
+	}
+
+	@Override
+	public void mChannelLeaderQuit_Insert(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelLeaderQuit_Insert(map);
+	}
+
+	@Override
+	public void mChannelLeaderQuit_Update2(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelLeaderQuit_Update2(map);
+	}
+
+	@Override
+	public void mChannelLeaderQuit_Insert2(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelLeaderQuit_Insert2(map);
+	}
+
+	@Override
+	public void mChannelLeaderQuit_Update3(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelLeaderQuit_Update3(map);
+	}
+
+	@Override
+	public void mChannelLeaderQuit_Update4(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelLeaderQuit_Update4(map);
+	}
+
 	
 }

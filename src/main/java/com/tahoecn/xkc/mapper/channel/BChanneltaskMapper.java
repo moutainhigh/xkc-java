@@ -80,5 +80,15 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	 * 领取的任务状态
 	 */
 	List<Map<String, Object>> mChannelTaskAccept_Select(Map<String, Object> map);
+	
+	/*
+	 * 写入任务结束信息
+	 */
+	void mChannelLeaderQuit_Update(Map<String, Object> map);
+	void mChannelLeaderQuit_Insert(Map<String, Object> map);
+	void mChannelLeaderQuit_Update2(Map<String, Object> map);
+	void mChannelLeaderQuit_Insert2(Map<String, Object> map);
+	void mChannelLeaderQuit_Update3(Map<String, Object> map);
+	void mChannelLeaderQuit_Update4(Map<String, Object> map);
 
 }

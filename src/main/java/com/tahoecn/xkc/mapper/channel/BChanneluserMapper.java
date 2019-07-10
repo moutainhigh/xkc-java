@@ -71,13 +71,13 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	/*
 	 * 专员考勤
 	 */
-	List<Map<String, Object>> mChannelCheckClockTotal_Select(IPage page, String ChannelTaskID, String CheckDate);
+	List<Map<String, Object>> mChannelCheckClockTotal_Select(IPage page, @Param("ChannelTaskID")String ChannelTaskID, @Param("CheckDate")String CheckDate);
 
 	/*
 	 * 详细考勤
 	 *
 	 */
-	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, String ChannelTaskID, String CheckDate);
+	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, @Param("ChannelTaskID")String ChannelTaskID, @Param("CheckDate")String CheckDate);
 
 	/*
 	 * 详细考勤数量
@@ -92,7 +92,7 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	/*
 	 * 考勤信息查询
 	 */
-	List<Map<String, Object>> mChannelCheckClockPerson_Select(IPage page, String UserID, String CheckDate);
+	List<Map<String, Object>> mChannelCheckClockPerson_Select(IPage page, @Param("UserID")String UserID, @Param("CheckDate")String CheckDate);
 
 	/*
 	 * 考勤信息数量统计
@@ -107,7 +107,7 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	/*
 	 * 考勤异常
 	 */
-	List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, String ChannelTaskID, String SiteUrl);
+	List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, @Param("ChannelTaskID")String ChannelTaskID, @Param("SiteUrl")String SiteUrl);
 
 	/*
 	 * 考勤异常数量统计
