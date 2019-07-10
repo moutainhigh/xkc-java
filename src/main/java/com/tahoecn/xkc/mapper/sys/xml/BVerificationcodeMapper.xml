@@ -19,4 +19,9 @@
         ORDER BY
         createtime DESC
     </select>
+    <update id="VerificationCodeDetail_Insert" parameterType="java.lang.String">
+	    UPDATE   B_VerificationCode
+		SET      IsDel = 1
+		WHERE    Mobile = #{Mobile}
+    </update>
 </mapper>

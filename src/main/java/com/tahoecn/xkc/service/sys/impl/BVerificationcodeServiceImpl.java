@@ -1,14 +1,18 @@
 package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.sys.BVerificationcodeMapper;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>
@@ -46,4 +50,24 @@ public class BVerificationcodeServiceImpl extends ServiceImpl<BVerificationcodeM
     public BVerificationcode checkAuthCode(String mobile) {
         return baseMapper.checkAuthCode(mobile);
     }
+
+    /**
+     * 新增验证码
+     */
+	@Override
+	public void Detail_Add(Map<String, Object> parameter) {
+		String Mobile = (String) parameter.get("Mobile");
+		String VerificationCode = (String) parameter.get("VerificationCode");
+		baseMapper.VerificationCodeDetail_Insert(Mobile);
+		Date time=new Date();
+        Date overdueTime=new Date(time.getTime()+10*60*1000);
+		BVerificationcode bv = new BVerificationcode();
+		bv.setCreateTime(time);
+		bv.setIsDel(0);
+		bv.setMobile(Mobile);
+		bv.setOverdueTime(overdueTime);
+		bv.setStatus(1);
+		bv.setVerificationCode(VerificationCode);
+		baseMapper.insert(bv);
+	}
 }

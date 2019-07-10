@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tahoecn.core.date.DateTime;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
 import com.tahoecn.xkc.converter.Result;
@@ -8,7 +9,9 @@ import com.tahoecn.xkc.model.sys.BAppupgrade;
 import com.tahoecn.xkc.model.sys.BSystemad;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
+import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
+import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +47,10 @@ public class AppSystemController extends TahoeBaseController {
     private IBAppupgradeService iBAppupgradeService;
     @Autowired
     private ISLogsService iSLogsService;
+    @Autowired
+    private IBVerificationcodeService iBVerificationcodeService;
+    @Autowired 
+	private CsSendSmsLogService csSendSmsLogService;
 
 	@ResponseBody
     @ApiOperation(value = "广告接口", notes = "广告接口")
@@ -93,6 +101,28 @@ public class AppSystemController extends TahoeBaseController {
     		List<BAppupgrade> bAppupgrade = iBAppupgradeService.SystemAppVersion_Select(map);
     		
     		return Result.ok(bAppupgrade!= null && bAppupgrade.size()!=0 ?bAppupgrade.get(0):"");
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
+	
+	@ResponseBody
+    @ApiOperation(value = "获取验证码", notes = "获取验证码")
+    @RequestMapping(value = "/mVerificationCode_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mVerificationCode_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String Mobile = (String)paramMap.get("Mobile").toString();
+            Random ran = new Random();
+            int verificationCode = ran.nextInt(899999)+100000;
+            //写入数据,并调取短信接口
+            Map<String,Object> parameter = new HashMap<String,Object>();
+            parameter.put("Mobile", Mobile);//string
+            parameter.put("VerificationCode", String.valueOf(verificationCode));//string
+            iBVerificationcodeService.Detail_Add(parameter);
+            csSendSmsLogService.sendSms(Mobile,"【泰禾集团】验证码："+String.valueOf(verificationCode)+"，5分钟内有效","");
+            return Result.ok(String.valueOf(verificationCode));
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
