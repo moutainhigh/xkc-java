@@ -5,6 +5,8 @@ import com.tahoecn.xkc.model.channel.BChanneltaskarea;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -21,7 +23,7 @@ public interface BChanneltaskareaMapper extends BaseMapper<BChanneltaskarea> {
 	/*
 	 * 任务地点列表
 	 */
-	List<BChanneltaskarea> mChannelTaskAreaList_Select(IPage page, String UserID);
+	List<BChanneltaskarea> mChannelTaskAreaList_Select(IPage page, @Param("UserID")String UserID);
 
 	/*
 	 * 新建任务地点

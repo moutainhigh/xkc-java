@@ -116,4 +116,8 @@ public interface SystemMessageMapper {
     int mMessageAllList_Updata(@Param("ID") String ID);
     
     void SystemMessageDetailByHandle_Update(@Param("BizType")String BizType,@Param("SetStatus")String SetStatus,@Param("Where")String Where);
+    /**
+	 * 设置动态消息已读
+	 */
+	void mMessageDynamicReadList_Update(Map<String, Object> map);
 }

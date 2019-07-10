@@ -37,4 +37,19 @@
         CreateTime DESC
         END
     </select>
+    <!-- 客户筛选分组列表 -->
+	<select id="mCustomerFilterGroupList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  ID ,
+			        Name ,
+			        Filter ,
+			        FilterDesc
+			FROM    B_CustomerFilterGroup
+			WHERE   IsDel = 0
+			        AND Status = 1
+			        AND ProjectID = #{ProjectID}
+			        AND Creator = #{UserID}
+			ORDER BY CreateTime DESC
+    	]]>
+	</select>
 </mapper>
