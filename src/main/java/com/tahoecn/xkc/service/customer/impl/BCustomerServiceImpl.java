@@ -37,4 +37,33 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     public List<Map<String, Object>> GetDistributionList_Select(String project) {
         return baseMapper.getDistributionList_Select(project);
     }
-}
+
+    @Override
+    public IPage<Map<String, Object>> CustomerChange_BakPageList_Select(IPage page, String projectID, String sqlWhere) {
+        return baseMapper.CustomerChange_BakPageList_Select(page,projectID,sqlWhere);
+    }
+
+    @Override
+    public List<Map<String, Object>> SetExcelToCustomerChange_BakList(String projectID, String sqlWhere) {
+        return baseMapper.SetExcelToCustomerChange_BakList(projectID,sqlWhere);
+    }
+
+    @Override
+    public Map<String, Object> CustomerChangeDetailAll_Select(String projectId, String customerID, String clueID) {
+        Map<String, Object> opportunity = baseMapper.getB_OpportunityByClueID(clueID);
+        Map<String, Object> customerChangeDetail;
+        if (opportunity != null){
+            customerChangeDetail = baseMapper.CustomerChangeDetailAll_Select(projectId,customerID,clueID,opportunity.get("CustomerID").toString());
+        }else{
+            customerChangeDetail = baseMapper.CustomerChangeDetailAll_Select2(projectId,customerID,clueID);
+        }
+        return customerChangeDetail;
+    }
+    /**
+     * 验证是否是本项目老业主
+     */
+        @Override
+        public List<Map<String, Object>> IsProjectOwner_Select(String projectId, String phone) {
+        	return baseMapper.IsProjectOwner_Select(projectId,phone);
+        }
+    }

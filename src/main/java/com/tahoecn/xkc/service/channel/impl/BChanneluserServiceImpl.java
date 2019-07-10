@@ -392,5 +392,23 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return baseMapper.GetReportUserInfo_Select(userID,intentProjectID,channelIdentify);
     }
 
+	/*
+	 * 考勤异常
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, String ChannelTaskID, String SiteUrl) {
+		return bChanneluserMapper.mChannelUserAbnormal_Select(page,ChannelTaskID,SiteUrl);
+		
+	}
+
+	/*
+	 * 考勤异常数量统计
+	 */
+	@Override
+	public int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelUserAbnormal_SelectAllCount(map);
+		
+	}
+
 
 }

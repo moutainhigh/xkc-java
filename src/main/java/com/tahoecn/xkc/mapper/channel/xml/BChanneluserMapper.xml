@@ -371,4 +371,67 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         WHERE
         id = #{UserID}
     </select>
+    
+    <!-- 考勤异常 -->
+    <select id="mChannelUserAbnormal_Select" parameterType="java.util.Map" resultType="String">
+	SELECT  Name,AbnormalDesc,Mobile,HeadImg
+	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
+	                    ChannelUserName Name ,
+	                    AbnormalDesc ,
+	                    ChannelUserMobile Mobile,
+	                    #{SiteUrl}+ HeadImg HeadImg
+	          FROM      B_ChannelUserAbnormal cua
+	          LEFT JOIN dbo.B_SalesUser su ON su.ID = cua.ChannelUserID 
+	          WHERE     ChannelTaskID = #{ChannelTaskID}
+	        ) n
+	WHERE   n.RowNum = 1
+        
+    </select>
+    
+    <!-- 考勤异常数量统计 -->
+    <select id="mChannelUserAbnormal_SelectAllCount" parameterType="java.util.Map" resultType="int">
+	SELECT  COUNT(1) recordCount
+	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
+	                    ChannelUserName Name ,
+	                    AbnormalDesc ,
+	                    ChannelUserMobile Mobile,
+	                    #{SiteUrl}+ HeadImg HeadImg
+	          FROM      B_ChannelUserAbnormal cua
+	          LEFT JOIN dbo.B_SalesUser su ON su.ID = cua.ChannelUserID 
+	          WHERE     ChannelTaskID = #{ChannelTaskID}
+	        ) n
+	WHERE   n.RowNum = 1
+        
+    </select>
+    <!-- 获取分销渠道所属机构ID -->
+    <select id="GetChannelOrgID_Select" resultType="java.util.Map" parameterType="java.util.Map">
+    <![CDATA[
+		select CASE WHEN LEN(b.PID)>0 THEN b.PID else ChannelOrgID END ChannelOrgID from B_ChannelUser a
+		inner join B_ChannelOrg b on a.ChannelOrgID = b.ID
+		 where 
+		 a.ID=#{UserID} and 
+		 a.ChannelTypeID='32C92DA0-DA13-4C21-A55E-A1D16955882C'
+
+    ]]>
+    </select>
+
+    <insert id="insertBChannelUser" parameterType="java.util.Map">
+        INSERT INTO dbo.B_ChannelUser
+        ( ID ,
+        UserName ,
+        Password ,
+        Mobile ,
+        Name ,
+        Gender ,
+        ChannelTypeID,
+        Creator ,
+        CreateTime ,
+        IsDel ,
+        Status
+        )
+        SELECT id,UserName,Password,Mobile,EmployeeName,Gender,(
+        SELECT CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
+        INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID AND b.ID=#{ID}
+        WHERE a.IsDel=0),#{UserID},GETDATE(),0,1 FROM dbo.S_Account WHERE id=#{MemberID}
+    </insert>
 </mapper>

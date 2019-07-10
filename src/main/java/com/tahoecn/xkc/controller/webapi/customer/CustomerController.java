@@ -66,7 +66,7 @@ public class CustomerController extends TahoeBaseController {
                                                 String ReportTime_End,
                                                 String TheFirstVisitDate_Start,
                                                 String TheFirstVisitDate_End,
-                                                    Integer OpportunityStatus,String isExcel,ModelMap modelMap) {
+                                                    Integer OpportunityStatus,String isExcel) {
         StringBuffer sqlWhere = new StringBuffer();
 
 
@@ -183,6 +183,102 @@ public class CustomerController extends TahoeBaseController {
         return Result.ok(result);
     }
 
+    @ApiOperation(value = "渠道客户变更列表")
+    @RequestMapping(value = "/CustomerChange_BakPageList_Select", method = {RequestMethod.GET})
+    public Result CustomerChange_BakPageList_Select(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize,String projectID,
+                                                    String CustomerName,
+                                                    String CustomerMobile,
+                                                    Integer Status,
+                                                    String ReportTime_Start,
+                                                    String ReportTime_End,
+                                                    String isExcel) {
+        IPage page = new Page(pageNum,pageSize);
+        StringBuilder sqlWhere = new StringBuilder();
+
+
+        if (StringUtils.isNotEmpty(CustomerName)) {
+            sqlWhere.append(" AND t.CustomerName like '%").append(CustomerName).append("%'");
+        }
+        
+        //客户姓名
+        if (StringUtils.isNotEmpty(CustomerName)) {
+            sqlWhere.append(" AND t.CustomerName like '%").append(CustomerName).append("%'");
+        }
+        //客户手机号
+        if (StringUtils.isNotEmpty(CustomerMobile)) {
+            sqlWhere.append(" AND t.CustomerMobile like '%").append(CustomerName).append("%'");
+        }
+        //客户状态
+        if (Status != null) {
+            if (Status == 1){//无效
+                sqlWhere.append(" AND t.Statu = 3 ");
+            } else{//有效
+                sqlWhere.append(" AND t.Statu <> 3 ");
+            }
+        }
+
+        //报备时间
+        if (StringUtils.isNotEmpty(ReportTime_Start)) {
+            sqlWhere.append(" and  t.ReportTime>='").append(ReportTime_Start).append("'");
+        }
+        //报备时间
+        if (StringUtils.isNotEmpty(ReportTime_End)) {
+            sqlWhere.append(" and  t.ReportTime<='").append(ReportTime_End).append("'");
+        }
+
+        if (StringUtils.isNotEmpty(isExcel)){
+            customerChangeExcel(projectID,sqlWhere.toString());
+            return null;
+        }
+        
+        IPage<Map<String,Object>> result = customerService.CustomerChange_BakPageList_Select(page,projectID,sqlWhere.toString());
+        return Result.ok(result);
+    }
+
+
+    private void customerChangeExcel(String projectID, String sqlWhere){
+        List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+        entity.add(new ExcelExportEntity("客户姓名", "CustomerName"));
+        entity.add(new ExcelExportEntity("手机号", "CustomerMobile"));
+        entity.add(new ExcelExportEntity("客储等级", "CustomerRank"));
+        entity.add(new ExcelExportEntity("客户状态", "Status"));
+        entity.add(new ExcelExportEntity("原因", "InvalidReason"));
+        entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
+        entity.add(new ExcelExportEntity("到访逾期时间", "ComeOverdueTime"));
+        entity.add(new ExcelExportEntity("成交逾期时间", "TradeOverdueTime"));
+        entity.add(new ExcelExportEntity("确认人", "ConfirmUserName"));
+        entity.add(new ExcelExportEntity("确认时间", "ConfirmTime"));
+        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
+        entity.add(new ExcelExportEntity("渠道类型", "SourceType"));
+        entity.add(new ExcelExportEntity("报备人", "ReportUserName"));
+        entity.add(new ExcelExportEntity("报备人手机号", "ReportUserMobile"));
+        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
+        entity.add(new ExcelExportEntity("所属机构", "ChannelName"));
+        entity.add(new ExcelExportEntity("首访时间", "TheFirstVisitDate"));
+        entity.add(new ExcelExportEntity("最近到访", "ZJDF"));
+        entity.add(new ExcelExportEntity("认筹时间", "RCTime"));
+        entity.add(new ExcelExportEntity("认购时间", "RGTime"));
+        entity.add(new ExcelExportEntity("签约时间", "QYTime"));
+
+        List<Map<String,Object>> result = customerService.SetExcelToCustomerChange_BakList(projectID,sqlWhere);
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @ApiOperation(value = "渠道客户列表详情")
+    @RequestMapping(value = "/CustomerChangeDetailAll_Select", method = {RequestMethod.GET})
+    public Result CustomerChangeDetailAll_Select(String projectId,String customerID,String clueID) {
+        Map<String,Object> result = customerService.CustomerChangeDetailAll_Select(projectId,customerID,clueID);
+        return Result.ok(result);
+    }
 
 
 

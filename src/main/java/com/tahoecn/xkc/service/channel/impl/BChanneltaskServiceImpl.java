@@ -89,4 +89,47 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 		
 	}
 
+	/*
+	 * 打卡
+	 */
+	@Override
+	public boolean mChannelCheckClock_Insert(Map<String, Object> map) {
+		
+		return bChanneltaskMapper.mChannelCheckClock_Insert(map);
+	}
+
+	/*
+	 * 获取当天第一条打卡记录
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelCheckClockTopOne_Select(Map<String, Object> map) {
+	
+		return bChanneltaskMapper.mChannelCheckClockTopOne_Select(map);
+	}
+
+	/*
+	 * 获取当天第一条打卡记录
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map) {
+
+		return bChanneltaskMapper.mChannelCheckClockByDeviceCode_Select(map);
+	}
+
+	/*
+	 * 分配专员客户
+	 */
+	@Override
+	public void mChannelTempPersonQuitCus_Update(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelTempPersonQuitCus_Update(map);
+	}
+	@Override
+	public void mChannelTempPersonQuitCus_Update2(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelTempPersonQuitCus_Update2(map);
+	}
+	@Override
+	public void mChannelTempPersonQuitCus_Update3(Map<String, Object> map) {
+		bChanneltaskMapper.mChannelTempPersonQuitCus_Update3(map);
+	}
+	
 }

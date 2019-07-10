@@ -3,13 +3,11 @@ package com.tahoecn.xkc.mapper.channel;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.channel.BChanneluser;
-import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -106,5 +104,20 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	 */
 	List<Map<String, Object>> mChannelCheckClockCountDaily_Select(Map<String, Object> map);
 
+	/*
+	 * 考勤异常
+	 */
+	List<Map<String, Object>> mChannelUserAbnormal_Select(IPage page, String ChannelTaskID, String SiteUrl);
 
+	/*
+	 * 考勤异常数量统计
+	 */
+	int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map);
+
+	/**
+	 * 获取分销渠道所属机构ID
+	 */
+	List<Map<String, Object>> GetChannelOrgID_Select(Map<String, Object> obj);
+
+	void insertBChannelUser(Map<String, Object> map);
 }

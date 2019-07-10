@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.rule.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
 import com.tahoecn.xkc.model.rule.BCluerule;
@@ -73,5 +74,15 @@ public class BClueruleServiceImpl extends ServiceImpl<BClueruleMapper, BCluerule
     public Map<String, Object> getRegisterRule(String projectId, String adviserGroupID) {
         return baseMapper.getRegisterRule(projectId,adviserGroupID);
     }
-
+	/**
+	 * 获取规则信息
+	 */
+	@Override
+	public BCluerule CaseFieRuleDetail_Select(Map<String, Object> ruleP) {
+		QueryWrapper<BCluerule> wrapper = new QueryWrapper<BCluerule>();
+		wrapper.eq("id", ruleP.get("ID"));
+		wrapper.eq("status", 1);
+		wrapper.eq("IsDel", 0);
+		return bClueruleMapper.selectOne(wrapper);
+	}
 }

@@ -118,4 +118,81 @@
 		WHERE   a.IsDel = 0 AND a.Status = 2 AND ChannelUserID = #{UserID} 
     	]]>
     </select>
+    
+    <!-- 打卡 -->
+	<insert id="mChannelCheckClock_Insert" parameterType="java.util.Map">
+        <![CDATA[
+	    INSERT  INTO B_CheckClockRecord
+		        ( ID ,
+		          ChannelTaskID ,
+		          CheckDate ,
+		          Longitude ,
+		          Dimension ,
+		          Photo ,
+		          DeviceCode ,
+		          CheckType ,
+		          TaskAreaID ,
+		          TaskAreaName ,
+		          Creator ,
+		          CreateTime ,
+		          Editor ,
+		          EditTime ,
+		          IsDel ,
+		          Status
+		        )
+		VALUES  ( #{ID} ,
+		          #{ChannelTaskID} ,
+		           CONVERT(VARCHAR(10),GETDATE(),111) ,
+		          #{Longitude} ,
+		          #{Dimension} ,
+		          #{Photo} ,
+		          #{DeviceCode} ,
+		          #{CheckType} ,
+		          #{TaskAreaID} ,
+		          #{TaskAreaName} ,
+		          #{UserID} ,
+		           GETDATE()  ,
+		          #{UserID} ,
+		           GETDATE() ,
+		           0 ,
+		           1
+		        )
+    ]]>
+    </insert>
+
+    
+	 <!-- 获取当天第一条打卡记录 --> 
+    <select id="mChannelCheckClockTopOne_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT TOP 1 * FROM  dbo.B_CheckClockRecord WHERE  Creator = #{UserID} AND DateDiff(dd,CreateTime,getdate()) = 0 ORDER BY CreateTime
+	    ]]>
+	</select>
+	
+	 <!-- 获取当天第一条打卡记录 --> 
+	<select id="mChannelCheckClockByDeviceCode_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT TOP 1 * FROM  dbo.B_CheckClockRecord WHERE  DeviceCode = #{DeviceCode} AND DateDiff(dd,CreateTime,getdate()) = 0 ORDER BY CreateTime
+	    ]]>
+	</select>
+    
+    <!-- 分配专员客户 -->
+    <!-- 线索更新，分配用户  -->
+    <update id="mChannelTempPersonQuitCus_Update" parameterType="java.util.Map">
+    UPDATE dbo.B_Clue SET ChannelUserID = #{NewChannelUserID},ChannelCollaborator = #{UserID},Editor = #{UserID} , EditeTime = GETDATE() WHERE ChannelUserID = #{OldChannelUserID}
+    </update>
+    <!-- 删除任务 -->
+    <update id="mChannelTempPersonQuitCus_Update2" parameterType="java.util.Map">
+    UPDATE B_ChannelTask_ChannelUser
+	SET IsDel=1,Status = 3
+	WHERE ChannelUserID=#{OldChannelUserID} AND  ChannelTaskID IN (
+		SELECT ID FROM dbo.B_ChannelTask WHERE Creator=#{UserID}
+	)
+    </update>
+    <!-- 删除归属关系 -->
+    <update id="mChannelTempPersonQuitCus_Update3" parameterType="java.util.Map">
+    UPDATE dbo.B_ChannelUser
+	SET ReportUserID=NULL,ChannelTypeID='CFCEA39C-8882-4546-A79E-C1812CC851C1'
+	WHERE ID=#{OldChannelUserID}
+    </update>
+    
 </mapper>
