@@ -9,6 +9,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
@@ -47,15 +48,8 @@ public class SCommonjobsController extends TahoeBaseController {
     @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
             @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
     @RequestMapping(value = "/SystemCommonJobsList_Select", method = {RequestMethod.POST})
-    
-    public Result SystemCommonJobsList_Select(@RequestBody JSONObject jsonParam){
-        Map map = (HashMap)jsonParam.get("_param");
-        int PageIndex=(int) map.get("Pageindex");
-        int PageSize=(int) map.get("Pagesize");
-        String AuthCompanyID=(String) map.get("AuthCompanyID");
-        String ProductID=(String) map.get("ProductID");
-        String JobName=(String) map.get("JobName");
-        IPage page = new Page(PageIndex, PageSize);
+    public Result SystemCommonJobsList_Select(String AuthCompanyID,String ProductID,String JobName,int Pageindex,int Pagesize){
+        IPage page = new Page(Pageindex, Pagesize);
     	List list = ISCommonjobsService.SystemCommonJobsList_Select(page,AuthCompanyID,ProductID,JobName);
     	return Result.ok(list);
     }
@@ -73,11 +67,8 @@ public class SCommonjobsController extends TahoeBaseController {
     
     @ApiOperation(value = "查询岗位名称是否存在", notes = "查询岗位名称是否存在")
     @RequestMapping(value = "SystemCommonJobNameIsExists_Select", method = {RequestMethod.POST})
-    public Result SystemCommonJobNameIsExists_Select(@RequestBody JSONObject jsonParam){
-        Map map = (HashMap)jsonParam.get("_param");
-
-    	Boolean result = ISCommonjobsService.SystemCommonJobNameIsExists_Select(map);
-
+    public Result SystemCommonJobNameIsExists_Select(String AuthCompanyID,String ProductID,String JobName){
+    	Boolean result = ISCommonjobsService.SystemCommonJobNameIsExists_Select(AuthCompanyID,ProductID,JobName);
     	return Result.ok(result);
     }
     
@@ -86,10 +77,10 @@ public class SCommonjobsController extends TahoeBaseController {
     	@ApiImplicitParam(name = "id", value = "id", dataType = "string")
     	})
     @RequestMapping(value = "/SystemCommonJobStatus_Update", method = {RequestMethod.POST})
-    public Result SystemCommonJobStatus_Update(@RequestBody JSONObject jsonParam){
-        Map map = (HashMap)jsonParam.get("_param");
+    public Result SystemCommonJobStatus_Update(@RequestBody SCommonjobs commonjobs){
+
         //未判断不成功情况
-    	ISCommonjobsService.SystemCommonJobStatus_Update(map);
+    	ISCommonjobsService.updateById(commonjobs);
 
     	return Result.ok("启用/禁用成功");
     }
@@ -98,9 +89,9 @@ public class SCommonjobsController extends TahoeBaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "id", dataType = "string")
     	})
     @RequestMapping(value = "/SystemCommonJob_Delete", method = {RequestMethod.POST})
-    public Result SystemCommonJob_Delete(@RequestBody JSONObject jsonParam){
-        Map map = (HashMap)jsonParam.get("_param");
-    	ISCommonjobsService.SystemCommonJob_Delete(map);
+    public Result SystemCommonJob_Delete(@RequestBody SCommonjobs commonjobs){
+        commonjobs.setIsDel(1);
+    	ISCommonjobsService.updateById(commonjobs);
     	return Result.okm("成功");
     }
     
@@ -116,17 +107,9 @@ public class SCommonjobsController extends TahoeBaseController {
 	   @ApiImplicitParam(name = "isDel", value = "IsDel", dataType = "string"),
     	})
    @RequestMapping(value = "/SystemCommonJob_Insert", method = {RequestMethod.POST})
-   public Result SystemCommonJob_Insert(@RequestBody JSONObject jsonParam){
-       Map map = (HashMap)jsonParam.get("_param");
-	   	SCommonjobs commonjobs=new SCommonjobs();
-	   	commonjobs.setJobCode((String) map.get("JobCode"));
-	   	commonjobs.setJobName((String) map.get("JobName"));
-	   	commonjobs.setJobDesc((String) map.get("JobDesc"));
-	   	commonjobs.setAuthCompanyID((String) map.get("AuthCompanyID"));
-	   	commonjobs.setProductID((String) map.get("ProductID"));
-	   	commonjobs.setCreator((String) map.get("Creator"));
-	   	commonjobs.setCreateTime(new Date());
-	   	commonjobs.setStatus((int) map.get("Status"));
+   public Result SystemCommonJob_Insert(@RequestBody SCommonjobs commonjobs){
+        commonjobs.setCreator(ThreadLocalUtils.getUserName());
+        commonjobs.setCreateTime(new Date());
 	   	commonjobs.setIsDel(0);
        boolean save = ISCommonjobsService.save(commonjobs);
        if (save){
@@ -144,9 +127,10 @@ public class SCommonjobsController extends TahoeBaseController {
 	   @ApiImplicitParam(name = "id", value = "id", dataType = "string"),
     	})
    @RequestMapping(value = "/SystemCommonJob_Update", method = {RequestMethod.POST})
-   public Result SystemCommonJob_Update(@RequestBody JSONObject jsonParam){
-       Map map = (HashMap)jsonParam.get("_param");
-	   	ISCommonjobsService.SystemCommonJob_Update(map);
+   public Result SystemCommonJob_Update(@RequestBody SCommonjobs commonjobs){
+        commonjobs.setEditor(ThreadLocalUtils.getUserName());
+        commonjobs.setEditTime(new Date());
+	   	ISCommonjobsService.updateById(commonjobs);
 	   	return Result.okm("成功");
    }
 

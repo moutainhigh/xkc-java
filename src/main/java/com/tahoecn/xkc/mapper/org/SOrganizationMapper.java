@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.org.SOrganization;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  Mapper 接口
@@ -14,4 +17,8 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SOrganizationMapper extends BaseMapper<SOrganization> {
     void userOrgInsert(@Param("UserID") String UserID, @Param("ProjectID") String ProjectID);
+
+    List<Map<String, Object>> SystemOrganization_Select(@Param("authCompanyID") String authCompanyID, @Param("orgID")String orgID,
+                                                        @Param("productID")String productID, @Param("pid")String pid,
+                                                        @Param("status")String status);
 }

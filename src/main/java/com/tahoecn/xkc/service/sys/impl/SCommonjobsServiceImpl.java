@@ -41,8 +41,8 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 	}
 
 	@Override
-	public Boolean SystemCommonJobNameIsExists_Select(Map<String, Object> map) {
-		String result= SCommonjobsMapper.SystemCommonJobNameIsExists_Select(map);
+	public Boolean SystemCommonJobNameIsExists_Select(String AuthCompanyID,String ProductID,String JobName) {
+		String result= SCommonjobsMapper.SystemCommonJobNameIsExists_Select(AuthCompanyID,ProductID,JobName);
 		if(StringUtils.isNotEmpty(result)){
 			return true;
 		}else {
