@@ -566,38 +566,38 @@ public class AppKCController extends TahoeBaseController {
 		}
     }
 	
-//	@ResponseBody
-//    @ApiOperation(value = "分配客户和兼职", notes = "分配客户和兼职")
-//    @RequestMapping(value = "/mChannelLeaderQuit_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//    public Result mChannelLeaderQuit_Update(@RequestBody JSONObject jsonParam) {
-//		Result re=new Result();
-//    	try{
-//    		// 直接将json信息打印出来
-//    		System.out.println(jsonParam.toJSONString());
-//    		Map paramMap = (HashMap)jsonParam.get("_param");
-//    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
-//            String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//
-//            String TaskType = (String)paramMap.get("TaskType").toString();//
-//            String ReportUserID = (String)paramMap.get("ReportUserID").toString();//
-//            Map<String,Object> map = new HashMap<String,Object>();
-//            map.put("UserID", UserID);
-//            map.put("ChannelTaskID", ChannelTaskID);
-//            map.put("TaskType", TaskType);
-//            map.put("ReportUserID", ReportUserID);
-//           iBChanneltaskService.mChannelLeaderQuit_Insert(map);
-//           iBChanneltaskService.mChannelLeaderQuit_Update(map);
-//           iBChanneltaskService.mChannelLeaderQuit_Update2(map);
-//           iBChanneltaskService.mChannelLeaderQuit_Insert2(map);
-//           iBChanneltaskService.mChannelLeaderQuit_Update3(map);
-//           iBChanneltaskService.mChannelLeaderQuit_Update4(map);
-//            
-//    		return re.ok(1);
-//    	}catch (Exception e) {
-//			e.printStackTrace();
-//			return Result.errormsg(1, "系统异常，请联系管理员");
-//			
-//		}
-//    }
+	@ResponseBody
+    @ApiOperation(value = "分配客户和兼职", notes = "分配客户和兼职")
+    @RequestMapping(value = "/mChannelLeaderQuit_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelLeaderQuit_Update(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
+            String OldUserID = (String)paramMap.get("OldUserID").toString();//
+            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+            String NewUserID = (String)paramMap.get("NewUserID").toString();//
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("UserID", UserID);
+            map.put("OldUserID", OldUserID);
+            map.put("ProjectID", ProjectID);
+            map.put("NewUserID", NewUserID);
+           iBChanneltaskService.mChannelLeaderQuit_Insert(map);
+           iBChanneltaskService.mChannelLeaderQuit_Update(map);
+           iBChanneltaskService.mChannelLeaderQuit_Update2(map);
+           iBChanneltaskService.mChannelLeaderQuit_Insert2(map);
+           iBChanneltaskService.mChannelLeaderQuit_Update3(map);
+           iBChanneltaskService.mChannelLeaderQuit_Update4(map);
+           
+    		return re.ok(true);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1, "系统异常，请联系管理员");
+			
+		}
+    }
 	/*
 	 * 生成UUID
 	 */

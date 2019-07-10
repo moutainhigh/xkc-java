@@ -89,15 +89,23 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	 */
 	
 	void mChannelLeaderQuit_Insert(Map<String, Object> map);
-	
+	/*
+	 * 强制结束任务
+	 */
 	void mChannelLeaderQuit_Update(Map<String, Object> map);
 
 	void mChannelLeaderQuit_Update2(Map<String, Object> map);
-
+	/*
+	 * 写入将分配的线索跟进记录
+	 */
 	void mChannelLeaderQuit_Insert2(Map<String, Object> map);
-
+	/*
+	 * 分配线索  
+	 */
 	void mChannelLeaderQuit_Update3(Map<String, Object> map);
-
+	/*
+	 * 分配兼职 
+	 */
 	void mChannelLeaderQuit_Update4(Map<String, Object> map);
 
 

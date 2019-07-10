@@ -159,7 +159,9 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	public void mChannelLeaderQuit_Update(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Update(map);
 	}
-
+	/*
+	 * 强制结束任务
+	 */
 	@Override
 	public void mChannelLeaderQuit_Insert(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Insert(map);
@@ -169,17 +171,23 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	public void mChannelLeaderQuit_Update2(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Update2(map);
 	}
-
+	/*
+	 * 写入将分配的线索跟进记录
+	 */
 	@Override
 	public void mChannelLeaderQuit_Insert2(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Insert2(map);
 	}
-
+	/*
+	 * 分配线索 
+	 */
 	@Override
 	public void mChannelLeaderQuit_Update3(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Update3(map);
 	}
-
+	/*
+	 * 分配兼职 
+	 */
 	@Override
 	public void mChannelLeaderQuit_Update4(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Update4(map);

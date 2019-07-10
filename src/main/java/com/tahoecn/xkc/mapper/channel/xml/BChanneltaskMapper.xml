@@ -288,7 +288,7 @@
 	    ]]>
 	</insert>
 	<!-- 分配线索 -->
-	<update id="mChannelLeaderQuit_Update2" parameterType="java.util.Map">
+	<update id="mChannelLeaderQuit_Update3" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE a
 		SET a.ReportUserID='{NewUserID}', a.ReportUserName = dbo.F_GetSaleUserName('{NewUserID}'),a.ChannelUserID = NULL, ChannelTaskID = NULL, a.Editor = '{UserID}' , a.EditeTime = GETDATE() , a.TheLatestFollowUpDate = GETDATE() 
@@ -299,7 +299,7 @@
 		]]> 
 	</update>
 	<!-- 分配兼职 -->
-	<update id="mChannelLeaderQuit_Update2" parameterType="java.util.Map">
+	<update id="mChannelLeaderQuit_Update4" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE a
 		SET a.ReportUserID='{NewUserID}' 
