@@ -128,4 +128,9 @@ public interface ISystemMessageService {
      * @return
      */
     public Result DetailByHandle_Update(String[] BizIDs, String BizType,int msgHandType);
+
+	/**
+	 * 设置动态消息已读
+	 */
+	void mMessageDynamicReadList_Update(Map<String, Object> map);
 }

@@ -381,5 +381,19 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 		UPDATE S_Message SET IsApprove = 1, Editor = '99', EditTime = GETDATE() ${SetStatus} WHERE BizType = #{BizType} AND ISNULL(IsApprove,0) = 0 ${Where}
 	    ]]>
     </update>
+    <!-- 设置动态消息已读 -->
+    <update id="mMessageDynamicReadList_Update" parameterType="java.util.Map">
+    	<![CDATA[
+			UPDATE  S_Message
+			SET     IsRead = 1 ,
+			        IsApprove=1,
+			        Editor = #{UserID} ,
+			        EditTime = GETDATE()
+			WHERE   Receiver = #{UserID}
+					AND ProjectID =#{ProjectID}
+			    AND MessageType = '4936AA45-FDC0-4E86-B8EC-AD4A74E77322'
+					AND SendTime <= GETDATE()
+	    ]]>
+    </update>
   
 </mapper>

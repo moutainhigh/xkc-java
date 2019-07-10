@@ -249,4 +249,11 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		}
         return re;
 	}
+	/**
+	 * 设置动态消息已读
+	 */
+	@Override
+	public void mMessageDynamicReadList_Update(Map<String, Object> map){
+		systemMessageMapper.mMessageDynamicReadList_Update(map);
+	}
 }

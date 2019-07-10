@@ -1295,4 +1295,24 @@ public class MessageAppController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+	@ApiOperation(value = "动态未读消息数更改", notes = "动态未读消息数更改")
+	@RequestMapping(value = "/mMessageDynamicReadList_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mMessageDynamicReadList_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			String UserID = (String) paramMap.get("UserID");
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("ProjectID", ProjectID);
+			map.put("UserID", UserID);
+			//设消息为已读
+			iSystemMessageService.mMessageDynamicReadList_Update(map);
+			return Result.ok("设置动态消息已读成功");
+		}catch(Exception e){
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }
