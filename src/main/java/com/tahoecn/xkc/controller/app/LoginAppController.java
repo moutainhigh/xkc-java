@@ -9,6 +9,8 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
+import com.tahoecn.xkc.service.channel.IBChanneluserService;
+import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISAppdeviceService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
@@ -41,6 +43,10 @@ public class LoginAppController extends TahoeBaseController {
     private ISAppdeviceService iSAppdeviceService;
     @Autowired
     private ISLogsService iSLogsService;
+    @Autowired
+    private IBVerificationcodeService iBVerificationcodeService;
+    @Autowired
+    private IBChanneluserService iBChanneluserService;
 
     @Autowired
     private ISAccountService accountService;
@@ -469,6 +475,30 @@ public class LoginAppController extends TahoeBaseController {
             iSLogsService.SystemLogsDetail_Insert(logMap, request);
             
     		return Result.ok("案场登出成功,账号:" + (String)paramMap.get("UserName"));
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
+    @ResponseBody
+    @ApiOperation(value = "注册", notes = "行销拓客兼职注册")
+    @RequestMapping(value = "/mChannelRegistJZ_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelRegistJZ_Insert(@RequestBody JSONObject jsonParam) {
+    	try{
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String Mobile = (String)paramMap.get("Mobile");
+            String AuthCode = (String)paramMap.get("CheckCode");
+            //1.验证验证码
+            if(!iBVerificationcodeService.Verification(Mobile,AuthCode)){
+            	return Result.errormsg(1,"验证码验证失败");
+            }
+            //2.手机重名验证
+            if(iBChanneluserService.ChannelUserCheckMobile_Select(paramMap) > 0){
+            	return Result.errormsg(1,"手机号重复");
+            }
+            //3.行销拓客兼职注册
+            iBChanneluserService.mChannelRegistJZ_Insert(paramMap);
+            return Result.ok("注册成功");
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");

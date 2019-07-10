@@ -70,4 +70,19 @@ public class BVerificationcodeServiceImpl extends ServiceImpl<BVerificationcodeM
 		bv.setVerificationCode(VerificationCode);
 		baseMapper.insert(bv);
 	}
+	/**
+	 * 验证验证码
+	 */
+	@Override
+	public boolean Verification(String mobile,String AuthCode){
+		//获取验证码
+		Map<String, Object> entity = baseMapper.VerificationCodeDetail_Select(mobile);
+		if(entity != null ){
+			String code = (String) entity.get("VerificationCode");
+			if(AuthCode.equals(code)){
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -20,4 +20,9 @@ public interface BVerificationcodeMapper extends BaseMapper<BVerificationcode> {
     BVerificationcode checkAuthCode(@Param("mobile") String mobile);
 
 	void VerificationCodeDetail_Insert(@Param("Mobile") String Mobile);
+
+	/**
+	 * 获取验证码
+	 */
+	Map<String, Object> VerificationCodeDetail_Select(@Param("Mobile")String Mobile);
 }

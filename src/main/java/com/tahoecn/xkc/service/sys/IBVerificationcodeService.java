@@ -23,4 +23,9 @@ public interface IBVerificationcodeService extends IService<BVerificationcode> {
      * 新增验证码
      */
 	void Detail_Add(Map<String, Object> parameter);
+
+	/**
+	 * 验证验证码
+	 */
+	boolean Verification(String mobile,String AuthCode);
 }
