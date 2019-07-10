@@ -353,4 +353,53 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 			and IntentProjectID = #{IntentProjectID} and Mobile=#{Mobile} and ReportUserID <> #{ReportUserID}
 		]]>
      </select>
+     <select id="ClueConfirm_Update" parameterType="java.util.Map" resultType="java.util.Map">
+     	<![CDATA[
+		]]>
+     </select>
+     <!-- 待确认查询 -->
+     <select id="CaseFieToBeConfirmedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+     	<![CDATA[
+	     	SELECT  c.[ID] ,
+	        c.[CustomerPotentialID] ,
+	        c.[Name] ,
+	        c.[LastName] ,
+	        c.[FirstName] ,
+	        c.[Gender] ,
+	        c.[Mobile] ,
+	        c.[IntentProjectID] ,
+	        c.[IntentProjectName] ,
+	        c.[Remark] ,
+	        c.[SourceType] ,
+	        c.[ReportUserID] ,
+	        c.[ReportUserName] ,
+	        c.[ReportUserMobile] ,
+	        c.[ReportUserOrg] ,
+	        c.[RuleID] ,
+	        c.[InvalidType] ,
+	        c.[InvalidTime] ,
+	        c.[InvalidReason] ,
+	        c.[ComeOverdueTime] ,
+	        c.[TradeOverdueTime] ,
+	        c.[UserBehaviorID] ,
+	        c.[AdviserGroupID] ,
+	        c.[IsSelect] ,
+	        c.[ConfirmTime] ,
+	        c.[Creator] ,
+	        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+	        c.[Editor] ,
+	        c.[EditeTime] ,
+	        c.[IsDel] ,
+	        c.[Status] ,
+	        c.[ConfirmUserId] ,
+	        u.name AS TokerUserName
+		FROM    [B_Clue] AS c
+		        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		WHERE   c.status = ${Status}
+		        AND c.IntentProjectID = #{ProjectID} ${sqlWhere}
+		        AND c.IsDel = 0
+		ORDER BY c.ConfirmTime DESC ,
+		        c.CreateTime DESC
+		]]>
+     </select>
 </mapper>

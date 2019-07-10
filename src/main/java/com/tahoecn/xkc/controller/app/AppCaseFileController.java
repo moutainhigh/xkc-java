@@ -524,4 +524,26 @@ public class AppCaseFileController extends TahoeBaseController {
         BClue result = iBClueService.getOne(wrapper);
         return result != null ?result.getAdviserGroupID():"";
 	}
+	@ResponseBody
+    @ApiOperation(value = "客户列表(待确认 已确认 无效)", notes = "客户列表(待确认 已确认 无效)")
+    @RequestMapping(value = "/mCaseFieToBeConfirmedList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCaseFieToBeConfirmedList_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+            @SuppressWarnings("rawtypes")
+			Map paramMap = (HashMap)jsonParam.get("_param");
+            //查询
+            String where = "";
+            if (!StringUtils.isEmpty(paramMap.get("Condition"))){
+            	where = "  and (c.name = '" + paramMap.get("Condition") + "' or c.Mobile = '" + paramMap.get("Condition") + "')  ";
+            }
+            paramMap.put("sqlWhere", where);
+            List<Map<String, Object>> ob = iBClueService.CaseFieToBeConfirmedList_Select(paramMap);
+            Map<String, Object> map = new HashMap<String,Object>();
+            map.put("List", ob);
+            return Result.ok(map);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
 }

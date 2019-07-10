@@ -407,7 +407,14 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		return baseMapper.RuleClueList_Select(obj);
 	}
 	@Override
-	public Object ClueConfirm_Update(Map parameter){
+	public Object ClueConfirm_Update(Map<String, Object> parameter){
 		return baseMapper.ClueConfirm_Update(parameter);
+	}
+	/**
+	 * 待确认查询
+	 */
+	@Override
+	public List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> parameter){
+		return baseMapper.CaseFieToBeConfirmedList_Select(parameter);
 	}
 }
