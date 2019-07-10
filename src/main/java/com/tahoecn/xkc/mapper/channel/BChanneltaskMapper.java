@@ -20,10 +20,10 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	/*
 	 * 新建任务
 	 */
-	List<BChanneltask> mChannelTask_Insert(Map<String, Object> map) ;
-	List<BChanneltask> mChannelTask_Insert2(Map<String, Object> map);
-	List<BChanneltask> mChannelTask_Insert3(Map<String, Object> map);
-	List<BChanneltask> mChannelTask_Insert4(Map<String, Object> map);
+	String mChannelTask_Insert(Map<String, Object> map) ;
+	void mChannelTask_Insert2(Map<String, Object> map);
+	void mChannelTask_Insert3(Map<String, Object> map);
+	List<Map<String, Object>> mChannelTask_Insert4(Map<String, Object> map);
 
 	/*
 	 * 结束任务

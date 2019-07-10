@@ -29,25 +29,25 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 * 新建任务
 	 */
 	@Override
-	public List<BChanneltask> mChannelTask_Insert(Map<String, Object> map) {
+	public String mChannelTask_Insert(Map<String, Object> map) {
 	
 		return bChanneltaskMapper.mChannelTask_Insert(map);
 	}
 	
 	@Override
-	public List<BChanneltask> mChannelTask_Insert2(Map<String, Object> map) {
+	public void mChannelTask_Insert2(Map<String, Object> map) {
 	
-		return bChanneltaskMapper.mChannelTask_Insert2(map);
+		bChanneltaskMapper.mChannelTask_Insert2(map);
 	}
 	
 	@Override
-	public List<BChanneltask> mChannelTask_Insert3(Map<String, Object> map) {
+	public void mChannelTask_Insert3(Map<String, Object> map) {
 	
-		return bChanneltaskMapper.mChannelTask_Insert3(map);
+		bChanneltaskMapper.mChannelTask_Insert3(map);
 	}
 	
 	@Override
-	public List<BChanneltask> mChannelTask_Insert4(Map<String, Object> map) {
+	public List<Map<String, Object>> mChannelTask_Insert4(Map<String, Object> map) {
 	
 		return bChanneltaskMapper.mChannelTask_Insert4(map);
 	}

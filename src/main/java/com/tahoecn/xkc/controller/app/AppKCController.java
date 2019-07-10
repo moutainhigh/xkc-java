@@ -4,6 +4,7 @@ package com.tahoecn.xkc.controller.app;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,55 +53,69 @@ public class AppKCController extends TahoeBaseController {
     @Autowired
     private IBChanneluserService iBChanneluserService;
 
-//	@ResponseBody
-//    @ApiOperation(value = "新建任务", notes = "新建任务")
-//    @RequestMapping(value = "/mChannelTask_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//    public Result mChannelTask_Insert(@RequestBody JSONObject jsonParam) {
-//		Result re=new Result();
-//    	try{
-//    		// 直接将json信息打印出来
-//    		System.out.println(jsonParam.toJSONString());
-//            Map paramMap = (HashMap)jsonParam.get("_param");
-//            String ChannelTypeID = (String)paramMap.get("ChannelTypeID").toString();//
-//            String CustomerTarget = (String)paramMap.get("CustomerTarget").toString();//
-//            String EndTime = (String)paramMap.get("EndTime").toString();//
-//            String Name = (String)paramMap.get("Name").toString();//
-//            String StartTime = (String)paramMap.get("StartTime").toString();//
-//            String TaskAreaID = (String)paramMap.get("TaskAreaID").toString();//
-//            String TaskAreaName = (String)paramMap.get("TaskAreaName").toString();//
-//            String WorkEndTime = (String)paramMap.get("WorkEndTime").toString();//
-//            String WorkRange = (String)paramMap.get("WorkRange").toString();//
-//            String WorkStartTime = (String)paramMap.get("WorkStartTime").toString();//
-//            String Platform = (String)paramMap.get("Platform").toString();//
-//            String ProjectID = (String)paramMap.get("ProjectID").toString();//
-//            String UserID = (String)paramMap.get("UserID").toString();//
-//            
-//    		Map<String,Object> map = new HashMap<String,Object>();
-//    		map.put("ChannelTypeID", ChannelTypeID);
-//    		map.put("CustomerTarget", CustomerTarget);
-//    		map.put("EndTime", EndTime);
-//    		map.put("Name", Name);
-//    		map.put("StartTime", StartTime);
-//    		map.put("TaskAreaID", TaskAreaID);
-//    		map.put("TaskAreaName", TaskAreaName);
-//    		map.put("WorkEndTime", WorkEndTime);
-//    		map.put("WorkRange", WorkRange);
-//    		map.put("WorkStartTime", WorkStartTime);
-//    		map.put("Platform", Platform);
-//    		map.put("ProjectID", ProjectID);
-//    		map.put("UserID", UserID);
-//    		
-//    		iBChanneltaskService.mChannelTask_Insert(map);
-//    		iBChanneltaskService.mChannelTask_Insert2(map);
-//    		iBChanneltaskService.mChannelTask_Insert3(map);
-//    		iBChanneltaskService.mChannelTask_Insert4(map);
-//    		
-//    		return Result.ok("");
-//    	}catch (Exception e) {
-//			e.printStackTrace();
-//			return Result.errormsg(1,"系统异常，请联系管理员");
-//		}
-//    }
+	@ResponseBody
+    @ApiOperation(value = "新建任务", notes = "新建任务")
+    @RequestMapping(value = "/mChannelTask_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelTask_Insert(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String ChannelTypeID = (String)paramMap.get("ChannelTypeID").toString();//
+            String CustomerTarget = (String)paramMap.get("CustomerTarget").toString();//
+            String EndTime = (String)paramMap.get("EndTime").toString();//
+            String Name = (String)paramMap.get("Name").toString();//
+            String StartTime = (String)paramMap.get("StartTime").toString();//
+            String TaskAreaID = (String)paramMap.get("TaskAreaID").toString();//
+            String TaskAreaName = (String)paramMap.get("TaskAreaName").toString();//
+            String WorkEndTime = (String)paramMap.get("WorkEndTime").toString();//
+            String WorkRange = (String)paramMap.get("WorkRange").toString();//
+            String WorkStartTime = (String)paramMap.get("WorkStartTime").toString();//
+            String Platform = (String)paramMap.get("Platform").toString();//
+            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+            String UserID = (String)paramMap.get("UserID").toString();//
+            
+    		Map<String,Object> map = new HashMap<String,Object>();
+    		map.put("ChannelTypeID", ChannelTypeID);
+    		map.put("CustomerTarget", CustomerTarget);
+    		map.put("EndTime", EndTime);
+    		map.put("Name", Name);
+    		map.put("StartTime", StartTime);
+    		map.put("TaskAreaID", TaskAreaID);
+    		map.put("TaskAreaName", TaskAreaName);
+    		map.put("WorkEndTime", WorkEndTime);
+    		map.put("WorkRange", WorkRange);
+    		map.put("WorkStartTime", WorkStartTime);
+    		map.put("Platform", Platform);
+    		map.put("ProjectID", ProjectID);
+    		map.put("UserID", UserID);
+    		String ChannelTaskID = getUUID();
+    		System.out.println(ChannelTaskID);
+    		map.put("ChannelTaskID", ChannelTaskID);
+    		String TaskCode = iBChanneltaskService.mChannelTask_Insert(map);
+    		int TaskCode1 = Integer.parseInt(TaskCode); 
+    		if(TaskCode != null) {
+    			TaskCode1++;
+    			TaskCode = String.valueOf(TaskCode1);
+    		}
+    		else {
+    			TaskCode = "100001";
+    		}
+    		
+    		map.put("TaskCode",  TaskCode);
+    	
+    		
+    		iBChanneltaskService.mChannelTask_Insert2(map);
+    		iBChanneltaskService.mChannelTask_Insert3(map);
+    		List<Map<String, Object>> obj = iBChanneltaskService.mChannelTask_Insert4(map);
+    		
+    		return Result.ok(obj);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
 	
 	@ResponseBody
     @ApiOperation(value = "新建任务地点", notes = "新建任务地点")
@@ -543,5 +558,15 @@ public class AppKCController extends TahoeBaseController {
 //			
 //		}
 //    }
+	
+	/*
+	 * 生成UUID
+	 */
+	public static String getUUID(){
+        UUID uuid=UUID.randomUUID();
+        String str = uuid.toString(); 
+        String a= str.toUpperCase();
+        return a;
+      }
 }
 

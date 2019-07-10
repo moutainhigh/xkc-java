@@ -3,14 +3,14 @@
 <mapper namespace="com.tahoecn.xkc.mapper.channel.BChanneltaskMapper">
 
 	<!-- 新建任务 -->
-    <select id="mChannelTask_Insert" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="mChannelTask_Insert" parameterType="java.util.Map" resultType="String">
 		<![CDATA[
-		SELECT  #{TaskCode} = CONVERT(VARCHAR, ( ISNULL(MAX(TaskCode), '100000') + 1 ))
+		SELECT  MAX(TaskCode) a
 		FROM    dbo.B_ChannelTask
 	    ]]>
 	</select>   
 	 
-    <select id="mChannelTask_Insert2" parameterType="java.util.Map">
+    <insert id="mChannelTask_Insert2" parameterType="java.util.Map">
 		<![CDATA[
 		INSERT  INTO dbo.B_ChannelTask
 		        ( ID ,
@@ -51,9 +51,9 @@
 		        )
 	
 	    ]]>	    
-	</select>  
+	</insert>  
 	 
-    <select id="mChannelTask_Insert3" parameterType="java.util.Map">
+    <insert id="mChannelTask_Insert3" parameterType="java.util.Map">
 		<![CDATA[
 		INSERT  INTO dbo.B_ChannelTask_TaskArea
 		        ( ChannelTaskID ,
@@ -67,9 +67,9 @@
 		          1 
 		        )
 	    ]]>
-	</select>
+	</insert>
 	    
-    <select id="mChannelTask_Insert4" parameterType="java.util.Map" >
+    <select id="mChannelTask_Insert4" parameterType="java.util.Map" resultType="java.util.Map">
 		<![CDATA[
 		SELECT  TaskCode
 		FROM    dbo.B_ChannelTask
