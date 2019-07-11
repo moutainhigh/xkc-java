@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.sys.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -255,5 +256,33 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 	@Override
 	public void mMessageDynamicReadList_Update(Map<String, Object> map){
 		systemMessageMapper.mMessageDynamicReadList_Update(map);
+	}
+	
+	@Override
+	public Result Detail_Insert(String UserID, String ProjectID, String BizID,
+			String BizType, String Subject, String Content, String Receiver,
+			String msgType, Boolean IsNeedPush) {
+		Result re = new Result();
+		try {
+			Map<String,Object> Parameter = new HashMap<String, Object>();
+	        Parameter.put("ProjectID", ProjectID);
+	        Parameter.put("BizID", BizID);
+	        Parameter.put("BizType", BizType);
+	        Parameter.put("Subject", Subject);
+	        Parameter.put("Content", Content);
+	        Parameter.put("Receiver", Receiver);
+	        Parameter.put("MessageType", msgType);
+	        Parameter.put("Sender", UserID);
+	        Parameter.put("Creator", UserID);
+	        Parameter.put("IsNeedPush", IsNeedPush ? 1 : 0);
+	        systemMessageMapper.SystemMessageDetail_Insert(Parameter);
+	        re.setErrmsg("成功");
+	        re.setErrcode(0);
+		} catch (Exception e) {
+			re.setErrmsg("系统异常");
+	        re.setErrcode(9);
+			e.printStackTrace();
+		}
+        return re;
 	}
 }

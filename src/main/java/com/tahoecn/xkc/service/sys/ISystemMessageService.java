@@ -133,4 +133,20 @@ public interface ISystemMessageService {
 	 * 设置动态消息已读
 	 */
 	void mMessageDynamicReadList_Update(Map<String, Object> map);
+	
+	/**
+     * 消息添加
+     * @param UserID
+     * @param ProjectID
+     * @param BizID
+     * @param BizType
+     * @param Subject
+     * @param Content
+     * @param Receiver
+     * @param msgType
+     * @param IsNeedPush
+     * @return
+     */
+    public Result Detail_Insert(String UserID, String ProjectID, String BizID, String BizType, String Subject, String Content, String Receiver, String msgType, Boolean IsNeedPush);
+	
 }

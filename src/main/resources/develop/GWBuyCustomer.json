@@ -1,0 +1,783 @@
+{
+  "ClueID": "",
+  "OpportunityID": "",
+  "CustomerID": "",
+  "Panel": [
+    {
+      "Name": "默认项",
+      "Type": "Normal",
+      "ListIndex": 1,
+      "Child": [
+        {
+          "ID": "292026B9-FB64-4391-9782-A86A025A7399",
+          "Name": "认购人",
+          "Placeholder": "请输入姓名",
+          "Type": "SubscribePush",
+          "Value": "",
+          "ListIndex": 1,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "149F778D-4244-46F6-908F-D33A363A5B58",
+          "Name": "姓名",
+          "Placeholder": "请输入姓名(必填)",
+          "Type": "Text",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 1,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 10,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "21685728-54C5-4268-8371-62413CE42841",
+          "Name": "手机号",
+          "Placeholder": "请输入手机号",
+          "Type": "Mobile",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 20,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "E72C340D-4092-467A-9B8F-5138DBDCA43B",
+          "Name": "性别",
+          "Placeholder": "必填",
+          "Type": "OptionRadio",
+          "Value": "男",
+          "ListIndex": 4,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "848EBE45-2C03-40C5-AE91-EC72533539BD",
+          "Name": "证件类型",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37",
+          "Name": "证件号码",
+          "Placeholder": "必填",
+          "Type": "Card",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "证件类型",
+          "SubPartner": "",
+          "Verify": [
+            {
+              "ID": "BAB5C6D2-76DD-4708-9938-D281C3103F9E",
+              "Name": "身份证",
+              "Type": "Text",
+              "MaxLength": 18
+            },
+            {
+              "ID": "9159A206-2AB4-4924-A724-D0CB03E2D523",
+              "Name": "军官证",
+              "Type": "Text",
+              "MaxLength": 18
+            },
+            {
+              "ID": "D50C24E1-2FEA-4517-B613-E88A436397AD",
+              "Name": "护照",
+              "Type": "Text",
+              "MaxLength": 18
+            },
+            {
+              "ID": "14A2EB9F-A3B2-45EE-BBC6-75CB99B89B1A",
+              "Name": "台胞证",
+              "Type": "Text",
+              "MaxLength": 18
+            },
+            {
+              "ID": "E952F8E8-9F96-4017-8179-2703D5377036",
+              "Name": "通行证",
+              "Type": "Text",
+              "MaxLength": 18
+            },
+            {
+              "ID": "D2F21115-FD38-4654-8F3F-FA8B4E526A45",
+              "Name": "其他",
+              "Type": "Text",
+              "MaxLength": 18
+            }
+          ],
+          "Option": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "默认项",
+      "Type": "Normal",
+      "ListIndex": 3,
+      "Child": [
+        {
+          "ID": "475D020E-DEC6-413C-898E-BC1A52511067",
+          "Name": "年龄段",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "A977C068-98A9-4184-AD39-5E645778CB5D",
+          "Name": "是否收小筹",
+          "Placeholder": "必填",
+          "Type": "OptionRadio",
+          "Value": "否",
+          "ValueID": "DFE6406C-120B-45E5-9293-DD093E416C68",
+          "ListIndex": 4,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "47A4BAF0-F946-4A8A-81F1-D675BEED6DE2",
+          "Name": "顾客标签",
+          "Placeholder": "必填",
+          "Type": "CustomerTag",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 1,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFB740",
+          "SelectedColor": "",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D",
+          "Name": "意向项目",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 2,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 1,
+          "MaxLength": 50,
+          "MaxSelectedNum": 2,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "BFD616A1-118F-4C9F-986F-BAA32A1A7EA3",
+          "Name": "意向项目分期",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ListIndex": 2,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 1,
+          "MaxLength": 50,
+          "MaxSelectedNum": 2,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602",
+          "Name": "渠道来源",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 4,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0",
+          "Name": "认知媒体",
+          "Placeholder": "",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 1,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "认知媒体",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "0BFD0AEF-2C16-4A91-94D3-9CBF114DC78A",
+          "Name": "媒体子类",
+          "Placeholder": "",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 1,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "认知媒体",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "7FFDA0F6-6DEA-4CA5-86B6-C76D400702E3",
+          "Name": "泰禾员工或家属",
+          "Placeholder": "必填",
+          "Type": "OptionRadio",
+          "Value": "是",
+          "ListIndex": 4,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "D9199E8F-D1E0-49C1-A9C6-EE11CA7D5ECD",
+          "Name": "最认可因素",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "8741C05C-86DA-4952-8BC3-5C9CB669CCF9",
+          "Name": "本次置业目的",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "96F8FC2D-9AF2-413B-8628-85BC2040DC72",
+          "Name": "需求业态",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "4D35ABCF-E61C-4650-9F55-0D2D66548CF0",
+          "Name": "备注",
+          "Placeholder": "请输入……",
+          "Type": "TextArea",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "默认项",
+      "Type": "Normal",
+      "ListIndex": 4,
+      "Child": [
+        {
+          "ID": "C7B06191-E032-45F4-A990-DB73450588DE",
+          "Name": "户籍所在地",
+          "Placeholder": "必填",
+          "Type": "OptionCity",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 1,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "39410FA8-101E-40C9-AE48-3415849A96FB",
+          "Name": "居住区域",
+          "Placeholder": "必填",
+          "Type": "OptionCity",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "86D4BA4F-3F3C-4F2E-8FF3-5DDAE8D71921",
+          "Name": "工作区域",
+          "Placeholder": "必填",
+          "Type": "OptionCity",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 2,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "62AC02D0-C4AB-4EB7-A85F-6E1D509C166B",
+          "Name": "婚姻状况",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "6438B845-441C-4A53-AB17-96ECF291955F",
+          "Name": "家庭结构",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 4,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "4124D302-0E37-47C7-A9CA-A7D5774A5361",
+          "Name": "所属行业",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "1A006C4D-B010-44CD-B09A-355E8A4328E3",
+          "Name": "置业次数",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ValueID": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "5B3EA885-C8D6-4890-A75E-88904575D46C",
+          "Name": "生日",
+          "Placeholder": "必填",
+          "Type": "Date",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "MinDate": "",
+          "MaxDate": "",
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "9036F3E4-2EB7-4E7A-849D-FFF39EEB093D",
+          "Name": "通讯地址",
+          "Placeholder": "必填",
+          "Type": "TextArea",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 100,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        }
+      ]
+    }
+  ]
+}
