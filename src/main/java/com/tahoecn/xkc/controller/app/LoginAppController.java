@@ -192,7 +192,7 @@ public class LoginAppController extends TahoeBaseController {
             if(MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("DataZQFZR"))){
                 sb.append("{'Name': '数据','Categroy': 'Data','NormalImage': '','SelectedImage': '','ChildRole': { 'Data_H5URL':'").append(MobileSiteUrl).append("View/rCustomer/YXJLUserCustomerRank.html'}},");
             }
-            if(MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("MessageStyle"))){
+            if(MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("MessageStyle"))){
 
                 String categroy =  MenuAndFunList.stream().filter(j -> j.get("Url").contains("MessageStyle")).findFirst().get().get("Url");
                 sb.append("{'Name':'消息','Categroy':'" + categroy + "','NormalImage':'','SelectedImage':'','ChildRole':{");
