@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.hutool.core.date.DateUtil;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -162,13 +163,16 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	IPage<GWCustomerPageVo> page =new Page<GWCustomerPageVo>();
         	page.setSize(model.getPageSize());
         	page.setCurrent(model.getPageIndex());
-        	List<GWCustomerPageVo> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
+        	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
         	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_count(model);
-        	JSONObject re = new JSONObject();
+        	Map<String,Object> re = new HashMap<String, Object>();
         	re.put("List", data);
         	re.put("AllCount", allCount);
         	re.put("PageSize", model.getPageSize());
-        	entity.setData(re);
+        	
+        	String dataStr = new JSONObject(re).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+        	entity.setData(data_re);
         	entity.setErrmsg("成功");
 		} catch (Exception e) {
 			entity.setErrmsg("服务器异常");

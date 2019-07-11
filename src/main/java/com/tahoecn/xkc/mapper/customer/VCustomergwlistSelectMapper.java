@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.GWCustomerPageVo;
 
 /**
  * <p>
@@ -28,7 +27,7 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param gWCustomerPageDto
 	 * @return
 	 */
-	List<GWCustomerPageVo> sCustomerGWListNew_Select(GWCustomerPageDto gWCustomerPageDto);
+	List<Map<String,Object>> sCustomerGWListNew_Select(GWCustomerPageDto gWCustomerPageDto);
 	
 	Long sCustomerGWListNew_Select_count(GWCustomerPageDto gWCustomerPageDto);
 	
