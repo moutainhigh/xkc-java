@@ -6,8 +6,172 @@
         LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
         WHERE O.ProjectID=#{projectId} AND O.SaleUserID=#{MemberID}
     </select>
-
-
-
-
+	<!-- 客户确认归属 -->
+	<update id="mCustomerBelong_Update" statementType="CALLABLE">
+		{call P_CustomerBelong_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{OpportunityIDList})}
+	</update>
+	<!-- 客户确认归属 -->
+	<!-- <update id="mCustomerBelong_Update">
+		<![CDATA[
+			UPDATE dbo.B_Opportunity 
+			SET IsDel = 1,
+			EditeTime = GETDATE( ),
+			Editor = #{UserID} 
+			WHERE
+				ProjectID = #{ProjectID} 
+				AND IsDel = 0 
+				AND Status <> 6 
+				AND ISNULL( CustomerMobile, '' ) <> '' 
+				AND CustomerMobile IN ( SELECT CustomerMobile FROM dbo.B_Opportunity WHERE id IN (#{OpportunityIDList}) ) 
+				AND id NOT IN (#{OpportunityIDList})
+		]]>
+	</update> -->
+	<select id="getYQWGJ" parameterType="java.util.Map" resultType="java.util.Map">
+			<![CDATA[
+				SELECT A.ID 
+				FROM
+					dbo.B_Opportunity A
+					LEFT JOIN ( SELECT ProjectID, OverdueTime, ROW_NUMBER ( ) OVER ( PARTITION BY ProjectID ORDER BY VersionStartTime DESC ) num FROM B_OverdueRule ) B ON A.ProjectID = B.ProjectID 
+					AND B.num = 1 
+				WHERE
+					A.ProjectID = #{ProjectID} 
+					AND A.IsDel = 0 
+					AND A.Status <> 6 
+					AND A.TheLatestFollowUpDate IS NOT NULL 
+					AND (
+						DATEDIFF( DAY, DATEADD( DAY, ISNULL( B.OverdueTime, 7 ), A.TheLatestFollowUpDate ), GETDATE( ) ) >= 0 
+						AND A.Status IN ( 1, 2, 3 ) 
+					) 
+					AND ISNULL( A.SaleUserID, '' ) IN (#{AdviserIDList})
+			]]>
+	</select>
+	<select id="getYQWRG" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT A.ID 
+			FROM
+				dbo.B_Opportunity A
+				JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
+				JOIN dbo.C_MYTrade C ON B.ID = C.OppGUID
+				JOIN C_MYBooking D ON C.TradeGUID = D.TradeGUID 
+			WHERE
+				A.ProjectID = #{ProjectID} 
+				AND D.Status = '排号' 
+				AND DATEDIFF( DAY, D.EndDate, GETDATE( ) ) >= 0 
+				AND A.SaleUserID IN (#{AdviserIDList})
+		]]>
+	</select>
+	<select id="getYQWQY" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT A.ID 
+			FROM
+				dbo.C_MYOrder D
+				LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+				LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+				LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+				JOIN dbo.B_Room E ON E.ID = D.RoomGUID 
+			WHERE
+				EXISTS ( SELECT ID FROM dbo.B_Project P WHERE D.ProjGUID = P.ID AND PID = #{ProjectID} ) 
+				AND D.OrderType = '认购' 
+				AND D.Status = '激活' 
+				AND D.JhqyDate IS NOT NULL 
+				AND ISNULL( A.SaleUserID, '' ) IN (#{AdviserIDList})
+				AND DATEDIFF( DAY, JhqyDate, GETDATE( ) ) >= 0 
+				AND DATEDIFF( DAY, JhqyDate, GETDATE( ) ) <= 3650
+		]]>
+	</select>
+	<select id="getYQWJK" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT A.ID 
+			FROM
+				dbo.C_MYContract D
+				LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+				LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+				LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+				JOIN dbo.B_Room E ON E.ID = D.RoomGUID
+				JOIN (
+				SELECT
+					TradeGUID,
+					SUM ( Ye ) OverduePayment,
+					MAX ( DATEDIFF( DAY, ISNULL( lastDate, DATEADD( DAY, 1, GETDATE( ) ) ), GETDATE( ) ) ) OverduePaymentDay 
+				FROM
+					C_MYFee 
+				WHERE
+					Ye > 0 
+					AND ItemType LIKE '%房款%' 
+				GROUP BY
+					TradeGUID 
+				) F ON F.TradeGUID = D.TradeGUID 
+			WHERE
+				EXISTS ( SELECT ID FROM dbo.B_Project P WHERE D.ProjGUID = P.ID AND PID = #{ProjectID} ) 
+				AND D.Status = '激活' 
+				AND ISNULL( A.SaleUserID, '' ) IN (#{AdviserIDList})
+				AND F.OverduePaymentDay >= 0 
+				AND F.OverduePaymentDay <= 3650
+		]]>
+	</select>
+	
+	<update id="updateCustomerRecovery1" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE dbo.B_OpportunityGiveUp 
+		SET ApprovalStatus = 3,
+		EditeTime = GETDATE(),
+		Editor = #{UserID} 
+		WHERE
+			Status = 1 
+			AND ApprovalStatus = 0
+			AND OpportunityID IN (${OpportunityIDTable})
+	]]>
+	</update>
+	<update id="updateCustomerRecovery2" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE S_Message 
+		SET Status = 0,
+		Editor = #{UserID},
+		EditTime = GETDATE( ) 
+		WHERE
+			Status = 1 
+			AND BizType = 'Opportunity' 
+			AND BizID IN (#{OpportunityIDTable})
+	]]>
+	</update>
+	<update id="updateCustomerRecovery3" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE S_Message 
+		SET Status = 0,
+		Editor = #{UserID},
+		EditTime = GETDATE( ) 
+		WHERE
+			Status = 1 
+			AND BizType = 'OpportunityGiveUp' 
+			AND BizID IN ( SELECT ID FROM dbo.B_OpportunityGiveUp WHERE OpportunityID IN (#{OpportunityIDTable}) )
+	]]>
+	</update>
+	<update id="updateCustomerRecovery4" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE B_CustomerPublicPool 
+		SET IsDel = 1,
+			Editor = @UserID,
+			EditeTime = GETDATE( ) 
+		WHERE
+			OpportunityID IN (#{OpportunityIDTable});
+	]]>
+	</update>
+	<update id="updateCustomerRecovery5" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE B_Opportunity 
+		SET SaleUserID = '',
+			SaleUserName = '',
+			Editor = #{UserID},
+			EditeTime = GETDATE( ),
+			AllotUserID = #{UserID},
+			AllotTime = GETDATE( ) 
+		WHERE
+			id IN (#{OpportunityIDTable});
+	]]>
+	</update>
+	<!-- 回收-存储过程 -->
+	<update id="mCustomerRecovery_Update" statementType="CALLABLE">
+		{call P_CustomerRecovery_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{Code},#{AdviserIDList},#{OpportunityIDList})}
+	</update>
+	
 </mapper>

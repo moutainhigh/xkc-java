@@ -134,4 +134,15 @@
             ORDER BY sgm.CreateTime DESC
         ]]>
     </select>
+    <select id="getSaleGroupName" parameterType="java.util.Map" resultType="java.util.Map">
+	    SELECT  A.ReceptionGroupID,P.Name as pName,G.Name as gName
+	        FROM    B_SalesGroupMember A
+	                LEFT JOIN B_SalesGroup G ON A.ReceptionGroupID = G.ID
+	                LEFT JOIN B_Project P ON A.ProjectID = P.ID
+	        WHERE   A.ProjectID = #{ProjectID}
+	                AND A.MemberID = #{SaleUserID}
+	                AND A.Status = 1
+	                AND A.IsDel = 0
+	                AND A.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+    </select>
 </mapper>

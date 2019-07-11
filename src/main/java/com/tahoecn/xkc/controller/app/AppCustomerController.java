@@ -16,13 +16,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
-import com.tahoecn.xkc.model.customer.BCustomerpotentialfiltergroup;
-import com.tahoecn.xkc.model.customer.VOpportunity;
 import com.tahoecn.xkc.model.vo.CSearchModel;
 import com.tahoecn.xkc.model.vo.CustomerModel;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
 import com.tahoecn.xkc.service.customer.IVOpportunityService;
+import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +45,8 @@ public class AppCustomerController extends TahoeBaseController {
     private IBCustomerpotentialfiltergroupService iBCustomerpotentialfiltergroupService;
     @Autowired
     private IBCustomerfiltergroupService iBCustomerfiltergroupService;
+    @Autowired
+    private IBOpportunityService iBOpportunityService;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -140,6 +141,59 @@ public class AppCustomerController extends TahoeBaseController {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
 			return Result.ok(iBCustomerfiltergroupService.mCustomerFilterGroupList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "确认归属", notes = "确认归属")
+	@RequestMapping(value = "/mCustomerBelong_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerBelong_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String Opportunity = "";
+			List<String> OpportunityIDList = (List) paramMap.get("OpportunityIDList");
+            if (OpportunityIDList != null){
+                for(String item : OpportunityIDList){
+                	Opportunity += item + ",";
+                }
+                Opportunity = Opportunity.length() > 0 ? Opportunity.substring(0, Opportunity.length() - 1) : Opportunity;
+            }
+            paramMap.put("OpportunityIDList", Opportunity);
+            iBOpportunityService.mCustomerBelong_Update(paramMap);
+			return Result.ok("成功");
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "客户回收", notes = "客户回收")
+	@RequestMapping(value = "/mCustomerRecovery_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerRecovery_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String AdviserID = "";
+            String OpportunityID = "";
+			List<String> OpportunityIDList = (List) paramMap.get("OpportunityIDList");
+			List<String> AdviserIDList = (List) paramMap.get("AdviserIDList");
+			if (AdviserIDList != null){
+                for (String item : AdviserIDList){
+                    AdviserID += item + ",";
+                }
+                AdviserID = AdviserID.length() > 0 ? AdviserID.substring(0, AdviserID.length() - 1) : AdviserID;
+            }
+			if (OpportunityIDList != null){
+				for(String item : OpportunityIDList){
+					OpportunityID += item + ",";
+				}
+				OpportunityID = OpportunityID.length() > 0 ? OpportunityID.substring(0, OpportunityID.length() - 1) : OpportunityID;
+			}
+			paramMap.put("OpportunityIDList", OpportunityID);
+			paramMap.put("AdviserIDList", AdviserID);
+			iBOpportunityService.mCustomerRecovery_Update(paramMap);
+			return Result.ok("成功");
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
