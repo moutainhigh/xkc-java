@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.mapper.org;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.org.SOrganization;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 public interface SOrganizationMapper extends BaseMapper<SOrganization> {
     void userOrgInsert(@Param("UserID") String UserID, @Param("ProjectID") String ProjectID);
 
-    List<Map<String, Object>> SystemOrganization_Select(@Param("authCompanyID") String authCompanyID, @Param("orgID")String orgID,
+    IPage<Map<String,Object>> SystemOrganization_Select(IPage page,@Param("authCompanyID") String authCompanyID, @Param("orgID")String orgID,
                                                         @Param("productID")String productID, @Param("pid")String pid,
                                                         @Param("status")String status);
 }

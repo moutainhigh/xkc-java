@@ -131,7 +131,7 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     }
 
     @Override
-    public List<Map<String, Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String orgID, String key) {
+    public IPage<Map<String,Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String orgID, String key) {
         return baseMapper.SystemUserListByOrgID_Select(page,authCompanyID,orgID,key);
     }
 }

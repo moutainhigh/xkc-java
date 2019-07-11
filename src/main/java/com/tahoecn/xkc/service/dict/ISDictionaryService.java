@@ -19,4 +19,8 @@ public interface ISDictionaryService extends IService<SDictionary> {
     List<Map<String, String>> AgenCertificatesList_SelectN();
 
     List<Map<String,Object>> ListByCode_Select(String dictCodes);
+
+    boolean SystemParam_Delete(String id);
+
+    boolean SystemParam_Update(SDictionary dictionary);
 }

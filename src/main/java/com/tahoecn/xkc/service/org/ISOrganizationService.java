@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.org;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.org.SOrganization;
 
@@ -16,6 +17,7 @@ import java.util.Map;
  */
 public interface ISOrganizationService extends IService<SOrganization> {
 
-    List<Map<String, Object>> SystemOrganization_Select(String authCompanyID, String orgID, String productID, String pid, String status);
+    IPage<Map<String,Object>> SystemOrganization_Select(IPage page,String authCompanyID, String orgID, String productID, String pid, String status);
 
+    boolean SystemOrganizationDetail_Updatez(SOrganization organization);
 }

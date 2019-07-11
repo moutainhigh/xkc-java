@@ -38,5 +38,5 @@ public interface SAccountMapper extends BaseMapper<SAccount> {
 
     List<HashMap<String,String>> GetMenuAndFunList_Select(@Param("jobCode") String jobCode, @Param("projectID") String projectID);
 
-    List<Map<String, Object>> SystemUserListByOrgID_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("OrgID")String orgID, @Param("Key")String key);
+    IPage<Map<String,Object>> SystemUserListByOrgID_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("OrgID")String orgID, @Param("Key")String key);
 }

@@ -40,9 +40,6 @@ public class SAccountController extends TahoeBaseController {
     private ISAccountService accountService;
 
     @Autowired
-    private ISOrganizationService organizationService;
-
-    @Autowired
     private IBSalesuserService salesuserService;
 
     //已测
@@ -50,7 +47,7 @@ public class SAccountController extends TahoeBaseController {
     @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.POST})
     public Result SystemUserListByOrgID_Select(String AuthCompanyID,String OrgID,String Key,int Pageindex,int Pagesize) {
         IPage page = new Page(Pageindex, Pagesize);
-        List<Map<String,Object>> list=accountService.SystemUserListByOrgID_Select(page,AuthCompanyID,OrgID,Key);
+        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_Select(page,AuthCompanyID,OrgID,Key);
         return Result.ok(list);
     }
 
@@ -101,12 +98,5 @@ public class SAccountController extends TahoeBaseController {
 
 
 
-    @ApiOperation(value = "全部组织(用户管理)", notes = "全部组织(用户管理)")
-    @RequestMapping(value = "/SystemOrganization_Select", method = {RequestMethod.POST})
-    public Result SystemOrganization_Select(String OrgID,String AuthCompanyID,String ProductID,String Status,String PID) {
-
-        List<Map<String,Object>> list=organizationService.SystemOrganization_Select(AuthCompanyID,OrgID,ProductID,PID,Status);
-        return Result.ok(list);
-    }
 
 }

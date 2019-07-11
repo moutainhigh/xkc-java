@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.SJobsMapper">
+<mapper namespace="com.tahoecn.xkc.mapper.job.SJobsMapper">
     <insert id="userOrgInsert" >
         INSERT INTO dbo.S_Jobs
         ( ID ,
@@ -21,4 +21,71 @@
         )
 		SELECT NEWID(),Code,Name+''+(SELECT DictName FROM dbo.S_Dictionary WHERE ID=#{RoleID}),Name+''+(SELECT DictName FROM dbo.S_Dictionary WHERE ID=#{RoleID}),NULL,#{RoleID},id,'17BA4307-D05A-4A57-8729-FC1BD45302B6','9E0FADFF-31F0-4EC5-B35D-EE5BC5F4E622',#{UserID},GETDATE(),NULL,NULL,1,0 FROM dbo.B_Project WHERE id=#{ProjectID}
     </insert>
+
+    <select id="SystemJobList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *
+        FROM dbo.S_Jobs
+        WHERE AuthCompanyID = #{AuthCompanyID}
+        AND ProductID = #{ProductID}
+        AND JobOrgID = #{OrgID}
+        AND IsDel = 0
+        ORDER BY LEN(JobName),JobName
+    </select>
+
+    <select id="SystemUserList_Select" resultType="com.tahoecn.xkc.model.sys.SAccount" parameterType="string">
+        SELECT
+        A.[ID],
+        A.[UserName],
+        A.[AccountType],
+        A.[EmployeeName],
+        A.[Gender],
+        A.[OfficeTel],
+        A.[EmployeeCode],
+        A.[OfficeMail],
+        A.[Mobile],
+        A.[PostCode],
+        A.[Address],
+        A.[Status]
+        FROM
+        [S_Account] A
+        INNER JOIN S_JobsUserRel B ON A.ID = B.AccountID
+        INNER JOIN S_Jobs J ON J.ID= B.JobID
+        INNER JOIN S_Organization O ON J.JobOrgID = O.ID
+        WHERE
+        B.JobID = #{JobID}
+        AND A.AuthCompanyID = #{AuthCompanyID}
+        AND A.IsDel = 0
+        AND O.IsDel = 0
+        AND O.[Status] = 1
+    </select>
+
+
+    <select id="SystemJobAllList_Select" parameterType="string" resultType="java.util.HashMap">
+        SELECT
+        *
+        FROM dbo.S_Jobs j
+        WHERE AuthCompanyID = #{AuthCompanyID}
+        AND ProductID = #{ProductID}
+        AND IsDel = 0
+        AND EXISTS(
+        SELECT
+        1
+        FROM
+        (
+        SELECT
+        ID
+        FROM dbo.S_Organization
+        WHERE ProductID = #{ProductID}
+        AND FullPath LIKE
+        (
+        SELECT
+        FullPath + '%'
+        FROM dbo.S_Organization
+        WHERE ID = #{OrgID}
+        )
+        ) t WHERE j.JobOrgID = t.ID
+        )
+        ORDER BY LEN(JobName),JobName
+    </select>
 </mapper>
