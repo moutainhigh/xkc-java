@@ -18,16 +18,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class GenerateCodeBuilder {
 
-    @Value("${spring.datasource.dynamic.datasource.master.url}")
+    @Value("${spring.datasource.dynamic.datasource.slave_my.url}")
     private String url;
 
-    @Value("${spring.datasource.dynamic.datasource.master.username}")
+    @Value("${spring.datasource.dynamic.datasource.slave_my.username}")
     private String user;
 
-    @Value("${spring.datasource.dynamic.datasource.master.password}")
+    @Value("${spring.datasource.dynamic.datasource.slave_my.password}")
     private String password;
 
-    @Value("${spring.datasource.dynamic.datasource.master.driver-class-name}")
+    @Value("${spring.datasource.dynamic.datasource.slave_my.driver-class-name}")
     private String driver;
 
     //生成文件所在项目路径
@@ -37,7 +37,7 @@ public class GenerateCodeBuilder {
     private static String basePackage="com.tahoecn.xkc";
 
     //要生成的表名
-    private static String[] tables= {"V_CustomerGWList_Select"};
+    private static String[] tables= {"cb_Fy"};
 
     @Test
     public void generateCodeBuilder(){

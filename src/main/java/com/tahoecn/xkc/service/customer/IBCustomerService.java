@@ -34,4 +34,24 @@ public interface IBCustomerService extends IService<BCustomer> {
      * 验证是否是本项目老业主
      */
     List<Map<String,Object>> IsProjectOwner_Select(String projectId, String phone);
+
+    List<Map<String,Object>> SourceTypeChangeList_Select(String Mobile, String projectID,String sqlWhere,String ClueID);
+
+    void SourceTypeChangeDetail_Update(String oldClueID, String clueID, String userID, String reason, String enclosure);
+
+    void ExtendProtectDetail_Update(String protectNum, String clueID, String userID, String reason, String enclosure);
+
+    void SetInvalidDetail_Update(String clueID, String reason, String enclosure, String userID);
+
+    void ChangeSourceTypeDetail_Update(String clueID, String SourceType, String reason, String enclosure,String userID,String type);
+
+    void ChangeCognitiveChannelDetail_Update(String clueID, String cognitiveChannel, String reason, String enclosure, String userID, String type);
+
+    IPage<Map<String,Object>> CustomerGuidePageList_Select(Integer pageIndex, Integer pageSize, String sql);
+
+    List<Map<String,Object>> CustomerGuideDownLoadByIDList_Select(String arr);
+
+    List<Map<String,Object>> CustomerGuideDownLoadList_Select(String sqlWhere);
+
+    Map<String,Object> CustomerNEWDetailAll_Select(String projectID, String customerID, String reportUserID, String opportunityID);
 }
