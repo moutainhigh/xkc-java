@@ -199,16 +199,8 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 * 经理团队列表
 	 */
 	@Override
-	public List<Map<String, Object>> mChannelLeaderList_Select(Map<String, Object> map) {
-		return 	bChanneltaskMapper.mChannelLeaderList_Select(map);
-	}
-
-	/*
-	 * 经理团队列表数量统计
-	 */
-	@Override
-	public int mChannelLeaderList_SelectAllCount(Map<String, Object> map) {
-		return bChanneltaskMapper.mChannelLeaderList_SelectAllCount(map);
+	public IPage<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere) {
+		return bChanneltaskMapper.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
 	}
 
 	/*
@@ -227,10 +219,7 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 		return bChanneltaskMapper.mChannelLeaderTaskList_Select(map);
 	}
 
-//	@Override
-//	public List<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere) {
-//		return bChanneltaskMapper.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
-//	}
+
 
 	
 }

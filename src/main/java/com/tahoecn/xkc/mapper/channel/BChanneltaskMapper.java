@@ -6,6 +6,8 @@ import com.tahoecn.xkc.model.channel.BChanneltaskarea;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -108,13 +110,8 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	/*
 	 * 经理团队列表
 	 */
-	List<Map<String, Object>> mChannelLeaderList_Select(Map<String, Object> map);
-	//List<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere);
-	/*
-	 * 经理团队列表数量统计
-	 */
-	int mChannelLeaderList_SelectAllCount(Map<String, Object> map);
-	
+	IPage<Map<String, Object>> mChannelLeaderList_Select(IPage page, @Param("ProjectID")String ProjectID, @Param("sqlWhere")String sqlWhere);
+
 	/*
 	 * 是否保存锁房图片到本地
 	 */
@@ -124,5 +121,6 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	 * 经理作战图任务列表
 	 */
 	List<Map<String, Object>> mChannelLeaderTaskList_Select(Map<String, Object> map);
+	
 
 }

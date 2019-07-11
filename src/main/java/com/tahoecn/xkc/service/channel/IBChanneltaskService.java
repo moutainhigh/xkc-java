@@ -113,15 +113,8 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	/*
 	 * 经理团队列表
 	 */
-	List<Map<String, Object>> mChannelLeaderList_Select(Map<String, Object> map);
-
-	//List<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere);
-
-	/*
-	 * 经理团队列表数量统计
-	 */
-	int mChannelLeaderList_SelectAllCount(Map<String, Object> map);
-
+	IPage<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere);
+	
 	/*
 	 * 是否保存锁房图片到本地
 	 */
@@ -131,4 +124,6 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	 * 经理作战图任务列表
 	 */
 	List<Map<String, Object>> mChannelLeaderTaskList_Select(Map<String, Object> map);
+
+
 }

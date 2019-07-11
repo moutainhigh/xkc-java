@@ -600,47 +600,42 @@ public class AppKCController extends TahoeBaseController {
 		}
     }
 	
-//	@ResponseBody
-//    @ApiOperation(value = "经理团队列表", notes = "经理团队列表")
-//    @RequestMapping(value = "/mChannelLeaderList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//    public Result mChannelLeaderList_Select(@RequestBody JSONObject jsonParam) {
-//		Map<String,Object> result=new HashMap<String,Object>();
-//		Result re=new Result();
-//    	try{
-//    		// 直接将json信息打印出来
-//    		System.out.println(jsonParam.toJSONString());
-//    		Map paramMap = (HashMap)jsonParam.get("_param");
-//            String ProjectID = (String)paramMap.get("ProjectID").toString();//
-//            String IsAll = (String)paramMap.get("IsAll").toString();//
-//            String Filter = (String)paramMap.get("Filter").toString();//
-//            Map<String,Object> map = new HashMap<String,Object>();
-//            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
-//            int PageSize = (int)paramMap.get("PageSize");//每页数量
-//            IPage page = new Page(PageIndex, PageSize);
-//            map.put("ProjectID", ProjectID);
-//            String sqlWhere = "";
-//            if(IsAll.equals("0")) {
-//            	sqlWhere += " AND a.IsDel=0 AND a.Status=1";
-//            }
-//            if(Filter.length() > 0) {
-//            	sqlWhere += "AND (b.Name LIKE '%"+Filter+"%' OR b.TelPhone LIKE '%"+Filter+"%')";
-//            }
-//            map.put("sqlWhere", sqlWhere);
-//            List<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(map);
-//            int AllCount = iBChanneltaskService.mChannelLeaderList_SelectAllCount(map);
-//           //List<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
-//            result.put("List", obj);
-//            result.put("AllCount", AllCount);
-//            result.put("PageSize", PageSize);
-//            
-//    		return re.ok(result);
-//    	}catch (Exception e) {
-//			e.printStackTrace();
-//			return Result.errormsg(1, "系统异常，请联系管理员");
-//			
-//		}
-//    }
-//	
+	@ResponseBody
+    @ApiOperation(value = "经理团队列表", notes = "经理团队列表")
+    @RequestMapping(value = "/mChannelLeaderList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelLeaderList_Select(@RequestBody JSONObject jsonParam) {
+
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+            String IsAll = (String)paramMap.get("IsAll").toString();//
+            String Filter = (String)paramMap.get("Filter").toString();//
+           
+            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+            int PageSize = (int)paramMap.get("PageSize");//每页数量
+            IPage page = new Page(PageIndex, PageSize);
+            
+            String sqlWhere = "";
+            if(IsAll.equals("0")) {
+            	sqlWhere += " AND a.IsDel=0 AND a.Status=1";
+            }
+            if(Filter.length() > 0) {
+            	sqlWhere += "AND (b.Name LIKE '%"+Filter+"%' OR b.TelPhone LIKE '%"+Filter+"%')";
+            }
+           
+            IPage<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
+    
+    		return re.ok(obj);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1, "系统异常，请联系管理员");
+			
+		}
+    }
+	
 //	@ResponseBody
 //    @ApiOperation(value = "是否保存锁房图片到本地", notes = "是否保存锁房图片到本地")
 //    @RequestMapping(value = "/CustomerLockRoomClientSaveDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
