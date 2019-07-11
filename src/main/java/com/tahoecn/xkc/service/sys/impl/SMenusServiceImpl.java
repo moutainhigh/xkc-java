@@ -3,6 +3,7 @@ package com.tahoecn.xkc.service.sys.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.sys.SMenusMapper;
 import com.tahoecn.xkc.model.dict.BTag;
@@ -21,6 +22,8 @@ import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
@@ -664,5 +667,76 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
     @Override
     public List<Map<String, Object>> SystemMenusList_Select(IPage page) {
         return baseMapper.SystemMenusList_Select(page);
+    }
+
+    @Override
+    public void SystemMenu_Insert(SMenus menus) {
+        baseMapper.SystemMenu_Insert(menus);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean SystemMenu_Update(SMenus menu) {
+        try {
+            String ID = menu.getId();
+            String MenuSysName = menu.getMenuSysName();
+            String MenuName = menu.getMenuName();
+            String Url = menu.getUrl();
+            String ImageUrl = menu.getImageUrl();
+            String IconClass = menu.getIconClass();
+            int IsHomePage = menu.getIsHomePage();
+            int IsShow = menu.getIsShow();
+            int Levels = menu.getLevels();
+            int ListIndex = menu.getListIndex();
+            int IsLast = menu.getIsLast();
+            String Editor = ThreadLocalUtils.getUserName();
+            int Status = menu.getStatus();
+            String OldPath=baseMapper.getOldPath(ID);
+            String NewPath=baseMapper.getNewPath(ID);
+            NewPath=NewPath+"/"+MenuSysName;
+            SMenus menus=new SMenus();
+            menus.setId(ID);
+            menus.setMenuSysName(MenuSysName);
+            menus.setMenuName(MenuName);
+            menus.setUrl(Url);
+            menus.setImageUrl(ImageUrl);
+            menus.setIconClass(IconClass);
+            menus.setIsHomePage(IsHomePage);
+            menus.setIsShow(IsShow);
+            menus.setLevels(Levels);
+            menus.setListIndex(ListIndex);
+            menus.setIsLast(IsLast);
+            menus.setEditor(Editor);
+            menus.setEditTime(new Date());
+            menus.setStatus(Status);
+            menus.setFullPath(NewPath);
+            baseMapper.updateById(menus);
+            if (StringUtils.isNotBlank(OldPath)){
+                QueryWrapper<SMenus> wrapper=new QueryWrapper<>();
+                wrapper.likeRight("FullPath",OldPath);
+                List<SMenus> list = baseMapper.selectList(wrapper);
+                for (SMenus sMenus : list) {
+                    String fullPath = sMenus.getFullPath();
+                    String replace = fullPath.replace(OldPath, NewPath);
+                    sMenus.setFullPath(replace);
+                    baseMapper.updateById(sMenus);
+                }
+            }
+            if (IsLast==1){
+                QueryWrapper<SMenus> wrapper=new QueryWrapper<>();
+                wrapper.likeRight("FullPath",NewPath);
+                wrapper.eq("ID",ID);
+                List<SMenus> list = baseMapper.selectList(wrapper);
+                for (SMenus sMenus : list) {
+                    sMenus.setIsLast(0);
+                    baseMapper.updateById(sMenus);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+        return true;
     }
 }

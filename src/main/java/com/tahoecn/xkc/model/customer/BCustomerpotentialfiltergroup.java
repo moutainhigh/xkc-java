@@ -15,11 +15,11 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author YYY
- * @since 2019-07-08
+ * @since 2019-07-10
  */
-@TableName("B_CustomerFilterGroup")
-@ApiModel(value="BCustomerfiltergroup对象", description="")
-public class BCustomerfiltergroup implements Serializable {
+@TableName("B_CustomerPotentialFilterGroup")
+@ApiModel(value="BCustomerpotentialfiltergroup对象", description="")
+public class BCustomerpotentialfiltergroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -136,7 +136,7 @@ public class BCustomerfiltergroup implements Serializable {
 
     @Override
     public String toString() {
-        return "BCustomerfiltergroup{" +
+        return "BCustomerpotentialfiltergroup{" +
         "id=" + id +
         ", ProjectID=" + ProjectID +
         ", Name=" + Name +

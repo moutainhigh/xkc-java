@@ -18,4 +18,8 @@ import java.util.Map;
 public interface BCustomerfiltergroupMapper extends BaseMapper<BCustomerfiltergroup> {
 
     List<Map<String, Object>> groupList(@Param("JobCode") String jobCode, @Param("ProjectID")String projectID, @Param("UserID")String userID);
+    /**
+	 * 客户筛选分组列表
+	 */
+	List<Map<String, Object>> mCustomerFilterGroupList_Select(Map<String, Object> paramMap);
 }

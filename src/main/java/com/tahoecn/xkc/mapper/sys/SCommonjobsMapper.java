@@ -22,7 +22,7 @@ public interface SCommonjobsMapper extends BaseMapper<SCommonjobs> {
 	
 	List<SCommonjobs> SystemCommonJobsList_SelectList();
 	
-	String SystemCommonJobNameIsExists_Select(Map<String, Object> map);
+	String SystemCommonJobNameIsExists_Select(@Param("AuthCompanyID")String AuthCompanyID, @Param("ProductID")String ProductID, @Param("JobName")String JobName);
 	
 	void SystemCommonJobStatus_Update(Map<String, Object> map);
 	

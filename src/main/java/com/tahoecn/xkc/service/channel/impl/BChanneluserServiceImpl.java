@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
+import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dict.SDictionary;
@@ -53,6 +54,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Autowired
     private ISDictionaryService dictionaryService;
+    @Autowired
+    private SDictionaryMapper sDictionaryMapper;
     @Override
     public List<Map<String, String>> AgenApproverList() {
         return baseMapper.AgenApproverList();
@@ -408,6 +411,46 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 	public int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map) {
 		return bChanneluserMapper.mChannelUserAbnormal_SelectAllCount(map);
 		
+	}
+	/**
+	 * 验证是否重复手机号
+	 */
+	@Override
+	public Integer ChannelUserCheckMobile_Select(Map<String, Object> map) {
+		QueryWrapper<BChanneluser> wrapper = new QueryWrapper<BChanneluser>();
+		wrapper.eq("Mobile", map.get("Mobile"));
+		wrapper.eq("IsDel", 0);
+		return bChanneluserMapper.selectCount(wrapper);
+	}
+	/**
+	 * 行销拓客兼职注册
+	 */
+	@Override
+	public void mChannelRegistJZ_Insert(Map<String, Object> map) {
+		String pwd = (String) map.get("Pwd");
+		SDictionary d = new SDictionary();
+		d = sDictionaryMapper.selectById("62DC076A-0900-4877-B4A3-D8A9ED0BC10E");
+		BChanneluser user = new BChanneluser();
+		user.setUserName(map.get("Mobile").toString());
+		user.setPassword(SecureUtil.md5(pwd).toUpperCase());
+		user.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");//默认女
+		user.setMobile(map.get("Mobile").toString());
+		user.setName(map.get("Name").toString());
+//		user.setCreator(Creator);
+		user.setCreateTime(new Date());
+		user.setIsDel(0);
+		user.setStatus(1);
+		user.setApprovalStatus(1);
+		user.setApprovalDate(new Date());
+		user.setChannelTypeID("62DC076A-0900-4877-B4A3-D8A9ED0BC10E");//默认兼职
+		user.setChannelType(d.getDictName());
+		user.setJob(3);
+		user.setCertificatesType("62DC076A-0900-4877-B4A3-D8A9ED0BC10E");//--默认身份证
+		user.setCertificatesName("身份证");
+		user.setCertificatesNo(map.get("CardID").toString());
+		bChanneluserMapper.insert(user);
+		user.setCreator(user.getId());
+		bChanneluserMapper.updateById(user);
 	}
 
 

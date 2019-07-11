@@ -23,4 +23,8 @@ public interface ISMenusService extends IService<SMenus> {
     Result SystemDictionaryDetail(HashMap<String,Object> param);
 
     List<Map<String, Object>> SystemMenusList_Select(IPage page);
+
+    void SystemMenu_Insert(SMenus menus);
+
+    boolean SystemMenu_Update(SMenus menus);
 }

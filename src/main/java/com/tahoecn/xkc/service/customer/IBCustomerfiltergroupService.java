@@ -17,4 +17,16 @@ import java.util.Map;
 public interface IBCustomerfiltergroupService extends IService<BCustomerfiltergroup> {
 
     List<Map<String, Object>> groupList(String jobCode, String projectID, String userID);
+    /**
+	 * 客户筛选分组删除
+	 */
+	void mCustomerFilterGroupDetail_Delete(String ID);
+	/**
+	 * 客户筛选分组新增
+	 */
+	void mCustomerFilterGroupDetail_Insert(Map<String,Object> paramMap);
+	/**
+	 * 客户筛选分组列表
+	 */
+	List<Map<String,Object>> mCustomerFilterGroupList_Select(Map<String,Object> paramMap);
 }

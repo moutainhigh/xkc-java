@@ -8,7 +8,9 @@ import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SMenus;
 import com.tahoecn.xkc.service.sys.ISMenusService;
 import io.swagger.annotations.ApiOperation;
@@ -20,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -48,7 +48,7 @@ public class SMenusController extends TahoeBaseController {
     }
 
     /**
-     * 数据字典
+     * 数据字典 H5  不应在本类里
      */
     @ApiOperation(value = "数据字典", notes = "数据字典")
     @RequestMapping(value = "/mSystemDictionaryDetail_Select", method = {RequestMethod.POST})
@@ -60,13 +60,47 @@ public class SMenusController extends TahoeBaseController {
 
     @ApiOperation(value = "获取所有菜单信息", notes = "获取所有菜单信息")
     @RequestMapping(value = "/SystemMenusList_Select", method = {RequestMethod.POST})
-    public Result SystemMenusList_Select(@RequestBody JSONObject jsonParam) {
-        Map map = (HashMap)jsonParam.get("_param");
-        int PageIndex=(int) map.get("Pageindex");
-        int PageSize=(int) map.get("Pagesize");
-        IPage page = new Page(PageIndex, PageSize);
+    public Result SystemMenusList_Select(int Pageindex,int Pagesize) {
+        IPage page = new Page(Pageindex, Pagesize);
         List<Map<String,Object>> list=isMenusService.SystemMenusList_Select(page);
         return Result.ok(list);
+    }
+
+    @ApiOperation(value = "启用/禁用菜单", notes = "启用/禁用菜单")
+    @RequestMapping(value = "/SystemMenuStatus_Update", method = {RequestMethod.POST})
+    public Result SystemMenuStatus_Update(@RequestBody SMenus menus) {
+        boolean b = isMenusService.updateById(menus);
+        if (b) {
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
+    }
+
+    @ApiOperation(value = "新增菜单", notes = "新增菜单")
+    @RequestMapping(value = "/SystemMenu_Insert", method = {RequestMethod.POST})
+    public Result SystemMenu_Insert(@RequestBody SMenus menus) {
+        menus.setId(UUID.randomUUID().toString());
+        menus.setCreator(ThreadLocalUtils.getUserName());
+        menus.setCreateTime(new Date());
+        menus.setIsDel(0);
+        try {
+            isMenusService.SystemMenu_Insert(menus);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Result.errormsg(99,"新增菜单错误");
+        }
+        return Result.okm("成功");
+    }
+
+    @ApiOperation(value = "编辑菜单", notes = "编辑菜单")
+    @RequestMapping(value = "/SystemMenu_Update", method = {RequestMethod.POST})
+    public Result SystemMenu_Update(@RequestBody SMenus menus) {
+
+        boolean b=isMenusService.SystemMenu_Update(menus);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
     }
 
 }

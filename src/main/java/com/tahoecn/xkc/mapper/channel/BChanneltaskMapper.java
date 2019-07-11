@@ -20,10 +20,10 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	/*
 	 * 新建任务
 	 */
-	List<BChanneltask> mChannelTask_Insert(Map<String, Object> map) ;
-	List<BChanneltask> mChannelTask_Insert2(Map<String, Object> map);
-	List<BChanneltask> mChannelTask_Insert3(Map<String, Object> map);
-	List<BChanneltask> mChannelTask_Insert4(Map<String, Object> map);
+	String mChannelTask_Insert(Map<String, Object> map) ;
+	void mChannelTask_Insert2(Map<String, Object> map);
+	void mChannelTask_Insert3(Map<String, Object> map);
+	List<Map<String, Object>> mChannelTask_Insert4(Map<String, Object> map);
 
 	/*
 	 * 结束任务
@@ -49,12 +49,12 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	/*
 	 * 获取当天第一条打卡记录
 	 */
-	List<Map<String, Object>> mChannelCheckClockTopOne_Select(Map<String, Object> map);
+	Map<String, Object> mChannelCheckClockTopOne_Select(Map<String, Object> map);
 
 	/*
 	 * 获取当天第一条打卡记录
 	 */
-	List<Map<String, Object>> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map);
+	Map<String, Object> mChannelCheckClockByDeviceCode_Select(Map<String, Object> map);
 
 	
 	/*
@@ -65,4 +65,42 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	void mChannelTempPersonQuitCus_Update2(Map<String, Object> map);
 
 	void mChannelTempPersonQuitCus_Update3(Map<String, Object> map);
+	
+	/*
+	 * 领取任务
+	 */
+	int mChannelTaskAccept_Insert(Map<String, Object> map);
+	void mChannelTaskAccept_Insert2(Map<String, Object> map);
+	void mChannelTaskAccept_Insert3(Map<String, Object> map);
+	/*
+	 * 更新兼职归属关系
+	 */
+	void mChannelTaskAccept_Update(Map<String, Object> map);
+	/*
+	 * 领取的任务状态
+	 */
+	List<Map<String, Object>> mChannelTaskAccept_Select(Map<String, Object> map);
+	
+	/*
+	 * 写入任务结束信息
+	 */
+	void mChannelLeaderQuit_Update(Map<String, Object> map);
+	/*
+	 * 强制结束任务 
+	 */
+	void mChannelLeaderQuit_Insert(Map<String, Object> map);
+	void mChannelLeaderQuit_Update2(Map<String, Object> map);
+	/*
+	 * 写入将分配的线索跟进记录
+	 */
+	void mChannelLeaderQuit_Insert2(Map<String, Object> map);
+	/*
+	 * 分配线索
+	 */
+	void mChannelLeaderQuit_Update3(Map<String, Object> map);
+	/*
+	 * 分配兼职 
+	 */
+	void mChannelLeaderQuit_Update4(Map<String, Object> map);
+
 }

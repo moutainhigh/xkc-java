@@ -121,6 +121,16 @@ public interface IBChanneluserService extends IService<BChanneluser> {
      * 考勤异常数量统计
      */
 	int mChannelUserAbnormal_SelectAllCount(Map<String, Object> map);
+
+	/**
+	 * 验证是否重复手机号
+	 */
+	Integer ChannelUserCheckMobile_Select(Map<String, Object> paramMap);
+
+	/**
+	 * 行销拓客兼职注册
+	 */
+	void mChannelRegistJZ_Insert(Map<String, Object> paramMap);
 	
 
 }

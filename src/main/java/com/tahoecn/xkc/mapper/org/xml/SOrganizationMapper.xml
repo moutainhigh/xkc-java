@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.SOrganizationMapper">
+<mapper namespace="com.tahoecn.xkc.mapper.org.SOrganizationMapper">
     <insert id="userOrgInsert" >
         INSERT INTO dbo.S_Organization
 			( ID ,
@@ -24,4 +24,28 @@
 			)
 	    SELECT id,'7270113E-8134-413F-98B9-6BA40AFB82F5',Code,Name,ShortName,5,1,5,'第三方组织/泰禾/泰禾移动营销管理平台/'+Name,'17BA4307-D05A-4A57-8729-FC1BD45302B6','9E0FADFF-31F0-4EC5-B35D-EE5BC5F4E622',#{UserID},GETDATE(),NULL,NULL,1,0,0 FROM dbo.B_Project WHERE ID=#{ProjectID}
     </insert>
+
+    <select id="SystemOrganization_Select" parameterType="string" resultType="java.util.HashMap">
+        SELECT * FROM (
+        SELECT  A.[ID] ,
+        A.[OrgCode] ,
+        A.[OrgName] ,
+        A.[OrgShortName] ,
+        A.[OrgCategory] ,
+        A.[ListIndex] ,
+        A.[FullPath] ,
+        A.[Levels] ,
+        A.[PID] ,
+        A.[Status],
+        (SELECT OrgName FROM S_Organization B WHERE B.ID = A.PID) AS PName
+        FROM    [S_Organization] A
+        WHERE   A.AuthCompanyID = #{authCompanyID}
+        AND A.ProductID = #{productID}
+        AND A.FullPath LIKE (SELECT FullPath FROM S_Organization WHERE ID = #{orgID}) + '%'
+        AND (#{pid} = '' OR A.PID = #{pid})
+        AND (#{status} = '' OR A.[Status] = #{status})
+        AND A.IsDel = 0
+        ) t
+        ORDER BY Levels ASC,ListIndex ASC
+    </select>
 </mapper>

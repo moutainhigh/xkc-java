@@ -22,7 +22,7 @@ public interface ISCommonjobsService extends IService<SCommonjobs> {
 	
 	List<SCommonjobs> SystemCommonJobsList_SelectList();
 	
-	Boolean SystemCommonJobNameIsExists_Select(Map<String, Object> map);
+	Boolean SystemCommonJobNameIsExists_Select(String AuthCompanyID,String ProductID,String JobName);
 	
 	void SystemCommonJobStatus_Update(Map<String, Object> map);
 	

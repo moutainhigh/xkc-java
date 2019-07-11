@@ -16,9 +16,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.customer.BCustomerpotentialfiltergroup;
 import com.tahoecn.xkc.model.customer.VOpportunity;
 import com.tahoecn.xkc.model.vo.CSearchModel;
 import com.tahoecn.xkc.model.vo.CustomerModel;
+import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
+import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
 import com.tahoecn.xkc.service.customer.IVOpportunityService;
 
 import io.swagger.annotations.Api;
@@ -39,6 +42,10 @@ public class AppCustomerController extends TahoeBaseController {
 	
     @Autowired
     private IVOpportunityService iVOpportunityService;
+    @Autowired
+    private IBCustomerpotentialfiltergroupService iBCustomerpotentialfiltergroupService;
+    @Autowired
+    private IBCustomerfiltergroupService iBCustomerfiltergroupService;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -62,5 +69,80 @@ public class AppCustomerController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
-	
+	@ResponseBody
+    @ApiOperation(value = "潜在客户分组删除", notes = "潜在客户分组删除")
+    @RequestMapping(value = "/mCustomerPotentialFilterGroupDetail_Delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerPotentialFilterGroupDetail_Delete(@RequestBody JSONObject jsonParam) {
+    	try{
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupDetail_Delete(paramMap.get("ID").toString());
+            return Result.ok("潜在客户分组删除成功");
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
+	@ResponseBody
+	@ApiOperation(value = "潜在客户分组新增", notes = "潜在客户分组新增")
+	@RequestMapping(value = "/mCustomerPotentialFilterGroupDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerPotentialFilterGroupDetail_Insert(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupDetail_Insert(paramMap);
+			return Result.ok("潜在客户分组添加成功");
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "潜在客户分组列表", notes = "潜在客户分组列表")
+	@RequestMapping(value = "/mCustomerPotentialFilterGroupList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerPotentialFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			return Result.ok(iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+    @ApiOperation(value = "分组删除", notes = "分组删除")
+    @RequestMapping(value = "/mCustomerFilterGroupDetail_Delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerFilterGroupDetail_Delete(@RequestBody JSONObject jsonParam) {
+    	try{
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            iBCustomerfiltergroupService.mCustomerFilterGroupDetail_Delete(paramMap.get("ID").toString());
+            return Result.ok("分组删除成功");
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
+	@ResponseBody
+	@ApiOperation(value = "分组新增", notes = "分组新增")
+	@RequestMapping(value = "/mCustomerFilterGroupDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerFilterGroupDetail_Insert(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			iBCustomerfiltergroupService.mCustomerFilterGroupDetail_Insert(paramMap);
+			return Result.ok("分组添加成功");
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "分组列表", notes = "分组列表")
+	@RequestMapping(value = "/mCustomerFilterGroupList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			return Result.ok(iBCustomerfiltergroupService.mCustomerFilterGroupList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }
