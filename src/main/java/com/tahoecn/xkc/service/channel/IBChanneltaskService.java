@@ -1,10 +1,12 @@
 package com.tahoecn.xkc.service.channel;
 
 import com.tahoecn.xkc.model.channel.BChanneltask;
+import com.tahoecn.xkc.model.channel.BChanneltaskarea;
 
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -26,7 +28,7 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	
 	void mChannelTask_Insert3(Map<String, Object> map);
 	
-	List<Map<String, Object>> mChannelTask_Insert4(Map<String, Object> map);
+	Map<String, Object> mChannelTask_Insert4(Map<String, Object> map);
 
 	/*
 	 * 结束任务
@@ -107,6 +109,21 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	 * 分配兼职 
 	 */
 	void mChannelLeaderQuit_Update4(Map<String, Object> map);
+
+	/*
+	 * 经理团队列表
+	 */
+	IPage<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere);
+	
+	/*
+	 * 是否保存锁房图片到本地
+	 */
+	void CustomerLockRoomClientSaveDetail_Update(Map<String, Object> map);
+
+	/*
+	 * 经理作战图任务列表
+	 */
+	List<Map<String, Object>> mChannelLeaderTaskList_Select(Map<String, Object> map);
 
 
 }

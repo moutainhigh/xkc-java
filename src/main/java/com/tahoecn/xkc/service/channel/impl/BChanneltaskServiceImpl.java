@@ -1,8 +1,10 @@
 package com.tahoecn.xkc.service.channel.impl;
 
 import com.tahoecn.xkc.model.channel.BChanneltask;
+import com.tahoecn.xkc.model.channel.BChanneltaskarea;
 import com.tahoecn.xkc.mapper.channel.BChanneltaskMapper;
 import com.tahoecn.xkc.service.channel.IBChanneltaskService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.List;
@@ -44,7 +46,7 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	}
 	
 	@Override
-	public List<Map<String, Object>> mChannelTask_Insert4(Map<String, Object> map) {
+	public Map<String, Object> mChannelTask_Insert4(Map<String, Object> map) {
 		return bChanneltaskMapper.mChannelTask_Insert4(map);
 	}
 
@@ -192,6 +194,32 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	public void mChannelLeaderQuit_Update4(Map<String, Object> map) {
 		bChanneltaskMapper.mChannelLeaderQuit_Update4(map);
 	}
+
+	/*
+	 * 经理团队列表
+	 */
+	@Override
+	public IPage<Map<String, Object>> mChannelLeaderList_Select(IPage page, String ProjectID, String sqlWhere) {
+		return bChanneltaskMapper.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
+	}
+
+	/*
+	 * 是否保存锁房图片到本地
+	 */
+	@Override
+	public void CustomerLockRoomClientSaveDetail_Update(Map<String, Object> map) {
+		bChanneltaskMapper.CustomerLockRoomClientSaveDetail_Update(map);
+	}
+
+	/*
+	 * 经理作战图任务列表
+	 */
+	@Override
+	public List<Map<String, Object>> mChannelLeaderTaskList_Select(Map<String, Object> map) {
+		return bChanneltaskMapper.mChannelLeaderTaskList_Select(map);
+	}
+
+
 
 	
 }

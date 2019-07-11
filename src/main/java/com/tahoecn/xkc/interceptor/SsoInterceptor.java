@@ -99,7 +99,7 @@ public class SsoInterceptor extends SSOSpringInterceptor {
 		String loginName = sso.map(SSOToken::getIssuer).orElse(null);
 
 		if (StringUtils.isNotBlank(loginName)) {
-			SAccount csUcUser = (SAccount) redisTemplate.opsForValue().get("asdasd1z");	//YYY:todo
+			SAccount csUcUser = (SAccount) redisTemplate.opsForValue().get(loginName);	//YYY:todo
 			if (csUcUser == null) {
 				QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
 				wrapper.lambda().eq(SAccount::getStatus, 1);

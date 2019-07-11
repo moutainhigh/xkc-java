@@ -11,6 +11,7 @@ import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.common.utils.ExcelUtilsTest;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
@@ -29,10 +30,7 @@ import javax.servlet.ServletOutputStream;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -280,6 +278,181 @@ public class CustomerController extends TahoeBaseController {
         return Result.ok(result);
     }
 
+    @ApiOperation(value = "归属变更查询")
+    @RequestMapping(value = "/SourceTypeChangeList_Select", method = {RequestMethod.GET})
+    public Result SourceTypeChangeList_Select(String ReportUserName,String ReportUserMobile,String Mobile,String projectID,String ClueID) {
+        StringBuilder sqlWhere = new StringBuilder();
+
+        //客户姓名
+        if (StringUtils.isNotEmpty(ReportUserName)) {
+            sqlWhere.append(" AND b.ReportUserName like '%").append(ReportUserName).append("%'");
+        }
+        //客户手机号
+        if (StringUtils.isNotEmpty(ReportUserMobile)) {
+            sqlWhere.append(" AND b.ReportUserMobile like '%").append(ReportUserMobile).append("%'");
+        }
+
+        List<Map<String,Object>> result = customerService.SourceTypeChangeList_Select(Mobile,projectID,sqlWhere.toString(),ClueID);
+        return Result.ok(result);
+    }
+
+    @ApiOperation(value = "pc渠道变更")
+    @RequestMapping(value = "/SourceTypeChangeDetail_Update", method = {RequestMethod.POST})
+    public Result SourceTypeChangeDetail_Update(String OldClueID,String ClueID,String UserID,String Reason,String Enclosure) {
+        //UserID = ThreadLocalUtils.getUserId();
+        customerService.SourceTypeChangeDetail_Update(OldClueID,ClueID,UserID,Reason,Enclosure);
+        return Result.ok("成功");
+    }
+
+    @ApiOperation(value = "延长保护期")
+    @RequestMapping(value = "/ExtendProtectDetail_Update", method = {RequestMethod.POST})
+    public Result ExtendProtectDetail_Update(String ClueID,String ProtectNum,String Reason,String Enclosure,String UserID) {
+        customerService.ExtendProtectDetail_Update(ProtectNum,ClueID,UserID,Reason,Enclosure);
+        return Result.ok("成功");
+    }
+
+    @ApiOperation(value = "设为无效")
+    @RequestMapping(value = "/SetInvalidDetail_Update", method = {RequestMethod.POST})
+    public Result SetInvalidDetail_Update(String ClueID,String Reason,String Enclosure,String UserID) {
+        customerService.SetInvalidDetail_Update(ClueID,Reason,Enclosure,UserID);
+        return Result.ok("成功");
+    }
+
+    @ApiOperation(value = "变更渠道来源")
+    @RequestMapping(value = "/ChangeSourceTypeDetail_Update", method = {RequestMethod.POST})
+    public Result ChangeSourceTypeDetail_Update(String clueID, String SourceType, String reason, String enclosure,String userID,String type){
+        customerService.ChangeSourceTypeDetail_Update(clueID, SourceType, reason, enclosure,userID,type);
+        return Result.ok("成功");
+    }
+
+    @ApiOperation(value = "变更认知媒体")
+    @RequestMapping(value = "/ChangeCognitiveChannelDetail_Update", method = {RequestMethod.POST})
+    public Result ChangeCognitiveChannelDetail_Update(String clueID, String CognitiveChannel, String reason, String enclosure,String userID,String type){
+        customerService.ChangeCognitiveChannelDetail_Update(clueID, CognitiveChannel, reason, enclosure,userID,type);
+        return Result.ok("成功");
+    }
+
+    @ApiOperation(value = "带看确认单打印列表")
+    @RequestMapping(value = "/CustomerGuidePageList_Select", method = {RequestMethod.POST})
+    public Result CustomerGuidePageList_Select(String ProjectID, String CustomerMobile, String ReceptionPlace, String Status,
+                                               String PrintStatus,String DFSJ,String IsExcel,@RequestParam(defaultValue = "1") Integer pageNum,
+                                               @RequestParam(defaultValue = "10") Integer pageSize,String checkarr[]){
+
+        StringBuilder sqlWhere = new StringBuilder();
+        if (StringUtils.isNotEmpty(ProjectID)) {
+            sqlWhere.append(" AND o.ProjectID = '").append(ProjectID).append("'");
+        }else{
+            return Result.ok("");
+        }
+
+        //客户手机号
+        if (StringUtils.isNotEmpty(CustomerMobile)) {
+            sqlWhere.append(" AND o.CustomerMobile like '%").append(CustomerMobile).append("%'");
+        }
+
+        //接待地点
+        if (StringUtils.isNotEmpty(ReceptionPlace)) {
+            sqlWhere.append(" AND ca.VisitAddress like '%").append(ReceptionPlace).append("%'");
+        }
+
+        //到访时间
+        if (StringUtils.isNotEmpty(DFSJ)) {
+            switch (DFSJ) {
+                case "1"://近3天
+                    sqlWhere.append(" AND datediff(day,ca.VisitTime,getdate())<= 3 and datediff(day,ca.VisitTime,getdate())>= 0 ");
+                    break;
+                case "2"://近5天
+                    sqlWhere.append(" AND datediff(day,ca.VisitTime,getdate())<= 5 and datediff(day,ca.VisitTime,getdate())>= 0 ");
+                    break;
+                case "3"://近10天
+                    sqlWhere.append(" AND datediff(day,ca.VisitTime,getdate())<= 10 and datediff(day,ca.VisitTime,getdate())>= 0 ");
+                    break;
+                case "4"://近一月
+                    sqlWhere.append("  AND datediff(day,ca.VisitTime,getdate())<= 30 and datediff(day,ca.VisitTime,getdate())>= 0 ");
+                    break;
+            }
+        }
+
+        //打印状态
+        if (StringUtils.isNotEmpty(PrintStatus)) {
+            //已经打印
+            if (Objects.equals(PrintStatus, "1")) {
+                sqlWhere.append(" AND ISNULL(ca.SerialNumber,'') <> '' ");
+            }
+            //未打印
+            else {
+                sqlWhere.append("  AND ISNULL(ca.SerialNumber,'') = '' ");
+            }
+        }
+
+        //状态
+        if (StringUtils.isNotEmpty(Status)) {
+            if (Objects.equals(Status, "1")) {
+                sqlWhere.append(" AND o.Status<>6 ");
+            } else {
+                sqlWhere.append(" AND o.Status=6 ");
+            }
+        }
+        if (StringUtils.isNotEmpty(IsExcel)){
+            SetExcelToCustomerGuideList(checkarr,sqlWhere.toString());
+            return null;
+        }
+        IPage<Map<String,Object>> result = customerService.CustomerGuidePageList_Select(pageNum,pageSize,sqlWhere.toString());
+        return Result.ok(result);
+    }
+
+    private void SetExcelToCustomerGuideList(String[] checkarr,String sqlWhere){
+
+        List<Map<String, Object>> result;
+        if (checkarr != null && checkarr.length != 0) {
+            StringBuilder arr = new StringBuilder();
+            arr.append(" and  ca.ID IN ( ");
+            for (int i = 0; i < checkarr.length; i++) {
+                if (i + 1 == checkarr.length) {
+                    arr.append("'").append(checkarr[i]).append("'");
+                } else {
+                    arr.append("'").append(checkarr[i]).append("'").append(",");
+                }
+            }
+            arr.append(" )");
+            result = customerService.CustomerGuideDownLoadByIDList_Select(arr.toString());
+        } else {
+            result = customerService.CustomerGuideDownLoadList_Select(sqlWhere);
+        }
+
+        List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+        entity.add(new ExcelExportEntity("客户姓名", "CustomerName"));
+        entity.add(new ExcelExportEntity("手机号", "CustomerMobile"));
+        entity.add(new ExcelExportEntity("客储等级", "CustomerRank"));
+        entity.add(new ExcelExportEntity("客户状态", "Status"));
+        entity.add(new ExcelExportEntity("渠道来源", "SourceType"));
+        entity.add(new ExcelExportEntity("所属机构", "OrgName"));
+        entity.add(new ExcelExportEntity("渠道人员", "ReportUserName"));
+        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
+        entity.add(new ExcelExportEntity("协作人", "SalePartnerName"));
+        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
+        entity.add(new ExcelExportEntity("首次到访时间", "TheFirstVisitDate"));
+        entity.add(new ExcelExportEntity("最近到访时间", "TheLatestVisitDate"));
+        entity.add(new ExcelExportEntity("最近跟进时间", "TheLatestFollowUpDate"));
+        entity.add(new ExcelExportEntity("分配地", "VisitAddress"));
+        entity.add(new ExcelExportEntity("流水号", "SerialNumber"));
+        entity.add(new ExcelExportEntity("打印状态", "PrintStatus"));
 
 
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ApiOperation(value = "带看确认单列表-详情")
+    @RequestMapping(value = "/CustomerNEWDetailAll_Select", method = {RequestMethod.POST})
+    public Result CustomerNEWDetailAll_Select(String ProjectID, String CustomerID, String ReportUserID, String OpportunityID){
+        Map<String,Object> result = customerService.CustomerNEWDetailAll_Select(ProjectID, CustomerID, ReportUserID, OpportunityID);
+        return Result.ok(result);
+    }
 }

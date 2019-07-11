@@ -1,0 +1,166 @@
+{
+  "ClueID": "",
+  "OpportunityID": "",
+  "CustomerID": "",
+  "Panel": [
+    {
+      "Name": "老客户信息",
+      "Type": "ShowDetail",
+      "ListIndex": 1,
+      "Child": [
+        {
+          "ID": "AEC5E071-B01F-4B41-942B-8BDC2112E06A",
+          "Name": "姓名",
+          "Placeholder": "必填",
+          "Type": "Text",
+          "Value": "",
+          "ListIndex": 1,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 10,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "21685728-54C5-4268-8371-62413CE42841",
+          "Name": "手机",
+          "Placeholder": "必填",
+          "Type": "Mobile",
+          "Value": "",
+          "ListIndex": 2,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 20,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "F9EDFEB5-BD8E-4237-9979-2CB7104EB1F1",
+          "Name": "客户顾问",
+          "Placeholder": "必填",
+          "Type": "Text",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "5e7e5171-9a10-41a7-b713-4db83b2f36f0",
+          "Name": "渠道",
+          "Placeholder": "",
+          "Type": "Text",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "24435169-D54C-4FA2-AE6F-1233861420B2",
+          "Name": "首次到访时间",
+          "Placeholder": "",
+          "Type": "Text",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "IsFullLine": 1,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "8D5F984D-1315-4F1D-AED1-F4009B831674",
+          "Name": "最后跟进时间",
+          "Placeholder": "",
+          "Type": "Text",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "IsFullLine": 1,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -9,36 +9,36 @@ public class CustomerActionVo implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public String follwUpTypeID;
-    public String follwUpType;
+	private String follwUpTypeID;
+	private String follwUpType;
     // 跟进方式ID
-    public String follwUpWay;
+	private String follwUpWay;
     // 跟进内容
-    public String followUpContent;
+	private String followUpContent;
     // 跟进人
-    public String follwUpUserID;
+	private String follwUpUserID;
     // 下次跟进格时间
-    public String nextFollowUpDate;
+	private String nextFollowUpDate;
     // 跟进人角色ID
-    public String follwUpUserRole;
+	private String follwUpUserRole;
     // 跟进人所属组织
-    public String orgID;
+	private String orgID;
     // 意向级别
-    public String intentionLevel;
+	private String intentionLevel;
     // 机会ID
     public String opportunityID;
     // 线索ID
-    public String clueID;
+    private String clueID;
     // 原顾问姓名
-    public String oldSaleUserName;
+    private String oldSaleUserName;
     // 新顾问姓名
-    public String newSaleUserName;
+    private String newSaleUserName;
     // 销售人员身份,1为自销，2为代理，3为自渠,4为外渠
-    public int salesType;
+    private int salesType;
     // 创建人
-    public String creator;
+    private String creator;
     // 编辑人
-    public String editor;
+    private String editor;
 	public String getFollwUpTypeID() {
 		return follwUpTypeID;
 	}
