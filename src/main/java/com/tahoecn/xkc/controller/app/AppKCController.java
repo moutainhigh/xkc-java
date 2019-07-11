@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,7 @@ public class AppKCController extends TahoeBaseController {
     		
     		iBChanneltaskService.mChannelTask_Insert2(map);
     		iBChanneltaskService.mChannelTask_Insert3(map);
-    		List<Map<String, Object>> obj = iBChanneltaskService.mChannelTask_Insert4(map);
+    		Map<String, Object> obj = iBChanneltaskService.mChannelTask_Insert4(map);
     		
     		return Result.ok(obj);
     	}catch (Exception e) {
@@ -268,7 +269,7 @@ public class AppKCController extends TahoeBaseController {
     @ApiOperation(value = "详细考勤", notes = "详细考勤")
     @RequestMapping(value = "/mChannelTaskCheckClockList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mChannelTaskCheckClockList_Select(@RequestBody JSONObject jsonParam) {
-		Map<String,Object> result=new HashMap<String,Object>();
+		Map<String, Object> result=new HashMap<String,Object>();
 		Result re=new Result();
     	try{
     		// 直接将json信息打印出来
@@ -592,6 +593,171 @@ public class AppKCController extends TahoeBaseController {
            iBChanneltaskService.mChannelLeaderQuit_Update4(map);
            
     		return re.ok(true);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1, "系统异常，请联系管理员");
+			
+		}
+    }
+	
+//	@ResponseBody
+//    @ApiOperation(value = "经理团队列表", notes = "经理团队列表")
+//    @RequestMapping(value = "/mChannelLeaderList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    public Result mChannelLeaderList_Select(@RequestBody JSONObject jsonParam) {
+//		Map<String,Object> result=new HashMap<String,Object>();
+//		Result re=new Result();
+//    	try{
+//    		// 直接将json信息打印出来
+//    		System.out.println(jsonParam.toJSONString());
+//    		Map paramMap = (HashMap)jsonParam.get("_param");
+//            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+//            String IsAll = (String)paramMap.get("IsAll").toString();//
+//            String Filter = (String)paramMap.get("Filter").toString();//
+//            Map<String,Object> map = new HashMap<String,Object>();
+//            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+//            int PageSize = (int)paramMap.get("PageSize");//每页数量
+//            IPage page = new Page(PageIndex, PageSize);
+//            map.put("ProjectID", ProjectID);
+//            String sqlWhere = "";
+//            if(IsAll.equals("0")) {
+//            	sqlWhere += " AND a.IsDel=0 AND a.Status=1";
+//            }
+//            if(Filter.length() > 0) {
+//            	sqlWhere += "AND (b.Name LIKE '%"+Filter+"%' OR b.TelPhone LIKE '%"+Filter+"%')";
+//            }
+//            map.put("sqlWhere", sqlWhere);
+//            List<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(map);
+//            int AllCount = iBChanneltaskService.mChannelLeaderList_SelectAllCount(map);
+//           //List<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
+//            result.put("List", obj);
+//            result.put("AllCount", AllCount);
+//            result.put("PageSize", PageSize);
+//            
+//    		return re.ok(result);
+//    	}catch (Exception e) {
+//			e.printStackTrace();
+//			return Result.errormsg(1, "系统异常，请联系管理员");
+//			
+//		}
+//    }
+//	
+//	@ResponseBody
+//    @ApiOperation(value = "是否保存锁房图片到本地", notes = "是否保存锁房图片到本地")
+//    @RequestMapping(value = "/CustomerLockRoomClientSaveDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    public Result CustomerLockRoomClientSaveDetail_Update(@RequestBody JSONObject jsonParam) {
+//		Result re=new Result();
+//    	try{
+//    		// 直接将json信息打印出来
+//    		System.out.println(jsonParam.toJSONString());
+//    		Map paramMap = (HashMap)jsonParam.get("_param");
+//    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
+//            String OpportunityID = (String)paramMap.get("OpportunityID").toString();//
+//            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+//            String CustomerID = (String)paramMap.get("CustomerID").toString();//
+//            String RoomID = (String)paramMap.get("RoomID").toString();//
+//            Map<String,Object> map = new HashMap<String,Object>();
+//            map.put("UserID", UserID);
+//            map.put("ProjectID", ProjectID);
+//            StringBuilder Where = new StringBuilder();
+//            if(ProjectID != null && ProjectID.length() != 0) {
+//            	Where.append(" and ProjectID = '").append(ProjectID).append("'");
+//            }
+//            if(OpportunityID != null && OpportunityID.length() != 0) {
+//            	Where.append(" and OpportunityID = '").append(OpportunityID).append("'");
+//            }
+//            if(CustomerID != null && CustomerID.length() != 0) {
+//            	Where.append(" and CustomerID = '").append(CustomerID).append("'");
+//            }
+//			if(RoomID != null && RoomID.length() != 0) {
+//				Where.append(" and RoomID = '").append(RoomID).append("'");
+//			}
+//			System.out.println(Where);
+//            map.put("Where", Where);
+//           iBChanneltaskService.CustomerLockRoomClientSaveDetail_Update(map);
+//           
+//           
+//    		return re.ok(true);
+//    	}catch (Exception e) {
+//			e.printStackTrace();
+//			return Result.errormsg(1, "系统异常，请联系管理员");
+//			
+//		}
+//    }
+	
+	@ResponseBody
+    @ApiOperation(value = "经理作战图任务列表", notes = "经理作战图任务列表")
+    @RequestMapping(value = "/mChannelLeaderTaskList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mChannelLeaderTaskList_Select(@RequestBody JSONObject jsonParam) {
+		List result=new ArrayList();
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String ProjectID = (String)paramMap.get("ProjectID").toString();///
+            String TaskList ;//
+            
+    		Map<String,Object> map = new HashMap<String,Object>();
+    		map.put("ProjectID", ProjectID);
+    		List<Map<String, Object>> a = iBChanneltaskService.mChannelLeaderTaskList_Select(map);
+    		Map<String,Object> obj1 = new HashMap<String,Object>();
+    		Map<String,Object> obj2 = new HashMap<String,Object>();
+    		Map<String,Object> obj3 = new HashMap<String,Object>();
+    		Map<String,Object> obj4 = new HashMap<String,Object>();
+    		List a1 = new ArrayList();
+    		List a2 = new ArrayList();
+    		List a3 = new ArrayList();
+    		List a4 = new ArrayList();
+    		int i1=0;
+    		int i2=0;
+    		int i3=0;
+    		int i4=0;
+    		obj1.put("TaskType","0E88065E-AF3E-4905-8809-7BD30610323F");
+    		obj1.put("TaskTypeName","拦截");
+    		for(Map<String, Object> x : a) {
+    			if(a.get(i1).get("TaskTypeName").equals("拦截")) {
+    				a1.add(a.get(i1));
+    			}
+    			i1++;
+    		}
+    		obj1.put("TaskList",a1);
+    		result.add(obj1);
+    		
+    		obj2.put("TaskType","FC09F0DF-D3DF-4378-91C0-7146EC451F43");
+    		obj2.put("TaskTypeName","圈层");
+    		for(Map<String, Object> x : a) {
+    			if(a.get(i2).get("TaskTypeName").equals("圈层")) {
+    				a2.add(a.get(i2));
+    			}
+    			i2++;
+    		}
+    		obj2.put("TaskList",a2);
+    		result.add(obj2);
+    		
+    		obj3.put("TaskType","C07D5987-ACDD-40B8-9CBD-6257AA59C88C");
+    		obj3.put("TaskTypeName","外拓");
+    		for(Map<String, Object> x : a) {
+    			if(a.get(i3).get("TaskTypeName").equals("外拓")) {
+    				a3.add(a.get(i3));
+    			}
+    			i3++;
+    		}
+    		obj3.put("TaskList",a3);
+    		result.add(obj3);
+    		
+    		obj4.put("TaskType","0E88065E-AF3E-4905-8809-7BD30610323F");
+    		obj4.put("TaskTypeName","外展");
+    		for(Map<String, Object> x : a) {
+    			if(a.get(i4).get("TaskTypeName").equals("外展")) {
+    				a4.add(a.get(i4));
+    			}
+    			i4++;
+    		}
+    		obj4.put("TaskList",a4);
+    		result.add(obj4);
+
+    		return re.ok(result);
+    		
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1, "系统异常，请联系管理员");
