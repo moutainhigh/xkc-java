@@ -173,5 +173,10 @@
 	<update id="mCustomerRecovery_Update" statementType="CALLABLE">
 		{call P_CustomerRecovery_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{Code},#{AdviserIDList},#{OpportunityIDList})}
 	</update>
+	<!-- 客户分配置业顾问 -->
+	<update id="mCustomerAllotAdviser_Update" statementType="CALLABLE">
+		{call P_CustomerAllotAdviser_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{AdviserID},
+		#{Code},#{AdviserIDList},#{OpportunityIDList},#{LostIDList},#{PublicIDList})}
+	</update>
 	
 </mapper>

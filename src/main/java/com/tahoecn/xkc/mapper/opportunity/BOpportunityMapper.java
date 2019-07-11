@@ -35,4 +35,8 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 	 * 回归
 	 */
 	void mCustomerRecovery_Update(Map<String,Object> paramMap);
+	/**
+	 * 客户分配置业顾问
+	 */
+	void mCustomerAllotAdviser_Update(Map<String, Object> paramMap);
 }

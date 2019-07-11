@@ -199,4 +199,53 @@ public class AppCustomerController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+	@ApiOperation(value = "分配职业顾问提交", notes = "分配职业顾问提交")
+	@RequestMapping(value = "/mCustomerAllotAdviser_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerAllotAdviser_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String AdviserID = "";
+            String OpportunityID = "";
+            String LostID = "";
+            String PublicID = "";
+			List<String> OpportunityIDList = (List) paramMap.get("OpportunityIDList");
+			List<String> AdviserIDList = (List) paramMap.get("AdviserIDList");
+			List<String> LostIDList = (List) paramMap.get("LostIDList");
+			List<String> PublicIDList = (List) paramMap.get("PublicIDList");
+			if (AdviserIDList != null){
+				for (String item : AdviserIDList){
+					AdviserID += item + ",";
+				}
+				AdviserID = AdviserID.length() > 0 ? AdviserID.substring(0, AdviserID.length() - 1) : AdviserID;
+			}
+			if (OpportunityIDList != null){
+				for(String item : OpportunityIDList){
+					OpportunityID += item + ",";
+				}
+				OpportunityID = OpportunityID.length() > 0 ? OpportunityID.substring(0, OpportunityID.length() - 1) : OpportunityID;
+			}
+			if (LostIDList != null){
+				for(String item : LostIDList){
+					LostID += item + ",";
+				}
+				LostID = LostID.length() > 0 ? LostID.substring(0, LostID.length() - 1) : LostID;
+			}
+			if (PublicIDList != null){
+				for(String item : PublicIDList){
+					PublicID += item + ",";
+				}
+				PublicID = PublicID.length() > 0 ? PublicID.substring(0, PublicID.length() - 1) : PublicID;
+			}
+			paramMap.put("OpportunityIDList", OpportunityID);
+			paramMap.put("AdviserIDList", AdviserID);
+			paramMap.put("LostIDList", LostID);
+			paramMap.put("PublicIDList", PublicID);
+			iBOpportunityService.mCustomerAllotAdviser_Update(paramMap);
+			return Result.ok("成功");
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

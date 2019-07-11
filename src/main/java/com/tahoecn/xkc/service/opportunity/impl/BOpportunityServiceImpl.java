@@ -251,4 +251,11 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 		up.setOpportunityID(up.getId());
 		bCustomerfollowupMapper.updateById(up);
 	}
+	/**
+	 * 客户分配置业顾问
+	 */
+	@Override
+	public void mCustomerAllotAdviser_Update(Map<String,Object> paramMap) {
+		baseMapper.mCustomerAllotAdviser_Update(paramMap);
+	}
 }
