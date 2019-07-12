@@ -5,6 +5,8 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.log.Log;
@@ -31,6 +33,9 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.coyote.http11.Constants.a;
 
 /**
  * <p>
@@ -333,7 +338,7 @@ public class CustomerController extends TahoeBaseController {
     }
 
     @ApiOperation(value = "带看确认单打印列表")
-    @RequestMapping(value = "/CustomerGuidePageList_Select", method = {RequestMethod.POST})
+    @RequestMapping(value = "/CustomerGuidePageList_Select", method = {RequestMethod.GET})
     public Result CustomerGuidePageList_Select(String ProjectID, String CustomerMobile, String ReceptionPlace, String Status,
                                                String PrintStatus,String DFSJ,String IsExcel,@RequestParam(defaultValue = "1") Integer pageNum,
                                                @RequestParam(defaultValue = "10") Integer pageSize,String checkarr[]){
@@ -450,9 +455,80 @@ public class CustomerController extends TahoeBaseController {
     }
 
     @ApiOperation(value = "带看确认单列表-详情")
-    @RequestMapping(value = "/CustomerNEWDetailAll_Select", method = {RequestMethod.POST})
+    @RequestMapping(value = "/CustomerNEWDetailAll_Select", method = {RequestMethod.GET})
     public Result CustomerNEWDetailAll_Select(String ProjectID, String CustomerID, String ReportUserID, String OpportunityID){
         Map<String,Object> result = customerService.CustomerNEWDetailAll_Select(ProjectID, CustomerID, ReportUserID, OpportunityID);
         return Result.ok(result);
     }
+
+    @ApiOperation(value = "带看确认单打印")
+    @RequestMapping(value = "/CustomerGuidePrintDetail_Select", method = {RequestMethod.POST})
+    public Result CustomerGuidePrintDetail_Select(String ProjectID, String UserID, String ID){
+        Map<String,Object> result = customerService.CustomerGuidePrintDetail_Select(ProjectID, UserID, ID);
+        StringBuilder OpenHtml = new StringBuilder();
+        StringBuilder html = new StringBuilder();
+        if (result.get("CustomerGuideTemplate")!=null&& !Objects.equals(result.get("CustomerGuideTemplate").toString(), "") &&
+                result.get("Rise") != null && !Objects.equals(result.get("Rise").toString(), "") &&
+                result.get("SerialNumber") != null && !Objects.equals(result.get("SerialNumber").toString(), "")){
+            JSONArray jsonObject = JSONObject.parseArray(result.get("CustomerGuideTemplate").toString());
+            jsonObject = jsonObject.stream().filter(a-> ((JSONObject) a).getString("IsCheck").equals("1")).collect(Collectors.toCollection(JSONArray::new));
+            jsonObject.forEach(o ->{
+                switch (((JSONObject) o).getString("title")){
+                    case "客户信息":
+                        ((JSONObject) o).put("Name", (result.get("CustomerName") == null ? "" : result.get("CustomerName")) + "(" + (result.get("CustomerMobile") == null ? "" : result.get("CustomerMobile")) + ")");
+                        break;
+                    case "渠道信息":
+                        ((JSONObject) o).put("Name", (result.get("SourceType") == null ? "" : result.get("SourceType")) + "-" + (result.get("OrgName") == null ? "" : result.get("OrgName").toString()) + "-" + (result.get("ReportUserName") == null ? "" : result.get("ReportUserName").toString()) + "-" + (result.get("ReportUserMobile") == null ? "" : result.get("ReportUserMobile").toString()));
+                        break;
+                    case "流水号":
+                        ((JSONObject) o).put("Name", result.get("Rise").toString() + result.get("Mark").toString() + result.get("SerialNumberText").toString());
+                        break;
+                    default:
+                        ((JSONObject) o).put("Name", result.get(((JSONObject) o).getString("key")) == null ? "" : result.get(((JSONObject) o).getString("key")).toString());
+                        break;
+                }
+            });
+
+
+            OpenHtml.append("<div id='PrintContent' runat='server'>");
+            html.append("<div class='listBox'>");
+            html.append("<h3>");
+            html.append("<span class='title'>带看确认单</span>");
+            JSONObject SerialNumberText = (JSONObject)jsonObject.stream().filter(a-> ((JSONObject) a).getString("IsCheck").equals("1") && ((JSONObject) a).getString("key").equals("SerialNumber")).findFirst().get();
+            if (SerialNumberText != null){
+                html.append("<span class='serial'>").append(SerialNumberText.get("title")).append(":").append(SerialNumberText.get("Name")).append("</span>");
+                jsonObject.remove(SerialNumberText);
+            }
+            html.append("</h3>");
+            html.append("<ul class='clearfix'>");
+            jsonObject.forEach(o ->{
+                html.append("<li>");
+                html.append("<span>").append(((JSONObject) o).get("title")).append("：</span>");
+                html.append("<span>").append(((JSONObject) o).get("Name")).append(" </span>");
+                html.append("</li>");
+            });
+            html.append("</ul>");
+            html.append("</div>");
+
+
+            result.put("CustomerInfoText", (result.get("CustomerName") == null ? "" : result.get("CustomerName")) + "(" + (result.get("CustomerMobile") == null ? "" : result.get("CustomerMobile")) + ")");
+            result.put("ChannelInfoText", (result.get("SourceType") == null ? "" : result.get("SourceType").toString()) + "-" + (result.get("OrgName") == null ? "" : result.get("OrgName").toString()) + "-" + (result.get("ReportUserName") == null ? "" : result.get("ReportUserName").toString()) + "-" + (result.get("ReportUserMobile") == null ? "" : result.get("ReportUserMobile").toString()));
+            result.put("FirstSalesUserText", (result.get("FirstSalesUser") == null ? "" : result.get("FirstSalesUser")));
+            result.put("PartnerText", (result.get("Partner") == null ? "" : result.get("Partner")));
+            result.put("ReportTimeText", (result.get("ReportTime") == null ? "" : result.get("ReportTime")));
+            result.put("FirstTimeText", (result.get("FirstVisitTime") == null ? "" : result.get("FirstVisitTime")));
+            result.put("RevisitTimeText", (result.get("ReVisitTime") == null ? "" : result.get("ReVisitTime")));
+            result.put("PrintingTimeText", (result.get("PrintingTime") == null ? "" : result.get("PrintingTime")));
+            result.put("PrintingAddressText", (result.get("PrintingAddress") == null ? "" : result.get("PrintingAddress")));
+            result.put("PrintingUserText", (result.get("PrintingUser") == null ? "" : result.get("PrintingUser")));
+            result.put("RiseText", (result.get("Rise") == null ? "" : result.get("Rise")));
+            result.put("MarkText", (result.get("Mark") == null ? "" : result.get("Mark")));
+            result.put("SerialNumberText",(result.get("SerialNumberText") == null ? "" : result.get("SerialNumberText")));
+
+            customerService.CustomerGuidePrintDetail_Insert(result);
+            customerService.CustomerGuidePrintDetail_Update(result);
+        }
+        return Result.ok(OpenHtml.toString() + html.toString() + html.toString() + "</div>");
+    }
+
 }

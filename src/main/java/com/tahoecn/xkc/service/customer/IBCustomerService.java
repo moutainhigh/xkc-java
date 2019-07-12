@@ -54,4 +54,10 @@ public interface IBCustomerService extends IService<BCustomer> {
     List<Map<String,Object>> CustomerGuideDownLoadList_Select(String sqlWhere);
 
     Map<String,Object> CustomerNEWDetailAll_Select(String projectID, String customerID, String reportUserID, String opportunityID);
+
+    Map<String,Object> CustomerGuidePrintDetail_Select(String ProjectID, String UserID, String ID);
+
+    void CustomerGuidePrintDetail_Insert(Map<String, Object> result);
+
+    void CustomerGuidePrintDetail_Update(Map<String, Object> result);
 }

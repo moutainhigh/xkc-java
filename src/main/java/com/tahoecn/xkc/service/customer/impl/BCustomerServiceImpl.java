@@ -166,6 +166,24 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
         return result;
     }
 
+    @Override
+    public void CustomerGuidePrintDetail_Insert(Map<String, Object> result) {
+        baseMapper.CustomerGuidePrintDetail_Insert(result);
+    }
+
+    @Override
+    public void CustomerGuidePrintDetail_Update(Map<String, Object> result) {
+        baseMapper.CustomerGuidePrintDetail_Update(result);
+    }
+
+    @Override
+    public Map<String, Object> CustomerGuidePrintDetail_Select(String ProjectID, String UserID, String ID) {
+        int num = baseMapper.getB_CustomerGuide(ProjectID);
+        String num1 = baseMapper.getB_Project(ProjectID);
+        String username = baseMapper.getS_Account(UserID);
+        return baseMapper.CustomerGuidePrintDetail_Select(num, num1,username,UserID,ID);
+    }
+
     /**
      * 验证是否是本项目老业主
      */
