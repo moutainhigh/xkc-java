@@ -100,4 +100,17 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
     List<Map<String,Object>> CustomerNEWSignInfo_Select(@Param("projectID")String projectID, @Param("customerID")String customerID);
 
     List<Map<String,Object>> CustomerNEWPayInfo_Select(@Param("projectID")String projectID, @Param("customerID")String customerID);
+
+    int getB_CustomerGuide(@Param("projectID")String projectID);
+
+    String getB_Project(@Param("projectID")String projectID);
+
+    String getS_Account(@Param("userID")String userID);
+
+    Map<String,Object> CustomerGuidePrintDetail_Select(@Param("num")int num, @Param("num1")String num1, @Param("username")String username,
+                                                       @Param("userID")String userID, @Param("id")String id);
+
+    void CustomerGuidePrintDetail_Insert(Map<String, Object> result);
+
+    void CustomerGuidePrintDetail_Update(Map<String, Object> result);
 }

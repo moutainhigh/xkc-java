@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerMapper">
+    <insert id="CustomerGuidePrintDetail_Insert" parameterType="java.util.Map">
+        INSERT INTO dbo.B_CustomerGuide
+        ( ID ,
+        B_ClueAllocationID,
+        ProjectID ,
+        OpportunityID ,
+        CustomerID ,
+        CustomerMobile ,
+        CustomerGuideTemplate ,
+        CustomerInfoText ,
+        ChannelInfoText ,
+        FirstSalesUserText ,
+        PartnerText ,
+        ReportTimeText ,
+        FirstTimeText ,
+        RevisitTimeText ,
+        PrintingTimeText ,
+        PrintingAddressText ,
+        PrintingUserText ,
+        RiseText ,
+        MarkText ,
+        SerialNumberText ,
+        Creator ,
+        CreateTime ,
+        Editor ,
+        EditTime ,
+        IsDel ,
+        Status
+        )
+        VALUES  ( NEWID() ,
+        #{ID} ,
+        #{ProjectID} ,
+        #{OpportunityID} ,
+        #{CustomerID} ,
+        #{CustomerMobile} ,
+        #{CustomerGuideTemplate} ,
+        #{CustomerInfoText} ,
+        #{ChannelInfoText} ,
+        #{FirstSalesUserText} ,
+        #{PartnerText} ,
+        #{ReportTimeText} ,
+        #{FirstTimeText},
+        #{RevisitTimeText},
+        #{PrintingTimeText},
+        #{PrintingAddressText} ,
+        #{PrintingUserText} ,
+        #{RiseText} ,
+        #{MarkText} ,
+        #{SerialNumberText} ,
+        #{UserID} ,
+        GETDATE() ,
+        NULL ,
+        NULL ,
+        0 ,
+        1
+        )
+    </insert>
+    <update id="CustomerGuidePrintDetail_Update">
+        UPDATE dbo.B_ClueAllocation SET SerialNumber=#{RiseText}+#{MarkText}+#{SerialNumberText} WHERE ID=#{ID}
+    </update>
 
     <select id="customerChangePageList_Select" resultType="java.util.Map">
         <![CDATA[
@@ -1028,6 +1088,59 @@
                             join B_Project P on A.ProjGUID = P.ID
                     WHERE a.CstAllGUID like #{customerID} and P.PID=#{projectID}
                     order by B.Sequence
+        ]]>
+    </select>
+    <select id="getB_CustomerGuide" resultType="java.lang.Integer">
+        SELECT  COUNT(1)
+        FROM dbo.B_CustomerGuide
+        WHERE ProjectID = #{projectID}
+    </select>
+    <select id="getB_Project" resultType="java.lang.String">
+        SELECT TOP 1 SerialNumber
+        FROM dbo.B_Project
+        WHERE ID = #{projectID}
+        ORDER BY CreateTime DESC
+    </select>
+    <select id="getS_Account" resultType="java.lang.String">
+        SELECT EmployeeName
+        FROM dbo.S_Account
+        WHERE ID = #{userID}
+    </select>
+    <select id="CustomerGuidePrintDetail_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ca.ID,
+            ca.VisitAddress                                                              PrintingAddress, --打印地点
+            ca.VisitTime                                                                 ReVisitTime,     --复访时间
+            o.CustomerName,                                                                               --客户姓名
+            o.CustomerMobile,                                                                             --客户手机号
+            o.SaleUserName                                                               FirstSalesUser,  --置业顾问
+            CASE
+            WHEN DATEDIFF(MINUTE, ca.VisitTime, o.SalePartnerAllotTime) <= 0 THEN o.SalePartnerName
+            ELSE '-' END                                                             [Partner],       --接待顾问
+            --o.SalePartnerName [Partner],				--协作人
+            o.TheFirstVisitDate                                                          FirstVisitTime,  --首访时间
+            c.CreateTime                                                                 ReportTime,      --报备时间
+            p.CustomerGuideTemplate,                                                                      --带看确认单打印模板
+            p.Rise,                                                                                       --抬头
+            p.Mark,                                                                                       --符号
+            p.SerialNumber,                                                                               --流水号
+            right('000000' + ltrim((CONVERT(INT, #{num1}) + ISNULL(#{num}, 0))), LEN(#{num1})) SerialNumberText,
+            co.OrgName,                                                                                   --所属机构
+            c.ReportUserName,                                                                             --渠道人员
+            c.ReportUserMobile,                                                                           --渠道人员电话
+            dbo.F_DictName(c.AdviserGroupID)                                             SourceType,      --渠道来源
+            GETDATE()                                                                    PrintingTime,    --打印时间
+            #{username}                                                                    PrintingUser,    --打印人
+            o.ProjectID,                                                                                  --项目ID
+            ca.CustomerID,                                                                                --客户ID
+            ca.OpportunityID,                                                                             --机会ID
+            #{userID}                                                                   UserID
+            FROM dbo.B_ClueAllocation ca
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
+            LEFT JOIN dbo.B_Project p ON p.ID = o.ProjectID
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
+            WHERE ca.ID = #{id}
         ]]>
     </select>
 </mapper>
