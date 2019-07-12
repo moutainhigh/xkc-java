@@ -75,14 +75,17 @@ public class SMenusController extends TahoeBaseController {
                 resultList.add(record);
             }
         }
+        List<Map<String,Object>> temp=new ArrayList<>();
         for (Map<String, Object> map : resultList) {
             for (Map<String, Object> stringObjectMap : list) {
                 if (StringUtils.equals((String)map.get("ID"),(String)stringObjectMap.get("PID"))){
                     stringObjectMap.put("pText",map.get("MenuName"));
-                    map.put("children",stringObjectMap);
+                    temp.add(stringObjectMap);
                 }
             }
+            map.put("children",temp);
             resultListNew.add(map);
+            temp.clear();
         }
         System.out.println(resultListNew.size());
         return Result.ok(resultListNew);

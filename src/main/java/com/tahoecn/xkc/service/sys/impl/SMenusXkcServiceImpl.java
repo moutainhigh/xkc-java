@@ -763,6 +763,6 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     public List<HashMap<String, Object>> getResult() {
 
 
-        return null;
+        return baseMapper.getResult();
     }
 }
