@@ -3,17 +3,26 @@ package com.tahoecn.xkc.model.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DicInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
     // 字典ID
+	@JsonProperty("DicID")
     private String DicID;
     // 字典名称
+	@JsonProperty("DicName")
     private String DicName;
+	@JsonProperty("Value")
     private String Value;
+	@JsonProperty("ValueID")
     private String ValueID;
+	@JsonProperty("FieldName")
     private String FieldName;
+	@JsonProperty("TableName")
     private String TableName;
+	@JsonProperty("Type")
     private String Type;
 	public String getDicID() {
 		return DicID;

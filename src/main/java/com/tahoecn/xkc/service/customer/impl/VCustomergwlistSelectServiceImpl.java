@@ -710,7 +710,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 		Result entity = new Result();
         try{
             CSearchModelVo model = JSONObject.parseObject(paramAry.toJSONString(), CSearchModelVo.class);
-            CustomerModelVo customerModel = new CustomerModelVo();
+            CustomerModelVo customerModel=null;
             String opportunityID = model.getOpportunityID();
             JSONObject CustomerObj = customerTemplate.OpportunityInfo(opportunityID);
             if (!CustomerObj.isEmpty()){

@@ -3,6 +3,8 @@ package com.tahoecn.xkc.model.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CustomerModelVo implements Serializable{
 	
 	/**
@@ -10,16 +12,22 @@ public class CustomerModelVo implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@JsonProperty("ClueID")
 	private String ClueID;
 	
+	@JsonProperty("OpportunityID")
 	private String OpportunityID;
 
+	@JsonProperty("CustomerID")
 	private String CustomerID;
 
+	@JsonProperty("OrgID")
 	private String OrgID;
 
+	@JsonProperty("IsNew")
 	private int IsNew;
 
+	@JsonProperty("Panel")
 	private List<PanelItem> Panel;
     
     
@@ -73,12 +81,16 @@ public class CustomerModelVo implements Serializable{
 
 	public static class PanelItem{
         //默认项
+		@JsonProperty("Name")
 		private String Name;
 
+		@JsonProperty("Type")
 		private String Type;
 
+		@JsonProperty("ListIndex")
 		private int ListIndex;
 
+		@JsonProperty("Child")
 		private List<ChildItem> Child;
 
 		public String getName() {
@@ -116,51 +128,74 @@ public class CustomerModelVo implements Serializable{
     }
     
     public static class ChildItem{
+    	@JsonProperty("ID")
     	private String ID;
         // 姓(必填)
+    	@JsonProperty("Name")
     	private String Name;
 
         // 请输入姓氏
+    	@JsonProperty("Placeholder")
     	private String Placeholder;
 
+    	@JsonProperty("Type")
     	private String Type;
 
+    	@JsonProperty("Value")
     	private String Value;
 
+    	@JsonProperty("ValueID")
     	private String ValueID;
 
+    	@JsonProperty("ListIndex")
     	private int ListIndex;
 
+    	@JsonProperty("IsMust")
     	private int IsMust;
 
+    	@JsonProperty("IsHide")
     	private int IsHide;
 
+    	@JsonProperty("IsMustShow")
     	private int IsMustShow;
         
+    	@JsonProperty("IsEdit")
     	private int IsEdit;
 
+    	@JsonProperty("IsMulti")
     	private int IsMulti;
 
+    	@JsonProperty("IsFullLine")
     	private int IsFullLine;
 
+    	@JsonProperty("MaxLength")
     	private int MaxLength;
 
+    	@JsonProperty("MaxSelectedNum")
     	private int MaxSelectedNum;
         
+    	@JsonProperty("MinDate")
     	private String MinDate;
         
+    	@JsonProperty("MaxDate")
     	private String MaxDate;
 
+    	@JsonProperty("NormalColor")
     	private String NormalColor;
 
+    	@JsonProperty("SelectedColor")
     	private String SelectedColor;
 
+    	@JsonProperty("Partner")
     	private String Partner;
 
+    	@JsonProperty("SubPartner")
     	private String SubPartner;
         
+    	@JsonProperty("Verify")
     	private List<VerifyItem> Verify;
 
+    	@JsonProperty("Option")
         private List<OptionItem> Option;
         
         public ChildItem(){
@@ -358,13 +393,18 @@ public class CustomerModelVo implements Serializable{
     }
     
     public static class VerifyItem{
+    	
+    	@JsonProperty("ID")
     	private String ID;
 
         //身份证
+    	@JsonProperty("Name")
     	private String Name;
 
+    	@JsonProperty("Type")
     	private String Type;
 
+    	@JsonProperty("MaxLength")
     	private int MaxLength;
 
 		public String getID() {
@@ -403,24 +443,31 @@ public class CustomerModelVo implements Serializable{
     
     public static class OptionItem{
         //主键
+    	@JsonProperty("ID")
     	private String ID;
 
         //名称
+    	@JsonProperty("Name")
     	private String Name;
 
         //是否可以选择
+    	@JsonProperty("IsChoose")
     	private int IsChoose;
 
         //是否子集必填
+    	@JsonProperty("IsSubMust")
     	private int IsSubMust;
         
         //可以选择颜色
+    	@JsonProperty("SelectedColor")
     	private String SelectedColor;
 
         //不可以选择颜色
+    	@JsonProperty("UnSelectedColor")
     	private String UnSelectedColor;
 
         //子集
+    	@JsonProperty("Child")
     	private List<OptionItem> Child;
 
         public OptionItem(){
