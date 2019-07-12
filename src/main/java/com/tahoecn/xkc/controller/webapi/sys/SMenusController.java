@@ -12,8 +12,11 @@ import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SMenus;
+import com.tahoecn.xkc.model.sys.SMenusXkc;
 import com.tahoecn.xkc.service.sys.ISMenusService;
+import com.tahoecn.xkc.service.sys.ISMenusXkcService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,15 +40,16 @@ import java.util.*;
 public class SMenusController extends TahoeBaseController {
     private static final Log log = LogFactory.get();
 
-    @Autowired
-    private ISMenusService isMenusService;
 
-    @ApiOperation(value = "sample menus", notes = "menus")
-    @RequestMapping(value = "/menusList", method = {RequestMethod.POST})
-    public Result menusList() {
-        List<SMenus> list = isMenusService.list();
-        return Result.ok(list);
-    }
+    @Autowired
+    private ISMenusXkcService isMenusService;
+
+//    @ApiOperation(value = "sample menus", notes = "menus")
+//    @RequestMapping(value = "/menusList", method = {RequestMethod.POST})
+//    public Result menusList() {
+//        List<SMenus> list = isMenusService.list();
+//        return Result.ok(list);
+//    }
 
     /**
      * 数据字典 H5  不应在本类里
@@ -60,15 +64,32 @@ public class SMenusController extends TahoeBaseController {
 
     @ApiOperation(value = "获取所有菜单信息", notes = "获取所有菜单信息")
     @RequestMapping(value = "/SystemMenusList_Select", method = {RequestMethod.POST})
-    public Result SystemMenusList_Select(int Pageindex,int Pagesize) {
-        IPage page = new Page(Pageindex, Pagesize);
-        List<Map<String,Object>> list=isMenusService.SystemMenusList_Select(page);
-        return Result.ok(list);
+    public Result SystemMenusList_Select() {
+        List<Map<String,Object>> list=isMenusService.SystemMenusList_Select();
+
+        ArrayList<Map<String,Object>> resultList=new ArrayList();
+        ArrayList<Map<String,Object>> resultListNew=new ArrayList();
+
+        for (Map<String, Object> record : list) {
+            if (StringUtils.equals((String)record.get("PID"),"-1")){
+                resultList.add(record);
+            }
+        }
+        for (Map<String, Object> map : resultList) {
+            for (Map<String, Object> stringObjectMap : list) {
+                if (StringUtils.equals((String)map.get("ID"),(String)stringObjectMap.get("PID"))){
+                    map.put("children",stringObjectMap);
+                }
+            }
+            resultListNew.add(map);
+        }
+        System.out.println(resultListNew.size());
+        return Result.ok(resultListNew);
     }
 
     @ApiOperation(value = "启用/禁用菜单", notes = "启用/禁用菜单")
     @RequestMapping(value = "/SystemMenuStatus_Update", method = {RequestMethod.POST})
-    public Result SystemMenuStatus_Update(@RequestBody SMenus menus) {
+    public Result SystemMenuStatus_Update(@RequestBody SMenusXkc menus) {
         boolean b = isMenusService.updateById(menus);
         if (b) {
             return Result.okm("成功");

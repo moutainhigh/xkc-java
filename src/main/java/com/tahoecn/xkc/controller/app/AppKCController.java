@@ -626,7 +626,7 @@ public class AppKCController extends TahoeBaseController {
             	sqlWhere += "AND (b.Name LIKE '%"+Filter+"%' OR b.TelPhone LIKE '%"+Filter+"%')";
             }
            
-            IPage<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
+            IPage<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page,ProjectID, sqlWhere);
     
     		return re.ok(obj);
     	}catch (Exception e) {

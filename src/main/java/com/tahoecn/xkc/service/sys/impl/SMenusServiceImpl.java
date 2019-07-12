@@ -675,7 +675,6 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public boolean SystemMenu_Update(SMenus menu) {
         try {
             String ID = menu.getId();
@@ -738,5 +737,14 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID) {
+
+
+
+
+        return null;
     }
 }

@@ -31,4 +31,6 @@ public interface ISCommonjobsService extends IService<SCommonjobs> {
 	String SystemCommonJob_Insert(Map<String, Object> map);
 	
 	void SystemCommonJob_Update(Map<String, Object> map);
+
+    boolean SystemCommonJobAuth_Insert(String oldMenus, String oldFunctions, String menus, String functions, String jobID);
 }

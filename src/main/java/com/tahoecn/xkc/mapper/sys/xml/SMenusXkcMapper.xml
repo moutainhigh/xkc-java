@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SMenusXkcMapper">
+
+
+    <select id="SystemMenusList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        ID ,
+        PID ,
+        MenuName ,
+        MenuSysName ,
+        Url ,
+        ImageUrl ,
+        IconClass ,
+        IsHomePage ,
+        IsShow ,
+        Levels ,
+        ListIndex ,
+        IsLast ,
+        [Status]
+        FROM  [S_Menus_xkc]
+        WHERE IsDel = 0
+        ORDER BY Levels,ListIndex
+    </select>
+
+    <insert id="SystemMenu_Insert" parameterType="com.tahoecn.xkc.model.sys.SMenus">
+        INSERT INTO dbo.S_Menus_xkc (
+        ID,
+        PID,
+        MenuName,
+        MenuSysName,
+        Url,
+        ImageUrl,
+        IconClass,
+        IsHomePage,
+        IsShow,
+        Levels,
+        ListIndex,
+        FullPath,
+        IsLast,
+        Creator,
+        CreateTime,
+        Editor,
+        EditTime,
+        Status,
+        IsDel
+        )
+        VALUES
+        (
+        #{ID},
+        #{PID},
+        #{MenuName},
+        #{MenuSysName},
+        #{Url},
+        #{ImageUrl},
+        #{IconClass},
+        #{IsHomePage},
+        #{IsShow},
+        #{Levels},
+        #{ListIndex},
+        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{PID} ) + '/', '' ) + #{MenuSysName},
+        #{IsLast},
+        #{Creator},
+        GETDATE(),
+        NULL,
+        NULL,
+        #{Status},
+        0
+        )
+    </insert>
+
+    <select id="getOldPath" resultType="string" parameterType="string">
+        SELECT FullPath FROM S_Menus_xkc WHERE ID = #{ID}
+    </select>
+    <select id="getNewPath" parameterType="string" resultType="string">
+        SELECT FullPath FROM S_Menus_xkc WHERE ID = ( SELECT PID FROM S_Menus_xkc WHERE ID = #{ID} )
+    </select>
+</mapper>

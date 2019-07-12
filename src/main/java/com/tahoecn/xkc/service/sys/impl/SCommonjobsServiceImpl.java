@@ -1,6 +1,9 @@
 package com.tahoecn.xkc.service.sys.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
+import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
 import com.tahoecn.xkc.service.sys.ISCommonjobsService;
 import com.tahoecn.xkc.mapper.sys.SCommonjobsMapper;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
@@ -10,9 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.tahoecn.xkc.service.sys.ISCommonjobsfunctionsrelService;
+import com.tahoecn.xkc.service.sys.ISCommonjobsmenurelService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  * <p>
@@ -27,6 +34,12 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 	
 	@Autowired
 	private SCommonjobsMapper SCommonjobsMapper;
+
+    @Autowired
+    private ISCommonjobsmenurelService commonjobsmenurelService;
+
+    @Autowired
+    private ISCommonjobsfunctionsrelService commonjobsfunctionsrelService;
 
 	@Override
 	public List<SCommonjobs> SystemCommonJobsList_Select(IPage page, String AuthCompanyID, String ProductID, String JobName) {
@@ -72,5 +85,65 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 	public void SystemCommonJob_Update(Map<String, Object> map) {
 		SCommonjobsMapper.SystemCommonJob_Update(map);
 	}
+
+    /**
+     * 功能授权
+     * @param oldMenus
+     * @param oldFunctions
+     * @param menus
+     * @param functions
+     * @param jobID
+     */
+    @Override
+    public boolean SystemCommonJobAuth_Insert(String oldMenus, String oldFunctions, String menus, String functions, String jobID) {
+        try {
+            //字符串分组
+            String[] oldMenusSplit = oldMenus.split("|");
+            String[] oldFunctionsSplit = oldFunctions.split("|");
+            String[] menusSplit = menus.split("|");
+            String[] functionsSplit = functions.split("|");
+
+            //删除原功能
+            QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
+            wrapper.eq("JobID",jobID);
+            wrapper.in("MenuID",oldMenusSplit);
+            List<SCommonjobsmenurel> list = commonjobsmenurelService.list(wrapper);
+            for (SCommonjobsmenurel sCommonjobsmenurel : list) {
+                commonjobsmenurelService.removeById(sCommonjobsmenurel);
+            }
+
+            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
+            queryWrapper.eq("JobID",jobID);
+            queryWrapper.in("FuncID",oldFunctionsSplit);
+            List<SCommonjobsfunctionsrel> list1 = commonjobsfunctionsrelService.list(queryWrapper);
+            for (SCommonjobsfunctionsrel sCommonjobsfunctionsrel : list1) {
+                commonjobsfunctionsrelService.removeById(sCommonjobsfunctionsrel);
+            }
+
+            //新增新菜单
+            if (menusSplit.length!=0){
+                for (String s : menusSplit) {
+                    SCommonjobsmenurel commonjobsmenurel=new SCommonjobsmenurel();
+                    commonjobsmenurel.setJobID(jobID);
+                    commonjobsmenurel.setMenuID(s);
+                    commonjobsmenurelService.save(commonjobsmenurel);
+                }
+            }
+            if (functionsSplit.length!=0){
+                for (String s : functionsSplit) {
+                    SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
+                    commonjobsfunctionsrel.setJobID(jobID);
+                    commonjobsfunctionsrel.setFuncID(s);
+                    commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    return true;
+
+    }
 
 }

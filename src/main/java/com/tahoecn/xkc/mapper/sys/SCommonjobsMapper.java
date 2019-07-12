@@ -31,4 +31,8 @@ public interface SCommonjobsMapper extends BaseMapper<SCommonjobs> {
 	void SystemCommonJob_Insert(Map<String, Object> map);
 	
 	void SystemCommonJob_Update(Map<String, Object> map);
+
+//    void SystemCommonJobAuth_Insert(@Param("OldMenus")String oldMenus,@Param("OldFunctions") String oldFunctions,
+//                                    @Param("Menus")String menus, @Param("Functions")String functions,
+//                                    @Param("JobID")String jobID);
 }
