@@ -20,5 +20,7 @@ public interface VCustomerfjlistSelectMapper extends BaseMapper<VCustomerfjlistS
 	 * 案场分接客户列表
 	 */
 	List<VCustomerfjlistSelect> sCustomerFJList_Select(Map<String, Object> pa);
+	
+	List<Map<String,Object>> sCustomerFJAdviserList_Select(Map<String, Object> pmap);
 
 }

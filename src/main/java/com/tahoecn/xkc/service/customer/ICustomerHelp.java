@@ -13,6 +13,8 @@ public interface ICustomerHelp {
 	
 	public JSONObject OpportunityInfo(String opportunityID);
 	
+	public JSONObject OpportunityInfo(String ProjectID, String Mobile);
+	
 	public CustomerModelVo InitCustomerModeData(CSearchModelVo model,String jsonFileName, JSONObject CustomerObj,String customerModeType);
 	
 	public void SyncCustomer(String opportunityID, int optionType);
