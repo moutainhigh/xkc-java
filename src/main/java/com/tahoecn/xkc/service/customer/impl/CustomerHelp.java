@@ -61,6 +61,18 @@ public class CustomerHelp implements ICustomerHelp {
 			return new JSONObject();
 		}
 	}
+	
+	@Override
+	public JSONObject OpportunityInfo(String ProjectID, String Mobile) {
+		try {
+            String where  = "  AND ProjectID ='" + ProjectID + "' AND Mobile='" + Mobile + "' ORDER BY CreateTime DESC ";
+            Map<String, Object> map = vCustomergwlistSelectMapper.OpportunityDetail_Select(where);
+			return new JSONObject(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JSONObject();
+		}
+	}
 
 	@Override
 	@Transactional(readOnly=false)
@@ -80,7 +92,12 @@ public class CustomerHelp implements ICustomerHelp {
 					for (DicInfo item : dicList) {
 						fieldKey = (item.getType() == "Option" || item.getType() == "OptionRadio") ? item.getFieldName() + "Name" : item.getFieldName();
 						item.setValue(CustomerObj.getString(fieldKey));
-						String tvalueID = CustomerObj.getString(item.getFieldName()).replaceAll("\r\n  ", "").replaceAll("\r", "").replaceAll("\n", "");
+						String tvalueID = CustomerObj.getString(item.getFieldName());
+						if(tvalueID!=null){
+							tvalueID.replaceAll("\r\n", "").replaceAll("\r", "").replaceAll("\n", "");
+						}else{
+							System.out.println(fieldKey);
+						}
 						item.setValueID(tvalueID);
 					}
 				}
@@ -105,9 +122,7 @@ public class CustomerHelp implements ICustomerHelp {
 								|| "OptionTextArea".equals(childItem.getType())) { // 初始化option值
 							switch (childItem.getID()) {
 							case "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D": {// 意向项目
-								String where = " and ID='"
-										+ model.getProjectID()
-										+ "' and level='1'";
+								String where = " and ID='"+ model.getProjectID()+ "' and level='1'";
 								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
 								if (optionList.size() > 0) {
 									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
@@ -366,7 +381,7 @@ public class CustomerHelp implements ICustomerHelp {
 								break;
 							}
 							// 关联权益人时
-							if (model.getIsEquity().equals("1")) {
+							if (model.getIsEquity()!=null && model.getIsEquity().equals("1")) {
 								// 初始化手机号
 								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {
 									childItem.setValue(StringUtils.isEmpty(childItem.getValue().trim()) ? model.getMobile() : childItem.getValue());

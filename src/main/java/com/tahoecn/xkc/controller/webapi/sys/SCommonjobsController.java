@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class SCommonjobsController extends TahoeBaseController {
 	
 	@Autowired
 	private ISCommonjobsService ISCommonjobsService;
+
+	@Autowired
+    private ISMenusService menusService;
 	
 //已测
     @ApiOperation(value = "获取通用岗位列表(查询)", notes = "分页获取获取通用岗位列表（查询）")
@@ -135,6 +139,24 @@ public class SCommonjobsController extends TahoeBaseController {
    }
 
 
+    @ApiOperation(value = "通用岗位功能授权", notes = "通用岗位功能授权")
+    @RequestMapping(value = "/SystemCommonJobAuth_Insert", method = {RequestMethod.POST})
+    public Result SystemCommonJobAuth_Insert(String OldMenus,String OldFunctions,String Menus,
+                                             String Functions,String JobID){
+        boolean b = ISCommonjobsService.SystemCommonJobAuth_Insert(OldMenus, OldFunctions, Menus, Functions, JobID);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"授权失败");
+    }
 
+    @ApiOperation(value = "通用岗位功能列表查询", notes = "通用岗位功能列表查询")
+    @RequestMapping(value = "/SystemCommonJobAuth_Select", method = {RequestMethod.POST})
+    public Result SystemCommonJobAuth_Select(String UserID,String AuthCompanyID,String ProductID,
+                                             String JobID){
+
+        List<Map<String,Object>> list=menusService.SystemCommonJobAuth_Select(UserID,AuthCompanyID,ProductID,JobID);
+        return Result.errormsg(99,"授权失败");
+    }
 
 }

@@ -494,4 +494,21 @@
               AND a.IsDel = 0
 
     </select>
+
+    <select id="insertJob" resultType="java.util.HashMap" parameterType="string">
+        SELECT DISTINCT
+        jur.JobID ,
+        j.JobName ,
+        j.CommonJobID
+        FROM
+        dbo.S_Account a
+        INNER JOIN dbo.S_JobsUserRel jur ON a.ID = jur.AccountID
+        INNER JOIN dbo.S_Jobs j ON jur.JobID = j.ID
+        WHERE
+        a.ID = #{UserID}
+        AND j.IsDel = 0
+        AND j.[Status] = 1
+        AND j.AuthCompanyID =#{AuthCompanyID}
+        AND j.ProductID =#{ProductID};
+    </select>
 </mapper>

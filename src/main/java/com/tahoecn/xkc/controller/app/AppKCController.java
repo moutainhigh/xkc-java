@@ -600,84 +600,100 @@ public class AppKCController extends TahoeBaseController {
 		}
     }
 	
-	@ResponseBody
-    @ApiOperation(value = "经理团队列表", notes = "经理团队列表")
-    @RequestMapping(value = "/mChannelLeaderList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Result mChannelLeaderList_Select(@RequestBody JSONObject jsonParam) {
-
-		Result re=new Result();
-    	try{
-    		// 直接将json信息打印出来
-    		System.out.println(jsonParam.toJSONString());
-    		Map paramMap = (HashMap)jsonParam.get("_param");
-            String ProjectID = (String)paramMap.get("ProjectID").toString();//
-            String IsAll = (String)paramMap.get("IsAll").toString();//
-            String Filter = (String)paramMap.get("Filter").toString();//
-           
-            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
-            int PageSize = (int)paramMap.get("PageSize");//每页数量
-            IPage page = new Page(PageIndex, PageSize);
-            
-            String sqlWhere = "";
-            if(IsAll.equals("0")) {
-            	sqlWhere += " AND a.IsDel=0 AND a.Status=1";
-            }
-            if(Filter.length() > 0) {
-            	sqlWhere += "AND (b.Name LIKE '%"+Filter+"%' OR b.TelPhone LIKE '%"+Filter+"%')";
-            }
-           
-            IPage<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
-    
-    		return re.ok(obj);
-    	}catch (Exception e) {
-			e.printStackTrace();
-			return Result.errormsg(1, "系统异常，请联系管理员");
-			
-		}
-    }
-	
 //	@ResponseBody
-//    @ApiOperation(value = "是否保存锁房图片到本地", notes = "是否保存锁房图片到本地")
-//    @RequestMapping(value = "/CustomerLockRoomClientSaveDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//    public Result CustomerLockRoomClientSaveDetail_Update(@RequestBody JSONObject jsonParam) {
+//    @ApiOperation(value = "经理团队列表", notes = "经理团队列表")
+//    @RequestMapping(value = "/mChannelLeaderList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    public Result mChannelLeaderList_Select(@RequestBody JSONObject jsonParam) {
+//
 //		Result re=new Result();
 //    	try{
 //    		// 直接将json信息打印出来
 //    		System.out.println(jsonParam.toJSONString());
 //    		Map paramMap = (HashMap)jsonParam.get("_param");
-//    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
-//            String OpportunityID = (String)paramMap.get("OpportunityID").toString();//
 //            String ProjectID = (String)paramMap.get("ProjectID").toString();//
-//            String CustomerID = (String)paramMap.get("CustomerID").toString();//
-//            String RoomID = (String)paramMap.get("RoomID").toString();//
+//            String IsAll = (String)paramMap.get("IsAll").toString();//
+//            String Filter = (String)paramMap.get("Filter").toString();//
+//           
+//            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+//            int PageSize = (int)paramMap.get("PageSize");//每页数量
+//            IPage page = new Page(PageIndex, PageSize);
+//            
+//            String sqlWhere = "";
+//            if(IsAll.equals("0")) {
+//            	sqlWhere += " AND a.IsDel=0 AND a.Status=1";
+//            }
+//            if(Filter.length() > 0) {
+//            	sqlWhere += "AND (b.Name LIKE '%"+Filter+"%' OR b.TelPhone LIKE '%"+Filter+"%')";
+//            }
+//           
+//            IPage<Map<String, Object>> obj=iBChanneltaskService.mChannelLeaderList_Select(page, ProjectID, sqlWhere);
 //            Map<String,Object> map = new HashMap<String,Object>();
-//            map.put("UserID", UserID);
-//            map.put("ProjectID", ProjectID);
-//            StringBuilder Where = new StringBuilder();
-//            if(ProjectID != null && ProjectID.length() != 0) {
-//            	Where.append(" and ProjectID = '").append(ProjectID).append("'");
-//            }
-//            if(OpportunityID != null && OpportunityID.length() != 0) {
-//            	Where.append(" and OpportunityID = '").append(OpportunityID).append("'");
-//            }
-//            if(CustomerID != null && CustomerID.length() != 0) {
-//            	Where.append(" and CustomerID = '").append(CustomerID).append("'");
-//            }
-//			if(RoomID != null && RoomID.length() != 0) {
-//				Where.append(" and RoomID = '").append(RoomID).append("'");
-//			}
-//			System.out.println(Where);
-//            map.put("Where", Where);
-//           iBChanneltaskService.CustomerLockRoomClientSaveDetail_Update(map);
-//           
-//           
-//    		return re.ok(true);
+//            map.put("PageSize", obj.getSize());
+//            map.put("AllCount", obj.getTotal());
+//            map.put("List", obj.getRecords());
+//    		return re.ok(map);
 //    	}catch (Exception e) {
 //			e.printStackTrace();
 //			return Result.errormsg(1, "系统异常，请联系管理员");
 //			
 //		}
 //    }
+	
+	@ResponseBody
+    @ApiOperation(value = "是否保存锁房图片到本地", notes = "是否保存锁房图片到本地")
+    @RequestMapping(value = "/CustomerLockRoomClientSaveDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result CustomerLockRoomClientSaveDetail_Update(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+    	try{
+    		// 直接将json信息打印出来
+    		System.out.println(jsonParam.toJSONString());
+    		Map paramMap = (HashMap)jsonParam.get("_param");
+    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
+            String OpportunityID = (String)paramMap.get("OpportunityID").toString();//
+            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+            String CustomerID = (String)paramMap.get("CustomerID").toString();//
+            String RoomID = (String)paramMap.get("RoomID").toString();//
+            String IsClientSave = (String)paramMap.get("IsClientSave").toString();//
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("UserID", UserID);
+            map.put("IsClientSave", IsClientSave);
+            StringBuilder Where = new StringBuilder();
+            if(ProjectID != null && ProjectID.length() > 0) {
+            	Where.append(" and ProjectID = '").append(ProjectID).append("'");
+            }
+            else {
+            	return Result.errormsg(2, "项目ID不能为空");
+            }
+            if(OpportunityID != null && OpportunityID.length() > 0) {
+            	Where.append(" and OpportunityID = '").append(OpportunityID).append("'");
+            }
+            else {
+            	return Result.errormsg(2, "机会ID不能为空");
+            }
+            if(CustomerID != null && CustomerID.length() > 0) {
+            	Where.append(" and CustomerID = '").append(CustomerID).append("'");
+            }
+            else {
+            	return Result.errormsg(2, "客户ID不能为空");
+            }
+			if(RoomID != null && RoomID.length() > 0) {
+				Where.append(" and RoomID = '").append(RoomID).append("'");
+			}
+			else {
+            	return Result.errormsg(2, "房间ID不能为空");
+            }
+			System.out.println(Where);
+            map.put("Where", Where);
+           iBChanneltaskService.CustomerLockRoomClientSaveDetail_Update(map);
+           
+           
+    		return re.ok("");
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1, "系统异常，请联系管理员");
+			
+		}
+    }
 	
 	@ResponseBody
     @ApiOperation(value = "经理作战图任务列表", notes = "经理作战图任务列表")
@@ -759,6 +775,130 @@ public class AppKCController extends TahoeBaseController {
 			
 		}
     }
+	
+//	@ResponseBody
+//    @ApiOperation(value = "任务列表查询", notes = "任务列表查询")
+//    @RequestMapping(value = "/mChannelTaskList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    public Result mChannelTaskList_Select(@RequestBody JSONObject jsonParam) {
+//		Result re=new Result();
+//    	try{
+//    		// 直接将json信息打印出来
+//    		System.out.println(jsonParam.toJSONString());
+//    		Map paramMap = (HashMap)jsonParam.get("_param");
+//    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
+//            String ProjectID = (String)paramMap.get("ProjectID").toString();//打卡日期
+//            String JobCode = (String)paramMap.get("JobCode").toString();//任务ID
+//            String ChannelTaskCode = (String)paramMap.get("DeviceCode").toString();
+//            String TaskStatus = (String)paramMap.get("TaskStatus").toString();
+//            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+//            int PageSize = (int)paramMap.get("PageSize");//每页数量
+//            IPage page = new Page(PageIndex, PageSize);
+//            
+//            String errmsg = "";
+//            StringBuilder whereStr = new StringBuilder();
+//            StringBuilder JZCode = new StringBuilder();;
+//            if(JobCode.equals("ZQ")) {
+//            	if(ProjectID != null)
+//            		whereStr.append(" AND a.ProjectID = '").append(ProjectID).append("'");
+//            }
+//            if(TaskStatus != null) {
+//            	if(JobCode.equals("ZQ")) {
+//            		whereStr.append(" AND a.Status = '").append(TaskStatus).append("'");
+//            	}
+//            	else if(JobCode.equals("JZ")) {
+//            		whereStr.append(" AND b.Status = '").append(TaskStatus).append("'");
+//            	}
+//            }
+//            if(JobCode != null) {
+//            	if(JobCode.equals("ZQ")) {
+//            		if(ChannelTaskCode != null) {
+//            			whereStr.append(" AND a.TaskCode like '%").append(ChannelTaskCode).append("%'");
+//            		}
+//            		whereStr.append(" AND a.Creator = '").append(UserID).append("'");
+//            	}
+//            	if (JobCode.equals("JZ")){
+//            		if(ChannelTaskCode != null) {
+//            			whereStr.append(" AND a.TaskCode = '").append(ChannelTaskCode).append("'");
+//            		}
+//            		else {
+//            			whereStr.append(" AND b.ChannelUserID = '").append(UserID).append("'");
+//            		}
+//            		if(TaskStatus.equals("1") || TaskStatus.equals("2")) {
+//            			//判断该兼职是否有所属专员
+//            			Map<String, Object> objChannelUser =iBChanneltaskService.mChannelUserByID_Select(UserID);
+//            			if(objChannelUser.get("ReportUserID") != null) {
+//            				whereStr.append(" AND a.Creator = '").append(objChannelUser.get("ReportUserID")).append("'");
+//            			}
+//            		}
+//            		JZCode.append(" AND ChannelUserID = '").append(UserID).append("'");
+//            	}
+//            }
+//            //
+//            //搜索任务时
+//            if(JobCode.equals("JZ") && ChannelTaskCode != null) {
+//            	//判断该兼职是否有所属专员
+//            	Map<String, Object> objChannelUser = iBChanneltaskService.mChannelUserByID_Select(UserID);
+//    			String reportUserID = (String) objChannelUser.get("ReportUserID");//专员ID
+//    			if(reportUserID != null) {
+//    				IPage<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(page, whereStr, JZCode);
+//    	    		if(objData.getCurrent() > 0) {
+//    	    			String Creator = (String) objData.getRecords().get(0).get("Creator");
+//    	    			if(Creator != reportUserID) {
+//    	    				List data = new ArrayList();
+//    	    				data.add("{\"List\": [],\"AllCount\": 0,\"PageSize\": 10}");
+//    	    				data.add("只能领取所属专员的任务");
+//    	    				data.add(9);
+//    	    				return re.ok(data);
+//    	    			}
+//    	    		}
+//    			}
+//            }
+//            IPage<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(page, whereStr, JZCode);
+//    		Map<String, Object> result = new HashMap<String, Object>();
+//    		result.put("List", objListData.getRecords());
+//    		result.put("AllCount", objListData.getTotal());
+//    		//result.put("AllCount", objListData.getCurrent() > 0 ? objListData.getCurrent() : "未找到对应任务");
+//    		result.put("PageSize", objListData.getSize());
+//    		return re.ok(result);
+//    	}catch (Exception e) {
+//			e.printStackTrace();
+//			return Result.errormsg(1, "系统异常，请联系管理员");
+//			
+//		}
+//    }
+	
+//	@ResponseBody
+//    @ApiOperation(value = "专员团队管理列表", notes = "专员团队管理列表")
+//    @RequestMapping(value = "/mChannelTempPersonList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    public Result mChannelTempPersonList_Select(@RequestBody JSONObject jsonParam) {
+//
+//		Result re=new Result();
+//    	try{
+//    		// 直接将json信息打印出来
+//    		System.out.println(jsonParam.toJSONString());
+//    		Map paramMap = (HashMap)jsonParam.get("_param");
+//            String ProjectID = (String)paramMap.get("ProjectID").toString();//
+//            String JobCode = (String)paramMap.get("JobCode").toString();//
+//            String UserID = (String)paramMap.get("UserID").toString();//
+//            String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//
+//            String Filter = (String)paramMap.get("Filter").toString();//
+//            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+//            int PageSize = (int)paramMap.get("PageSize");//每页数量
+//            IPage page = new Page(PageIndex, PageSize);
+//            
+//           
+//            IPage<Map<String, Object>> obj=iBChanneltaskService.mChannelTempPersonList_Select(page,);
+//            Map<String,Object> map = new HashMap<String,Object>();
+//            map.put("PageSize", obj.getSize());
+//            map.put("AllCount", obj.getTotal());
+//            map.put("List", obj.getRecords());
+//    		return re.ok(map);
+//    	}catch (Exception e) {
+//			e.printStackTrace();
+//			return Result.errormsg(1, "系统异常，请联系管理员");
+//			
+//		}
+//    }
 	/*
 	 * 生成UUID
 	 */

@@ -10,4 +10,29 @@
 	      	${ORDER}
 		]]>
 	</select>
+	
+	<select id="sCustomerFJAdviserList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT ID,RoleID,ProjectID,Name,Mobile,#{SiteUrl}+HeadImg HeadImg,GroupName,GroupID,DayTotalCount,Creator   FROM CustomerFJAdviserList_Select
+	    WHERE RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and ProjectID=#{ProjectID}
+	    ${WHERE}
+	    ${ORDER}
+	    ]]>
+	</select>
+	
+	<!-- <select id="mSystemFormSessionStatus_Select_step1" > </select>
+	
+	<sql id="mSystemFormSessionStatus_Select" type="object" desc="查询是否已经存在无效的FormSessionID,不存在则更新为无效状态">
+    <![CDATA[
+DECLARE @FormSessionID NVARCHAR(36) =  '{FormSessionID}'
+DECLARE @Count INT 
+
+SELECT @Count = COUNT(1) FROM S_FormSession WHERE Status = 0 AND ID = @FormSessionID
+
+IF @Count = 0
+UPDATE S_FormSession SET Status = 0,EditTime = GETDATE() WHERE ID = @FormSessionID
+
+SELECT @Count 'RowCount'
+    ]]>
+  </sql> -->
 </mapper>

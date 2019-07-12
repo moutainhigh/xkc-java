@@ -79,4 +79,6 @@ public interface ISAccountService extends IService<SAccount> {
     List<HashMap<String,String>> GetMenuAndFunList_Select(String jobCode, String projectID);
 
     IPage<Map<String,Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String orgID, String key);
+
+    List<HashMap<String, Object>> insertJob(String userID, String authCompanyID, String productID);
 }
