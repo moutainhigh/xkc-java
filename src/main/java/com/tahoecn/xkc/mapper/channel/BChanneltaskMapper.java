@@ -122,5 +122,15 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	 */
 	List<Map<String, Object>> mChannelLeaderTaskList_Select(Map<String, Object> map);
 	
+	/*
+	 * 判断该兼职是否有所属专员
+	 */
+	Map<String, Object> mChannelUserByID_Select(@Param("UserID")String UserID);
+	
+	/*
+	 * 任务列表查询
+	 */
+	IPage<Map<String, Object>> mChannelTaskList_Select(IPage page, @Param("whereStr")StringBuilder whereStr, @Param("JZCode")StringBuilder JZCode);
+	
 
 }
