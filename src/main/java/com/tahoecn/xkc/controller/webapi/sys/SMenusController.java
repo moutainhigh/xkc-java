@@ -78,6 +78,7 @@ public class SMenusController extends TahoeBaseController {
         for (Map<String, Object> map : resultList) {
             for (Map<String, Object> stringObjectMap : list) {
                 if (StringUtils.equals((String)map.get("ID"),(String)stringObjectMap.get("PID"))){
+                    stringObjectMap.put("pText",map.get("MenuName"));
                     map.put("children",stringObjectMap);
                 }
             }
@@ -100,7 +101,7 @@ public class SMenusController extends TahoeBaseController {
     @ApiOperation(value = "新增菜单", notes = "新增菜单")
     @RequestMapping(value = "/SystemMenu_Insert", method = {RequestMethod.POST})
     public Result SystemMenu_Insert(@RequestBody SMenus menus) {
-        menus.setId(UUID.randomUUID().toString());
+        menus.setID(UUID.randomUUID().toString());
         menus.setCreator(ThreadLocalUtils.getUserName());
         menus.setCreateTime(new Date());
         menus.setIsDel(0);

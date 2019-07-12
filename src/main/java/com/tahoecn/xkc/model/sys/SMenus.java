@@ -25,8 +25,8 @@ public class SMenus implements Serializable {
     @TableField("MenuSysName")
     private String MenuSysName;
 
-    @TableId(value = "id",type = IdType.UUID)
-    private String id;
+    @TableId(value = "ID",type = IdType.UUID)
+    private String ID;
 
     @TableField("IsLast")
     private Integer IsLast;
@@ -86,13 +86,15 @@ public class SMenus implements Serializable {
     public void setMenuSysName(String MenuSysName) {
         this.MenuSysName = MenuSysName;
     }
-    public String getId() {
-        return id;
+
+    public String getID() {
+        return ID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setID(String ID) {
+        this.ID = ID;
     }
+
     public Integer getIsLast() {
         return IsLast;
     }
@@ -216,25 +218,25 @@ public class SMenus implements Serializable {
     @Override
     public String toString() {
         return "SMenus{" +
-        "MenuSysName=" + MenuSysName +
-        ", id=" + id +
-        ", IsLast=" + IsLast +
-        ", Levels=" + Levels +
-        ", IconClass=" + IconClass +
-        ", Status=" + Status +
-        ", IsShow=" + IsShow +
-        ", ImageUrl=" + ImageUrl +
-        ", FullPath=" + FullPath +
-        ", MenuName=" + MenuName +
-        ", CreateTime=" + CreateTime +
-        ", IsHomePage=" + IsHomePage +
-        ", Creator=" + Creator +
-        ", EditTime=" + EditTime +
-        ", ListIndex=" + ListIndex +
-        ", Url=" + Url +
-        ", pid=" + pid +
-        ", Editor=" + Editor +
-        ", IsDel=" + IsDel +
-        "}";
+                "MenuSysName='" + MenuSysName + '\'' +
+                ", ID='" + ID + '\'' +
+                ", IsLast=" + IsLast +
+                ", Levels=" + Levels +
+                ", IconClass='" + IconClass + '\'' +
+                ", Status=" + Status +
+                ", IsShow=" + IsShow +
+                ", ImageUrl='" + ImageUrl + '\'' +
+                ", FullPath='" + FullPath + '\'' +
+                ", MenuName='" + MenuName + '\'' +
+                ", CreateTime=" + CreateTime +
+                ", IsHomePage=" + IsHomePage +
+                ", Creator='" + Creator + '\'' +
+                ", EditTime=" + EditTime +
+                ", ListIndex=" + ListIndex +
+                ", Url='" + Url + '\'' +
+                ", pid='" + pid + '\'' +
+                ", Editor='" + Editor + '\'' +
+                ", IsDel=" + IsDel +
+                '}';
     }
 }

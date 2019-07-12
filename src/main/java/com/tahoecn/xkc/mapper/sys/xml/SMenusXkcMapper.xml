@@ -48,7 +48,7 @@
         VALUES
         (
         #{ID},
-        #{PID},
+        #{pid},
         #{MenuName},
         #{MenuSysName},
         #{Url},
@@ -58,7 +58,7 @@
         #{IsShow},
         #{Levels},
         #{ListIndex},
-        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{PID} ) + '/', '' ) + #{MenuSysName},
+        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{pid} ) + '/', '' ) + #{MenuSysName},
         #{IsLast},
         #{Creator},
         GETDATE(),

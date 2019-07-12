@@ -19,6 +19,7 @@ import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISCityService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
+import com.tahoecn.xkc.service.sys.ISMenusXkcService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,9 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
 
     @Autowired
     private IVProjectroomService projectroomService;
+
+    @Autowired
+    private ISMenusXkcService menusXkcService;
 
     @Override
     public Result SystemDictionaryDetail(HashMap<String,Object> param) {
@@ -677,7 +681,7 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
     @Override
     public boolean SystemMenu_Update(SMenus menu) {
         try {
-            String ID = menu.getId();
+            String ID = menu.getID();
             String MenuSysName = menu.getMenuSysName();
             String MenuName = menu.getMenuName();
             String Url = menu.getUrl();
@@ -694,7 +698,7 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
             String NewPath=baseMapper.getNewPath(ID);
             NewPath=NewPath+"/"+MenuSysName;
             SMenus menus=new SMenus();
-            menus.setId(ID);
+            menus.setID(ID);
             menus.setMenuSysName(MenuSysName);
             menus.setMenuName(MenuName);
             menus.setUrl(Url);
@@ -742,7 +746,8 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
     @Override
     public List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID) {
 
-
+//        登录人有权限的菜单
+        List<Map<String,Object>> list=menusXkcService.UserMenus(userID,authCompanyID,productID);
 
 
         return null;
