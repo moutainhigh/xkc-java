@@ -326,7 +326,6 @@
 		) d ON a.MemberID=d.ReportUserID
 		WHERE a.IsDel = 0 AND a.RoleID = '48FC928F-6EB5-4735-BF2B-29B1F591A582' 
 		AND a.ProjectID=#{ProjectID} ${sqlWhere}
-		order by dbo.GetPYFirst(b.Name)
 
     ]]>
     </select>
@@ -334,7 +333,7 @@
     	<!--  是否保存锁房图片到本地 -->
 	<update id="CustomerLockRoomClientSaveDetail_Update" parameterType="java.util.Map">
 		<![CDATA[
-		UPDATE dbo.B_CustomerLockRoom SET IsClientSave={IsClientSave},Editor=#{UserID} WHERE 1=1 ${Where}
+		UPDATE dbo.B_CustomerLockRoom SET IsClientSave=#{IsClientSave},Editor=#{UserID} WHERE 1=1 ${Where}
 		]]> 
 	</update>
 	
@@ -376,4 +375,47 @@
 		) n ORDER BY CreateTime DESC
     ]]>
     </select>
+    
+    <!-- 判断该兼职是否有所属专员 -->
+    <select id="mChannelUserByID_Select" parameterType="String" resultType="java.util.Map">
+		<![CDATA[
+		SELECT * FROM dbo.B_ChannelUser WHERE ID = #{UserID}
+	    ]]>
+	</select>
+	
+	<!-- 任务列表查询 -->
+    <select id="mChannelTaskList_Select" parameterType="String" resultType="java.util.Map">
+		<![CDATA[
+		SELECT  a.ID ,
+		        a.ProjectID ,
+		        a.Name ,
+		        a.TaskType ,
+		        dbo.F_DictName(a.TaskType) TaskTypeName ,
+		        a.TaskCode ,
+		        a.StartTime ,
+		        a.EndTime ,
+		        a.TaskAreaID ,
+		        a.TaskAreaName ,
+		        c.Longitude ,
+		        c.Dimension ,
+		        a.WorkStartTime ,
+		        a.WorkEndTime ,
+		        a.WorkRange ,
+		        a.CustomerTarget ,
+		        a.Creator,
+		        ( SELECT    COUNT(1)
+		          FROM      dbo.B_Clue b
+		          WHERE     b.ChannelTaskID = a.ID ${JZCode}
+		        ) CustomerCount ,
+		        a.Status,
+		        ROW_NUMBER() OVER ( ORDER BY a.CreateTime DESC ) num
+		FROM    dbo.B_ChannelTask a
+		        LEFT JOIN dbo.B_ChannelTask_ChannelUser b ON a.ID = b.ChannelTaskID
+		        LEFT JOIN dbo.B_ChannelTaskArea c ON c.ID = a.TaskAreaID
+		WHERE   a.IsDel = 0 ${whereStr}
+		GROUP BY a.ID ,a.ProjectID ,a.Name ,a.TaskType ,a.TaskCode , a.StartTime ,a.EndTime
+			 , a.TaskAreaID ,a.TaskAreaName , c.Longitude ,c.Dimension ,a.WorkStartTime ,a.WorkEndTime ,a.WorkRange ,a.CustomerTarget ,a.Creator,a.CreateTime,a.Status
+	    ]]>
+	</select>
+	
 </mapper>

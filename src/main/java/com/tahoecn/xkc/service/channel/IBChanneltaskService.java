@@ -125,5 +125,15 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	 */
 	List<Map<String, Object>> mChannelLeaderTaskList_Select(Map<String, Object> map);
 
+	/*
+	 * 判断该兼职是否有所属专员
+	 */
+	Map<String, Object> mChannelUserByID_Select(String UserID);
+
+	/*
+	 * 任务列表查询
+	 */
+	IPage<Map<String, Object>> mChannelTaskList_Select(IPage page, StringBuilder whereStr, StringBuilder JZCode);
+
 
 }

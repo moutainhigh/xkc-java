@@ -219,6 +219,24 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 		return bChanneltaskMapper.mChannelLeaderTaskList_Select(map);
 	}
 
+	/*
+	 * 判断该兼职是否有所属专员
+	 */
+	@Override
+	public Map<String, Object> mChannelUserByID_Select(String UserID) {
+		return bChanneltaskMapper.mChannelUserByID_Select(UserID);
+	}
+
+	/*
+	 * 任务列表查询
+	 */
+	@Override
+	public IPage<Map<String, Object>> mChannelTaskList_Select(IPage page, StringBuilder whereStr,
+			StringBuilder JZCode) {
+		
+		return bChanneltaskMapper.mChannelTaskList_Select(page, whereStr, JZCode);
+	}
+
 
 
 	
