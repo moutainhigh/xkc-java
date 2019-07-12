@@ -10,12 +10,12 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.hutool.core.date.DateUtil;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -60,6 +60,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 	private ICustomerHelp customerTemplate;
 	@Resource
 	private IProjectService iProjectService;
+	@Value("${SiteUrl}")
+    private String SiteUrl;
 	
 	@Override
 	public Result customerList(GWCustomerPageDto model) {
@@ -190,11 +192,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	String projectID = paramAry.getString("ProjectID");
         	HashMap<String,Object> objData =vCustomergwlistSelectMapper.sCustomerGWBase_Select(opportunityID,projectID);
             //获取顾问和协作人信息
-          /*  Hashtable SiteConfig = Utils.GetSiteConfig("SiteConfig");
-            string SiteUrl = SiteConfig["SiteUrl"].ToString();*/
-            String siteUrl="";
-            paramAry.put("SiteUrl", "");
-            List<HashMap<String,Object>> gwInfo = vCustomergwlistSelectMapper.sCustomerGWBaseSalerInfo_Select(opportunityID, projectID,siteUrl);
+            paramAry.put("SiteUrl", SiteUrl);
+            List<HashMap<String,Object>> gwInfo = vCustomergwlistSelectMapper.sCustomerGWBaseSalerInfo_Select(opportunityID, projectID,SiteUrl);
             objData.put("AdviserList", gwInfo);
             String dataStr = new JSONObject(objData).toJSONString();
             JSONObject data = JSONObject.parseObject(dataStr);
@@ -618,7 +617,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	String userID = paramAry.getString("UserID");
         	if(StringUtils.isEmpty(tagName) || StringUtils.isEmpty(userID)){
         		entity.setErrcode(1);
-                entity.setErrmsg("数据异常");
+                entity.setErrmsg("参数异常");
                 return entity;
         	}
         	List<Map<String,Object>> valid = vCustomergwlistSelectMapper.CustomerTagDetail_InsertValid(tagName);
@@ -649,9 +648,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 		Result re = new Result();
 		String userID = paramAry.getString("UserID");
 		List<Map<String, Object>> data = vCustomergwlistSelectMapper.TagList_Select(userID);
-		JSONObject json = new JSONObject();
-		json.put("List", data);
-		re.setData(json);
+		re.setData(data);
         re.setErrmsg("成功");
         re.setErrcode(0);
         return re;
@@ -678,9 +675,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	}else{
         		result = null;
         	}
-        	JSONObject json = new JSONObject();
-    		json.put("List", result);
-    		entity.setData(json);
+    		entity.setData(result);
             entity.setErrmsg("成功");
             entity.setErrcode(0);
         }catch (Exception e){
@@ -699,9 +694,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	String opportunityID = paramAry.getString("OpportunityID");
             String whereSb = String.format(" and PID='%s' and level='%s' and ID not in(SELECT IntentProjectID FROM B_CustomerAttach WHERE   OpportunityID ='%s') ", projectID,2,opportunityID);
             List<Map<String, Object>> result = vCustomergwlistSelectMapper.sProject_Select(whereSb);
-            JSONObject json = new JSONObject();
-    		json.put("List", result);
-    		entity.setData(json);
+    		entity.setData(result);
             entity.setErrmsg("成功");
             entity.setErrcode(0);
         }catch (Exception ex){

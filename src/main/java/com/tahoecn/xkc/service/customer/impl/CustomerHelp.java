@@ -72,31 +72,21 @@ public class CustomerHelp implements ICustomerHelp {
 			if (customerModel != null) {
 				List<DicInfo> dicList = InitCustomerDicModel();
 				if (!CustomerObj.isEmpty()) {
-					customerModel.setCustomerID(CustomerObj
-							.getString("CustomerID"));
-					customerModel.setOpportunityID(CustomerObj
-							.getString("OpportunityID"));
+					customerModel.setCustomerID(CustomerObj.getString("CustomerID"));
+					customerModel.setOpportunityID(CustomerObj.getString("OpportunityID"));
 					customerModel.setClueID(CustomerObj.getString("ClueID"));
-					model.setCustomerPotentialID(CustomerObj
-							.getString("CustomerPotentialID"));
+					model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID"));
 					String fieldKey = null;
 					for (DicInfo item : dicList) {
-						fieldKey = (item.getType() == "Option" || item
-								.getType() == "OptionRadio") ? item
-								.getFieldName() + "Name" : item.getFieldName();
+						fieldKey = (item.getType() == "Option" || item.getType() == "OptionRadio") ? item.getFieldName() + "Name" : item.getFieldName();
 						item.setValue(CustomerObj.getString(fieldKey));
-						String tvalueID = CustomerObj
-								.getString(item.getFieldName())
-								.replaceAll("\r\n  ", "").replaceAll("\r", "")
-								.replaceAll("\n", "");
+						String tvalueID = CustomerObj.getString(item.getFieldName()).replaceAll("\r\n  ", "").replaceAll("\r", "").replaceAll("\n", "");
 						item.setValueID(tvalueID);
 					}
 				}
-
 				//
 				// 查询当前项目信息
-				Result project_r = iProjectService.Detail_FindById(model
-						.getProjectID());
+				Result project_r = iProjectService.Detail_FindById(model.getProjectID());
 				JSONObject project = (JSONObject) project_r.getData();
 				int IsNoAllotRole = project.getIntValue("IsNoAllotRole");
 				int IsNoMobileVerify = project.getIntValue("IsNoMobileVerify");
@@ -118,56 +108,33 @@ public class CustomerHelp implements ICustomerHelp {
 								String where = " and ID='"
 										+ model.getProjectID()
 										+ "' and level='1'";
-								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper
-										.sProject_Select(where);
+								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
 								if (optionList.size() > 0) {
-									childItem.setValue(String
-											.valueOf(optionList.get(0).get(
-													"Name")));
-									childItem.setValueID(String
-											.valueOf(optionList.get(0)
-													.get("ID")));
-									String optionL = JSONArray
-											.toJSONString(optionList);
-									childItem.setOption(JSONArray.parseArray(
-											optionL, OptionItem.class));
+									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
+									childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
+									String optionL = JSONArray.toJSONString(optionList);
+									childItem.setOption(JSONArray.parseArray(optionL, OptionItem.class));
 								}
 							}
 								break;
 							case "BFD616A1-118F-4C9F-986F-BAA32A1A7EA3": {// 意向项目分期
-								String where = " and PID='"
-										+ model.getProjectID()
-										+ "' and level='2'";
-								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper
-										.sProject_Select(where);
+								String where = " and PID='"+ model.getProjectID()+ "' and level='2'";
+								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
 								if (optionList.size() > 0) {
-									childItem.setValue(String
-											.valueOf(optionList.get(0).get(
-													"Name")));
-									childItem.setValueID(String
-											.valueOf(optionList.get(0)
-													.get("ID")));
-									String optionL = JSONArray
-											.toJSONString(optionList);
-									childItem.setOption(JSONArray.parseArray(
-											optionL, OptionItem.class));
+									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
+									childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
+									String optionL = JSONArray.toJSONString(optionList);
+									childItem.setOption(JSONArray.parseArray(optionL, OptionItem.class));
 								}
 							}
 								break;
 							case "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602": {// 认知途径
-								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper
-										.SystemDictionaryXSRZTJList_Select();
+								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.SystemDictionaryXSRZTJList_Select();
 								if (optionList.size() > 0) {
-									childItem.setValue(String
-											.valueOf(optionList.get(0).get(
-													"Name")));
-									childItem.setValueID(String
-											.valueOf(optionList.get(0)
-													.get("ID")));
-									String optionL = JSONArray
-											.toJSONString(optionList);
-									childItem.setOption(JSONArray.parseArray(
-											optionL, OptionItem.class));
+									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
+									childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
+									String optionL = JSONArray.toJSONString(optionList);
+									childItem.setOption(JSONArray.parseArray(optionL, OptionItem.class));
 								}
 
 								if (customerModeType
@@ -203,21 +170,16 @@ public class CustomerHelp implements ICustomerHelp {
 								if (itemList != null && jobCode.equals("GW")
 										&& IsNoAllotRole == 0) {// 开启分接置业顾问只能录入来电、去电、问询、外展接待
 									List<String> followIdList = new ArrayList<String>();
-									followIdList
-											.add("A79A1057-D4DC-497C-8C81-8F93E422C819");
-									followIdList
-											.add("F0942939-A90E-4915-81D7-7752919B0F72");
-									followIdList
-											.add("44775694-7C97-455C-B48E-154C6BFE2D94");
-									followIdList
-											.add("EEB32C04-5B7C-4676-A5DC-5F95E56370EB");
+									followIdList.add("A79A1057-D4DC-497C-8C81-8F93E422C819");
+									followIdList.add("F0942939-A90E-4915-81D7-7752919B0F72");
+									followIdList.add("44775694-7C97-455C-B48E-154C6BFE2D94");
+									followIdList.add("EEB32C04-5B7C-4676-A5DC-5F95E56370EB");
 
 									List<OptionItem> re_option = new ArrayList<OptionItem>();
 
 									// 模糊处
 									for (OptionItem optionItem : itemList) {
-										if (followIdList.contains(optionItem
-												.getID())) {
+										if (followIdList.contains(optionItem.getID())) {
 											re_option.add(optionItem);
 										}
 									}
@@ -239,174 +201,120 @@ public class CustomerHelp implements ICustomerHelp {
 							}
 						}
 						if (dicInfo != null) {// 字典存在
-							childItem.setValue(StringUtils.isEmpty(dicInfo
-									.getValue()) ? childItem.getValue()
-									: dicInfo.getValue());
-							childItem.setValueID(StringUtils.isEmpty(dicInfo
-									.getValueID()) ? childItem.getValueID()
-									: dicInfo.getValueID());
-							if (childItem.getID().equals(
-									"8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36")) {// 来访时间
-								if (StringUtils.isEmpty(childItem.getValue()
-										.trim())) {
-									childItem.setValue(DateUtil.format(
-											new Date(), "yyyy/MM/dd HH:mm"));
-									childItem.setValueID(DateUtil.format(
-											new Date(), "yyyy/MM/dd HH:mm"));
+							childItem.setValue(StringUtils.isEmpty(dicInfo.getValue()) ? childItem.getValue(): dicInfo.getValue());
+							childItem.setValueID(StringUtils.isEmpty(dicInfo.getValueID()) ? childItem.getValueID(): dicInfo.getValueID());
+							if (childItem.getID().equals("8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36")) {// 来访时间
+								if (StringUtils.isEmpty(childItem.getValue().trim())) {
+									childItem.setValue(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
+									childItem.setValueID(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
 								}
 							}
-							if (childItem.getID().equals(
-									"21685728-54C5-4268-8371-62413CE42841")) {// 电话
+							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 电话
 								if (IsNoMobileVerify == 1) {
 									childItem.setType("Text");
 								}
-								if (StringUtils.isEmpty(childItem.getValue()
-										.trim())) {
+								if (StringUtils.isEmpty(childItem.getValue().trim())) {
 									childItem.setValue(model.getMobile());
 								}
 							}
-							if (childItem.getID().equals(
-									"61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")) {// 客户级别
+							if (childItem.getID().equals("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")) {// 客户级别
 								if (IsNoCustomerRank == 1) {
-									deleteItem.put(childItem.getID() + "_"
-											+ panelIndex, childItem);
+									deleteItem.put(childItem.getID() + "_"+ panelIndex, childItem);
 								}
 							}
-							if (childItem.getID().equals(
-									"A977C068-98A9-4184-AD39-5E645778CB5D")) {// 是否收小筹
+							if (childItem.getID().equals("A977C068-98A9-4184-AD39-5E645778CB5D")) {// 是否收小筹
 								if (IsNoCustomerRank == 1) {
-									deleteItem.put(childItem.getID() + "_"
-											+ panelIndex, childItem);
+									deleteItem.put(childItem.getID() + "_"+ panelIndex, childItem);
 								}
 							}
 							switch (customerModeType) {
 							case "1":
-								if (childItem.getID().equals(
-										"9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
+								if (childItem.getID().equals("9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
 								break;
 							case "21":
-								if (childItem.getID().equals(
-										"149F778D-4244-46F6-908F-D33A363A5B58")) {// 姓名
+								if (childItem.getID().equals("149F778D-4244-46F6-908F-D33A363A5B58")) {// 姓名
 									childItem.setIsEdit(0);
 								}
-								if (childItem.getID().equals(
-										"21685728-54C5-4268-8371-62413CE42841")) {// 手机
+								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 手机
 									childItem.setIsEdit(0);
 								}
-								if (childItem.getID().equals(
-										"E72C340D-4092-467A-9B8F-5138DBDCA43B")) {// 性别
+								if (childItem.getID().equals("E72C340D-4092-467A-9B8F-5138DBDCA43B")) {// 性别
 									childItem.setIsEdit(0);
 								}
-								if (childItem.getID().equals(
-										"1FA31185-3B00-47AA-8F5E-7AA3D53205A5")) {// 置业顾问
-									childItem.setValue(String
-											.valueOf(CustomerObj
-													.get("SaleUserName")));
-									childItem.setValueID(String
-											.valueOf(CustomerObj
-													.get("SaleUserID")));
+								if (childItem.getID().equals("1FA31185-3B00-47AA-8F5E-7AA3D53205A5")) {// 置业顾问
+									childItem.setValue(String.valueOf(CustomerObj.get("SaleUserName")));
+									childItem.setValueID(String.valueOf(CustomerObj.get("SaleUserID")));
 								}
-								if (childItem.getID().equals(
-										"BB66EE25-E48E-4A7B-BA1D-DB03FBC87500")) {// 备注
+								if (childItem.getID().equals("BB66EE25-E48E-4A7B-BA1D-DB03FBC87500")) {// 备注
 									childItem.setIsEdit(0);
 								}
-								if (childItem.getID().equals(
-										"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-									String where = " and ClueID='"
-											+ customerModel.getClueID() + "'";
-									Map<String, Object> ClueObj = vCustomergwlistSelectMapper
-											.sCustomerPotentialClue(where);
+								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+									String where = " and ClueID='"+ customerModel.getClueID() + "'";
+									Map<String, Object> ClueObj = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
 									if (ClueObj.size() > 0) {
-										childItem.setValue(String
-												.valueOf(ClueObj.get("Name")));
-										childItem.setValueID(String
-												.valueOf(ClueObj.get("ID")));
+										childItem.setValue(String.valueOf(ClueObj.get("Name")));
+										childItem.setValueID(String.valueOf(ClueObj.get("ID")));
 									}
 									childItem.setIsEdit(0);
 								}
 								break;
 							case "23":
-								if (childItem.getID().equals(
-										"9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
+								if (childItem.getID().equals("9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
-								if (childItem.getID().equals(
-										"4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
+								if (childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
-								if (childItem.getID().equals(
-										"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-									ChildItem clueOpportunitySource = GetClueOpportunitySource(
-											childItem, model);
-									childItem.setOption(clueOpportunitySource
-											.getOption());
-									childItem.setValue(clueOpportunitySource
-											.getValue());
-									childItem.setValueID(clueOpportunitySource
-											.getValueID());
+								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+									ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
+									childItem.setOption(clueOpportunitySource.getOption());
+									childItem.setValue(clueOpportunitySource.getValue());
+									childItem.setValueID(clueOpportunitySource.getValueID());
 								}
 								break;
 							case "2":
-								if (childItem.getID().equals(
-										"1FA31185-3B00-47AA-8F5E-7AA3D53205A5")) {// 置业顾问
-									childItem.setValue(CustomerObj
-											.getString("SaleUserName"));
-									childItem.setValueID(CustomerObj
-											.getString("SaleUserID"));
+								if (childItem.getID().equals("1FA31185-3B00-47AA-8F5E-7AA3D53205A5")) {// 置业顾问
+									childItem.setValue(CustomerObj.getString("SaleUserName"));
+									childItem.setValueID(CustomerObj.getString("SaleUserID"));
 								}
-								if (childItem.getID().equals(
-										"9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
+								if (childItem.getID().equals("9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
-								if (childItem.getID().equals(
-										"4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
+								if (childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
-								if (childItem.getID().equals(
-										"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-									ChildItem clueOpportunitySource = GetClueOpportunitySource(
-											childItem, model);
-									childItem.setOption(clueOpportunitySource
-											.getOption());
-									childItem.setValue(clueOpportunitySource
-											.getValue());
-									childItem.setValueID(clueOpportunitySource
-											.getValueID());
+								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+									ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
+									childItem.setOption(clueOpportunitySource.getOption());
+									childItem.setValue(clueOpportunitySource.getValue());
+									childItem.setValueID(clueOpportunitySource.getValueID());
 								}
 								break;
 							case "3":
-								if (childItem.getID().equals(
-										"9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
+								if (childItem.getID().equals("9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
-								if (childItem.getID().equals(
-										"4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
+								if (childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
-								if (childItem.getID().equals(
-										"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-									ChildItem clueOpportunitySource = GetClueOpportunitySource(
-											childItem, model);
-									childItem.setOption(clueOpportunitySource
-											.getOption());
-									childItem.setValue(clueOpportunitySource
-											.getValue());
-									childItem.setValueID(clueOpportunitySource
-											.getValueID());
+								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+									ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
+									childItem.setOption(clueOpportunitySource.getOption());
+									childItem.setValue(clueOpportunitySource.getValue());
+									childItem.setValueID(clueOpportunitySource.getValueID());
 								}
 								break;
 							case "4":
-								if (childItem.getID().equals(
-										"9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
+								if (childItem.getID().equals("9134B1C9-B300-41CA-9FCD-D119661CB5F6")) {// 来访人数
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
@@ -414,8 +322,7 @@ public class CustomerHelp implements ICustomerHelp {
 							case "11":
 								break;
 							case "12":
-								if (childItem.getID().equals(
-										"4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
+								if (childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
@@ -423,21 +330,15 @@ public class CustomerHelp implements ICustomerHelp {
 								// {//项目没有开启分接角色,启用客户来源选择
 								// }
 								// 取消分接判断
-								if (childItem.getID().equals(
-										"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-									ChildItem clueOpportunitySource = GetClueOpportunitySource(
-											childItem, model);
-									childItem.setOption(clueOpportunitySource
-											.getOption());
-									childItem.setValue(clueOpportunitySource
-											.getValue());
-									childItem.setValueID(clueOpportunitySource
-											.getValueID());
+								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+									ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
+									childItem.setOption(clueOpportunitySource.getOption());
+									childItem.setValue(clueOpportunitySource.getValue());
+									childItem.setValueID(clueOpportunitySource.getValueID());
 								}
 								break;
 							case "13":
-								if (childItem.getID().equals(
-										"4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
+								if (childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0")) {// 备注
 									childItem.setValue("");
 									childItem.setValueID("");
 								}
@@ -445,23 +346,17 @@ public class CustomerHelp implements ICustomerHelp {
 								// {//项目没有开启分接角色,启用客户来源选择
 								// }
 								// 取消分接判断
-								if (childItem.getID().equals(
-										"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-									ChildItem clueOpportunitySource = GetClueOpportunitySource(
-											childItem, model);
-									childItem.setOption(clueOpportunitySource
-											.getOption());
-									childItem.setValue(clueOpportunitySource
-											.getValue());
-									childItem.setValueID(clueOpportunitySource
-											.getValueID());
+								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+									ChildItem clueOpportunitySource = GetClueOpportunitySource(childItem, model);
+									childItem.setOption(clueOpportunitySource.getOption());
+									childItem.setValue(clueOpportunitySource.getValue());
+									childItem.setValueID(clueOpportunitySource.getValueID());
 								}
 								break;
 							case "14":
 								break;
 							case "82":
-								if (childItem.getID().equals(
-										"61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")) {// 客户级别处理,如果是3级,是否收小筹,不可以编辑
+								if (childItem.getID().equals("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")) {// 客户级别处理,如果是3级,是否收小筹,不可以编辑
 									childItem.setIsEdit(0);
 								}
 								break;
@@ -473,24 +368,11 @@ public class CustomerHelp implements ICustomerHelp {
 							// 关联权益人时
 							if (model.getIsEquity().equals("1")) {
 								// 初始化手机号
-								if (childItem.getID().equals(
-										"21685728-54C5-4268-8371-62413CE42841")) {
-									childItem
-											.setValue(StringUtils
-													.isEmpty(childItem
-															.getValue().trim()) ? model
-													.getMobile() : childItem
-													.getValue());
+								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {
+									childItem.setValue(StringUtils.isEmpty(childItem.getValue().trim()) ? model.getMobile() : childItem.getValue());
 								}
 								// 除了客户标签,备注非必填,下次跟进 其他都必填
-								if (!childItem.getID().equals(
-										"47A4BAF0-F946-4A8A-81F1-D675BEED6DE2")
-										&& !childItem
-												.getID()
-												.equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0")
-										&& !childItem
-												.getID()
-												.equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
+								if (!childItem.getID().equals("47A4BAF0-F946-4A8A-81F1-D675BEED6DE2") && !childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0") && !childItem.getID().equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
 									childItem.setIsMust(1);
 									childItem.setPlaceholder("必填");
 								} else {
@@ -499,24 +381,9 @@ public class CustomerHelp implements ICustomerHelp {
 								childItem.setIsHide(0);
 								switch (customerModeType) {
 								case "82":
-									if (!childItem
-											.getID()
-											.equals("480B60B2-1EE1-4A31-A810-072184A1E9D7")
-											&& !childItem
-													.getID()
-													.equals("08289FD5-999A-4A9F-94D5-B85507575404")
-											&& !childItem
-													.getID()
-													.equals("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB")
-											&& !childItem
-													.getID()
-													.equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
+									if (!childItem.getID().equals("480B60B2-1EE1-4A31-A810-072184A1E9D7") && !childItem.getID().equals("08289FD5-999A-4A9F-94D5-B85507575404") && !childItem.getID().equals("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB") && !childItem.getID().equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
 										if (childItem.getIsMustShow() == 0) {// 非必有
-											if (!StringUtils.isEmpty(childItem
-													.getValueID())
-													&& !StringUtils
-															.isEmpty(childItem
-																	.getValue())) {// 隐藏已填写选项
+											if (!StringUtils.isEmpty(childItem.getValueID()) && !StringUtils.isEmpty(childItem.getValue())) {// 隐藏已填写选项
 												childItem.setIsHide(1);
 											} else {
 												childItem.setIsHide(0);
@@ -532,35 +399,14 @@ public class CustomerHelp implements ICustomerHelp {
 								case "82":
 									if (!model.getIsCustomerFirstEdit().equals(
 											"0")) {// 非首次访问
-										if (!childItem
-												.getID()
-												.equals("480B60B2-1EE1-4A31-A810-072184A1E9D7")
-												&& !childItem
-														.getID()
-														.equals("08289FD5-999A-4A9F-94D5-B85507575404")
-												&& !childItem
-														.getID()
-														.equals("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB")
-												&& !childItem
-														.getID()
-														.equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
+										if (!childItem.getID().equals("480B60B2-1EE1-4A31-A810-072184A1E9D7") && !childItem.getID().equals("08289FD5-999A-4A9F-94D5-B85507575404") && !childItem.getID().equals("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB") && !childItem.getID().equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
 											if (childItem.getIsMustShow() == 0) {// 非必有
-												if (!StringUtils
-														.isEmpty(childItem
-																.getValueID())
-														&& !StringUtils
-																.isEmpty(childItem
-																		.getValue())) {// 隐藏已填写选项
+												if (!StringUtils.isEmpty(childItem.getValueID()) && !StringUtils.isEmpty(childItem.getValue())) {// 隐藏已填写选项
 													childItem.setIsHide(1);
 												} else {
 													childItem.setIsHide(0);
 												}
-												if (childItem
-														.getID()
-														.equals("0BFD0AEF-2C16-4A91-94D3-9CBF114DC78A")
-														&& StringUtils
-																.isEmpty(childItem
-																		.getValue())) {// 媒体子类
+												if (childItem.getID().equals("0BFD0AEF-2C16-4A91-94D3-9CBF114DC78A") && StringUtils.isEmpty(childItem.getValue())) {// 媒体子类
 													childItem.setIsHide(1);
 												}
 											}
@@ -585,19 +431,16 @@ public class CustomerHelp implements ICustomerHelp {
 									break;
 								}
 							}
-							if (childItem.getID().equals(
-									"F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
+							if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
 								if (childItem.getOption().size() <= 1) {
 									childItem.setIsEdit(0);
 								}
 							}
-							if (childItem.getID().equals(
-									"480B60B2-1EE1-4A31-A810-072184A1E9D7")) {// 跟进方式
+							if (childItem.getID().equals("480B60B2-1EE1-4A31-A810-072184A1E9D7")) {// 跟进方式
 								childItem.setValue("");
 								childItem.setValueID("");
 							}
-							if (childItem.getID().equals(
-									"600DEB36-F5E0-4BA3-B7FA-1A244F0773AB")) {// 跟进内容
+							if (childItem.getID().equals("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB")) {// 跟进内容
 								childItem.setValue("");
 								childItem.setValueID("");
 							}
@@ -612,8 +455,7 @@ public class CustomerHelp implements ICustomerHelp {
 					String mapKey = entry.getKey();
 					ChildItem mapValue = entry.getValue();
 					int index = Integer.parseInt(mapKey.split("_")[1]);
-					customerModel.getPanel().get(index).getChild()
-							.remove(mapValue);
+					customerModel.getPanel().get(index).getChild().remove(mapValue);
 				}
 			}
 		} catch (Exception ex) {
