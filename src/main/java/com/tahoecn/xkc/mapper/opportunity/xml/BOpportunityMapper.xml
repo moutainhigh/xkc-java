@@ -178,5 +178,182 @@
 		{call P_CustomerAllotAdviser_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{AdviserID},
 		#{Code},#{AdviserIDList},#{OpportunityIDList},#{LostIDList},#{PublicIDList})}
 	</update>
-	
+	<resultMap type ="java.util.Map" id= "ZYQDMap">
+	     <result column ="ClueID" property="ClueID" />
+	     <result column ="ClueStatus" property="ClueStatus"  />
+	     <result column ="IsAlloc" property="IsAlloc"  />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	</resultMap >
+	<resultMap type ="java.lang.Integer" id= "recordCount">
+     	<result column ="recordCount" property="recordCount"  />
+	</resultMap >
+	<!-- 自有渠道客户列表 -->
+	<select id="mCustomerZYQDList_Select" statementType="CALLABLE" resultMap="ZYQDMap,recordCount">
+		{call P_CustomerZYQDList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "DSMap">
+	     <result column ="LostID" property="LostID" />
+	     <result column ="OpportunityID" property="OpportunityID"  />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="LostTime" property="LostTime"  />
+	     <result column ="LostReason" property="LostReason"  />
+	</resultMap >
+	<!-- 丢失客户列表 -->
+	<select id="mCustomerDSList_Select" statementType="CALLABLE" resultMap="DSMap,recordCount">
+		{call P_CustomerDSList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "GJMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	     <result column ="IsCooperat" property="IsCooperat"  />
+	</resultMap >
+	<!-- 正常跟进列表 -->
+	<select id="mCustomerGJList_Select" statementType="CALLABLE" resultMap="GJMap,recordCount">
+		{call P_CustomerGJList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "ZDMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="CreateTime" property="CreateTime"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="IntentProjectName" property="IntentProjectName"  />
+	</resultMap >
+	<!-- 撞单客户列表 -->
+	<select id="mCustomerZDList_Select" statementType="CALLABLE" resultMap="ZDMap,recordCount">
+		{call P_CustomerZDList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "GGMap">
+	     <result column ="PublicID" property="PublicID" />
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="HSTime" property="HSTime"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	     <result column ="IsCooperat" property="IsCooperat"  />
+	</resultMap >
+	<!-- 公共客户列表 -->
+	<select id="mCustomerGGList_Select" statementType="CALLABLE" resultMap="GGMap,recordCount">
+		{call P_CustomerGGList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWJKMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="YQAmount" property="YQAmount"  />
+	     <result column ="YQNum" property="YQNum"  />
+	     <result column ="ReturnedAmount" property="ReturnedAmount"  />
+	     <result column ="ContractTime" property="ContractTime"  />
+	     <result column ="ContractAmount" property="ContractAmount"  />
+	     <result column ="ContractArea" property="ContractArea"  />
+	     <result column ="ContractRoom" property="ContractRoom"  />
+	</resultMap >
+	<!-- 逾期客户未交款列表 -->
+	<select id="mCustomerYQWJKList_Select" statementType="CALLABLE" resultMap="YQWJKMap,recordCount">
+		{call P_CustomerYQWJKList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{OverduePaymentStartDay},
+		#{OverduePaymentEndDay},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWQYMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="PlanContractTime" property="PlanContractTime"  />
+	     <result column ="OrderTime" property="OrderTime"  />
+	     <result column ="OrderAmount" property="OrderAmount"  />
+	     <result column ="OrderArea" property="OrderArea"  />
+	     <result column ="OrderRoom" property="OrderRoom"  />
+	</resultMap >
+	<!-- 逾期客户未签约列表 -->
+	<select id="mCustomerYQWQYList_Select" statementType="CALLABLE" resultMap="YQWQYMap,recordCount">
+		{call P_CustomerYQWQYList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{OverduePaymentStartDay},
+		#{OverduePaymentEndDay},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWRGMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="BookingTime" property="BookingTime"  />
+	</resultMap >
+	<!-- 逾期客户未认购列表 -->
+	<select id="mCustomerYQWRGList_Select" statementType="CALLABLE" resultMap="YQWRGMap,recordCount">
+		{call P_CustomerYQWRGList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWGJMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	</resultMap >
+	<!-- 逾期客户未跟进列表 -->
+	<select id="mCustomerYQWGJList_Select" statementType="CALLABLE" resultMap="YQWGJMap,recordCount">
+		{call P_CustomerYQWGJList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
 </mapper>

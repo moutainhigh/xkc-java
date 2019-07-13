@@ -258,4 +258,130 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 	public void mCustomerAllotAdviser_Update(Map<String,Object> paramMap) {
 		baseMapper.mCustomerAllotAdviser_Update(paramMap);
 	}
+	/**
+	 * 自有渠道客户列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerZYQDList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerZYQDList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 丢失客户列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerDSList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerDSList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 正常跟进列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerGJList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerGJList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 撞单客户列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerZDList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerZDList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 公共客户列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerGGList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerGGList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 逾期客户未交款列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerYQWJKList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerYQWJKList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 逾期客户未签约列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerYQWQYList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerYQWQYList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 逾期客户未认购列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerYQWRGList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerYQWRGList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 逾期客户未跟进列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerYQWGJList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerYQWGJList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
 }

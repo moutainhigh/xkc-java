@@ -39,4 +39,40 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 	 * 客户分配置业顾问
 	 */
 	void mCustomerAllotAdviser_Update(Map<String, Object> paramMap);
+	/**
+	 * 自有渠道客户列表
+	 */
+	List<List<?>> mCustomerZYQDList_Select(Map<String, Object> paramMap);
+	/**
+	 * 丢失客户列表
+	 */
+	List<List<?>> mCustomerDSList_Select(Map<String, Object> paramMap);
+	/**
+	 * 正常跟进列表
+	 */
+	List<List<?>> mCustomerGJList_Select(Map<String, Object> paramMap);
+	/**
+	 * 撞单客户列表
+	 */
+	List<List<?>> mCustomerZDList_Select(Map<String, Object> paramMap);
+	/**
+	 * 公共客户列表
+	 */
+	List<List<?>> mCustomerGGList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期客户未交款列表
+	 */
+	List<List<?>> mCustomerYQWJKList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期客户未签约列表
+	 */
+	List<List<?>> mCustomerYQWQYList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期客户未认购列表
+	 */
+	List<List<?>> mCustomerYQWRGList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期客户未跟进列表
+	 */
+	List<List<?>> mCustomerYQWGJList_Select(Map<String, Object> paramMap);
 }
