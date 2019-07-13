@@ -1002,13 +1002,17 @@ VALUES  ( #{OpportunityID},
 		]]>
 	</update>
 	
-	<insert id="mOldCustomerGWDetail_Insert_step3" parameterType="java.util.Map">
+	<select id="mOldCustomerGWDetail_Insert_step3_vaild" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-	IF NOT EXISTS ( SELECT  CustomerID
+			SELECT  CustomerID
                 FROM    B_CustomerAttribute
-                WHERE   CustomerID = #{CustomerID})
-    BEGIN 
-        INSERT  INTO B_CustomerAttribute
+                WHERE   CustomerID = #{CustomerID}
+		]]>
+	</select>
+	
+	<insert id="mOldCustomerGWDetail_Insert_step3_insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerAttribute
                 ( ID ,
                   CustomerID ,
                   AgeGroup ,
@@ -1044,10 +1048,12 @@ VALUES  ( #{OpportunityID},
                   END,
                   #{Address}
                 ) 
-    END
-ELSE
-    BEGIN 
-        UPDATE  B_CustomerAttribute
+		]]>
+	</insert>
+	
+	<update id="mOldCustomerGWDetail_Insert_step3_update" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE  B_CustomerAttribute
         SET     AgeGroup = #{AgeGroup},
                 DomicilePlace = #{DomicilePlace},
                 HomeAddress = #{HomeAddress},
@@ -1065,9 +1071,8 @@ ELSE
                 Editor = #{UserID},
                 EditeTime = GETDATE()
         WHERE   CustomerID = #{CustomerID}
-    END
 		]]>
-	</insert>
+	</update>
 	
 	<delete id="mOldCustomerGWDetail_Insert_step4" parameterType="java.util.Map">
 		<![CDATA[
@@ -1219,16 +1224,30 @@ VALUES  ( #{OpportunityID},
 		]]>
 	</update>
 	
-	<insert id="sClueCustomer_Insert_step1" parameterType="java.util.Map">
+	<select id="sClueCustomer_Insert_step1_valid_1" parameterType="java.util.Map" resultType="java.util.HashMap" >
 		<![CDATA[
-		IF NOT EXISTS( SELECT ID FROM B_CustomerPotential WHERE ID = #{CustomerID}) BEGIN 
+			SELECT ID FROM B_CustomerPotential WHERE ID = #{CustomerID}
+		]]>
+	</select>
+	
+	<insert id="sClueCustomer_Insert_step1_insert_1" parameterType="java.util.Map">
+		<![CDATA[
 			INSERT INTO dbo.B_CustomerPotential( ID, Name, Gender, Mobile, IsOwner, CardType, CardID, AcceptFactor, Remark, OrgID, Creator, CreateTime, Editor, EditeTime, IsDel, Status) VALUES( #{CustomerID}, #{CustomerName}, #{Gender}, #{Mobile}, Null, Null, Null, Null, Null, Null, #{UserID}, GetDate(), #{UserID}, GetDate(), 0, 1)
-		END
-		IF NOT EXISTS( SELECT ID FROM B_CustomerPotentialAttribute WHERE CustomerPotentialID = #{CustomerID}) BEGIN 
-			INSERT INTO dbo.B_CustomerPotentialAttribute( ID, CustomerPotentialID, DomicilePlace, HomeAddress, HomeArea, WorkArea, Marriage, Family, Industry, AgeGroup, PropertyNum, FollowUpContent, Creator, CreateTime, Editor, EditeTime, IsDel, Status) VALUES( NEWID(), #{CustomerID}, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, #{UserID}, GETDATE(), #{UserID}, getdate(), 0, 1)
-		END
 		]]>
 	</insert>
+	
+	<select id="sClueCustomer_Insert_step1_valid_2" parameterType="java.util.Map" resultType="java.util.HashMap" >
+		<![CDATA[
+			SELECT ID FROM B_CustomerPotentialAttribute WHERE CustomerPotentialID = #{CustomerID}
+		]]>
+	</select>
+	
+	<insert id="sClueCustomer_Insert_step1_insert_2" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT INTO dbo.B_CustomerPotentialAttribute( ID, CustomerPotentialID, DomicilePlace, HomeAddress, HomeArea, WorkArea, Marriage, Family, Industry, AgeGroup, PropertyNum, FollowUpContent, Creator, CreateTime, Editor, EditeTime, IsDel, Status) VALUES( NEWID(), #{CustomerID}, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, #{UserID}, GETDATE(), #{UserID}, getdate(), 0, 1)
+		]]>
+	</insert>
+
 	<insert id="sClueCustomer_Insert_step2" parameterType="java.util.Map">
 		<![CDATA[
 		INSERT INTO dbo.B_Clue( ID, CustomerPotentialID, Name, LastName, FirstName, Gender, Mobile, IntentProjectID, IntentProjectName, Remark, SourceType, ReportUserID, ReportUserName, ReportUserMobile, ReportUserOrg, Creator, CreateTime, Editor, EditeTime, IsDel, Status,ConfirmTime) VALUES( #{ClueID}, #{CustomerID}, #{Name}, #{LastName}, #{FirstName}, #{Gender}, #{Mobile}, #{ProjectID}, NUll, NUll, NUll, NUll, NUll, NUll, NUll, #{UserID}, GETDATE(), #{UserID}, GETDATE(), 0, 2,GETDATE())
@@ -1468,13 +1487,17 @@ VALUES  ( #{OpportunityID},
 		]]>
 	</update>
 	
-	<insert id="mCustomerGWDetail_Update_step2" parameterType="java.util.Map">
+	<select id="mCustomerGWDetail_Update_step2_valid" resultType="java.util.HashMap" parameterType="java.util.Map">
 		<![CDATA[
-			IF NOT EXISTS ( SELECT  CustomerID
-                FROM    B_CustomerAttribute
-                WHERE   CustomerID = #{CustomerID} )
-    BEGIN 
-        INSERT  INTO B_CustomerAttribute
+		SELECT  CustomerID
+                FROM   B_CustomerAttribute
+                WHERE   CustomerID = #{CustomerID}
+         ]]>
+	</select>
+	
+	<insert id="mCustomerGWDetail_Update_step2_insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerAttribute
                 ( ID ,
                   CustomerID ,
                   AgeGroup ,
@@ -1510,11 +1533,13 @@ VALUES  ( #{OpportunityID},
                   END ,
                   #{Address}
                 ) 
-    END
-ELSE
-    BEGIN 
-        UPDATE  B_CustomerAttribute
-        SET     AgeGroup = #{AgeGroup},
+           ]]>
+	</insert>
+	
+	<update id="mCustomerGWDetail_Update_step2_update" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE  B_CustomerAttribute
+        		SET     AgeGroup = #{AgeGroup},
                 DomicilePlace = #{DomicilePlace},
                 HomeAddress = #{HomeAddress},
                 HomeArea = #{HomeArea},
@@ -1523,7 +1548,7 @@ ELSE
                 Family = #{Family},
                 Industry = #{Industry},
                 PropertyNum = #{PropertyNum},
-                Birthday = ( CASE LEN('{Birthday})
+                Birthday = ( CASE LEN(#{Birthday})
                                WHEN 0 THEN NULL
                                ELSE #{Birthday}
                              END ) ,
@@ -1531,9 +1556,9 @@ ELSE
                 Editor = #{UserID},
                 EditeTime = GETDATE()
         WHERE   CustomerID = #{CustomerID}
-    END
 		]]>
-	</insert>
+	</update>
+
 	
 	<delete id="mCustomerGWDetail_Update_step3" parameterType="java.util.Map">
 		<![CDATA[
@@ -1618,13 +1643,17 @@ ELSE
 		]]>
 	</update>
 	
-	<insert id="mCustomerSubscribeDetail_Insert_step2" parameterType="java.util.Map">
+	<select id="mCustomerSubscribeDetail_Insert_step2_valid" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		IF NOT EXISTS ( SELECT  CustomerID
+		SELECT  CustomerID
                 FROM    B_CustomerAttribute
-                WHERE   CustomerID = #{CustomerID} )
-	    BEGIN 
-	        INSERT  INTO B_CustomerAttribute
+                WHERE   CustomerID = #{CustomerID}
+		]]>
+	</select>
+	
+	<insert id="mCustomerSubscribeDetail_Insert_step2_insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerAttribute
 	                ( ID ,
 	                  CustomerID ,
 	                  AgeGroup ,
@@ -1660,10 +1689,12 @@ ELSE
 	                  END,
 	                  #{Address}
 	                ) 
-	    END
-	ELSE
-	    BEGIN 
-	        UPDATE  B_CustomerAttribute
+		]]>
+	</insert>
+	
+	<update id="mCustomerSubscribeDetail_Insert_step2_update" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE  B_CustomerAttribute
 	        SET     AgeGroup = #{AgeGroup},
 	                DomicilePlace = #{DomicilePlace},
 	                HomeAddress = #{HomeAddress},
@@ -1681,9 +1712,8 @@ ELSE
 	                Editor = #{UserID},
 	                EditeTime = GETDATE()
 	        WHERE   CustomerID = #{CustomerID}
-	    END
-	    ]]>
-	</insert>
+		]]>
+	</update>
 	
 	<delete id="mCustomerSubscribeDetail_Insert_step3" parameterType="java.util.Map">
 		<![CDATA[
@@ -1986,16 +2016,25 @@ ELSE
 		 ]]>
 	</select>
 	
-	<insert id="MYUserDetail_Insert" parameterType="java.util.Map">
+	<select id="MYUserDetail_Insert_valid_1" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		IF #{CreatedByGUID} <> ''
-		    AND #{CreatedByGUID} <> '99'
-		    AND NOT EXISTS ( SELECT TOP 1
-		                            UserGUID
+			SELECT TOP 1 UserGUID
 		                     FROM   dbo.myUser
-		                     WHERE  UserGUID = #{CreatedByGUID} )
-		    BEGIN
-		        INSERT  dbo.myUser
+		                     WHERE  UserGUID = #{CreatedByGUID}
+		]]>
+	</select>
+	
+	<select id="MYUserDetail_Insert_valid_2" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT TOP 1 UserGUID
+		                     FROM   dbo.myUser
+		                     WHERE  UserGUID = #{ModifyByGUID}
+		]]>
+	</select>
+	
+	<insert id="MYUserDetail_Insert_step1" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT  dbo.myUser
 		                ( UserGUID ,
 		                  UserCode ,
 		                  UserName ,
@@ -2035,16 +2074,13 @@ ELSE
 		                  0 ,
 		                  0 ,
 		                  0 
-		                )
-		    END
-		IF #{ModifyByGUID} <> ''
-		    AND #{ModifyByGUID} <> '99'
-		    AND NOT EXISTS ( SELECT TOP 1
-		                            UserGUID
-		                     FROM   dbo.myUser
-		                     WHERE  UserGUID = #{ModifyByGUID} )
-		    BEGIN
-		        INSERT  dbo.myUser
+		     			)
+		]]>
+	</insert>
+	
+	<insert id="MYUserDetail_Insert_step2" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT  dbo.myUser
 		                ( UserGUID ,
 		                  UserCode ,
 		                  UserName ,
@@ -2085,109 +2121,116 @@ ELSE
 		                  0 ,
 		                  0 
 		                )
-		    END
-		 ]]>
+		]]>
 	</insert>
 	
-	<insert id="MYCustomerDetail_Insert" parameterType="java.util.Map">
+	<select id="MYCustomerDetail_Insert_vaild_1" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		IF NOT EXISTS ( SELECT TOP 1
+		SELECT TOP 1
 		                        TradeGUID
 		                FROM    s_Trade A
 		                WHERE   A.TradeGUID IN ( SELECT TradeGUID
 		                                         FROM   s_Trade2Cst
-		                                         WHERE  CstGUID = #{CstGUID}) )
-		    AND NOT EXISTS ( SELECT TOP 1
+		                                         WHERE  CstGUID = #{CstGUID})
+		 ]]>
+	</select>
+	<select id="MYCustomerDetail_Insert_vaild_2" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT TOP 1
 		                            BookingGUID
 		                     FROM   s_Booking A
 		                     WHERE  A.BookingGUID IN ( SELECT   BookingGUID
 		                                               FROM     dbo.s_Booking2Cst
-		                                               WHERE    CstGUID = #{CstGUID} ) )
-		    BEGIN
-		        IF NOT EXISTS ( SELECT TOP 1
-		                                CstGUID
-		                        FROM    p_Customer
-		                        WHERE   CstGUID = #{CstGUID})
-		            BEGIN
-		                INSERT  INTO p_Customer
-		                        ( CstGUID ,
-		                          CstName ,
-		                          CardID ,
-		                          MobileTel ,
-		                          CstType ,
-		                          Gender ,
-		                          BirthDate ,
-		                          Address ,
-		                          CardType ,
-		                          CreatedOn ,
-		                          CreatedBy ,
-		                          ModifyOn ,
-		                          ModifyBy ,
-		                          SurName ,
-		                          GivenName ,
-		                          IsYZ ,
-		                          CreatedByGUID ,
-		                          FirstName ,
-		                          LastName ,
-		                          _DataSource
-			                    )
-		                VALUES  ( #{CstGUID},
-		                          #{CstName},
-		                          #{CardID},
-		                          #{MobileTel},
-		                          #{CstType},
-		                          #{Gender},
-		                          CASE LEN(#{BirthDate})
-		                            WHEN 0 THEN NULL
-		                            ELSE #{BirthDate}
-		                          END ,
-		                          #{Address},
-		                          #{CardType},
-		                          CONVERT(DATETIME, #{CreatedOn}, 121) ,
-		                          #{CreatedBy}' ,
-		                          CONVERT(DATETIME, #{ModifyOn}, 121) ,
-		                          #{ModifyBy},
-		                          #{SurName},
-		                          #{GivenName} ,
-		                          #{IsYZ} ,
-		                          CASE WHEN #{CreatedByGUID} = '99' THEN NULL
-		                               WHEN #{CreatedByGUID} = '' THEN NULL
-		                               ELSE #{CreatedByGUID}
-		                          END ,
-		                          #{FirstName},
-		                          #{LastName},
-		                          'YDYX'
-			                    )
-		                INSERT  INTO p_CstAttribute
+		                                               WHERE    CstGUID = #{CstGUID} ) 
+		]]>
+	</select>
+	
+	<insert id="MYCustomerDetail_Insert_insert_1" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT  INTO p_Customer
+                      ( CstGUID ,
+                        CstName ,
+                        CardID ,
+                        MobileTel ,
+                        CstType ,
+                        Gender ,
+                        BirthDate ,
+                        Address ,
+                        CardType ,
+                        CreatedOn ,
+                        CreatedBy ,
+                        ModifyOn ,
+                        ModifyBy ,
+                        SurName ,
+                        GivenName ,
+                        IsYZ ,
+                        CreatedByGUID ,
+                        FirstName ,
+                        LastName ,
+                        _DataSource
+                   )
+              VALUES  ( #{CstGUID},
+                        #{CstName},
+                        #{CardID},
+                        #{MobileTel},
+                        #{CstType},
+                        #{Gender},
+                        CASE LEN(#{BirthDate})
+                          WHEN 0 THEN NULL
+                          ELSE #{BirthDate}
+                        END ,
+                        #{Address},
+                        #{CardType},
+                        CONVERT(DATETIME, #{CreatedOn}, 121) ,
+                        #{CreatedBy}' ,
+                        CONVERT(DATETIME, #{ModifyOn}, 121) ,
+                        #{ModifyBy},
+                        #{SurName},
+                        #{GivenName} ,
+                        #{IsYZ} ,
+                        CASE WHEN #{CreatedByGUID} = '99' THEN NULL
+                             WHEN #{CreatedByGUID} = '' THEN NULL
+                             ELSE #{CreatedByGUID}
+                        END ,
+                        #{FirstName},
+                        #{LastName},
+                        'YDYX'
+                   )
+		]]>
+	</insert>
+	
+	<insert id="MYCustomerDetail_Insert_insert_2" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO p_CstAttribute
 		                        ( CstGUID )
 		                VALUES  ( #{CstGUID} )
-		            END
-		        ELSE
-		            BEGIN
-		                UPDATE  p_Customer
-		                SET     CstName = #{CstName},
-		                        CardID = #{CardID},
-		                        MobileTel = #{MobileTel},
-		                        CstType = #{CstType},
-		                        Gender = #{Gender},
-		                        BirthDate = ( CASE LEN(#{BirthDate})
-		                                        WHEN 0 THEN NULL
-		                                        ELSE #{BirthDate}
-		                                      END ) ,
-		                        Address = #{Address},
-		                        CardType = #{CardType},
-		                        ModifyOn = CONVERT(DATETIME, #{ModifyOn}, 121) ,
-		                        ModifyBy = #{ModifyBy},
-		                        SurName = #{SurName},
-		                        GivenName = #{GivenName},
-		                        IsYZ = #{IsYZ}' ,
-		                        FirstName = #{FirstName},
-		                        LastName = #{LastName}
-		                WHERE   CstGUID = #{CstGUID}
-		            END
-		    END
-		     ]]>
+		 ]]>
 	</insert>
+	
+	<update id="MYCustomerDetail_Insert_update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  p_Customer
+        SET     CstName = #{CstName},
+                CardID = #{CardID},
+                MobileTel = #{MobileTel},
+                CstType = #{CstType},
+                Gender = #{Gender},
+                BirthDate = ( CASE LEN(#{BirthDate})
+                                WHEN 0 THEN NULL
+                                ELSE #{BirthDate}
+                              END ) ,
+                Address = #{Address},
+                CardType = #{CardType},
+                ModifyOn = CONVERT(DATETIME, #{ModifyOn}, 121) ,
+                ModifyBy = #{ModifyBy},
+                SurName = #{SurName},
+                GivenName = #{GivenName},
+                IsYZ = #{IsYZ},
+                FirstName = #{FirstName},
+                LastName = #{LastName}
+        WHERE   CstGUID = #{CstGUID}
+		 ]]>
+	</update>
 	
 	<select id="LocalOpportunityDetail_Select" resultType="java.util.HashMap">
 		<![CDATA[
@@ -2266,13 +2309,17 @@ ELSE
 		 ]]>
 	</select>
 	
-	<insert id="MYOpportunityDetail_Insert" parameterType="java.util.Map">
+	<select id="MYOpportunityDetail_Insert_valid_1" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		IF NOT EXISTS ( SELECT  OppGUID
+			SELECT  OppGUID
 		                FROM    s_Opportunity
-		                WHERE   OppGUID = #{OppGUID} )
-		    BEGIN
-		        INSERT  INTO s_Opportunity
+		                WHERE   OppGUID = #{OppGUID}
+		]]>
+	</select>
+	
+	<select id="MYOpportunityDetail_Insert_insert_1" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT  INTO s_Opportunity
 		                ( OppGUID ,
 		                  BUGUID ,
 		                  ProjGUID ,
@@ -2330,24 +2377,35 @@ ELSE
 		                  #{ZjGjNr} ,
 		                  'YDYX'
 		                )
-		    END
-		ELSE
-		    BEGIN
-		        IF NOT EXISTS ( SELECT TOP 1
-		                                TradeGUID
-		                        FROM    s_Trade A
-		                        WHERE   A.TradeGUID IN ( SELECT TradeGUID
-		                                                 FROM   s_Trade2Cst
-		                                                 WHERE  CstGUID = #{CstGUID} ) )
-		            AND NOT EXISTS ( SELECT TOP 1
-		                                    BookingGUID
-		                             FROM   s_Booking A
-		                             WHERE  A.BookingGUID IN (
-		                                    SELECT  BookingGUID
-		                                    FROM    dbo.s_Booking2Cst
-		                                    WHERE   CstGUID = #{CstGUID}) )
-		            BEGIN
-		                UPDATE  s_Opportunity
+		]]>
+	</select>
+	
+	<select id="MYOpportunityDetail_Insert_valid_2" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT TOP 1
+                TradeGUID
+        FROM    s_Trade A
+        WHERE   A.TradeGUID IN ( SELECT TradeGUID
+                                 FROM   s_Trade2Cst
+                                 WHERE  CstGUID = #{CstGUID} )
+		 ]]>
+	</select>
+	
+	<select id="MYOpportunityDetail_Insert_valid_3" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT TOP 1
+                    BookingGUID
+             FROM   s_Booking A
+             WHERE  A.BookingGUID IN (
+                    SELECT  BookingGUID
+                    FROM    dbo.s_Booking2Cst
+                    WHERE   CstGUID = #{CstGUID})
+		]]>
+	</select>
+	
+	<update id="MYOpportunityDetail_Insert_update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  s_Opportunity
 		                SET     BUGUID = #{BUGUID},
 		                        ProjGUID = #{ProjGUID},
 		                        Status = #{Status},
@@ -2380,37 +2438,41 @@ ELSE
 		                                         END ,
 		                        ZjGjNr = #{ZjGjNr}
 		                WHERE   OppGUID = #{OppGUID}
-		            END;
-		        
-		    END
-		IF NOT EXISTS ( SELECT  CstAttachGUID
+		]]>
+	</update>
+	
+	<select id="MYOpportunityDetail_Insert_valid_4" parameterType="java.util.Map" resultType="java.util.HashMap">
+		SELECT  CstAttachGUID
 		                FROM    p_CstAttach
 		                WHERE   CstGUID = #{CstGUID}
-		                        AND ProjGUID = #{ProjGUID})
-		    BEGIN
-		        INSERT  INTO p_CstAttach
-		                ( BUGUID ,
-		                  CstGUID ,
-		                  ProjGUID ,
-		                  UserGUID ,
-		                  CstAttachGUID ,
-		                  CreatedOn ,
-		                  _DataSource
-		                )
-		        VALUES  ( #{BUGUID},
-		                  #{CstGUID},
-		                  #{ProjGUID},
-		                  CASE WHEN #{UserGUID} = '99' THEN NULL
-		                       WHEN #{UserGUID} = '' THEN NULL
-		                       ELSE #{UserGUID}
-		                  END ,
-		                  NEWID() ,
-		                  CONVERT(DATETIME, #{CreatedOn}, 121) ,
-		                  'YDYX'
-		                )
-		    END
-		     ]]>
+		                        AND ProjGUID = #{ProjGUID}
+	</select>
+	
+	<insert id="MYOpportunityDetail_Insert_insert_1" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO p_CstAttach
+	                ( BUGUID ,
+	                  CstGUID ,
+	                  ProjGUID ,
+	                  UserGUID ,
+	                  CstAttachGUID ,
+	                  CreatedOn ,
+	                  _DataSource
+	                )
+	        VALUES  ( #{BUGUID},
+	                  #{CstGUID},
+	                  #{ProjGUID},
+	                  CASE WHEN #{UserGUID} = '99' THEN NULL
+	                       WHEN #{UserGUID} = '' THEN NULL
+	                       ELSE #{UserGUID}
+	                  END ,
+	                  NEWID() ,
+	                  CONVERT(DATETIME, #{CreatedOn}, 121) ,
+	                  'YDYX'
+	                )
+		]]>
 	</insert>
+	
 	
 	<delete id="MyOpportunityCustomerDetail_Delete" >
 		<![CDATA[
