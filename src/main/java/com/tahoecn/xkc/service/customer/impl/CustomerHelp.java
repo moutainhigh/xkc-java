@@ -27,11 +27,11 @@ import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CGWDetailModel.Item;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
+import com.tahoecn.xkc.model.vo.ChildItem;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
-import com.tahoecn.xkc.model.vo.CustomerModelVo.ChildItem;
-import com.tahoecn.xkc.model.vo.CustomerModelVo.OptionItem;
-import com.tahoecn.xkc.model.vo.CustomerModelVo.PanelItem;
 import com.tahoecn.xkc.model.vo.DicInfo;
+import com.tahoecn.xkc.model.vo.OptionItem;
+import com.tahoecn.xkc.model.vo.PanelItem;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IMYService;
 import com.tahoecn.xkc.service.customer.IProjectService;
@@ -412,8 +412,7 @@ public class CustomerHelp implements ICustomerHelp {
 							} else {
 								switch (customerModeType) {
 								case "82":
-									if (!model.getIsCustomerFirstEdit().equals(
-											"0")) {// 非首次访问
+									if (!"0".equals(model.getIsCustomerFirstEdit())) {// 非首次访问
 										if (!childItem.getID().equals("480B60B2-1EE1-4A31-A810-072184A1E9D7") && !childItem.getID().equals("08289FD5-999A-4A9F-94D5-B85507575404") && !childItem.getID().equals("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB") && !childItem.getID().equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
 											if (childItem.getIsMustShow() == 0) {// 非必有
 												if (!StringUtils.isEmpty(childItem.getValueID()) && !StringUtils.isEmpty(childItem.getValue())) {// 隐藏已填写选项
@@ -874,7 +873,14 @@ public class CustomerHelp implements ICustomerHelp {
 	public Boolean ClueCustomerInsert(JSONObject param){
         try{
         	Map<String,Object> pmap = JSONObject.parseObject(param.toJSONString(),Map.class);
-        	vCustomergwlistSelectMapper.sClueCustomer_Insert_step1(pmap);
+        	List<Map<String,Object>> valid_1_map = vCustomergwlistSelectMapper.sClueCustomer_Insert_step1_valid_1(pmap);
+        	if(valid_1_map==null || valid_1_map.size()==0){
+        		vCustomergwlistSelectMapper.sClueCustomer_Insert_step1_insert_1(pmap);
+        	}
+        	List<Map<String,Object>> valid_2_map = vCustomergwlistSelectMapper.sClueCustomer_Insert_step1_valid_2(pmap);
+        	if(valid_2_map==null || valid_2_map.size()==0){
+        		vCustomergwlistSelectMapper.sClueCustomer_Insert_step1_insert_2(pmap);
+        	}
         	vCustomergwlistSelectMapper.sClueCustomer_Insert_step2(pmap);
         	vCustomergwlistSelectMapper.sClueCustomer_Insert_step3(pmap);
             return true;

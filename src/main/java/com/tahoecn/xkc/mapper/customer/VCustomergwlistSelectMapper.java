@@ -373,7 +373,9 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 */
 	void mOldCustomerGWDetail_Insert_step1(Map<String,Object> map);
 	void mOldCustomerGWDetail_Insert_step2(Map<String,Object> map);
-	void mOldCustomerGWDetail_Insert_step3(Map<String,Object> map);
+	List<Map<String,Object>> mOldCustomerGWDetail_Insert_step3_vaild(Map<String,Object> map);
+	void mOldCustomerGWDetail_Insert_step3_insert(Map<String,Object> map);
+	void mOldCustomerGWDetail_Insert_step3_update(Map<String,Object> map);
 	void mOldCustomerGWDetail_Insert_step4(Map<String,Object> map);
 	void mOldCustomerGWDetail_Insert_step5(Map<String,Object> map);
 	void mOldCustomerGWDetail_Insert_step6(Map<String,Object> map);
@@ -393,7 +395,10 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * 新增线索客户信息
 	 * @param map
 	 */
-	void sClueCustomer_Insert_step1(Map<String,Object> map);
+	List<Map<String,Object>> sClueCustomer_Insert_step1_valid_1(Map<String,Object> map);
+	void sClueCustomer_Insert_step1_insert_1(Map<String,Object> map);
+	List<Map<String,Object>> sClueCustomer_Insert_step1_valid_2(Map<String,Object> map);
+	void sClueCustomer_Insert_step1_insert_2(Map<String,Object> map);
 	void sClueCustomer_Insert_step2(Map<String,Object> map);
 	void sClueCustomer_Insert_step3(Map<String,Object> map);
 	
@@ -470,7 +475,9 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param map
 	 */
 	void mCustomerGWDetail_Update_step1(Map<String,Object> map);
-	void mCustomerGWDetail_Update_step2(Map<String,Object> map);
+	List<Map<String,Object>> mCustomerGWDetail_Update_step2_valid(Map<String,Object> map);
+	void mCustomerGWDetail_Update_step2_insert(Map<String,Object> map);
+	void mCustomerGWDetail_Update_step2_update(Map<String,Object> map);
 	void mCustomerGWDetail_Update_step3(Map<String,Object> map);
 	void mCustomerGWDetail_Update_step4(Map<String,Object> map);
 	void mCustomerGWDetail_Update_step5(Map<String,Object> map);
@@ -487,7 +494,11 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param map
 	 */
 	void mCustomerSubscribeDetail_Insert_step1(Map<String,Object> map);
-	void mCustomerSubscribeDetail_Insert_step2(Map<String,Object> map);
+	
+	List<Map<String,Object>> mCustomerSubscribeDetail_Insert_step2_valid(Map<String,Object> map);
+	void mCustomerSubscribeDetail_Insert_step2_insert(Map<String,Object> map);
+	void mCustomerSubscribeDetail_Insert_step2_update(Map<String,Object> map);
+	
 	void mCustomerSubscribeDetail_Insert_step3(Map<String,Object> map);
 	void mCustomerSubscribeDetail_Insert_step4(Map<String,Object> map);
 	void mCustomerSubscribeDetail_Insert_step5(Map<String,Object> map);
@@ -544,14 +555,29 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param map
 	 */
 	@DS("slave_my")
-	void MYUserDetail_Insert(Map<String,Object> map);
+	List<Map<String,Object>> MYUserDetail_Insert_valid_1(Map<String,Object> map);
+	@DS("slave_my")
+	List<Map<String,Object>> MYUserDetail_Insert_valid_2(Map<String,Object> map);
+	@DS("slave_my")
+	void MYUserDetail_Insert_step1(Map<String,Object> map);
+	@DS("slave_my")
+	void MYUserDetail_Insert_step2(Map<String,Object> map);
 	
 	/**
 	 * 添加明源客户信息
 	 * @param map
 	 */
 	@DS("slave_my")
-	void MYCustomerDetail_Insert(Map<String,Object> map);
+	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_1(Map<String,Object> map);
+	@DS("slave_my")
+	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_2(Map<String,Object> map);
+	@DS("slave_my")
+	void MYCustomerDetail_Insert_insert_1(Map<String,Object> map);
+	@DS("slave_my")
+	void MYCustomerDetail_Insert_insert_2(Map<String,Object> map);
+	@DS("slave_my")
+	void MYCustomerDetail_Insert_update(Map<String,Object> map);
+	
 	
 	/**
 	 * 查询本地机会信息
@@ -568,7 +594,19 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	List<Map<String,Object>> LocalOpportunityCustomerList_Select(@Param("opportunityID")String opportunityID);
 	
 	@DS("slave_my")
-	void MYOpportunityDetail_Insert(Map<String,Object> map);
+	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_1(Map<String,Object> map);
+	@DS("slave_my")
+	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_2(Map<String,Object> map);
+	@DS("slave_my")
+	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_3(Map<String,Object> map);
+	@DS("slave_my")
+	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_4(Map<String,Object> map);
+	@DS("slave_my")
+	void MYOpportunityDetail_Insert_insert_1(Map<String,Object> map);
+	@DS("slave_my")
+	void MYOpportunityDetail_Insert_insert_2(Map<String,Object> map);
+	@DS("slave_my")
+	void MYOpportunityDetail_Insert_update(Map<String,Object> map);
 	
 	@DS("slave_my")
 	void MyOpportunityCustomerDetail_Delete(Map<String,Object> map);

@@ -3,6 +3,8 @@ package com.tahoecn.xkc.model.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class OptionItem implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -40,6 +42,8 @@ public class OptionItem implements Serializable {
     	this.Name = Name; 
     	this.IsChoose = IsChoose;
     }
+    
+    @JsonProperty("ID")
 	public String getID() {
 		return ID;
 	}
@@ -48,6 +52,7 @@ public class OptionItem implements Serializable {
 		ID = iD;
 	}
 
+	@JsonProperty("Name")
 	public String getName() {
 		return Name;
 	}
@@ -56,6 +61,7 @@ public class OptionItem implements Serializable {
 		Name = name;
 	}
 
+	@JsonProperty("IsChoose")
 	public int getIsChoose() {
 		return IsChoose;
 	}
@@ -64,6 +70,7 @@ public class OptionItem implements Serializable {
 		IsChoose = isChoose;
 	}
 
+	@JsonProperty("IsSubMust")
 	public int getIsSubMust() {
 		return IsSubMust;
 	}
@@ -72,6 +79,7 @@ public class OptionItem implements Serializable {
 		IsSubMust = isSubMust;
 	}
 
+	@JsonProperty("SelectedColor")
 	public String getSelectedColor() {
 		return SelectedColor;
 	}
@@ -80,6 +88,7 @@ public class OptionItem implements Serializable {
 		SelectedColor = selectedColor;
 	}
 
+	@JsonProperty("UnSelectedColor")
 	public String getUnSelectedColor() {
 		return UnSelectedColor;
 	}
@@ -88,6 +97,7 @@ public class OptionItem implements Serializable {
 		UnSelectedColor = unSelectedColor;
 	}
 
+	@JsonProperty("Child")
 	public List<OptionItem> getChild() {
 		return Child;
 	}

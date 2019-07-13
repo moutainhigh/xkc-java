@@ -248,4 +248,121 @@ public class AppCustomerController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+	@ApiOperation(value = "新-自渠客户列表", notes = "新-自渠客户列表")
+	@RequestMapping(value = "/mCustomerZYQDList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerZYQDList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerZYQDList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "新-丢失客户列表", notes = "新-丢失客户列表")
+	@RequestMapping(value = "/mCustomerDSList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerDSList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerDSList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "新-正常跟进列表", notes = "新-正常跟进列表")
+	@RequestMapping(value = "/mCustomerGJList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerGJList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerGJList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "新-撞单客户列表", notes = "新-撞单客户列表")
+	@RequestMapping(value = "/mCustomerZDList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerZDList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerZDList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "新-公共客户列表", notes = "新-公共客户列表")
+	@RequestMapping(value = "/mCustomerGGList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerGGList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerGGList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "逾期客户未交款列表", notes = "逾期客户未交款列表")
+	@RequestMapping(value = "/mCustomerYQWJKList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYQWJKList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWJKList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "逾期客户未签约列表", notes = "逾期客户未签约列表")
+	@RequestMapping(value = "/mCustomerYQWQYList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYQWQYList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWQYList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "逾期客户未认购列表", notes = "逾期客户未认购列表")
+	@RequestMapping(value = "/mCustomerYQWRGList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYQWRGList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWRGList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "逾期客户未跟进列表", notes = "逾期客户未跟进列表")
+	@RequestMapping(value = "/mCustomerYQWGJList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYQWGJList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWGJList_Select(paramMap);
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

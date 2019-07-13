@@ -710,7 +710,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 		Result entity = new Result();
         try{
             CSearchModelVo model = JSONObject.parseObject(paramAry.toJSONString(), CSearchModelVo.class);
-            CustomerModelVo customerModel = new CustomerModelVo();
+            CustomerModelVo customerModel=null;
             String opportunityID = model.getOpportunityID();
             JSONObject CustomerObj = customerTemplate.OpportunityInfo(opportunityID);
             if (!CustomerObj.isEmpty()){
@@ -722,6 +722,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             	entity.setErrmsg("不存在客户信息！");
                 entity.setErrcode(11);
             }
+            
         }catch (Exception e){
             entity.setErrmsg("获取数据异常！");
             entity.setErrcode(110);
@@ -740,7 +741,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	String opportunityID = paramAry.getString("OpportunityID");
         	String userID = paramAry.getString("UserID");
         	Map<String,Object> obj = vCustomergwlistSelectMapper.CustomerAttachDetail_Select(customerID, projectID, intentProjectID, opportunityID);
-            if (obj.size() == 0){
+            if (obj!=null && obj.size() == 0){
             	vCustomergwlistSelectMapper.CustomerAttachDetail_Insert(customerID, projectID, intentProjectID, opportunityID, userID);
                 //同步明源客户数据
             	customerTemplate.SyncCustomer(opportunityID, 0);
@@ -763,7 +764,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             CustomerModelVo customerModel = new CustomerModelVo();
             String opportunityID = model.getOpportunityID();
             JSONObject CustomerObj = customerTemplate.OpportunityInfo(opportunityID);
-            if (CustomerObj.size() > 0){
+            if (CustomerObj!=null && CustomerObj.size() > 0){
                 String customerModeType = CustomerModeType.顾问_客户_详情.getTypeID();
                 customerModel = customerTemplate.InitCustomerModeData(model, "GWDetailCustomer.json", CustomerObj,customerModeType);
                 entity.setData(customerModel);
@@ -787,7 +788,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 		try {
 	        String opportunityID = paramAry.getString("OpportunityID");
 	        Map<String,Object> obj = vCustomergwlistSelectMapper.sOpportunityGiveUpDetail_Exists(opportunityID);
-	        if (obj.size() == 0){
+	        if (obj!=null && obj.size() == 0){
 	            String LostID =UUID.randomUUID().toString();
 				Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
 	            pmap.put("LostID", LostID);
@@ -805,7 +806,11 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                     iSystemMessageService.Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.客户丢失通知.getTypeID(), true);
                 }
 	        }
+	        entity.setErrcode(0);
+	        entity.setErrmsg("成功");
 		} catch (Exception e) {
+			entity.setErrcode(1);
+		    entity.setErrmsg("系统异常");
 			e.printStackTrace();
 		}
         return entity;
@@ -818,7 +823,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	String opportunityID = paramAry.getString("OpportunityID");
         	Map<String,Object> result = vCustomergwlistSelectMapper.sOpportunityGiveUpDetail_Exists(opportunityID);
         	JSONObject obj = new JSONObject();
-            if (result.size() > 0){//有申请
+            if (result!=null && result.size() > 0){//有申请
                 String approvalStatus = String.valueOf(result.get("ApprovalStatus"));
                 if (approvalStatus == "0"){//申请中
                     obj.put("Status", "1");
@@ -827,6 +832,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                     obj.put("Status", "2");
                 }
                 obj.put("Reason",String.valueOf(result.get("Reason")));
+                obj.put("Status", "");
             }else{//没有申请
                 obj.put("Status", "0");
                 obj.put("Reason", "");
@@ -848,7 +854,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         try{
         	String signID = paramAry.getString("SignID");
         	Map<String,Object> result = vCustomergwlistSelectMapper.sSignInfoDetail_Select(signID);
-            if (result.size() > 0){
+            if (result!=null && result.size() > 0){
             	List<Map<String,Object>> childResult = vCustomergwlistSelectMapper.sPaymentNodeList_Select(signID);
                 if (childResult.size() > 0){
                     result.put("MoneyList", childResult);
@@ -1063,7 +1069,13 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                             }else if(sqlKey.equals("mOldCustomerGWDetail_Insert")){//顾问新增已有客户机会信息
                             	vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step1(parameterMap);
                             	vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step2(parameterMap);
-                            	vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step3(parameterMap);
+                            	
+                            	List<Map<String,Object>> step3_map = vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step3_vaild(parameterMap);
+                            	if(step3_map!=null && step3_map.size()>0){
+                            		vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step3_update(parameterMap);
+                            	}else{
+                            		vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step3_insert(parameterMap);
+                            	}
                             	vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step4(parameterMap);
                             	vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step5(parameterMap);
                             	vCustomergwlistSelectMapper.mOldCustomerGWDetail_Insert_step6(parameterMap);
@@ -1262,7 +1274,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 
                 //若是公共客户，并更新渠道
                 Map<String,Object> objCus = vCustomergwlistSelectMapper.mCustomerGGUpdateChannelSource_Select(paramAry.getString("Mobile"), paramAry.getString("ProjectID"));
-                if (objCus.size() > 0){
+                if (objCus!=null && objCus.size() > 0){
                 	entity.setErrcode(20);
                 	entity.setErrmsg("该客户已更新渠道，需案场销支完成分配");
                     return entity;
@@ -1330,11 +1342,16 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 }
                 JSONObject opportunityObj = OpportunityCustomer(model.getOpportunityID());
                 JSONObject parameter = customerTemplate.GetParameters(model, opportunityObj);
-                if (parameter.size() > 0){
+                if (parameter!=null && parameter.size() > 0){
                 	Map<String,Object> pmap = JSONObject.parseObject(parameter.toJSONString(), Map.class);
                 	pmap.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
                 	vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step1(pmap);
-                	vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step2(pmap);
+                	List<Map<String,Object>> step2_map = vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step2_valid(pmap);
+                	if(step2_map!=null && step2_map.size()>0){
+                		vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step2_update(pmap);
+                	}else{
+                		vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step2_insert(pmap);
+                	}
                 	vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step3(pmap);
                 	vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step4(pmap);
                 	vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step5(pmap);
@@ -1530,7 +1547,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             if (!StringUtils.isEmpty(model.getOpportunityID())){
                 //如果开启2级以上客储允许提交认购，验证客储等级
             	Map<String, Object> objRank = vCustomergwlistSelectMapper.mCustomerTwoRankAllowSubscribe_Select(model.getOpportunityID());
-                if (objRank.size() > 0){
+                if (objRank!=null && objRank.size() > 0){
                     entity.setErrcode(1);
                     entity.setErrmsg("请到ipad端扫码确认到访！");
                     return entity;
@@ -1578,7 +1595,12 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                     	CustomerObj = re.getJSONObject("CustomerObj");
                         Map<String,Object> pmap = JSONObject.parseObject(parameter.toJSONString(),Map.class);
                         vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step1(pmap);
-                        vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step2(pmap);
+                        List<Map<String,Object>> step2_map = vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step2_valid(pmap);
+                        if(step2_map!=null && step2_map.size()>0){
+                        	vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step2_update(pmap);
+                        }else{
+                        	vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step2_insert(pmap);
+                        }
                         vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step3(pmap);
                         vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step4(pmap);
                         vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step5(pmap);
@@ -1678,7 +1700,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             paramAry.put("WHERE", where);
             Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
             List<Map<String, Object>> result = vCustomergwlistSelectMapper.sCustomerRelPeople_Select(pmap);
-            if (result.size() <= 0){
+            if (result!=null && result.size() <= 0){
                 result = new ArrayList<Map<String,Object>>();
             }
             entity.setData(result);
