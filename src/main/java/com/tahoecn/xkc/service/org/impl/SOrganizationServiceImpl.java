@@ -68,4 +68,9 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
         }
         return true;
     }
+
+    @Override
+    public List<Map<String, Object>> SystemOrganizationChec_Select(String pid) {
+        return baseMapper.SystemOrganizationChec_Select(pid);
+    }
 }

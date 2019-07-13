@@ -22,4 +22,7 @@ public interface SOrganizationMapper extends BaseMapper<SOrganization> {
     IPage<Map<String,Object>> SystemOrganization_Select(IPage page,@Param("authCompanyID") String authCompanyID, @Param("orgID")String orgID,
                                                         @Param("productID")String productID, @Param("pid")String pid,
                                                         @Param("status")String status);
+
+    List<Map<String, Object>> SystemOrganizationChec_Select(@Param("pid")String pid);
+
 }

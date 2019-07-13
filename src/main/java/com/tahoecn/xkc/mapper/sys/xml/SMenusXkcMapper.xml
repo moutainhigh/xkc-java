@@ -87,9 +87,110 @@
         m.ListIndex ,
         '/' + m.FullPath
         FROM
-        dbo.S_Menus m
+        dbo.S_Menus_xkc  m
         WHERE
         m.IsDel = 0
         AND m.[Status] = 1;
+
+    </select>
+
+    <select id="getElseResult" resultType="java.util.HashMap" parameterType="string">
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_CommonJobs cj
+        INNER JOIN dbo.S_CommonJobsMenuRel cjmr ON cj.ID = cjmr.JobID
+        INNER JOIN dbo.S_Menus_xkc  m ON cjmr.MenuID = m.ID
+        WHERE
+        cj.IsDel = 0
+        AND cj.[Status] = 1
+        AND m.IsDel = 0
+        AND m.[Status] = 1
+        AND cj.ID =#{CommonJobID};
+
+    </select>
+    <select id="getOtherResult" parameterType="string" resultType="java.util.HashMap">
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_JobsMenuRel jmr
+        INNER JOIN dbo.S_Menus_xkc  m ON jmr.MenuID = m.ID
+        WHERE
+        m.IsDel = 0
+        AND m.[Status] = 1
+        AND jmr.JobID=#{JobID}
+        AND jmr.MenuID IS NOT IN(${ID});
+
+    </select>
+    <select id="UserFunctions" resultType="java.util.HashMap" parameterType="string">
+        SELECT DISTINCT
+        f.*
+        FROM
+        S_JobsUserRel jur
+        INNER JOIN S_Jobs j ON jur.JobID = j.ID
+        INNER JOIN S_Organization o ON j.JobOrgID = o.ID
+        INNER JOIN (
+        SELECT
+        JobID,
+        FuncID
+        FROM
+        S_JobsFunctionsRel UNION
+        SELECT
+        j.ID,
+        cjfr.FuncID
+        FROM
+        S_CommonJobsFunctionsRel cjfr
+        INNER JOIN S_Jobs j ON cjfr.JobID = j.CommonJobID
+        ) temp ON j.ID = temp.JobID
+        INNER JOIN dbo.S_Functions f ON temp.FuncID = f.ID
+        WHERE
+        j.IsDel = 0
+        AND j.[Status] = 1
+        AND o.IsDel = 0
+        AND o.[Status] = 1
+        AND f.IsDel = 0
+        AND f.[Status] = 1
+        AND jur.AccountID = #{UserID}
+        AND j.AuthCompanyID = #{AuthCompanyID}
+        AND j.ProductID = #{ProductID}
+    </select>
+
+    <select id="CommonJobFunctions" parameterType="string" resultType="java.util.HashMap">
+        <![CDATA[
+       SELECT DISTINCT
+			cjfr.FuncID IDS
+		FROM
+			dbo.S_CommonJobsFunctionsRel cjfr
+			INNER JOIN dbo.S_Functions f ON cjfr.FuncID = f.ID
+		WHERE
+			f.[Status] = 1
+			AND f.IsDel = 0
+			AND cjfr.JobID = #{JobID}
+      ]]>
+    </select>
+    <select id="getCommonJobFunctions" parameterType="string" resultType="java.util.HashMap">
+        SELECT DISTINCT
+        cjmr.MenuID  IDS
+        FROM
+        dbo.S_CommonJobsMenuRel cjmr
+        INNER JOIN dbo.S_Menus_xkc  m ON cjmr.MenuID = m.ID
+        WHERE
+        m.[Status] = 1
+        AND m.IsDel = 0
+        AND cjmr.JobID = #{JobID}
     </select>
 </mapper>

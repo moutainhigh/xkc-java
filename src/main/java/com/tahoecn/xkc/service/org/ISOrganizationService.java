@@ -20,4 +20,6 @@ public interface ISOrganizationService extends IService<SOrganization> {
     IPage<Map<String,Object>> SystemOrganization_Select(IPage page,String authCompanyID, String orgID, String productID, String pid, String status);
 
     boolean SystemOrganizationDetail_Updatez(SOrganization organization);
+
+    List<Map<String, Object>> SystemOrganizationChec_Select(String pid);
 }

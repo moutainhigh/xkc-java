@@ -48,4 +48,39 @@
         ) t
         ORDER BY Levels ASC,ListIndex ASC
     </select>
+
+
+    <select id="SystemOrganizationChec_Select" parameterType="string" resultType="java.util.HashMap">
+        select
+        f.OrgName,
+        f.ID,
+        '0' ptype,
+        f.[OrgCode] ,
+        f.[OrgShortName] ,
+        f.[OrgCategory] ,
+        f.[ListIndex] ,
+        f.[FullPath] ,
+        isnull(f.[Levels],0) as [Levels] ,
+        f.pid,
+        f.[Status]
+        From S_Organization f
+        WHERE f.PID=#{pid}
+        union all
+        select
+        f.Name as OrgName,
+        f.id as ID,
+        '1' as ptype,
+        '' as [OrgCode] ,
+        '' as [OrgShortName] ,
+        '' as [OrgCategory] ,
+        '' as [ListIndex] ,
+        '' as [FullPath] ,
+        10 as [Levels] ,
+        f.BUGUID as pid,
+        ''as  [Status]
+        From B_Project f
+        where   f.Level=1
+        AND f.PID=#{pid}
+        ORDER BY Levels ASC,ListIndex ASC
+    </select>
 </mapper>

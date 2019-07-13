@@ -45,6 +45,14 @@ public class SOrganizationController extends TahoeBaseController {
         return Result.ok(list);
     }
 
+    @ApiOperation(value = "获取组织列表(全部)", notes = "获取组织列表(全部)")
+    @RequestMapping(value = "/SystemOrganizationChec_Select", method = {RequestMethod.POST})
+    public Result SystemOrganizationChec_Select(String pid){
+       List<Map<String,Object>> list=organizationService.SystemOrganizationChec_Select(pid);
+          return Result.ok(list);
+    }
+
+
     @ApiOperation(value = "新增组织", notes = "新增组织")
     @RequestMapping(value = "/SystemOrganizationDetail_Insert", method = {RequestMethod.POST})
     public Result SystemOrganizationDetail_Insert(SOrganization organization) {

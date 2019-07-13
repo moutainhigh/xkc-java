@@ -19,10 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -141,12 +138,30 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
 
     @Override
     public List<HashMap<String, Object>> insertJob(String userID, String authCompanyID, String productID) {
-        List<HashMap<String, Object>> list = baseMapper.insertJob(userID, authCompanyID, productID);
-        for (HashMap<String, Object> map : list) {
-            if (StringUtils.equals((String)map.get("CommonJobID"),"8B95D9B6-1F85-7565-A0B9-F1E07AE73C12")){
-                List<HashMap<String, Object>> result=menusXkcService.getResult();
+        HashMap<String, Object> job = baseMapper.insertJob(userID, authCompanyID, productID);
+           List<HashMap<String, Object>> result;
+            if (StringUtils.equals((String)job.get("CommonJobID"),"8B95D9B6-1F85-7565-A0B9-F1E07AE73C12")){
+                 result=menusXkcService.getResult();
+            }else {
+                String commonJobID = (String) job.get("CommonJobID");
+                 result=menusXkcService.getElseResult(commonJobID);
+                StringBuilder sb=new StringBuilder();
+                for (HashMap<String, Object> map : result) {
+                    sb.append("'");
+                    sb.append((String) map.get("ID"));
+                    sb.append("'");
+                    sb.append(",");
+                }
+                sb.substring(0,sb.length()-2);
+                String jobID = (String) job.get("JobID");
+                String ID=sb.toString();
+                System.out.println("ID = " + ID);
+                List<HashMap<String, Object>> otherResult =menusXkcService.getOtherResult(jobID,ID);
+                for (HashMap<String, Object> map : otherResult) {
+                    result.add(map);
+                }
             }
-        }
-        return null;
+
+        return result;
     }
 }

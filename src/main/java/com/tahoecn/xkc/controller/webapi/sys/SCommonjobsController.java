@@ -48,21 +48,18 @@ public class SCommonjobsController extends TahoeBaseController {
     private ISMenusService menusService;
 	
 //已测
-    @ApiOperation(value = "获取通用岗位列表(查询)", notes = "分页获取获取通用岗位列表（查询）")
-    @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
-            @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
-    @RequestMapping(value = "/SystemCommonJobsList_Select", method = {RequestMethod.POST})
-    public Result SystemCommonJobsList_Select(String AuthCompanyID,String ProductID,String JobName,int Pageindex,int Pagesize){
-        IPage page = new Page(Pageindex, Pagesize);
-    	List list = ISCommonjobsService.SystemCommonJobsList_Select(page,AuthCompanyID,ProductID,JobName);
-    	return Result.ok(list);
-    }
+//    @ApiOperation(value = "获取通用岗位列表(查询)", notes = "分页获取获取通用岗位列表（查询）")
+//    @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
+//            @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
+//    @RequestMapping(value = "/SystemCommonJobsList_Select", method = {RequestMethod.POST})
+//    public Result SystemCommonJobsList_Select(String AuthCompanyID,String ProductID,String JobName,int Pageindex,int Pagesize){
+//        IPage page = new Page(Pageindex, Pagesize);
+//    	List list = ISCommonjobsService.SystemCommonJobsList_Select(page,AuthCompanyID,ProductID,JobName);
+//    	return Result.ok(list);
+//    }
     
     @ApiOperation(value = "获取通用岗位列表", notes = "分页获取获取通用岗位列表")
-    @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
-            @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
     @RequestMapping(value = "/SystemCommonJobsList_SelectList", method = {RequestMethod.POST})
-    
     public Result SystemCommonJobsList_SelectList(){
     	List<SCommonjobs> list = ISCommonjobsService.SystemCommonJobsList_SelectList();
     	return Result.ok(list);
@@ -82,10 +79,9 @@ public class SCommonjobsController extends TahoeBaseController {
     	})
     @RequestMapping(value = "/SystemCommonJobStatus_Update", method = {RequestMethod.POST})
     public Result SystemCommonJobStatus_Update(@RequestBody SCommonjobs commonjobs){
-
-        //未判断不成功情况
+        commonjobs.setEditor(ThreadLocalUtils.getUserName());
+        commonjobs.setEditTime(new Date());
     	ISCommonjobsService.updateById(commonjobs);
-
     	return Result.ok("启用/禁用成功");
     }
     
@@ -95,6 +91,8 @@ public class SCommonjobsController extends TahoeBaseController {
     @RequestMapping(value = "/SystemCommonJob_Delete", method = {RequestMethod.POST})
     public Result SystemCommonJob_Delete(@RequestBody SCommonjobs commonjobs){
         commonjobs.setIsDel(1);
+        commonjobs.setEditor(ThreadLocalUtils.getUserName());
+        commonjobs.setEditTime(new Date());
     	ISCommonjobsService.updateById(commonjobs);
     	return Result.okm("成功");
     }
@@ -155,8 +153,11 @@ public class SCommonjobsController extends TahoeBaseController {
     public Result SystemCommonJobAuth_Select(String UserID,String AuthCompanyID,String ProductID,
                                              String JobID){
 
-        List<Map<String,Object>> list=menusService.SystemCommonJobAuth_Select(UserID,AuthCompanyID,ProductID,JobID);
-        return Result.errormsg(99,"授权失败");
+        Map<String, Object>  list=menusService.SystemCommonJobAuth_Select(UserID,AuthCompanyID,ProductID,JobID);
+        if (list!=null){
+            return Result.ok(list);
+        }
+        return Result.errormsg(99,"列表查询失败");
     }
 
 }

@@ -28,5 +28,5 @@ public interface ISMenusService extends IService<SMenus> {
 
     boolean SystemMenu_Update(SMenus menus);
 
-    List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID);
+    Map<String, Object>  SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID);
 }

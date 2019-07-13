@@ -744,12 +744,26 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
     }
 
     @Override
-    public List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID) {
+    public Map<String, Object> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID) {
+        Map result= null;
 
+        try {
 //        登录人有权限的菜单
-        List<Map<String,Object>> list=menusXkcService.UserMenus(userID,authCompanyID,productID);
-
-
-        return null;
+            List<HashMap<String,Object>> userMenus=menusXkcService.UserMenus(userID,authCompanyID,productID);
+//        登录人有权限的功能
+            List<Map<String,Object>>  userFunctions= menusXkcService.UserFunctions(userID,authCompanyID,productID);
+//        该岗位已有的菜单和功能
+            Map<String,Object> ids=menusXkcService.CommonJobFunctions(jobID);
+            System.out.println("ids = " + ids.size());
+            result = new HashMap();
+            result.put("UserMenus",userMenus);
+            result.put("UserFunctions",userFunctions);
+            if (!ids.isEmpty()){
+                result.put("CommonJobFunctions",ids);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

@@ -1,7 +1,6 @@
 package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
@@ -24,6 +23,7 @@ import com.tahoecn.xkc.service.sys.ISMenusXkcService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
@@ -678,6 +678,7 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean SystemMenu_Update(SMenus menu) {
         try {
             String ID = menu.getID();
@@ -686,13 +687,13 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             String Url = menu.getUrl();
             String ImageUrl = menu.getImageUrl();
             String IconClass = menu.getIconClass();
-            int IsHomePage = menu.getIsHomePage();
-            int IsShow = menu.getIsShow();
-            int Levels = menu.getLevels();
-            int ListIndex = menu.getListIndex();
-            int IsLast = menu.getIsLast();
+            Integer IsHomePage = menu.getIsHomePage();
+            Integer IsShow = menu.getIsShow();
+            Integer Levels = menu.getLevels();
+            Integer ListIndex = menu.getListIndex();
+            Integer IsLast = menu.getIsLast();
             String Editor = ThreadLocalUtils.getUserName();
-            int Status = menu.getStatus();
+            Integer Status = menu.getStatus();
             String OldPath=baseMapper.getOldPath(ID);
             String NewPath=baseMapper.getNewPath(ID);
             NewPath=NewPath+"/"+MenuSysName;
@@ -752,17 +753,42 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     }
 
     @Override
-    public List<Map<String, Object>> UserMenus(String userID, String authCompanyID, String productID) {
-        List<HashMap<String, Object>> b=accountService.insertJob(userID,authCompanyID,productID);
+    public List<HashMap<String, Object>> UserMenus(String userID, String authCompanyID, String productID) {
+        List<HashMap<String, Object>> list=accountService.insertJob(userID,authCompanyID,productID);
 
-
-        return null;
+        return list;
     }
 
     @Override
     public List<HashMap<String, Object>> getResult() {
-
-
         return baseMapper.getResult();
+    }
+
+    @Override
+    public List<Map<String, Object>> UserFunctions(String userID, String authCompanyID, String productID) {
+        return baseMapper.UserFunctions(userID,authCompanyID, productID);
+    }
+
+    @Override
+    public Map<String, Object> CommonJobFunctions(String jobID) {
+        List<Map<String, Object>> list=baseMapper.getCommonJobFunctions(jobID);
+        List<Map<String, Object>> list1=baseMapper.CommonJobFunctions(jobID);
+        Map<String, Object> objectMap=new HashMap<>();
+        for (Map<String, Object> map : list) {
+            objectMap.put("IDS",map.get("IDS"));
+        }
+        for (Map<String, Object> map : list1) {
+            objectMap.put("IDS",map.get("IDS"));
+        }
+
+        return objectMap;
+    }
+
+    public List<HashMap<String, Object>> getElseResult(String commonJobID) {
+        return baseMapper.getElseResult(commonJobID);
+    }
+
+    public List<HashMap<String, Object>> getOtherResult(String jobID, String id) {
+        return baseMapper.getOtherResult(jobID,id);
     }
 }

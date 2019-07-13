@@ -27,8 +27,8 @@
               [JobDesc] ,
               [Status]
       FROM    [S_CommonJobs]
-
-      ORDER BY JobName 
+        WHERE  IsDel = 0
+        ORDER BY JobName
   </select>
   
   	<select  id="SystemCommonJobNameIsExists_Select" parameterType="java.util.HashMap" resultType="String">
