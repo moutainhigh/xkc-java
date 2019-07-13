@@ -9,6 +9,7 @@ import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -36,6 +37,9 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
 
     @Autowired
     private SAccountMapper sAccountMapper;
+
+    @Autowired
+    private SMenusXkcServiceImpl menusXkcService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -133,5 +137,16 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     @Override
     public IPage<Map<String,Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String orgID, String key) {
         return baseMapper.SystemUserListByOrgID_Select(page,authCompanyID,orgID,key);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> insertJob(String userID, String authCompanyID, String productID) {
+        List<HashMap<String, Object>> list = baseMapper.insertJob(userID, authCompanyID, productID);
+        for (HashMap<String, Object> map : list) {
+            if (StringUtils.equals((String)map.get("CommonJobID"),"8B95D9B6-1F85-7565-A0B9-F1E07AE73C12")){
+                List<HashMap<String, Object>> result=menusXkcService.getResult();
+            }
+        }
+        return null;
     }
 }

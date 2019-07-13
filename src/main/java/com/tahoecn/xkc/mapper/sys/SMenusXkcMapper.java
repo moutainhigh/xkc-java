@@ -6,6 +6,7 @@ import com.tahoecn.xkc.model.sys.SMenus;
 import com.tahoecn.xkc.model.sys.SMenusXkc;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,4 +26,6 @@ public interface SMenusXkcMapper extends BaseMapper<SMenusXkc> {
     String getOldPath(@Param("ID") String id);
 
     String getNewPath(@Param("ID")String id);
+
+    List<HashMap<String, Object>> getResult();
 }

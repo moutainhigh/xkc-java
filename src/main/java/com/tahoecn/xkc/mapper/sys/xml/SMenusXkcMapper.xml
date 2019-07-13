@@ -48,7 +48,7 @@
         VALUES
         (
         #{ID},
-        #{PID},
+        #{pid},
         #{MenuName},
         #{MenuSysName},
         #{Url},
@@ -58,7 +58,7 @@
         #{IsShow},
         #{Levels},
         #{ListIndex},
-        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{PID} ) + '/', '' ) + #{MenuSysName},
+        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{pid} ) + '/', '' ) + #{MenuSysName},
         #{IsLast},
         #{Creator},
         GETDATE(),
@@ -74,5 +74,22 @@
     </select>
     <select id="getNewPath" parameterType="string" resultType="string">
         SELECT FullPath FROM S_Menus_xkc WHERE ID = ( SELECT PID FROM S_Menus_xkc WHERE ID = #{ID} )
+    </select>
+
+    <select id="getResult" resultType="java.util.HashMap">
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_Menus m
+        WHERE
+        m.IsDel = 0
+        AND m.[Status] = 1;
     </select>
 </mapper>
