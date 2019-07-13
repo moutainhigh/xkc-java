@@ -413,7 +413,7 @@ public class ProjectAppController extends TahoeBaseController {
     	try{
     		@SuppressWarnings("unchecked")
 			Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
-            return Result.ok(iBRoomService.RoomDetailYXJL_Select(paramMap));
+            return Result.ok(iBRoomService.RoomDetailYXJL_Select(paramMap).get(0));
     	}catch(Exception e){
     		e.printStackTrace();
     		return Result.errormsg(1, "系统异常，请联系管理员");
