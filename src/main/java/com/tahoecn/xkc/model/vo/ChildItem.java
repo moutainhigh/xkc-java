@@ -3,35 +3,59 @@ package com.tahoecn.xkc.model.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ChildItem implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
     private String ID;
     // 姓(必填)
     private String Name;
     // 请输入姓氏
     private String Placeholder;
+	
     private String Type;
+	
     private String Value;
+	
     private String ValueID;
+	
     private int ListIndex;
+	
     private int IsMust;
+	
     private int IsHide;
+	
     private int IsMustShow;
+	
     private int IsEdit;
+	
     private int IsMulti;
+	
     private int IsFullLine;
+	
     private int MaxLength;
+	
     private int MaxSelectedNum;
+	
     private String MinDate;
+	
     private String MaxDate;
+	
     private String NormalColor;
+	
     private String SelectedColor;
+	
     private String Partner;
+	
     private String SubPartner;
+	
     private List<VerifyItem> Verify;
+	
     private List<OptionItem> Option;
     
+    @JsonProperty("ID")
     public String getID() {
 		return ID;
 	}
@@ -40,6 +64,7 @@ public class ChildItem implements Serializable {
 		ID = iD;
 	}
 
+	@JsonProperty("Name")
 	public String getName() {
 		return Name;
 	}
@@ -48,6 +73,7 @@ public class ChildItem implements Serializable {
 		Name = name;
 	}
 
+	@JsonProperty("Placeholder")
 	public String getPlaceholder() {
 		return Placeholder;
 	}
@@ -56,6 +82,7 @@ public class ChildItem implements Serializable {
 		Placeholder = placeholder;
 	}
 
+	@JsonProperty("Type")
 	public String getType() {
 		return Type;
 	}
@@ -64,6 +91,7 @@ public class ChildItem implements Serializable {
 		Type = type;
 	}
 
+	@JsonProperty("Value")
 	public String getValue() {
 		return Value;
 	}
@@ -72,6 +100,7 @@ public class ChildItem implements Serializable {
 		Value = value;
 	}
 
+	@JsonProperty("ValueID")
 	public String getValueID() {
 		return ValueID;
 	}
@@ -80,6 +109,7 @@ public class ChildItem implements Serializable {
 		ValueID = valueID;
 	}
 
+	@JsonProperty("ListIndex")
 	public int getListIndex() {
 		return ListIndex;
 	}
@@ -88,6 +118,7 @@ public class ChildItem implements Serializable {
 		ListIndex = listIndex;
 	}
 
+	@JsonProperty("IsMust")
 	public int getIsMust() {
 		return IsMust;
 	}
@@ -96,6 +127,7 @@ public class ChildItem implements Serializable {
 		IsMust = isMust;
 	}
 
+	@JsonProperty("IsHide")
 	public int getIsHide() {
 		return IsHide;
 	}
@@ -104,6 +136,7 @@ public class ChildItem implements Serializable {
 		IsHide = isHide;
 	}
 
+	@JsonProperty("IsMustShow")
 	public int getIsMustShow() {
 		return IsMustShow;
 	}
@@ -112,6 +145,7 @@ public class ChildItem implements Serializable {
 		IsMustShow = isMustShow;
 	}
 
+	@JsonProperty("IsEdit")
 	public int getIsEdit() {
 		return IsEdit;
 	}
@@ -120,6 +154,7 @@ public class ChildItem implements Serializable {
 		IsEdit = isEdit;
 	}
 
+	@JsonProperty("IsMulti")
 	public int getIsMulti() {
 		return IsMulti;
 	}
@@ -128,6 +163,7 @@ public class ChildItem implements Serializable {
 		IsMulti = isMulti;
 	}
 
+	@JsonProperty("IsFullLine")
 	public int getIsFullLine() {
 		return IsFullLine;
 	}
@@ -136,6 +172,7 @@ public class ChildItem implements Serializable {
 		IsFullLine = isFullLine;
 	}
 
+	@JsonProperty("MaxLength")
 	public int getMaxLength() {
 		return MaxLength;
 	}
@@ -144,6 +181,7 @@ public class ChildItem implements Serializable {
 		MaxLength = maxLength;
 	}
 
+	@JsonProperty("MaxSelectedNum")
 	public int getMaxSelectedNum() {
 		return MaxSelectedNum;
 	}
@@ -152,6 +190,7 @@ public class ChildItem implements Serializable {
 		MaxSelectedNum = maxSelectedNum;
 	}
 
+	@JsonProperty("MinDate")
 	public String getMinDate() {
 		return MinDate;
 	}
@@ -160,6 +199,7 @@ public class ChildItem implements Serializable {
 		MinDate = minDate;
 	}
 
+	@JsonProperty("MaxDate")
 	public String getMaxDate() {
 		return MaxDate;
 	}
@@ -168,6 +208,7 @@ public class ChildItem implements Serializable {
 		MaxDate = maxDate;
 	}
 
+	@JsonProperty("NormalColor")
 	public String getNormalColor() {
 		return NormalColor;
 	}
@@ -176,6 +217,7 @@ public class ChildItem implements Serializable {
 		NormalColor = normalColor;
 	}
 
+	@JsonProperty("SelectedColor")
 	public String getSelectedColor() {
 		return SelectedColor;
 	}
@@ -184,6 +226,7 @@ public class ChildItem implements Serializable {
 		SelectedColor = selectedColor;
 	}
 
+	@JsonProperty("Partner")
 	public String getPartner() {
 		return Partner;
 	}
@@ -192,6 +235,7 @@ public class ChildItem implements Serializable {
 		Partner = partner;
 	}
 
+	@JsonProperty("SubPartner")
 	public String getSubPartner() {
 		return SubPartner;
 	}
@@ -200,6 +244,7 @@ public class ChildItem implements Serializable {
 		SubPartner = subPartner;
 	}
 
+	@JsonProperty("Verify")
 	public List<VerifyItem> getVerify() {
 		return Verify;
 	}
@@ -208,6 +253,7 @@ public class ChildItem implements Serializable {
 		Verify = verify;
 	}
 
+	@JsonProperty("Option")
 	public List<OptionItem> getOption() {
 		return Option;
 	}

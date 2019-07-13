@@ -722,6 +722,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             	entity.setErrmsg("不存在客户信息！");
                 entity.setErrcode(11);
             }
+            
         }catch (Exception e){
             entity.setErrmsg("获取数据异常！");
             entity.setErrcode(110);
