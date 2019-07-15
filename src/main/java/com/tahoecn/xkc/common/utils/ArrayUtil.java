@@ -19,8 +19,10 @@ public class ArrayUtil {
     public static String[] ArrayUnion(String[] befor,String[] now) {
         List<String> list = new ArrayList<String>(Arrays.asList(befor));
         list.addAll(Arrays.asList(now));
-        Object[] c = list.toArray();
-        System.out.println(Arrays.toString(c));
-        return (String[]) c;
+//        Object[] c = list.toArray();
+        String[] str=new String[list.size()];
+        String[] after = list.toArray(str);
+//        System.out.println(Arrays.toString(c));
+        return after;
     }
 }

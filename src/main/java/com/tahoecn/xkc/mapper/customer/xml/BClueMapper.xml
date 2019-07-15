@@ -358,7 +358,7 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 		]]>
      </select>
      <!-- 待确认查询 -->
-     <select id="CaseFieToBeConfirmedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+     <select id="CaseFieToBeConfirmedList_Select" parameterType="java.lang.String" resultType="java.util.Map">
      	<![CDATA[
 	     	SELECT  c.[ID] ,
 	        c.[CustomerPotentialID] ,
@@ -401,5 +401,63 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 		ORDER BY c.ConfirmTime DESC ,
 		        c.CreateTime DESC
 		]]>
+     </select>
+     <!-- 待分配 -->
+     <select id="CaseFieDistributionList_Select" parameterType="java.lang.String" resultType="java.util.Map">
+     	<![CDATA[
+     		SELECT  c.[ID] ,
+		        c.[CustomerPotentialID] ,
+		        c.[Name] ,
+		        c.[LastName] ,
+		        c.[FirstName] ,
+		        c.[Gender] ,
+		        c.[Mobile] ,
+		        c.[IntentProjectID] ,
+		        c.[IntentProjectName] ,
+		        c.[Remark] ,
+		        c.[SourceType] ,
+		        c.[ReportUserID] ,
+		        c.[ReportUserName] ,
+		        c.[ReportUserMobile] ,
+		        c.[ReportUserOrg] ,
+		        c.[RuleID] ,
+		        c.[InvalidType] ,
+		        c.[InvalidTime] ,
+		        c.[InvalidReason] ,
+		        c.[ComeOverdueTime] ,
+		        c.[TradeOverdueTime] ,
+		        c.[UserBehaviorID] ,
+		        c.[AdviserGroupID] ,
+		        c.[IsSelect] ,
+		        c.[ConfirmTime] ,
+		        c.[Creator] ,
+		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+		        c.[Editor] ,
+		        c.[EditeTime] ,
+		        c.[IsDel] ,
+		        c.[Status] ,
+		        c.[ConfirmUserId] ,
+		        u.name AS TokerUserName ,
+		        NULL SaleUserID
+		FROM    [B_Clue] AS c
+		        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		        LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+		        LEFT JOIN dbo.B_ClueRule r ON c.RuleID = r.ID
+		                                      AND r.ProtectSource = 0
+		WHERE   ( o.ID IS NULL
+		          OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		        )
+		        AND c.status = 2
+		        AND c.IsDel = 0
+		        AND c.IntentProjectID = #{ProjectID}
+		        AND ( CASE WHEN r.IsPreIntercept = 1
+		                   THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
+		                                            c.CreateTime) < GETDATE() THEN 1
+		                               ELSE 0
+		                          END )
+		                   ELSE 1
+		              END ) = 1 ${sqlWhere}
+		ORDER BY c.CreateTime DESC
+     	]]>
      </select>
 </mapper>

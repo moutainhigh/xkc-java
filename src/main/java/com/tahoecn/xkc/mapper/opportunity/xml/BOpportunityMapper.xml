@@ -356,4 +356,45 @@
 	<select id="mCustomerYQWGJList_Select" statementType="CALLABLE" resultMap="YQWGJMap,recordCount">
 		{call P_CustomerYQWGJList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
 	</select>
+	<resultMap type ="java.util.Map" id= "AdviserMap">
+	     <result column ="ID" property="ID" />
+	     <result column ="Name" property="Name"  />
+	     <result column ="OrgName" property="OrgName"  />
+	     <result column ="Value" property="Value"  />
+	</resultMap >
+	<!-- 客户置业顾问列表 -->
+	<select id="mCustomerAdviserList_Select" statementType="CALLABLE" resultMap="AdviserMap,recordCount">
+		{call P_CustomerAdviserList_Select(#{ProjectID},#{Code},#{Keyword},#{OverdueContractStartDay},
+		#{OverdueContractEndDay},#{OverduePaymentStartDay},#{OverduePaymentEndDay},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "ACYQWQYMap">
+	     <result column ="ID" property="ID" />
+	     <result column ="Name" property="Name"  />
+	     <result column ="Amount " property="Value"  />
+	     <result column ="OrgName" property="OrgName"  />
+	</resultMap >
+	<!-- 逾期未签约列表 -->
+	<select id="R_ACYQWQYList_Select" statementType="CALLABLE" resultMap="ACYQWQYMap,recordCount">
+		{call R_ACYQWQYList_Select(#{OrgID},#{OverdueContractStartDay},#{OverdueContractEndDay},#{UserID},
+		#{RequestType},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "ACYQWJKMap">
+	     <result column ="ID" property="ID" />
+	     <result column ="Name" property="Name"  />
+	     <result column ="Amount" property="Value"  />
+	     <result column ="OrgName" property="OrgName"  />
+	</resultMap >
+	<!-- 逾期未交款列表 -->
+	<select id="R_ACYQWJKList_Select" statementType="CALLABLE" resultMap="ACYQWJKMap,recordCount">
+		{call R_ACYQWJKList_Select(#{OrgID},#{OverdueContractStartDay},#{OverdueContractEndDay},#{UserID},
+		#{RequestType},#{PageIndex},#{PageSize})}
+	</select>
+	<!-- 逾期客户头部统计 -->
+	<select id="mCustomerYQCateList_Select" statementType="CALLABLE" resultType="java.util.Map">
+		{call P_CustomerYQCateList_Select(#{ProjectID},#{UserID},#{OrgID},#{JobCode})}
+	</select>
+	<!-- 客户管理分类 -->
+	<select id="mCustomerCateList_Select" statementType="CALLABLE" resultType="java.util.Map">
+		{call P_CustomerCateList_Select(#{ProjectID},#{UserID},#{OrgID},#{JobCode})}
+	</select>
 </mapper>

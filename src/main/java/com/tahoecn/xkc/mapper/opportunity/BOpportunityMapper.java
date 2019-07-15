@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 
 /**
@@ -75,4 +76,25 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 	 * 逾期客户未跟进列表
 	 */
 	List<List<?>> mCustomerYQWGJList_Select(Map<String, Object> paramMap);
+
+	/**
+	 * 客户置业顾问列表
+	 */
+	List<List<?>> mCustomerAdviserList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期未签约列表
+	 */
+	List<List<?>> R_ACYQWQYList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期未交款列表
+	 */
+	List<List<?>> R_ACYQWJKList_Select(Map<String, Object> paramMap);
+	/**
+	 * 逾期客户头部统计
+	 */
+	List<Map<String,Object>> mCustomerYQCateList_Select(Map<String, Object> paramMap);
+	/**
+	 * 客户管理分类
+	 */
+	List<Map<String,Object>> mCustomerCateList_Select(Map<String, Object> paramMap);
 }
