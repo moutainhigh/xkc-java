@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.opportunity.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BCustomerfollowupMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
@@ -384,4 +385,47 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 		map.put("PageSize", paramMap.get("PageSize"));
 		return map;
 	}
+	/**
+	 * 客户置业顾问列表
+	 */
+	@Override
+	public Map<String,Object> mCustomerAdviserList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.mCustomerAdviserList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 逾期未签约列表
+	 */
+	@Override
+	public Map<String,Object> R_ACYQWQYList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.R_ACYQWQYList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	/**
+	 * 逾期未交款列表
+	 */
+	@Override
+	public Map<String,Object> R_ACYQWJKList_Select(Map<String,Object> paramMap) {
+		List<List<?>> result = baseMapper.R_ACYQWJKList_Select(paramMap);
+		List<?> list = result.get(0);
+		List<?> recordCount = result.get(1);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("List", list);
+		map.put("AllCount", recordCount.get(0));
+		map.put("PageSize", paramMap.get("PageSize"));
+		return map;
+	}
+	
 }

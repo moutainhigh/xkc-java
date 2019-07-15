@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -360,6 +363,53 @@ public class AppCustomerController extends TahoeBaseController {
 			Map paramMap = (HashMap)jsonParam.get("_param");
 			Map<String,Object> map = iBOpportunityService.mCustomerYQWGJList_Select(paramMap);
 			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "逾期客户顾问列表", notes = "逾期客户顾问列表")
+	@RequestMapping(value = "/mCustomerAdviserList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerAdviserList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			List<Map<String,Object>> Filter = (List<Map<String, Object>>) paramMap.get("Filter");
+			paramMap.put("OverdueContractStartDay", "0");
+            paramMap.put("OverdueContractEndDay", "3650");
+            paramMap.put("OverduePaymentStartDay", "0");
+            paramMap.put("OverduePaymentEndDay", "3650");
+            
+			if(!StringUtils.isEmpty(paramMap.get("Filter"))){
+				for(Map<String,Object> item : Filter){
+					String TagID = (String) item.get("TagID");
+                    switch (TagID){
+                        case "2D0B4FD7-22C0-4225-A300-6AF34683DCAE":{//未签约周期
+                    		String start = (String) ((List)item.get("Child")).get(0);
+                            String end = (String) ((List)item.get("Child")).get(1);
+                            paramMap.put("OverdueContractStartDay", (start == "-" ? "0" : start));
+                            paramMap.put("OverdueContractEndDay", (end == "-" ? "3650" : end));
+						}
+                        break;
+                        case "883F5965-7D43-4EC9-918C-CF09BD625460":{//未交款周期
+                        	String start = (String) ((List)item.get("Child")).get(0);
+                            String end = (String) ((List)item.get("Child")).get(1);
+                            paramMap.put("OverduePaymentStartDay", (start == "-" ? "0" : start));
+                            paramMap.put("OverduePaymentEndDay", (end == "-" ? "3650" : end));
+                      	}
+                    	break;
+                    }
+				}
+			}
+			Map<String,Object> result = null;
+			if (StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWQY".equals(paramMap.get("Code"))){
+				result = iBOpportunityService.R_ACYQWQYList_Select(paramMap);
+			}else if(StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWJK".equals(paramMap.get("Code"))){
+				result = iBOpportunityService.R_ACYQWJKList_Select(paramMap);
+			}else{
+				result = iBOpportunityService.mCustomerAdviserList_Select(paramMap);
+			}
+			return Result.ok(result);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
