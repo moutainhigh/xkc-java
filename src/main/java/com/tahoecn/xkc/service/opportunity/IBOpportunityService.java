@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.opportunity;
 
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -79,5 +80,13 @@ public interface IBOpportunityService extends IService<BOpportunity> {
 	 * 逾期未交款列表
 	 */
 	Map<String, Object> R_ACYQWJKList_Select(Map<String,Object> paramMap);
+	/**
+	 * 逾期客户头部统计
+	 */
+	List<Map<String,Object>> mCustomerYQCateList_Select(Map<String,Object> paramMap);
+	/**
+	 * 客户管理分类
+	 */
+	List<Map<String,Object>> mCustomerCateList_Select(Map<String,Object> paramMap);
 
 }

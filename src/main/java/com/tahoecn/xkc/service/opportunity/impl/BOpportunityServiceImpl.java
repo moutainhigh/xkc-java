@@ -428,4 +428,19 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 		return map;
 	}
 	
+	/**
+	 * 逾期客户头部统计
+	 */
+	@Override
+	public List<Map<String,Object>> mCustomerYQCateList_Select(Map<String,Object> paramMap) {
+		return baseMapper.mCustomerYQCateList_Select(paramMap);
+	}
+	/**
+	 * 客户管理分类
+	 */
+	@Override
+	public List<Map<String,Object>> mCustomerCateList_Select(Map<String,Object> paramMap) {
+		return baseMapper.mCustomerCateList_Select(paramMap);
+	}
+	
 }

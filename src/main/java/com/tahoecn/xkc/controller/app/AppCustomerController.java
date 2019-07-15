@@ -415,4 +415,28 @@ public class AppCustomerController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+	@ApiOperation(value = "逾期客户头部统计", notes = "逾期客户头部统计")
+	@RequestMapping(value = "/mCustomerYQCateList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYQCateList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			return Result.ok(iBOpportunityService.mCustomerYQCateList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "客户管理分类", notes = "客户管理分类")
+	@RequestMapping(value = "/mCustomerCateList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerCateList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			return Result.ok(iBOpportunityService.mCustomerCateList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }
