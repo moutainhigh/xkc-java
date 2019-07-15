@@ -3,7 +3,10 @@ package com.tahoecn.xkc.mapper.customer;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.customer.BOpportunitygiveup;
 
 /**
@@ -32,6 +35,12 @@ public interface BOpportunitygiveupMapper extends BaseMapper<BOpportunitygiveup>
 	 * 协作人置空
 	 */
 	void mCustomerYXJLSalePartnerSetNull_Update(Map<String, Object> paramMap);
+	/**
+	 * 获取SalesUser列表信息
+	 */
+	IPage<Map<String, Object>> mCustomerYXJLAdviserList_Select(IPage<Map<String, Object>> page, 
+			@Param("ProjectID")String ProjectID, @Param("WHERE")String WHERE, @Param("ORDER")String ORDER,
+			@Param("SiteUrl")String SiteUrl);
 
 
 }

@@ -81,7 +81,26 @@
 			                  WHERE     name <> '' ) 
 	    ]]>
 	</update>
-	
+	<!-- 获取SalesUser列表信息 -->
+	<select id="mCustomerYXJLAdviserList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT ProjectID,	
+			SaleUserID,
+			SaleUserName,
+			SaleUserMobil,
+			#{SiteUrl}+HeadImg HeadImg,
+			GroupID,
+			SaleGroupName,
+			DayTotalCount,
+			CustomerTotalCount,
+			FollowTotalCount,
+			IsDel,
+			Status,
+			CreateTime
+			From  V_CustomerYXJLAdviserList_Select  
+			Where isdel =0 and  ProjectID =#{ProjectID}   ${WHERE} ${ORDER}
+		]]>
+	</select>
 	
 	
 	

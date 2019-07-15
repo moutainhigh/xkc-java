@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BOpportunitygiveupMapper;
 import com.tahoecn.xkc.model.customer.BOpportunitygiveup;
@@ -59,5 +60,13 @@ public class BOpportunitygiveupServiceImpl extends ServiceImpl<BOpportunitygiveu
 	@Override
 	public void mCustomerYXJLSalePartnerSetNull_Update(Map<String, Object> paramMap) {
 		baseMapper.mCustomerYXJLSalePartnerSetNull_Update(paramMap);
+	}
+	/**
+	 * 获取SalesUser列表信息
+	 */
+	@Override
+	public IPage<Map<String, Object>> mCustomerYXJLAdviserList_Select(IPage<Map<String, Object>> page, 
+			String projectID, String where, String order, String siteUrl) {
+		return baseMapper.mCustomerYXJLAdviserList_Select(page, projectID, where, order, siteUrl);
 	}
 }
