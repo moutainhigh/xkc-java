@@ -73,18 +73,21 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
     @Override
     public List<Map<String, Object>> SystemOrganizationChec_Select(String pid) {
         List<Map<String, Object>> list= baseMapper.SystemOrganizationChec_Select(pid);
-        SOrganization organization = baseMapper.selectById(pid);
         List<Map<String, Object>> result=new ArrayList<>();
-        for (Map<String, Object> map : list) {
-            List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
-            if (sub.size()>0){
-                map.put("hasChild",1);
-                map.put("subjectOrg",organization.getOrgName());
-            }else {
-                map.put("hasChild",0);
+        if (!"-1".equals(pid)){
+            SOrganization organization = baseMapper.selectById(pid);
+            for (Map<String, Object> map : list) {
+                List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
+                if (sub.size()>0){
+                    map.put("hasChild",1);
+                    map.put("subjectOrg",organization.getOrgName());
+                }else {
+                    map.put("hasChild",0);
+                }
+                result.add(map);
             }
-            result.add(map);
         }
-        return result;
+
+        return list;
     }
 }
