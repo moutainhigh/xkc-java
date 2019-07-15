@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.controller.app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.tahoecn.xkc.model.vo.CSearchModel;
 import com.tahoecn.xkc.model.vo.CustomerModel;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
+import com.tahoecn.xkc.service.customer.IBOpportunitygiveupService;
 import com.tahoecn.xkc.service.customer.IVOpportunityService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 
@@ -50,6 +52,8 @@ public class AppCustomerController extends TahoeBaseController {
     private IBCustomerfiltergroupService iBCustomerfiltergroupService;
     @Autowired
     private IBOpportunityService iBOpportunityService;
+    @Autowired
+    private IBOpportunitygiveupService iBOpportunitygiveupService;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -434,6 +438,26 @@ public class AppCustomerController extends TahoeBaseController {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
 			return Result.ok(iBOpportunityService.mCustomerCateList_Select(paramMap));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "顾问分配", notes = "案场营销经理顾问分配")
+	@RequestMapping(value = "/mCustomerYXJLAdviser_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYXJLAdviser_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+            //1.丢失中的客户不允许重分配
+            List<Map<String,Object>> valid = iBOpportunitygiveupService.GiveUpListStatusFind(paramMap);
+            if (valid != null && valid.size() > 0){
+                return Result.errormsg(1,"丢失中的客户不能重新分配，请先处理丢失申请！");
+            }
+            iBOpportunitygiveupService.mCustomerYXJLAdviser_Update(paramMap);
+            //2.营销经理重新分配【协作人】置空
+            iBOpportunitygiveupService.mCustomerYXJLSalePartnerSetNull_Update(paramMap);
+			return Result.ok(new ArrayList());
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
