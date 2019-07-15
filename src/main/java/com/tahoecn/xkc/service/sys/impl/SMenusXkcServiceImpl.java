@@ -773,14 +773,15 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     public Map<String, Object> CommonJobFunctions(String jobID) {
         List<Map<String, Object>> list=baseMapper.getCommonJobFunctions(jobID);
         List<Map<String, Object>> list1=baseMapper.CommonJobFunctions(jobID);
+        List result=new ArrayList();
         Map<String, Object> objectMap=new HashMap<>();
         for (Map<String, Object> map : list) {
-            objectMap.put("IDS",map.get("IDS"));
+            result.add(map.get("IDS"));
         }
         for (Map<String, Object> map : list1) {
-            objectMap.put("IDS",map.get("IDS"));
+            result.add(map.get("IDS"));
         }
-
+        objectMap.put("IDS",result);
         return objectMap;
     }
 
