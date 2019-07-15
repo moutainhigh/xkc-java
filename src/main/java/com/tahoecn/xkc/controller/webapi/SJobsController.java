@@ -106,4 +106,14 @@ public class SJobsController extends TahoeBaseController {
         IPage<SAccount> list=jobsService.SystemUserList_Select(page,JobID,AuthCompanyID);
         return Result.ok(list);
     }
+
+
+    @ApiOperation(value = "岗位人员新增", notes = "岗位人员新增")
+    @RequestMapping(value = "/SystemJobUser_Insert", method = {RequestMethod.POST})
+    public Result SystemJobUser_Insert(SAccount account,String JobID){
+
+
+        return Result.ok("");
+    }
+
 }

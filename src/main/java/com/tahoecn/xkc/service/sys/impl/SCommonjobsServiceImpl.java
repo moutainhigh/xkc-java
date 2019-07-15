@@ -100,13 +100,13 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
             //字符串分组
             String[] oldMenusSplit = oldMenus.split("|");
             String[] oldFunctionsSplit = oldFunctions.split("|");
-            String[] menusSplit = menus.split("|");
+            String[] menusSplit = menus.split(",");
             String[] functionsSplit = functions.split("|");
 
             //删除原功能
             QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
             wrapper.eq("JobID",jobID);
-            wrapper.in("MenuID",oldMenusSplit);
+//            wrapper.in("MenuID",oldMenusSplit);
             List<SCommonjobsmenurel> list = commonjobsmenurelService.list(wrapper);
             for (SCommonjobsmenurel sCommonjobsmenurel : list) {
                 commonjobsmenurelService.removeById(sCommonjobsmenurel);
@@ -114,7 +114,7 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 
             QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
             queryWrapper.eq("JobID",jobID);
-            queryWrapper.in("FuncID",oldFunctionsSplit);
+//            queryWrapper.in("FuncID",oldFunctionsSplit);
             List<SCommonjobsfunctionsrel> list1 = commonjobsfunctionsrelService.list(queryWrapper);
             for (SCommonjobsfunctionsrel sCommonjobsfunctionsrel : list1) {
                 commonjobsfunctionsrelService.removeById(sCommonjobsfunctionsrel);
