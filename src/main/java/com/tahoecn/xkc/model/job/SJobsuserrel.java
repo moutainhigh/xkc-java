@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.job;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -20,7 +21,7 @@ public class SJobsuserrel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("ID")
+    @TableId(value = "ID",type = IdType.UUID)
     private String id;
 
     @TableField("AccountID")

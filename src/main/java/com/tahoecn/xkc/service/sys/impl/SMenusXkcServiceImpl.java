@@ -689,7 +689,14 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             String IconClass = menu.getIconClass();
             Integer IsHomePage = menu.getIsHomePage();
             Integer IsShow = menu.getIsShow();
-            Integer Levels = menu.getLevels();
+            String pid=menu.getPid();
+            Integer Levels;
+            if (pid!="-1"){
+                SMenusXkc sMenusXkc = baseMapper.selectById(pid);
+                Levels=sMenusXkc.getLevels()+1;
+            }else {
+                Levels=1;
+            }
             Integer ListIndex = menu.getListIndex();
             Integer IsLast = menu.getIsLast();
             String Editor = ThreadLocalUtils.getUserName();

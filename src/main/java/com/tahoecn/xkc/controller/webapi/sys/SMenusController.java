@@ -2,6 +2,7 @@ package com.tahoecn.xkc.controller.webapi.sys;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.json.JSONResult;
@@ -108,6 +109,13 @@ public class SMenusController extends TahoeBaseController {
         menus.setCreator(ThreadLocalUtils.getUserName());
         menus.setCreateTime(new Date());
         menus.setIsDel(0);
+        //判断层级
+        if (menus.getPid()!="-1"){
+            SMenusXkc byId = isMenusService.getById(menus.getPid());
+            menus.setLevels(byId.getLevels()+1);
+        }else {
+            menus.setLevels(1);
+        }
         try {
             isMenusService.SystemMenu_Insert(menus);
         } catch (Exception e) {
