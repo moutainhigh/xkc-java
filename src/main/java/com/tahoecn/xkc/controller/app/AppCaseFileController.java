@@ -2,6 +2,8 @@ package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -531,19 +533,54 @@ public class AppCaseFileController extends TahoeBaseController {
     	try{
             @SuppressWarnings("rawtypes")
 			Map paramMap = (HashMap)jsonParam.get("_param");
+            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+            int PageSize = (int)paramMap.get("PageSize");//每页数量
+            String ProjectID = (String)paramMap.get("ProjectID");
+            String Status = (String)paramMap.get("Status");
             //查询
             String where = "";
             if (!StringUtils.isEmpty(paramMap.get("Condition"))){
             	where = "  and (c.name = '" + paramMap.get("Condition") + "' or c.Mobile = '" + paramMap.get("Condition") + "')  ";
             }
-            paramMap.put("sqlWhere", where);
-            List<Map<String, Object>> ob = iBClueService.CaseFieToBeConfirmedList_Select(paramMap);
-            Map<String, Object> map = new HashMap<String,Object>();
-            map.put("List", ob);
-            return Result.ok(map);
+//            paramMap.put("sqlWhere", where);
+            IPage page = new Page(PageIndex, PageSize);
+			IPage<Map<String, Object>> ob = iBClueService.CaseFieToBeConfirmedList_Select(page,Status,ProjectID,where);
+			Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", ob.getRecords());
+			map.put("AllCount", ob.getTotal());
+			map.put("PageSize", ob.getSize());
+			return Result.ok(map);
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
+	@ResponseBody
+	@ApiOperation(value = "带分配列表", notes = "带分配列表")
+	@RequestMapping(value = "/mCaseFieDistributionList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCaseFieDistributionList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			@SuppressWarnings("rawtypes")
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+            int PageSize = (int)paramMap.get("PageSize");//每页数量
+            String ProjectID = (String)paramMap.get("ProjectID");//每页数量
+			//查询
+			String where = "";
+			if (!StringUtils.isEmpty(paramMap.get("Condition"))){
+				where = "  and (c.name like '%" + paramMap.get("Condition") + "%' or c.Mobile like '%" + paramMap.get("Condition") + "%')  ";
+			}
+//			paramMap.put("sqlWhere", where);
+			IPage page = new Page(PageIndex, PageSize);
+			IPage<Map<String, Object>> ob = iBClueService.CaseFieDistributionList_Select(page,ProjectID,where);
+			Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", ob.getRecords());
+			map.put("AllCount", ob.getTotal());
+			map.put("PageSize", ob.getSize());
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

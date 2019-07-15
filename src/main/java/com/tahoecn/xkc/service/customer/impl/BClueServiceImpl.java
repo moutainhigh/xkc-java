@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.model.customer.BClue;
@@ -12,6 +13,8 @@ import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -414,7 +417,14 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	 * 待确认查询
 	 */
 	@Override
-	public List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> parameter){
-		return baseMapper.CaseFieToBeConfirmedList_Select(parameter);
+	public IPage<Map<String, Object>> CaseFieToBeConfirmedList_Select(IPage page, String Status, String ProjectID, String sqlWhere){
+		return baseMapper.CaseFieToBeConfirmedList_Select(page, Status, ProjectID, sqlWhere);
+	}
+	/**
+	 * 待分配
+	 */
+	@Override
+	public IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID, String sqlWhere) {
+		return baseMapper.CaseFieDistributionList_Select(page,ProjectID,sqlWhere);
 	}
 }

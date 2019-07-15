@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.mapper.customer;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.customer.BClue;
 import org.apache.ibatis.annotations.Param;
 
@@ -53,5 +54,11 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	/**
 	 * 待确认查询
 	 */
-	List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> parameter);
+	IPage<Map<String, Object>> CaseFieToBeConfirmedList_Select(IPage page, 
+			 @Param("Status")String Status,  @Param("ProjectID")String ProjectID, 
+			 @Param("sqlWhere")String sqlWhere);
+	/**
+	 * 待分配
+	 */
+	IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, @Param("ProjectID")String ProjectID, @Param("sqlWhere")String sqlWhere);
 }
