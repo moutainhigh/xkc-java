@@ -460,4 +460,49 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 		ORDER BY c.CreateTime DESC
      	]]>
      </select>
+     <!-- 报备信息列表 -->
+     <select id="CaseFielInquiriesList_Select" parameterType="java.lang.String" resultType="java.util.Map">
+     	<![CDATA[
+     		SELECT  c.[ID] ,
+		        c.[CustomerPotentialID] ,
+		        c.[Name] ,
+		        c.[LastName] ,
+		        c.[FirstName] ,
+		        c.[Gender] ,
+		        c.[Mobile] ,
+		        c.[IntentProjectID] ,
+		        c.[IntentProjectName] ,
+		        c.[Remark] ,
+		        c.[SourceType] ,
+		        c.[ReportUserID] ,
+		        c.[ReportUserName] ,
+		        c.[ReportUserMobile] ,
+		        c.[ReportUserOrg] ,
+		        c.[RuleID] ,
+		        c.[InvalidType] ,
+		        c.[InvalidTime] ,
+		        c.[InvalidReason] ,
+		        c.[ComeOverdueTime] ,
+		        c.[TradeOverdueTime] ,
+		        c.[UserBehaviorID] ,
+		        c.[AdviserGroupID] ,
+		        c.[IsSelect] ,
+		        c.[ConfirmTime] ,
+		        c.[Creator] ,
+		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+		        c.[Editor] ,
+		        c.[EditeTime] ,
+		        c.[IsDel] ,
+		        c.[Status] ,
+		        c.[ConfirmUserId] ,
+		        u.name AS TokerUserName ,
+		        o.SaleUserName
+		FROM    [B_Clue] AS c
+		        LEFT JOIN B_Opportunity o ON o.clueid = c.id
+		        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		WHERE   c.IntentProjectID = #{ProjectID} ${sqlWhere}
+		        AND c.IsDel = 0
+		ORDER BY c.CreateTime DESC
+     	]]>
+     </select>
 </mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BOpportunitygiveupMapper">
+	<!-- 机会列表中是否存在丢失中的机会 -->
+	<select id="sOpportunityGiveUpListDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT ID ,OpportunityID ,CustomerName ,CustomerMobile ,ApprovalStatus 
+			FROM    B_OpportunityGiveUp
+			WHERE  IsDel=0 and Status=1 AND ApprovalStatus=0 
+				AND  OpportunityID IN (SELECT name FROM F_StrToTable(#{OpportunityID}))
+	    ]]>
+	</select>
+	<update id="updMessByOpportunity" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE S_Message 
+			SET IsApprove = 1, Editor = #{UserID}, EditTime = GETDATE() 
+			WHERE ISNULL(IsApprove,0) = 0 AND BizType = 'Opportunity' 
+			AND BizID IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> '')
+		]]>
+	</update>
+	<update id="updMessByOpportunityGiveUp" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE S_Message 
+			SET IsApprove = 1, Editor = #{UserID}, EditTime = GETDATE() 
+			WHERE ISNULL(IsApprove,0) = 0 AND BizType = 'OpportunityGiveUp' 
+			AND BizID IN( SELECT ID FROM dbo.B_OpportunityGiveUp WHERE OpportunityID IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> ''));
+		]]>
+	</update>
+	<insert id="insCustomerFollowUp" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT INTO dbo.B_CustomerFollowUp( ID ,CustomerID ,CustomerMobile ,CustomerName ,OpportunityID ,FollwUpUserID ,FollwUpUserName ,FollwUpUserMobile ,FollwUpType ,FollwUpWay ,FollowUpContent ,NextFollowUpDate ,IntentionLevel ,OrgID ,Creator ,CreateTime ,Editor ,EditeTime ,IsDel ,Status) 
+			SELECT NEWID() ID, CustomerID, CustomerMobile, CustomerName, ID OpportunityID, #{UserID} FollwUpUserID, dbo.F_GetSaleUserName(#{UserID}) FollwUpUserName, dbo.F_GetSaleMobile(#{UserID}) FollwUpUserMobile, '0' FollwUpType, 'F0942939-A90E-4915-81D7-7752919B0F72' FollwUpWay, '重新分配' FollowUpContent, NULL NextFollowUpDate, '9CEA46E8-A3ED-409E-646C-F38A5EAC383E' IntentionLevel, #{OrgID} OrgID, #{UserID} Creator, GETDATE() CreateTime, NULL Editor, NULL EditeTime, 0 IsDel, 1 Status 
+			FROM dbo.B_Opportunity WHERE ID IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> '')
+		]]>
+	</insert>
+	<update id="upOpportunity" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE B_Opportunity 
+			SET isdel = 0, SaleUserID = #{SaleUserID}, SaleUserName = dbo.F_GetSaleUserName(#{SaleUserID}), Editor = #{UserID}, EditeTime = GETDATE(), AllotUserID = #{UserID}, AllotTime = GETDATE(), FollowupCount = ISNULL(FollowupCount, 0) + 1, TheLatestFollowUpDate = GETDATE(), CustomerLevel = '9CEA46E8-A3ED-409E-646C-F38A5EAC383E', TheLatestFollowUpWay = 'F0942939-A90E-4915-81D7-7752919B0F72', TheLatestFollowUpContent = '重新分配' 
+			WHERE id IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> '');
+		]]>
+	</update>
+	<insert id="insCustomerTrack" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO dbo.B_CustomerTrack 
+			SELECT NEWID() ID, CustomerID, CustomerMobile, CustomerName, ID OpportunityID, GETDATE() TrackTime, #{UserID} TrackUserID, dbo.F_GetSaleUserName(#{UserID}) TrackUserName, dbo.F_GetSaleMobile(#{UserID}) TrackUserMobile, 'F578C63F-4DB7-A7D2-9155-1C602853BFB0' TrackType, NULL OrgID, #{UserID} Creator, GETDATE() CreateTime, NULL Editor, NULL EditeTime, 0 IsDel, 1 Status 
+			FROM dbo.B_Opportunity 
+			WHERE ID IN( SELECT name FROM F_StrToTable( #{OpportunityID}) WHERE name <> '');
+	    ]]>
+	</insert>
+	<update id="upCustomerPublicPool" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE B_CustomerPublicPool 
+			SET IsDel = 1, Editor = #{UserID}, EditeTime = GETDATE() 
+			WHERE OpportunityID IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> '');
+		]]>
+	</update>
+	<insert id="insMessage" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status) 
+			SELECT NEWID(), ProjectID, ID, 'Opportunity', '分配待跟进', dbo.F_GetSaleUserName(#{UserID}) + '经理已分配' + CustomerName + '、' + CustomerMobile, #{UserID}, GETDATE(), '55B04B9F-CA2F-4115-AA93-57E64048425F', #{SaleUserID}, 0, 0, 1, #{UserID}, GETDATE(), 0, 1 
+			FROM dbo.B_Opportunity WHERE ID IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> '');
+	    ]]>
+	</insert>
+	<insert id="insTask" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO dbo.S_Task( ID, TaskType, TaskPara, StartTime, CreateTime) SELECT NEWID() ID, 'SyncOpportunity' TaskType, name TaskPara, GETDATE() StartTime, GETDATE() CreateTime 
+			FROM F_StrToTable(#{OpportunityID}) WHERE name <> '';
+	    ]]>
+	</insert>
+	<update id="mCustomerYXJLSalePartnerSetNull_Update" parameterType="java.util.Map" >
+		<![CDATA[
+			UPDATE  dbo.B_Opportunity 
+			SET     SalePartnerID = NULL ,
+			        SalePartnerName = NULL ,
+			        ReVisitAddress = NULL , 
+			        EditeTime = GETDATE() ,
+			        Editor = #{UserID}
+			WHERE   ID IN ( SELECT    name
+			                  FROM      F_StrToTable(#{OpportunityID})
+			                  WHERE     name <> '' ) 
+	    ]]>
+	</update>
+	
+	
+	
+	
+	
+</mapper>
