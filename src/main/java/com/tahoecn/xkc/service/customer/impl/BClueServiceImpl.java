@@ -427,4 +427,11 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	public IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID, String sqlWhere) {
 		return baseMapper.CaseFieDistributionList_Select(page,ProjectID,sqlWhere);
 	}
+	/**
+	 * 报备信息列表
+	 */
+	@Override
+	public IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, String ProjectID, String sqlWhere) {
+		return baseMapper.CaseFielInquiriesList_Select(page,ProjectID,sqlWhere);
+	}
 }

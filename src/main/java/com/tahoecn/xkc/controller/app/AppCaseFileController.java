@@ -583,4 +583,34 @@ public class AppCaseFileController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+	@ApiOperation(value = "报备查询", notes = "报备查询")
+	@RequestMapping(value = "/mCaseFielInquiriesList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCaseFielInquiriesList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+			int PageSize = (int)paramMap.get("PageSize");//每页数量
+			String ProjectID = (String)paramMap.get("ProjectID");
+			//查询
+			String where = "and 1=2";
+			Map<String, Object> map = new HashMap<String,Object>();
+			if (!StringUtils.isEmpty(paramMap.get("Condition"))){
+				where = "  and (c.name = '" + paramMap.get("Condition") + "' or c.Mobile = '" + paramMap.get("Condition") + "')  ";
+				IPage page = new Page(PageIndex, PageSize);
+				IPage<Map<String, Object>> ob = iBClueService.CaseFielInquiriesList_Select(page,ProjectID,where);
+				map.put("List", ob.getRecords());
+				map.put("AllCount", ob.getTotal());
+				map.put("PageSize", ob.getSize());
+			}else{
+				map.put("List", new ArrayList());
+				map.put("AllCount", 0);
+				map.put("PageSize", PageSize);
+			}
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }
