@@ -69,4 +69,12 @@ public class BOpportunitygiveupServiceImpl extends ServiceImpl<BOpportunitygiveu
 			String projectID, String where, String order, String siteUrl) {
 		return baseMapper.mCustomerYXJLAdviserList_Select(page, projectID, where, order, siteUrl);
 	}
+	/**
+	 * 获取CustomerPublicPool列表信息
+	 */
+	@Override
+	public IPage<Map<String, Object>> mCustomerYXJLList_Select(IPage<Map<String, Object>> page, 
+			String projectID, String where, String order) {
+		return baseMapper.mCustomerYXJLList_Select(page, projectID, where, order);
+	}
 }

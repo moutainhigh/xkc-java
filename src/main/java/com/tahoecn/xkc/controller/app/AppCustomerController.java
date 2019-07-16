@@ -252,7 +252,7 @@ public class AppCustomerController extends TahoeBaseController {
 			paramMap.put("LostIDList", LostID);
 			paramMap.put("PublicIDList", PublicID);
 			iBOpportunityService.mCustomerAllotAdviser_Update(paramMap);
-			return Result.ok("成功");
+			return Result.ok(true);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
@@ -507,6 +507,48 @@ public class AppCustomerController extends TahoeBaseController {
             }
             IPage page = new Page(PageIndex, PageSize);
 			IPage<Map<String, Object>> ob = iBOpportunitygiveupService.mCustomerYXJLAdviserList_Select(page,ProjectID,whereSb.toString(),OrderSb.toString(),SiteUrl);
+			Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", ob.getRecords());
+			map.put("AllCount", ob.getTotal());
+			map.put("PageSize", ob.getSize());
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "营销经理公共资源池", notes = "案场营销经理客户待分配用户查询")
+	@RequestMapping(value = "/mCustomerYXJLList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYXJLList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+			int PageSize = (int)paramMap.get("PageSize");//每页数量
+			String ProjectID = (String)paramMap.get("ProjectID");
+			StringBuilder whereSb = new StringBuilder();
+			StringBuilder OrderSb = new StringBuilder();
+			if (!StringUtils.isEmpty(paramMap.get("Filter"))){
+				whereSb.append(" and AdviserOrgID in('" + paramMap.get("Filter").toString() + "')");
+			}
+			if (!StringUtils.isEmpty(paramMap.get("Sort"))){
+				if ("7500BF27-A088-1975-240B-7F0D247E7A7B".equals(paramMap.get("Sort"))){//最新回收
+                    whereSb.append(" ORDER BY  RecoveryCreateTime desc");
+                }
+                if ("BD2933BB-4948-B57D-4916-FF991AFA7FA8".equals(paramMap.get("Sort"))){//最早回收
+                    whereSb.append(" ORDER BY  RecoveryCreateTime asc ");
+                }
+                if ("F19A7E4E-743F-5F75-AE06-9CF8FF84B46F".equals(paramMap.get("Sort"))){//最多跟进
+                    whereSb.append(" ORDER BY  FollowupCountValue desc");
+                }
+                if ("2FF60BA7-8AAE-03BB-6C59-38EAD42D2C1F".equals(paramMap.get("Sort"))){//最少跟进
+                    whereSb.append(" ORDER BY  FollowupCountValue asc ");
+                }
+			}else{
+				whereSb.append(" ORDER BY  RecoveryCreateTime desc");
+			}
+			IPage page = new Page(PageIndex, PageSize);
+			IPage<Map<String, Object>> ob = iBOpportunitygiveupService.mCustomerYXJLList_Select(page,ProjectID,whereSb.toString(),OrderSb.toString());
 			Map<String, Object> map = new HashMap<String,Object>();
 			map.put("List", ob.getRecords());
 			map.put("AllCount", ob.getTotal());

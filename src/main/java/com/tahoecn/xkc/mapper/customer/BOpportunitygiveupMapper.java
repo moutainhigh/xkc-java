@@ -41,6 +41,11 @@ public interface BOpportunitygiveupMapper extends BaseMapper<BOpportunitygiveup>
 	IPage<Map<String, Object>> mCustomerYXJLAdviserList_Select(IPage<Map<String, Object>> page, 
 			@Param("ProjectID")String ProjectID, @Param("WHERE")String WHERE, @Param("ORDER")String ORDER,
 			@Param("SiteUrl")String SiteUrl);
+	/**
+	 * 获取CustomerPublicPool列表信息
+	 */
+	IPage<Map<String, Object>> mCustomerYXJLList_Select(IPage<Map<String, Object>> page, 
+			@Param("ProjectID")String projectID, @Param("WHERE")String where, @Param("ORDER")String order);
 
 
 }

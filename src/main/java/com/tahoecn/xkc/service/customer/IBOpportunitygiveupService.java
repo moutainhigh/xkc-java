@@ -40,5 +40,15 @@ public interface IBOpportunitygiveupService extends IService<BOpportunitygiveup>
 	 */
 	IPage<Map<String, Object>> mCustomerYXJLAdviserList_Select(IPage<Map<String, Object>> page, 
 			String projectID, String where, String order, String siteUrl);
+	/**
+	 * 获取CustomerPublicPool列表信息
+	 * @param page
+	 * @param projectID 项目id
+	 * @param where where条件
+	 * @param order 排序
+	 * @return
+	 */
+	IPage<Map<String, Object>> mCustomerYXJLList_Select(IPage<Map<String, Object>> page, 
+			String projectID, String where, String order);
 
 }

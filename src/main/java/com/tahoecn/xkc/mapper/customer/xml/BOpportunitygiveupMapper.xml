@@ -101,6 +101,29 @@
 			Where isdel =0 and  ProjectID =#{ProjectID}   ${WHERE} ${ORDER}
 		]]>
 	</select>
+	<!-- 获取CustomerPublicPool列表信息 -->
+	<select id="mCustomerYXJLList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT RecoveryID, 
+			OpportunityID, 
+			CustomerID, 
+			CustomerName, 
+			CustomerMobile, 
+			OpportunitySource, 
+			CustomerLevel, 
+			FollowupCount, 
+			TheLatestFollowUpDate, 
+			AdviserID, 
+			AdviserMobile, 
+			AdviserName, 
+			AdviserOrgName, 
+			OpportunityStatus, 
+			IsYJ, 
+			YJTime 
+			FROM V_CustomerYXJLList_Select 
+			WHERE ProjectID=#{ProjectID} ${WHERE} ${ORDER}
+		]]>
+	</select>
 	
 	
 	
