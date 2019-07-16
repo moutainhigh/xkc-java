@@ -38,21 +38,21 @@ public class BOpportunitygiveupServiceImpl extends ServiceImpl<BOpportunitygiveu
 	@Transactional(rollbackFor = Exception.class)
 	public void mCustomerYXJLAdviser_Update(Map<String, Object> paramMap) {
 		//1
-		baseMapper.updMessByOpportunity(paramMap);
+		baseMapper.updSMessByOpportunity_Adviser(paramMap);
 		//2
-		baseMapper.updMessByOpportunityGiveUp(paramMap);
+		baseMapper.updSMessByOpportunityGiveUp_Adviser(paramMap);
 		//3
-		baseMapper.insCustomerFollowUp(paramMap);
+		baseMapper.insBCustomerFollowUp_Adviser(paramMap);
 		//4
-		baseMapper.upOpportunity(paramMap);
+		baseMapper.updBOpportunity_Adviser(paramMap);
 		//5
-		baseMapper.insCustomerTrack(paramMap);
+		baseMapper.insBCustomerTrack_Adviser(paramMap);
 		//6
-		baseMapper.upCustomerPublicPool(paramMap);
+		baseMapper.updBCustomerPublicPool_Adviser(paramMap);
 		//7
-		baseMapper.insMessage(paramMap);
+		baseMapper.insSMessage_Adviser(paramMap);
 		//8
-		baseMapper.insTask(paramMap);
+		baseMapper.insSTask(paramMap);
 	}
 	/**
 	 * 协作人置空
@@ -76,5 +76,53 @@ public class BOpportunitygiveupServiceImpl extends ServiceImpl<BOpportunitygiveu
 	public IPage<Map<String, Object>> mCustomerYXJLList_Select(IPage<Map<String, Object>> page, 
 			String projectID, String where, String order) {
 		return baseMapper.mCustomerYXJLList_Select(page, projectID, where, order);
+	}
+	/**
+	 * 客户激活
+	 * 1.删除丢失机会 2.新增销售机会 2.新增销售轨迹 3.删除公共池机会 4.分配待跟进消息提醒
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void mCustomerYXJLActive_Update(Map<String, Object> paramMap) {
+		//1
+		baseMapper.updBOpportunity_Active(paramMap);
+		//2
+		baseMapper.insBOpportunity_Active(paramMap);
+		//3
+		baseMapper.callPOpportunityCustomerRank_Active(paramMap);
+		//4
+		baseMapper.insBCustomerTrack_Active(paramMap);
+		//5
+		baseMapper.insBOpportunityCustomerRel_Active(paramMap);
+		//6
+		baseMapper.insSMessage_Active(paramMap);
+		//7
+		baseMapper.insSTask(paramMap);
+	}
+	/**
+	 * 客户回收
+	 * 0.在途丢失申请拒回 0.删除机会消息 1.删除公共池机会 2.增加公共池机会 3.回收消息提醒 4.变更机会顾问
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void mCustomerYXJLRecovery_Update(Map<String, Object> paramMap) {
+		//1
+		baseMapper.updBOpportunityGiveUp_Recovery(paramMap);
+		//2
+		baseMapper.updMessByOpportunity_Recovery(paramMap);
+		//3
+		baseMapper.updMessByOpportunityGiveUp_Recovery(paramMap);
+		//4
+		baseMapper.updBCustomerPublicPool_Adviser(paramMap);
+		//5
+		baseMapper.insBCustomerTrack_Recovery(paramMap);
+		//6
+		baseMapper.insBCustomerPublicPool_Recovery(paramMap);
+		//7
+		baseMapper.insSMessage_Recovery(paramMap);
+		//8
+		baseMapper.updBOpportunity_Recovery(paramMap);
+		//9
+		baseMapper.insSTask(paramMap);
 	}
 }

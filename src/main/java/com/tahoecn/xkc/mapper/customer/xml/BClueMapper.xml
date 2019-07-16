@@ -353,8 +353,9 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 			and IntentProjectID = #{IntentProjectID} and Mobile=#{Mobile} and ReportUserID <> #{ReportUserID}
 		]]>
      </select>
-     <select id="ClueConfirm_Update" parameterType="java.util.Map" resultType="java.util.Map">
+     <select id="ClueConfirm_Update"  statementType="CALLABLE">
      	<![CDATA[
+     	{call dbo.PR_SceneConfirmation(#{VisitTime},#{ClueID}, #{ProjectID},#{TradeOverdueTime},#{ConfirmUserId})}
 		]]>
      </select>
      <!-- 待确认查询 -->

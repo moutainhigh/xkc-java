@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -558,6 +559,122 @@ public class AppCustomerController extends TahoeBaseController {
 			map.put("AllCount", ob.getTotal());
 			map.put("PageSize", ob.getSize());
 			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "顾问列表查询", notes = "案场营销经理分配顾问列表")
+	@RequestMapping(value = "/mCustomerXSJLAdviserList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLAdviserList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+			int PageSize = (int)paramMap.get("PageSize");//每页数量
+			String ProjectID = (String)paramMap.get("ProjectID");
+			StringBuilder whereSb = new StringBuilder();
+			StringBuilder OrderSb = new StringBuilder();
+			whereSb.append(" and GroupID in('" + paramMap.get("OrgID") + "')");
+			if (!StringUtils.isEmpty(paramMap.get("Filter"))){
+				whereSb.append(" and SaleUserID in('" + paramMap.get("Filter").toString() + "')");
+			}
+			if (!StringUtils.isEmpty(paramMap.get("Sort"))){
+				if ("4E2A0673-9987-C488-57DF-CB367655BDEA".equals(paramMap.get("Sort"))){//累计分配最多
+                    whereSb.append(" ORDER BY  DayTotalCount desc");
+                }
+                if ("1552E084-1238-6E31-96B1-3ABE59895281".equals(paramMap.get("Sort"))){//累计分配最少
+                    whereSb.append(" ORDER BY  DayTotalCount asc ");
+                }
+                if ("27427A81-9E4B-375C-AED7-A00D1AA38864".equals(paramMap.get("Sort"))){//客户总数最多
+                    whereSb.append(" ORDER BY  CustomerTotalCount desc");
+                }
+                if ("46DCCC7C-D52E-901B-0A3F-A77B14641D73".equals(paramMap.get("Sort"))){//客户总数最少
+                    whereSb.append(" ORDER BY  CustomerTotalCount asc ");
+                }
+                if ("518DC5AA-3F06-A3EC-4FCC-B33098619A77".equals(paramMap.get("Sort"))){//正在跟进最多
+                    whereSb.append(" ORDER BY  FollowTotalCount Desc ");
+                }
+                if ("EE4354BB-B111-E704-F390-0109F2513BA4".equals(paramMap.get("Sort"))){//正在跟进最少
+                    whereSb.append(" ORDER BY  FollowTotalCount asc ");
+                }
+			}else{
+				whereSb.append(" ORDER BY  DayTotalCount desc");
+			}
+			IPage page = new Page(PageIndex, PageSize);
+			IPage<Map<String, Object>> ob = iBOpportunitygiveupService.mCustomerYXJLAdviserList_Select(page,ProjectID,whereSb.toString(),OrderSb.toString(),SiteUrl);
+			Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", ob.getRecords());
+			map.put("AllCount", ob.getTotal());
+			map.put("PageSize", ob.getSize());
+			/*if (model.Ctype != null)
+            {
+                if (model.Ctype == "1")
+                {
+                    JObject p = new JObject();
+                    p.Add("ID", model.ClueID);
+                    p.Add("ValidationMode", "4");
+                    var vdata = (JObject)JsonDataHelper.GetNormalData("CaseFieCustomerDetail_Update", out errmsg, debug);
+                }
+            }*/
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "激活", notes = "案场销售经理激活")
+	@RequestMapping(value = "/mCustomerXSJLActive_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLActive_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String OpportunityIDNew = "";
+            String OpportunityID = (String) paramMap.get("OpportunityID");
+            if (!StringUtils.isEmpty(OpportunityID)){
+                int count = OpportunityID.split(",").length;
+                String[] OpportunityIDNewList = new String[count];
+                for (int i = 0; i < count; i++){
+                    OpportunityIDNewList[i] = UUID.randomUUID().toString();
+                }
+                OpportunityIDNew = String.join(",", OpportunityIDNewList);
+            }
+            paramMap.put("OpportunityIDNew", OpportunityIDNew);
+            iBOpportunitygiveupService.mCustomerYXJLActive_Update(paramMap);
+			return Result.ok(new ArrayList());
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "回收", notes = "案场销售经理回收")
+	@RequestMapping(value = "/mCustomerXSJLRecovery_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLRecovery_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			iBOpportunitygiveupService.mCustomerYXJLRecovery_Update(paramMap);
+			return Result.ok(new ArrayList());
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "分配", notes = "案场销售经理顾问分配")
+	@RequestMapping(value = "/mCustomerXSJLAdviser_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLAdviser_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+            //1.丢失中的客户不允许重分配
+            List<Map<String,Object>> valid = iBOpportunitygiveupService.GiveUpListStatusFind(paramMap);
+            if (valid != null && valid.size() > 0){
+                return Result.errormsg(1,"丢失中的客户不能重新分配，请先处理丢失申请！");
+            }
+            iBOpportunitygiveupService.mCustomerYXJLAdviser_Update(paramMap);
+            //2.营销经理重新分配【协作人】置空
+            iBOpportunitygiveupService.mCustomerYXJLSalePartnerSetNull_Update(paramMap);
+			return Result.ok(new ArrayList());
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
