@@ -1,8 +1,10 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -12,14 +14,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
+import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.VCustomerfjlistSelectMapper;
+import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.model.customer.VCustomerfjlistSelect;
+import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
+import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IPartReceiveService;
+import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
+import com.tahoecn.xkc.service.sys.ISystemAccountService;
+import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -32,6 +43,14 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	private ICustomerHelp customerTemplate;
 	@Value("${SiteUrl}")
     private String SiteUrl;
+	@Resource
+	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
+	@Resource
+	private ISystemMessageService iSystemMessageService;
+	@Resource
+	private ISystemAccountService iSystemAccountService;
+	@Resource
+	private IVCustomergwlistSelectService iVCustomergwlistSelectService;
 	
 	
 	@Override
@@ -87,6 +106,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	}
 
 	@Override
+	@Transactional(readOnly=false)
 	public Result mCustomerFJSearch_Select(JSONObject paramAry) {
 		Result entity = new Result();
 		try {
@@ -173,381 +193,495 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	@Override
 	public Result mCustomerFJDetail_Insert(JSONObject paramAry) {
 		Result entity = new Result();
-        /*try{
+		entity.setErrcode(0);
+        try{
             if (!StringUtils.isEmpty(paramAry.getString("FormSessionID"))){
-                JObject sessionRes = (JObject)JsonDataHelper.GetNormalData("mSystemFormSessionStatus_Select", paramAry, out errmsg);
-                if (ConvertHelper.ToInt(sessionRes["RowCount"]) > 0)
-                {
-                    entity.ErrCode = 1;
-                    entity.ErrMsg = "不能重复请求！";
+            	Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+            	Long RowCount = vCustomerfjlistSelectMapper.mSystemFormSessionStatus_Select_step1(pmap);
+            	if(RowCount.intValue()==0){
+            		vCustomerfjlistSelectMapper.mSystemFormSessionStatus_Select_step2(pmap);
+            	}else{
+            		entity.setErrcode(1);
+            		entity.setErrmsg("不能重复请求！");
                     return entity;
-                }
+            	}
             }
 
-            JObject CustomerObj = new JObject();
-            CGWDetailModel model = paramAry.ToObject<CGWDetailModel>();
-            if (model != null && model.ItemList != null && model.ItemList.Count > 0)
-            {
+            JSONObject CustomerObj = new JSONObject();
+            CGWDetailModel model =JSONObject.parseObject(paramAry.toJSONString(), CGWDetailModel.class);
+            if (model != null && model.getItemList() != null && model.getItemList().size() > 0){
                 //初始化参数
-                JObject parameter = new CustomerHelp().GetParameters(model);
-                parameter["VisitAddress"] = "";
-                parameter["IsIPad"] = "0";
-                string OldSaleUserID = "";
-                string SaleUserID = ConvertHelper.ToString(parameter["SaleUserID"]); 
-                if (parameter.Count > 0)
-                {
-                    bool IsNew = true;
-                    string sqlKey = "";
-                    string Mobile = Convert.ToString(parameter["Mobile"]);
-                    if (!string.IsNullOrWhiteSpace(Mobile))
-                    {
-                        if (customerHelp.CustomerOpportunityExist(model.ProjectID, Mobile, out CustomerObj, debug))
-                        {//存在老机会_老客户 
-                            parameter["CustomerID"] = ConvertHelper.ToString(CustomerObj["CustomerID"]);
-                            parameter["OpportunityID"] = ConvertHelper.ToString(CustomerObj["OpportunityID"]);
-                            OldSaleUserID = ConvertHelper.ToString(CustomerObj["SaleUserID"]);
-                            parameter["LastName"] = ConvertHelper.ToString(CustomerObj["LastName"]);
-                            parameter["FirstName"] = ConvertHelper.ToString(CustomerObj["FirstName"]);
-                            if (!string.IsNullOrEmpty(OldSaleUserID) && OldSaleUserID != "C4C09951-FA39-4982-AAD1-E72D9D4C3899")
-                            {
+            	JSONObject parameter = customerTemplate.GetParameters(model);
+            	parameter.put("VisitAddress", "");
+            	parameter.put("IsIPad", "0");
+                String OldSaleUserID = "";
+                String SaleUserID = parameter.getString("SaleUserID");
+                if (parameter.size() > 0){
+                    Boolean IsNew = true;
+                    String sqlKey = "";
+                    String Mobile =parameter.getString("Mobile").trim();
+                    if (!StringUtils.isEmpty(Mobile)){
+                    	JSONObject re_j = customerTemplate.CustomerOpportunityExist(model.getProjectID(), Mobile);
+                    	if(re_j.getBooleanValue("status")){
+                    		CustomerObj = re_j.getJSONObject("CustomerObj");
+                    		//存在老机会_老客户 
+                    		parameter.put("CustomerID", CustomerObj.getString("CustomerID"));
+                    		parameter.put("OpportunityID", CustomerObj.getString("OpportunityID"));
+                            OldSaleUserID = CustomerObj.getString("SaleUserID");
+                            parameter.put("LastName", CustomerObj.getString("LastName"));
+                            parameter.put("FirstName", CustomerObj.getString("FirstName"));
+                            if (!StringUtils.isEmpty(OldSaleUserID) && !"C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(OldSaleUserID)){
                                 SaleUserID = OldSaleUserID;
-                                parameter["SaleUserID"] = OldSaleUserID;
+                                parameter.put("SaleUserID", OldSaleUserID);
                             }
                             sqlKey = "mCustomerFJDetail_Update";
                             IsNew = false;
                             //公共客户不允许分接跟进
-                            if (ConvertHelper.ToString(paramAry["JobCode"]) != "XSZC")
-                            {
-                                if (OldSaleUserID.Length == 0)
-                                {
-                                    entity.ErrCode = 1;
-                                    entity.ErrMsg = "不能跟进公共客户！";
+                            if (!"XSZC".equals(paramAry.getString("JobCode"))){
+                                if (OldSaleUserID.length() == 0){
+                                    entity.setErrcode(1);
+                            		entity.setErrmsg("不能跟进公共客户！");
                                     return entity;
                                 }
                             }
-                            parameter["IsReAlloc"] = "0";
-                        }
-                        else
-                        {//新机会
-                            if (!customerHelp.CustomerExist(Mobile, out CustomerObj, debug))
-                            {//新机会_新客户
-                                parameter["CustomerID"] = Guid.NewGuid().ToString();
+                            parameter.put("IsReAlloc", "0");
+                        }else{//新机会
+                        	JSONObject re_j_1 = customerTemplate.CustomerExist(Mobile);
+                            if (!re_j_1.getBooleanValue("status")){
+                            	//新机会_新客户
+                                parameter.put("CustomerID", UUID.randomUUID().toString());
                                 //1.根据手机号码查询拓客客户信息 
-                                if (customerHelp.CustomerPotentialExist(Mobile, out CustomerObj, debug))
-                                {//存在拓客客户信息
-                                    parameter["CardType"] = ConvertHelper.ToString(CustomerObj["CardType"]);
-                                    parameter["CardID"] = ConvertHelper.ToString(CustomerObj["CardID"]);
-                                    parameter["AcceptFactor"] = ConvertHelper.ToString(CustomerObj["AcceptFactor"]);
-                                    parameter["AgeGroup"] = ConvertHelper.ToString(CustomerObj["AgeGroup"]);
-                                    parameter["DomicilePlace"] = ConvertHelper.ToString(CustomerObj["DomicilePlace"]);
-                                    parameter["HomeAddress"] = ConvertHelper.ToString(CustomerObj["HomeAddress"]);
-                                    parameter["HomeArea"] = ConvertHelper.ToString(CustomerObj["HomeArea"]);
-                                    parameter["WorkArea"] = ConvertHelper.ToString(CustomerObj["WorkArea"]);
-                                    parameter["Marriage"] = ConvertHelper.ToString(CustomerObj["Marriage"]);
-                                    parameter["Family"] = ConvertHelper.ToString(CustomerObj["Family"]);
-                                    parameter["Industry"] = ConvertHelper.ToString(CustomerObj["Industry"]);
-                                    parameter["PropertyNum"] = ConvertHelper.ToString(CustomerObj["PropertyNum"]);
+                                JSONObject re_j_2 = customerTemplate.CustomerPotentialExist(Mobile);
+                                if (re_j_2.getBooleanValue("status")){
+                                	//存在拓客客户信息
+                                	CustomerObj = re_j_2.getJSONObject("CustomerObj");
+                                	parameter.put("CardType", CustomerObj.getString("CardType"));
+                                    parameter.put("CardID",CustomerObj.getString("CardID"));
+                                    parameter.put("AcceptFactor",CustomerObj.getString("AcceptFactor"));
+                                    parameter.put("AgeGroup", CustomerObj.getString("AgeGroup"));
+                                    parameter.put("DomicilePlace",CustomerObj.getString("DomicilePlace"));
+                                    parameter.put("HomeAddress",CustomerObj.getString("HomeAddress"));
+                                    parameter.put("HomeArea",CustomerObj.getString("HomeArea"));
+                                    parameter.put("WorkArea",CustomerObj.getString("WorkArea"));
+                                    parameter.put("Marriage",CustomerObj.getString("Marriage"));
+                                    parameter.put("Family",CustomerObj.getString("Family"));
+                                    parameter.put("Industry",CustomerObj.getString("Industry"));
+                                    parameter.put("PropertyNum",CustomerObj.getString("PropertyNum"));
                                 }
                                 sqlKey = "mCustomerFJDetail_Insert";
-                            }
-                            else
-                            {//新机会_老客户
-                                parameter["CustomerID"] = ConvertHelper.ToString(CustomerObj["CustomerID"]);
-                                var OldCustomerObj = customerHelp.OpportunityInfo(model.ProjectID, Mobile, debug);
-                                if (OldCustomerObj.Count > 0)
-                                {//本项目存在历史机会,直接分配给之前的顾问
-                                    //OldSaleUserID = ConvertHelper.ToString(OldCustomerObj["SaleUserID"]);
-                                    parameter["LastName"] = ConvertHelper.ToString(OldCustomerObj["LastName"]);
-                                    parameter["FirstName"] = ConvertHelper.ToString(OldCustomerObj["FirstName"]);
-                                    //if (OldSaleUserID.Length > 0 && OldSaleUserID != "C4C09951-FA39-4982-AAD1-E72D9D4C3899")//不为无
-                                    //{
-                                    //    parameter["SaleUserID"] = OldSaleUserID;
-                                    //    SaleUserID = OldSaleUserID;
-                                    //}
+                            }else{//新机会_老客户
+                            	CustomerObj = re_j_1.getJSONObject("CustomerObj");
+                            	parameter.put("CustomerID", CustomerObj.getString("CustomerID"));
+                            	JSONObject OldCustomerObj = customerTemplate.OpportunityInfo(model.getProjectID(), Mobile);
+                                if (OldCustomerObj.size() > 0){
+                                	//本项目存在历史机会,直接分配给之前的顾问
+                                    parameter.put("LastName",OldCustomerObj.getString("LastName"));
+                                    parameter.put("FirstName",OldCustomerObj.getString("FirstName"));
                                 }
                                 sqlKey = "mOldCustomerFJDetail_Insert";
                             }
-                            parameter["OpportunityID"] = Guid.NewGuid().ToString();
+                            parameter.put("OpportunityID",UUID.randomUUID().toString());
                             IsNew = true;
                         }
                         //销售轨迹类别
-                        parameter["TrackType"] = "BC2F967F-8FFE-1F52-49F6-CBCDFE8D044A";
+                    	parameter.put("TrackType", "BC2F967F-8FFE-1F52-49F6-CBCDFE8D044A");
                         //来电/来访
-                        int status = (Convert.ToString(parameter["VisitType"]) == "E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450") ? 2 : 1;
-                        parameter["Status"] = status;
-                        if (IsNew)
-                        {
+                        int status ="E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(parameter.getString("VisitType")) ? 2 : 1;
+                        parameter.put("Status", status);
+                        String ClueID = "";
+                        if (IsNew){
                             //客户来源
-                            string ClueID = "";
-                            parameter["OpportunitySource"] = customerHelp.GetOpportunitySource(parameter, out ClueID, debug);
-                            if (!string.IsNullOrEmpty(ClueID))
-                            {
-                                parameter["ClueID"] = ClueID;
-                            }
-                            else
-                            {
-                                parameter["ClueID"] = "";
-                            }
+                            String OpportunitySource="";
+                            Map<String, String> re_map = customerTemplate.GetOpportunitySource(parameter);
+                            ClueID = re_map.get("clueID")!=null?re_map.get("clueID").toString():"";
+                            OpportunitySource = re_map.get("opportunitySourceID")!=null?re_map.get("opportunitySourceID").toString():"";
+                            parameter.put("OpportunitySource",OpportunitySource);
+                            parameter.put("ClueID", ClueID);
                         }
-                        string IntentionLevel = ConvertHelper.ToString(CustomerObj["CustomerLevel"]);
-                        if (string.IsNullOrEmpty(IntentionLevel))
-                        {
+                        String IntentionLevel = CustomerObj.getString("CustomerLevel");
+                        if (StringUtils.isEmpty(IntentionLevel)){
                             IntentionLevel = "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D";
                         }
-                        string VisitType = ConvertHelper.ToString(parameter["VisitType"]);
-                        string FollwUpWay = "";
-                        if (VisitType == "E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450")
-                        {//来访
+                        String VisitType = parameter.getString("VisitType");
+                        String FollwUpWay = "";
+                        if (VisitType == "E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450"){
+                        	//来访
                             FollwUpWay = "E30825AA-B894-4A5F-AF55-24CAC34C8F1F";
-                        }
-                        else
-                        {//来电
+                        }else{//来电
                             FollwUpWay = "A79A1057-D4DC-497C-8C81-8F93E422C819";
                         }
-                        string FollwUpType = Common.Utils.GetCustomerActionByFollowUpWay(FollwUpWay);
-                        if (SaleUserID.Length > 0)
-                        {
-                            bool result = JsonDataHelper.SetNormalData(sqlKey, parameter, out errmsg, debug);
-                            if (result)
-                            {
-                                if (IsNew)
-                                {
+                        String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(FollwUpWay);
+                        if (SaleUserID.length() > 0){
+                            paramAry.put("Name", paramAry.getString("LastName")+paramAry.getString("FirstName"));
+                            Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                            if(sqlKey.equals("mCustomerFJDetail_Update")){
+                            	Map<String, Object> step1_map = vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step1(pmap);
+                            	if(step1_map!=null && step1_map.size()>0){
+                            		int Status = parameter.getIntValue("Status");
+                                	int IsIPad = parameter.getIntValue("IsIPad");
+                                	List<Integer> list = Arrays.asList(new Integer[]{1,2,3,4});
+                                	String tSaleUserID= step1_map.get("SaleUserID").toString();
+                                	int tStatus = (int)step1_map.get("Status");
+                                	if(Status==2 && list.contains(tStatus) && (tSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899") || tSaleUserID.equals(""))){
+                                		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step2(pmap);
+                                	}
+                                	String tSalePartnerID = null;
+                                	String tFirstVisitAddress = step1_map.get("FirstVisitAddress").toString();
+                                	String tReVisitAddress = step1_map.get("ReVisitAddress").toString();
+                                	if(step1_map.get("SalePartnerID")!=null){
+                                		tSalePartnerID = step1_map.get("SalePartnerID").toString();
+                                	}
+                                	if(IsIPad==1 && Status==2 && tSalePartnerID==null && "".equals(tFirstVisitAddress) && "".equals(tReVisitAddress) && !StringUtils.isEmpty(paramAry.getString("VisitAddress")) && paramAry.getIntValue("IsReAlloc")==0 ){
+                                		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step3(pmap);
+                                	}
+                                	if(IsIPad==1 && Status==2 && !tSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899") && tSalePartnerID==null && "".equals(tReVisitAddress) && !tFirstVisitAddress.equals(paramAry.getString("VisitAddress")) && paramAry.getIntValue("IsReAlloc")==1){
+                                		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step4(pmap);
+                                	}
+                                	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(paramAry.getString("VisitType"))){
+                                		pmap.put("CustomerRank", "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
+                                		pmap.put("UpDownStatus", 1);
+                                		vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
+                                	}
+                                	vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step5(pmap);
+                            	}
+                            	
+                            }else if(sqlKey.equals("mCustomerFJDetail_Insert")){
+                            	vCustomerfjlistSelectMapper.mCustomerFJDetail_Insert_step1(pmap);
+                            	vCustomerfjlistSelectMapper.mCustomerFJDetail_Insert_step2(pmap);
+                            	vCustomerfjlistSelectMapper.mCustomerFJDetail_Insert_step3(pmap);
+                            	vCustomerfjlistSelectMapper.mCustomerFJDetail_Insert_step4(pmap);
+                            	
+                            	pmap.put("CustomerRank", "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
+                            	pmap.put("UpDownStatus", 1);
+                            	vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
+                            	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(paramAry.getString("VisitType"))){
+                            		pmap.put("CustomerRank", "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
+                            		pmap.put("UpDownStatus", 1);
+                            		vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
+                            	}
+                            	vCustomerfjlistSelectMapper.mCustomerFJDetail_Insert_step5(pmap);
+                            	pmap.put("ClueID","");
+                            	vCustomergwlistSelectMapper.P_SyncClueOpportunity_Update(pmap);
+                            	
+                            }else if(sqlKey.equals("mOldCustomerFJDetail_Insert")){
+                            	vCustomerfjlistSelectMapper.mOldCustomerFJDetail_Insert_step1(pmap);
+                            	vCustomerfjlistSelectMapper.mOldCustomerFJDetail_Insert_step2(pmap);
+                            	vCustomerfjlistSelectMapper.mOldCustomerFJDetail_Insert_step3(pmap);
+                            	pmap.put("CustomerRank", "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
+                            	pmap.put("UpDownStatus", 1);
+                            	vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
+                            	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(paramAry.getString("VisitType"))){
+                            		pmap.put("CustomerRank", "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
+                            		pmap.put("UpDownStatus", 1);
+                            		vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
+                            	}
+                            	vCustomerfjlistSelectMapper.mOldCustomerFJDetail_Insert_step4(pmap);
+                            	pmap.put("ClueID","");
+                            	vCustomergwlistSelectMapper.P_SyncClueOpportunity_Update(pmap);
+                            }
+                            Boolean result = true;
+                            if (result){
+                                if (IsNew){
                                     //更新线索信息
-                                    customerHelp.ClueUpdate(parameter, debug);
-                                    if (SaleUserID != "C4C09951-FA39-4982-AAD1-E72D9D4C3899")//不为无
-                                    {//判断分配的置业顾问是否为无
-                                        if (entity.ErrCode == 0)
-                                        {
-                                            string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                            string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                            string BizID = ConvertHelper.ToString(parameter["OpportunityID"]);
-                                            string BizType = "Opportunity";
-                                            string Subject = MessageType.分配待跟进.ToString();
-                                            string Content = "客户" + Convert.ToString(parameter["LastName"]) + Convert.ToString(parameter["FirstName"]) + "、" + Convert.ToString(parameter["Mobile"]) + MessageType.到访提醒.ToString();
-                                            string Receiver = ConvertHelper.ToString(parameter["SaleUserID"]);
-                                            new SystemMessageService().Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.分配待跟进, true, debug);
+                                	customerTemplate.ClueUpdate(parameter);;
+                                    if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//不为无
+                                    	//判断分配的置业顾问是否为无
+                                        if (entity.getErrcode() == 0){
+                                            String UserID = parameter.getString("UserID");
+                                            String ProjectID = parameter.getString("ProjectID");
+                                            String BizID = parameter.getString("OpportunityID");
+                                            String BizType = "Opportunity";
+                                            String Subject = MessageType.分配待跟进.getTypeID();
+                                            String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" +  parameter.getString("Mobile") + MessageType.到访提醒.getTypeID();
+                                            String Receiver = parameter.getString("SaleUserID");
+                                            iSystemMessageService.Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver,  MessageType.分配待跟进.getTypeID(), true);
                                         }
                                         //客户分配
-                                        string msg = string.Empty;
-                                        
-                                        JObject re = (JObject)JsonDataHelper.GetNormalData("RemindRuleAllotDetail_Select", parameter, out msg, debug);
-                                        if (re["ClueID"] != null && !string.IsNullOrEmpty(re["ClueID"].ToString()) && re["ReportUserID"] != null && !string.IsNullOrEmpty(re["ReportUserID"].ToString()))
-                                        {
-                                            if (SaleUserID != "C4C09951-FA39-4982-AAD1-E72D9D4C3899")//不为无
-                                            {//判断分配的置业顾问是否为无
-                                                string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                                string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                                string Content = "客户" + Convert.ToString(parameter["LastName"]) + Convert.ToString(parameter["FirstName"]) + "、" + Convert.ToString(parameter["Mobile"]) +"(客户分配提醒)";
-                                                new SystemMessageService().Detail_Insert(UserID, ProjectID, re["ClueID"].ToString(), "Clue", "客户分配提醒", Content, re["ReportUserID"].ToString(), MessageType.系统通知, true, debug);
+                                        if(!StringUtils.isEmpty(ClueID)){
+                                        	Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(ClueID);
+                                            String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
+                                            String projectID = parameter.getString("ProjectID");
+                                            Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                            
+                                            String ReportUserID = "";
+                                            ClueID = "";
+                                            if((int)re_map_step2.get("AllotRemind")>0){
+                                            	if(re_map_step1.get("ReportUserID")!=null){
+                                            		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                            	}
+                                            	if(re_map_step1.get("ClueID")!=null){
+                                            		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                            	}
+                                            }
+                                            if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                            	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
+                                            		String UserID = parameter.getString("UserID");
+                                                    String ProjectID = parameter.getString("ProjectID");
+                                                    String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
+                                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                            	}
                                             }
                                         }
                                         //客户到访
-                                        if (FollwUpType == "售场接待")
-                                        {
-                                            string msgs = string.Empty;
-                                            JObject res = (JObject)JsonDataHelper.GetNormalData("RemindRuleArriveDetail_Select", parameter, out msgs, debug);
-                                            if (res["ClueID"] != null && !string.IsNullOrEmpty(res["ClueID"].ToString()) && res["ReportUserID"] != null && !string.IsNullOrEmpty(res["ReportUserID"].ToString()))
-                                            {
-                                                string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                                string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                                string Content = "客户" + Convert.ToString(res["LastName"]) + Convert.ToString(res["FirstName"]) + "、" + Convert.ToString(res["Mobile"]) + "(" + MessageType.到访提醒 + ")";
-                                                new SystemMessageService().Detail_Insert(UserID, ProjectID, res["ClueID"].ToString(), "Clue", "客户到访提醒", Content, res["ReportUserID"].ToString(), MessageType.带看通知, true, debug);
+                                        if ("售场接待".equals(FollwUpType)){//售场接待
+                                        	String projectID = parameter.getString("ProjectID");
+                                        	String tClueID = parameter.getString("ClueID");
+                                        	String opportunityID = parameter.getString("OpportunityID");
+                                            Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select(opportunityID, tClueID);
+                                            String reportUserID = "";
+                                            String tprotectSource = "";
+                                            if(res.get("clueID")!=null){
+                                            	tClueID = res.get("clueID").toString();
+                                            }
+                                            if(res.get("reportUserID")!=null){
+                                            	reportUserID = res.get("reportUserID").toString();
+                                            }
+                                            if(res.get("protectSource")!=null){
+                                            	tprotectSource = res.get("protectSource").toString();
+                                            }
+                                            if (!StringUtils.isEmpty(tClueID) &&  !StringUtils.isEmpty(reportUserID)){
+                                            	String LastName = "";
+                                            	String FirstName = "";
+                                            	String tMobile = "";
+                                            	if(!"".equals(tprotectSource)){
+                                                	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
+                                                	int customerVisitsRemind = 0;
+                                                	if(resf.get("customerVisitsRemind")!=null){
+                                                		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
+                                                	}
+                                                	if(customerVisitsRemind>0){
+                                                		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
+                                                		if(ress.get("LastName")!=null){
+                                                			LastName = ress.get("LastName").toString();
+                                                		}
+                                                		if(ress.get("FirstName")!=null){
+                                                			FirstName = ress.get("FirstName").toString();
+                                                		}
+                                                		if(ress.get("Mobile")!=null){
+                                                			tMobile = ress.get("Mobile").toString();
+                                                		}
+                                                	}
+                                                }
+                                                String UserID =paramAry.getString("UserID");
+                                                String ProjectID = paramAry.getString("ProjectID");
+                                                String Content = "客户" +LastName +FirstName + "、" + tMobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
+                                                Map<String,Object> parameter_1 = new HashMap<String,Object>();
+                                                parameter_1.put("ProjectID", ProjectID);
+                                                parameter_1.put("BizID", res.get("ClueID").toString());
+                                                parameter_1.put("BizType", "Clue");
+                                                parameter_1.put("Subject", "客户到访提醒");
+                                                parameter_1.put("Content", Content);
+                                                parameter_1.put("Receiver",res.get("ReportUserID").toString());
+                                                parameter_1.put("MessageType",MessageType.带看通知.getTypeID());
+                                                parameter_1.put("Sender", UserID);
+                                                parameter_1.put("Creator", UserID);
+                                                parameter_1.put("IsNeedPush", true);
+                                                iSystemMessageService.SystemMessageDetail_Insert(parameter_1);
+                                            }
+                                        
+                                        }
+                                        String userID = parameter.getString("SaleUserID");
+                                        Result Account = iSystemAccountService.SystemAccountDetail_Select(userID);
+                                        String NewSaleUserName = "";
+                                        if (Account.getErrcode() == 0){
+                                        	JSONObject AccountData = (JSONObject) Account.getData();
+                                            if (AccountData.size() > 0){
+                                                NewSaleUserName = AccountData.getString("EmployeeName");
                                             }
                                         }
-                                        #endregion
-                                        var Account = new SystemAccountService().SystemAccountDetail_Select(new JObject() { new JProperty("UserID", Convert.ToString(parameter["SaleUserID"])) }, debug);
-                                        string NewSaleUserName = "";
-                                        if (Account.ErrCode == 0)
-                                        {
-                                            if (((JObject)Account.Data).Count > 0)
-                                            {
-                                                NewSaleUserName = ConvertHelper.ToString(((JObject)Account.Data)["EmployeeName"]);
-                                            }
-                                        }
-                                        JObject obj1 = new JObject();
-                                        obj1.Add("FollwUpType", ActionType.分配顾问.ToString());
-                                        obj1.Add("SalesType", 1);
-                                        obj1.Add("NewSaleUserName", NewSaleUserName);
-                                        obj1.Add("OldSaleUserName", "");
-                                        obj1.Add("FollwUpUserID", ConvertHelper.ToString(parameter["UserID"]));
-                                        obj1.Add("FollwUpWay", "");
-                                        obj1.Add("FollowUpContent", "");
-                                        obj1.Add("IntentionLevel", "");
-                                        obj1.Add("OrgID", ConvertHelper.ToString(parameter["OrgID"]));
-                                        obj1.Add("FollwUpUserRole", ConvertHelper.ToString(parameter["JobID"]));
-                                        obj1.Add("OpportunityID", ConvertHelper.ToString(parameter["OpportunityID"]));
-                                        obj1.Add("ClueID", "");
-                                        obj1.Add("NextFollowUpDate", "");
-                                        new CustomerActionRepository(obj1, debug).CustomerFollowUp_Insert();
+                                        JSONObject obj1 = new JSONObject();
+                                        obj1.put("FollwUpType", ActionType.分配顾问.getValue());
+                                        obj1.put("SalesType", 1);
+                                        obj1.put("NewSaleUserName", NewSaleUserName);
+                                        obj1.put("OldSaleUserName", "");
+                                        obj1.put("FollwUpUserID",parameter.getString("UserID"));
+                                        obj1.put("FollwUpWay", "");
+                                        obj1.put("FollowUpContent", "");
+                                        obj1.put("IntentionLevel", "");
+                                        obj1.put("OrgID",parameter.getString("OrgID"));
+                                        obj1.put("FollwUpUserRole",parameter.getString("JobID"));
+                                        obj1.put("OpportunityID", parameter.getString("OpportunityID"));
+                                        obj1.put("ClueID", "");
+                                        obj1.put("NextFollowUpDate", "");
+                                        CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+                                        iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
                                     }
                                     //增加跟进记录
-                                    if (!string.IsNullOrEmpty(FollwUpType))
-                                    {
-                                        JObject obj = new JObject();
-                                        obj.Add("FollwUpType", FollwUpType);
-                                        obj.Add("SalesType", 1);
-                                        obj.Add("NewSaleUserName", "");
-                                        obj.Add("OldSaleUserName", "");
-                                        obj.Add("FollwUpUserID", ConvertHelper.ToString(parameter["UserID"]));
-                                        obj.Add("FollwUpWay", FollwUpWay);
-                                        obj.Add("FollowUpContent", FollwUpType);
-                                        obj.Add("IntentionLevel", IntentionLevel);//默认D级
-                                        obj.Add("OrgID", ConvertHelper.ToString(parameter["OrgID"]));
-                                        obj.Add("FollwUpUserRole", ConvertHelper.ToString(parameter["JobID"]));
-                                        obj.Add("OpportunityID", ConvertHelper.ToString(parameter["OpportunityID"]));
-                                        obj.Add("ClueID", "");
-                                        obj.Add("NextFollowUpDate", "");
-                                        new CustomerActionRepository(obj, debug).CustomerFollowUp_Insert();
+                                    if (StringUtils.isEmpty(FollwUpType)){
+                                    	JSONObject obj = new JSONObject();
+                                        obj.put("FollwUpType", FollwUpType);
+                                        obj.put("SalesType", 1);
+                                        obj.put("NewSaleUserName", "");
+                                        obj.put("OldSaleUserName", "");
+                                        obj.put("FollwUpUserID",parameter.getString("UserID"));
+                                        obj.put("FollwUpWay", FollwUpWay);
+                                        obj.put("FollowUpContent", FollwUpType);
+                                        obj.put("IntentionLevel", IntentionLevel);//默认D级
+                                        obj.put("OrgID",parameter.getString("OrgID"));
+                                        obj.put("FollwUpUserRole", parameter.getString("JobID"));
+                                        obj.put("OpportunityID", parameter.getString("OpportunityID"));
+                                        obj.put("ClueID", "");
+                                        obj.put("NextFollowUpDate", "");
+                                        CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
+                                        iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
                                     }
-                                    CustomerOpportunityFollowUpDetail_Update(parameter, debug);//客户机会跟进记录更新
-                                }
-                                else
-                                {
-                                    if (SaleUserID != "C4C09951-FA39-4982-AAD1-E72D9D4C3899")//不为无
-                                    {//判断分配的置业顾问是否为无
-                                        if (OldSaleUserID == "C4C09951-FA39-4982-AAD1-E72D9D4C3899")//原顾问为无,新顾问不为无,发送分配待跟进消息和分配跟进记录
-                                        {
-                                            if (entity.ErrCode == 0)
-                                            {
-                                                string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                                string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                                string BizID = ConvertHelper.ToString(parameter["OpportunityID"]);
-                                                string BizType = "Opportunity";
-                                                string Subject = MessageType.分配待跟进.ToString();
-                                                string Content = "客户" + Convert.ToString(parameter["LastName"]) + Convert.ToString(parameter["FirstName"]) + "、" + Convert.ToString(parameter["Mobile"]) + MessageType.到访提醒.ToString();
-                                                string Receiver = ConvertHelper.ToString(parameter["SaleUserID"]);
-                                                new SystemMessageService().Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.分配待跟进, true, debug);
+                                    String opportunityID = parameter.getString("OpportunityID");
+                                    String userID = parameter.getString("UserID");
+                                    iVCustomergwlistSelectService.CustomerOpportunityFollowUpDetail_Update(opportunityID, userID);//客户机会跟进记录更新
+                                }else{
+                                    if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//不为无
+                                    	//判断分配的置业顾问是否为无
+                                        if (OldSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//原顾问为无,新顾问不为无,发送分配待跟进消息和分配跟进记录
+                                            if (entity.getErrcode() == 0){
+                                                String UserID = parameter.getString("UserID");
+                                                String ProjectID = parameter.getString("ProjectID");
+                                                String BizID = parameter.getString("OpportunityID");
+                                                String BizType = "Opportunity";
+                                                String Subject = MessageType.分配待跟进.getTypeID();
+                                                String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + MessageType.到访提醒.getTypeID();
+                                                String Receiver = parameter.getString("SaleUserID");
+                                                iSystemMessageService.Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.分配待跟进.getTypeID(), true);
                                             }
                                             //客户分配
-                                            string msg = string.Empty;
-                                            JObject re = (JObject)JsonDataHelper.GetNormalData("RemindRuleAllotDetail_Select", parameter, out msg, debug);
-                                            if (re["ClueID"] != null && !string.IsNullOrEmpty(re["ClueID"].ToString()) && re["ReportUserID"] != null && !string.IsNullOrEmpty(re["ReportUserID"].ToString()))
-                                            {
-                                                if (SaleUserID != "C4C09951-FA39-4982-AAD1-E72D9D4C3899")//不为无
-                                                {//判断分配的置业顾问是否为无
-                                                    string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                                    string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                                    string Content = "客户" + Convert.ToString(parameter["LastName"]) + Convert.ToString(parameter["FirstName"]) + "、" + Convert.ToString(parameter["Mobile"]) + "(客户分配提醒)";
-                                                    new SystemMessageService().Detail_Insert(UserID, ProjectID, re["ClueID"].ToString(), "Clue", "客户分配提醒", Content, re["ReportUserID"].ToString(), MessageType.系统通知, true, debug);
+                                            String fClueID = parameter.getString("ClueID");
+                                            if(!StringUtils.isEmpty(fClueID)){
+                                                Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(fClueID);
+                                                String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
+                                                String projectID = parameter.getString("ProjectID");
+                                                Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                                String ReportUserID = "";
+                                                ClueID = "";
+                                                if((int)re_map_step2.get("AllotRemind")>0){
+                                                	if(re_map_step1.get("ReportUserID")!=null){
+                                                		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                                	}
+                                                	if(re_map_step1.get("ClueID")!=null){
+                                                		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                                	}
+                                                }
+                                                if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
+                                                		String UserID = parameter.getString("UserID");
+                                                        String ProjectID = parameter.getString("ProjectID");
+                                                        String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
+                                                        iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                                	}
                                                 }
                                             }
-                                            #endregion
-                                            var Account = new SystemAccountService().SystemAccountDetail_Select(new JObject() { new JProperty("UserID", Convert.ToString(parameter["SaleUserID"])) }, debug);
-                                            string NewSaleUserName = "";
-                                            if (Account.ErrCode == 0)
-                                            {
-                                                if (((JObject)Account.Data).Count > 0)
-                                                {
-                                                    NewSaleUserName = ConvertHelper.ToString(((JObject)Account.Data)["EmployeeName"]);
+                                            String userID = parameter.getString("SaleUserID");
+                                            Result Account = iSystemAccountService.SystemAccountDetail_Select(userID);
+                                            String NewSaleUserName = "";
+                                            if (Account.getErrcode() == 0){
+                                            	JSONObject AccountData = (JSONObject) Account.getData();
+                                                if (AccountData.size() > 0){
+                                                    NewSaleUserName =AccountData.getString("EmployeeName");
                                                 }
                                             }
-                                            JObject obj1 = new JObject();
-                                            obj1.Add("FollwUpType", ActionType.分配顾问.ToString());
-                                            obj1.Add("SalesType", 1);
-                                            obj1.Add("NewSaleUserName", NewSaleUserName);
-                                            obj1.Add("OldSaleUserName", "");
-                                            obj1.Add("FollwUpUserID", ConvertHelper.ToString(parameter["UserID"]));
-                                            obj1.Add("FollwUpWay", "");
-                                            obj1.Add("FollowUpContent", "");
-                                            obj1.Add("IntentionLevel", "");
-                                            obj1.Add("OrgID", ConvertHelper.ToString(parameter["OrgID"]));
-                                            obj1.Add("FollwUpUserRole", ConvertHelper.ToString(parameter["JobID"]));
-                                            obj1.Add("OpportunityID", ConvertHelper.ToString(parameter["OpportunityID"]));
-                                            obj1.Add("ClueID", "");
-                                            obj1.Add("NextFollowUpDate", "");
-                                            new CustomerActionRepository(obj1, debug).CustomerFollowUp_Insert();
-                                        }
-                                        else
-                                        {
-                                            if (FollwUpWay == "E30825AA-B894-4A5F-AF55-24CAC34C8F1F")
-                                            {
-                                                if (entity.ErrCode == 0 && model.IsSend == "1")
-                                                {
-                                                    string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                                    string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                                    string BizID = ConvertHelper.ToString(parameter["OpportunityID"]);
-                                                    string BizType = "Opportunity";
-                                                    string Subject = MessageType.到访提醒.ToString();
-                                                    string Content = "客户" + Convert.ToString(parameter["LastName"]) + Convert.ToString(parameter["FirstName"]) + "、" + Convert.ToString(parameter["Mobile"]) + MessageType.到访提醒.ToString();
-                                                    string Receiver = ConvertHelper.ToString(parameter["SaleUserID"]);
-                                                    new SystemMessageService().Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.到访提醒, true, debug);
+                                            JSONObject obj1 = new JSONObject();
+                                            obj1.put("FollwUpType", ActionType.分配顾问.getValue());
+                                            obj1.put("SalesType", 1);
+                                            obj1.put("NewSaleUserName", NewSaleUserName);
+                                            obj1.put("OldSaleUserName", "");
+                                            obj1.put("FollwUpUserID",parameter.getString("UserID"));
+                                            obj1.put("FollwUpWay", "");
+                                            obj1.put("FollowUpContent", "");
+                                            obj1.put("IntentionLevel", "");
+                                            obj1.put("OrgID", parameter.getString("OrgID"));
+                                            obj1.put("FollwUpUserRole",parameter.getString("JobID"));
+                                            obj1.put("OpportunityID", parameter.getString("OpportunityID"));
+                                            obj1.put("ClueID", "");
+                                            obj1.put("NextFollowUpDate", "");
+                                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+                                            iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+                                        }else{
+                                            if (FollwUpWay.equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F")){
+                                                if (entity.getErrcode() == 0 && model.getIsSend().equals("1")){
+                                                    String UserID = parameter.getString("UserID");
+                                                    String ProjectID = parameter.getString("ProjectID");
+                                                    String BizID = parameter.getString("OpportunityID");
+                                                    String BizType = "Opportunity";
+                                                    String Subject = MessageType.到访提醒.getTypeID();
+                                                    String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + MessageType.到访提醒.getTypeID();
+                                                    String Receiver = parameter.getString("SaleUserID");
+                                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.到访提醒.getTypeID(), true);
                                                 }
                                                 //客户到访
-                                                string msgs = string.Empty;
-                                                JObject res = (JObject)JsonDataHelper.GetNormalData("RemindRuleArriveDetail_Select", parameter, out msgs, debug);
-                                                if (res["ClueID"] != null && !string.IsNullOrEmpty(res["ClueID"].ToString()) && res["ReportUserID"] != null && !string.IsNullOrEmpty(res["ReportUserID"].ToString()))
-                                                {
-                                                    string UserID = ConvertHelper.ToString(parameter["UserID"]);
-                                                    string ProjectID = ConvertHelper.ToString(parameter["ProjectID"]);
-                                                    string Content = "客户" + Convert.ToString(res["LastName"]) + Convert.ToString(res["FirstName"]) + "、" + Convert.ToString(res["Mobile"]) + "(" + MessageType.到访提醒 + ")";
-                                                    new SystemMessageService().Detail_Insert(UserID, ProjectID, res["ClueID"].ToString(), "Clue", "客户到访提醒", Content, res["ReportUserID"].ToString(), MessageType.带看通知, true, debug);
+                                                String fClueID = parameter.getString("ClueID");
+                                                if(!StringUtils.isEmpty(fClueID)){
+                                                    Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(fClueID);
+                                                    String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
+                                                    String projectID = parameter.getString("ProjectID");
+                                                    Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                                    String ReportUserID = "";
+                                                    ClueID = "";
+                                                    if((int)re_map_step2.get("AllotRemind")>0){
+                                                    	if(re_map_step1.get("ReportUserID")!=null){
+                                                    		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                                    	}
+                                                    	if(re_map_step1.get("ClueID")!=null){
+                                                    		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                                    	}
+                                                    }
+                                                    if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                    	String UserID = parameter.getString("UserID");
+                                                        String ProjectID = parameter.getString("ProjectID");
+                                                        String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + MessageType.到访提醒.getTypeID();
+                                                        iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.带看通知.getTypeID(), true);
+                                                    }
                                                 }
                                             }
                                             //增加跟进记录
-                                            if (!string.IsNullOrEmpty(FollwUpType))
-                                            {
-                                                JObject obj = new JObject();
-                                                obj.Add("FollwUpType", FollwUpType);
-                                                obj.Add("SalesType", 1);
-                                                obj.Add("NewSaleUserName", "");
-                                                obj.Add("OldSaleUserName", "");
-                                                obj.Add("FollwUpUserID", ConvertHelper.ToString(parameter["UserID"]));
-                                                obj.Add("FollwUpWay", FollwUpWay);
-                                                obj.Add("FollowUpContent", FollwUpType);
-                                                obj.Add("IntentionLevel", IntentionLevel);//默认D级
-                                                obj.Add("OrgID", ConvertHelper.ToString(parameter["OrgID"]));
-                                                obj.Add("FollwUpUserRole", ConvertHelper.ToString(parameter["JobID"]));
-                                                obj.Add("OpportunityID", ConvertHelper.ToString(parameter["OpportunityID"]));
-                                                obj.Add("ClueID", "");
-                                                obj.Add("NextFollowUpDate", "");
-                                                new CustomerActionRepository(obj, debug).CustomerFollowUp_Insert();
+                                            if (!StringUtils.isEmpty(FollwUpType)){
+                                            	JSONObject obj = new JSONObject();
+                                                obj.put("FollwUpType", FollwUpType);
+                                                obj.put("SalesType", 1);
+                                                obj.put("NewSaleUserName", "");
+                                                obj.put("OldSaleUserName", "");
+                                                obj.put("FollwUpUserID", parameter.getString("UserID"));
+                                                obj.put("FollwUpWay", FollwUpWay);
+                                                obj.put("FollowUpContent", FollwUpType);
+                                                obj.put("IntentionLevel", IntentionLevel);//默认D级
+                                                obj.put("OrgID", parameter.getString("OrgID"));
+                                                obj.put("FollwUpUserRole", parameter.getString("JobID"));
+                                                obj.put("OpportunityID", parameter.getString("OpportunityID"));
+                                                obj.put("ClueID", "");
+                                                obj.put("NextFollowUpDate", "");
+                                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
+                                                iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
                                             }
-                                            CustomerOpportunityFollowUpDetail_Update(parameter, debug);//客户机会跟进记录更新
+                                            String opportunityID = parameter.getString("OpportunityID");
+                                            String userID = parameter.getString("UserID");
+                                            iVCustomergwlistSelectService.CustomerOpportunityFollowUpDetail_Update(opportunityID, userID);//客户机会跟进记录更新
                                         }
                                     }
                                 }
 
                             }
-                            else
-                            {
-                                entity.ErrCode = 1;
-                                entity.ErrMsg = "失败";
+                            else{
+                                entity.setErrcode(1);
+                                entity.setErrmsg("失败");
                             }
+                        }else{
+                        	entity.setErrcode(1);
+                            entity.setErrmsg("参数缺失！");
                         }
-                        else
-                        {
-                            entity.ErrCode = 1;
-                            entity.ErrMsg = "参数缺失！";
-                        }
+                    }else{
+                    	entity.setErrcode(1);
+                        entity.setErrmsg("手机号码为空！");
                     }
-                    else
-                    {
-                        entity.ErrCode = 1;
-                        entity.ErrMsg = "手机号码为空！";
-                    }
+                }else{
+                    entity.setErrcode(1);
+                    entity.setErrmsg("参数格式错误！");
                 }
-                else
-                {
-                    entity.ErrCode = 1;
-                    entity.ErrMsg = "参数格式错误！";
-
-                }
-
+            }else{
+                entity.setErrcode(1);
+                entity.setErrmsg("参数不完整！");
             }
-            else
-            {
-                entity.ErrCode = 1;
-                entity.ErrMsg = "参数不完整！";
-            }
+        }catch (Exception e){
+            entity.setErrcode(1);
+            entity.setErrmsg("服务器异常！");
+            throw e;
         }
-        catch (Exception ex)
-        {
-            entity.ErrCode = 1;
-            entity.ErrMsg = "服务器异常！";
-
-            throw ex;
-        }*/
-
         return entity;
 	}
 
