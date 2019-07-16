@@ -35,7 +35,7 @@ import java.util.Map;
  * @since 2019-07-04
  */
 @RestController
-@RequestMapping("/sJobs")
+@RequestMapping("/webapi/sJobs")
 public class SJobsController extends TahoeBaseController {
 
     @Autowired
@@ -98,8 +98,15 @@ public class SJobsController extends TahoeBaseController {
         jobsService.updateById(jobs);
         return Result.errormsg(99,"新增失败");
     }
-
-
+    @ApiOperation(value = "岗位功能授权", notes = "岗位功能授权")
+    @RequestMapping(value = "/SystemJobAuth_Insert", method = {RequestMethod.POST})
+    public Result SystemJobAuth_Insert(String Menus,String JobID){
+        boolean b=jobsService.SystemJobAuth_Insert(Menus,JobID);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"授权失败");
+    }
 
     @ApiOperation(value = "获取岗位下的人员", notes = "获取岗位下的人员")
     @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
@@ -123,7 +130,7 @@ public class SJobsController extends TahoeBaseController {
         return Result.errormsg(99,"人员新增失败");
     }
 
-    @ApiOperation(value = "获取所有人员(岗位授权)", notes = "获取所有人员(岗位授权)")
+    @ApiOperation(value = "获取所有人员", notes = "获取所有人员")
     @RequestMapping(value = "/SystemOrgUserList_Select", method = {RequestMethod.POST})
     public Result SystemOrgUserList_Select(String UserName,String EmployeeName,String JobID,int Pageindex, int Pagesize){
         IPage page=new Page(Pageindex,Pagesize);

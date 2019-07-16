@@ -80,7 +80,7 @@
         ''as  [Status]
         From B_Project f
         where   f.Level=1
-        AND f.PID=#{pid}
+        AND f.BUGUID=#{pid}
         ORDER BY Levels ASC,ListIndex ASC
     </select>
 </mapper>

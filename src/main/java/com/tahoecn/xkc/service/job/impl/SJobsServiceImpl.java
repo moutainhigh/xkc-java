@@ -1,15 +1,22 @@
 package com.tahoecn.xkc.service.job.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.mapper.job.SJobsMapper;
 import com.tahoecn.xkc.model.job.SJobs;
+import com.tahoecn.xkc.model.job.SJobsmenurel;
 import com.tahoecn.xkc.model.job.SJobsuserrel;
 import com.tahoecn.xkc.model.sys.SAccount;
+import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
+import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
+import com.tahoecn.xkc.model.sys.SMenus;
 import com.tahoecn.xkc.service.job.ISJobsService;
+import com.tahoecn.xkc.service.job.ISJobsmenurelService;
 import com.tahoecn.xkc.service.job.ISJobsuserrelService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
+import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +41,10 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private ISAccountService accountService;
     @Autowired
     private ISJobsuserrelService jobsuserrelService;
+    @Autowired
+    private ISJobsmenurelService jobsmenurelService;
+    @Autowired
+    private ISMenusService menusService;
 
     @Override
     public IPage<Map<String,Object>> SystemJobList_Select(IPage page, String authCompanyID, String productID, String orgID) {
@@ -92,5 +103,55 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             return false;
         }
 
+    }
+
+    @Override
+    public boolean SystemJobAuth_Insert(String menus, String jobID) {
+        boolean save =false;
+        try {
+            String[] menusSplit = menus.split(",");
+            //删除原功能
+            QueryWrapper<SJobsmenurel> wrapper=new QueryWrapper<>();
+            wrapper.eq("JobID",jobID);
+//            wrapper.in("MenuID",oldMenusSplit);
+            List<SJobsmenurel> list = jobsmenurelService.list(wrapper);
+            //判断menuID在原menu还是xkc menu  如果原menu不删除
+            for (SJobsmenurel jobsmenurel : list) {
+                String menuID = jobsmenurel.getMenuID();
+                SMenus byId = menusService.getById(menuID);
+                if (byId==null){
+                    jobsmenurelService.removeById(jobsmenurel);
+                }
+            }
+//            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
+//            queryWrapper.eq("JobID",jobID);
+////            queryWrapper.in("FuncID",oldFunctionsSplit);
+//            List<SCommonjobsfunctionsrel> list1 = commonjobsfunctionsrelService.list(queryWrapper);
+//            for (SCommonjobsfunctionsrel sCommonjobsfunctionsrel : list1) {
+//                commonjobsfunctionsrelService.removeById(sCommonjobsfunctionsrel);
+//            }
+            //新增新菜单
+            if (menusSplit.length!=0){
+                for (String s : menusSplit) {
+                    SJobsmenurel jobsmenurel=new SJobsmenurel();
+                    jobsmenurel.setJobID(jobID);
+                    jobsmenurel.setMenuID(s);
+                     save = jobsmenurelService.save(jobsmenurel);
+                }
+            }
+//        if (functionsSplit.length!=0){
+//            for (String s : functionsSplit) {
+//                SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
+//                commonjobsfunctionsrel.setJobID(jobID);
+//                commonjobsfunctionsrel.setFuncID(s);
+//                commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
+//            }
+//        }
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+        return save;
     }
 }

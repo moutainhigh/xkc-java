@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
 import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
+import com.tahoecn.xkc.model.sys.SMenus;
 import com.tahoecn.xkc.service.sys.ISCommonjobsService;
 import com.tahoecn.xkc.mapper.sys.SCommonjobsMapper;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 import com.tahoecn.xkc.service.sys.ISCommonjobsfunctionsrelService;
 import com.tahoecn.xkc.service.sys.ISCommonjobsmenurelService;
+import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,9 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 
     @Autowired
     private ISCommonjobsfunctionsrelService commonjobsfunctionsrelService;
+
+    @Autowired
+    private ISMenusService menusService;
 
 	@Override
 	public List<SCommonjobs> SystemCommonJobsList_Select(IPage page, String AuthCompanyID, String ProductID, String JobName) {
@@ -96,29 +101,33 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
      */
     @Override
     public boolean SystemCommonJobAuth_Insert(String oldMenus, String oldFunctions, String menus, String functions, String jobID) {
-        try {
-            //字符串分组
-            String[] oldMenusSplit = oldMenus.split("|");
-            String[] oldFunctionsSplit = oldFunctions.split("|");
-            String[] menusSplit = menus.split(",");
-            String[] functionsSplit = functions.split("|");
+                try {
+                    //字符串分组
+//            String[] oldMenusSplit = oldMenus.split("|");
+//            String[] oldFunctionsSplit = oldFunctions.split("|");
+                    String[] menusSplit = menus.split(",");
+                    String[] functionsSplit = functions.split("|");
 
-            //删除原功能
-            QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
-            wrapper.eq("JobID",jobID);
+                    //删除原功能
+                    QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
+                    wrapper.eq("JobID",jobID);
 //            wrapper.in("MenuID",oldMenusSplit);
-            List<SCommonjobsmenurel> list = commonjobsmenurelService.list(wrapper);
-            for (SCommonjobsmenurel sCommonjobsmenurel : list) {
-                commonjobsmenurelService.removeById(sCommonjobsmenurel);
-            }
-
-            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
-            queryWrapper.eq("JobID",jobID);
-//            queryWrapper.in("FuncID",oldFunctionsSplit);
-            List<SCommonjobsfunctionsrel> list1 = commonjobsfunctionsrelService.list(queryWrapper);
-            for (SCommonjobsfunctionsrel sCommonjobsfunctionsrel : list1) {
-                commonjobsfunctionsrelService.removeById(sCommonjobsfunctionsrel);
-            }
+                    List<SCommonjobsmenurel> list = commonjobsmenurelService.list(wrapper);
+                    //判断menuID在原menu还是xkc menu  如果原menu不删除
+                    for (SCommonjobsmenurel commonjobsmenurel : list) {
+                        String menuID = commonjobsmenurel.getMenuID();
+                        SMenus byId = menusService.getById(menuID);
+                        if (byId==null){
+                            commonjobsmenurelService.removeById(commonjobsmenurel);
+                        }
+                    }
+//            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
+//            queryWrapper.eq("JobID",jobID);
+////            queryWrapper.in("FuncID",oldFunctionsSplit);
+//            List<SCommonjobsfunctionsrel> list1 = commonjobsfunctionsrelService.list(queryWrapper);
+//            for (SCommonjobsfunctionsrel sCommonjobsfunctionsrel : list1) {
+//                commonjobsfunctionsrelService.removeById(sCommonjobsfunctionsrel);
+//            }
 
             //新增新菜单
             if (menusSplit.length!=0){

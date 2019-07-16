@@ -86,6 +86,17 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
                 }
                 result.add(map);
             }
+        }else {
+            for (Map<String, Object> map : list) {
+                List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
+                if (sub.size()>0){
+                    map.put("hasChild",1);
+                }else {
+                    map.put("hasChild",0);
+                }
+                result.add(map);
+            }
+
         }
 
         return list;

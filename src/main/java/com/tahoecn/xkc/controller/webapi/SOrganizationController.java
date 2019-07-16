@@ -1,25 +1,21 @@
 package com.tahoecn.xkc.controller.webapi;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
-import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.org.SOrganization;
 import com.tahoecn.xkc.service.org.ISOrganizationService;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 
-import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +29,7 @@ import java.util.Map;
  * @since 2019-07-06
  */
 @RestController
-@RequestMapping("/sOrganization")
+@RequestMapping("/webapi/sOrganization")
 public class SOrganizationController extends TahoeBaseController {
 
     @Autowired
@@ -57,15 +53,25 @@ public class SOrganizationController extends TahoeBaseController {
 
     @ApiOperation(value = "新增组织", notes = "新增组织")
     @RequestMapping(value = "/SystemOrganizationDetail_Insert", method = {RequestMethod.POST})
-    public Result SystemOrganizationDetail_Insert(SOrganization organization) {
-        SOrganization byId = organizationService.getById(organization.getId());
-        String FullPath=byId.getFullPath()+"/"+organization.getOrgName();
+    public Result SystemOrganizationDetail_Insert(int OrgCategory,String AuthCompanyID,String ProductID,
+                                                  String OrgName,String OrgShortName,String pid) {
+        SOrganization organization=new SOrganization();
+        SOrganization byId = organizationService.getById(pid);
+        String FullPath=byId.getFullPath()+"/"+OrgName;
         organization.setFullPath(FullPath);
         organization.setCreateTime(new Date());
         organization.setCreator(ThreadLocalUtils.getUserName());
         organization.setStatus(1);
         organization.setIsDel(0);
         organization.setCurrentPoint(0d);
+
+        organization.setOrgCategory(OrgCategory);
+        organization.setLevels(byId.getLevels()+1);
+        organization.setAuthCompanyID(AuthCompanyID);
+        organization.setProductID(ProductID);
+        organization.setOrgName(OrgName);
+        organization.setOrgShortName(OrgShortName);
+        organization.setPid(pid);
         boolean save = organizationService.save(organization);
         if (save){
             return Result.okm("成功");
@@ -75,7 +81,7 @@ public class SOrganizationController extends TahoeBaseController {
 
     @ApiOperation(value = "修改更新组织", notes = "修改更新组织")
     @RequestMapping(value = "/SystemOrganizationDetail_Update", method = {RequestMethod.POST})
-    public Result SystemOrganizationDetail_Update(SOrganization organization) {
+    public Result SystemOrganizationDetail_Update(@RequestBody SOrganization organization) {
         boolean b=organizationService.SystemOrganizationDetail_Updatez(organization);
         if (b){
             return Result.okm("成功");
@@ -89,6 +95,7 @@ public class SOrganizationController extends TahoeBaseController {
         SOrganization organization=new SOrganization();
         organization.setId(ID);
         organization.setStatus(Status);
+        System.out.println("+++++++++++"+ThreadLocalUtils.getUserName());
         organization.setEditor(ThreadLocalUtils.getUserName());
         organization.setEditTime(new Date());
         boolean b = organizationService.updateById(organization);

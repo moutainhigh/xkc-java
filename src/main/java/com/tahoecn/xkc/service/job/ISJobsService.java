@@ -29,4 +29,6 @@ public interface ISJobsService extends IService<SJobs> {
     IPage<SAccount> SystemOrgUserList_Select(IPage page, String userName, String employeeName, String jobID);
 
     boolean SystemJobUserRel_Insert(String userIDS, String jobID);
+
+    boolean SystemJobAuth_Insert(String menus, String jobID);
 }
