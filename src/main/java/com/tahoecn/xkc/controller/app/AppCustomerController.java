@@ -26,6 +26,7 @@ import com.tahoecn.xkc.model.vo.CustomerModel;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBOpportunitygiveupService;
+import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.customer.IVOpportunityService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 
@@ -57,24 +58,27 @@ public class AppCustomerController extends TahoeBaseController {
     private IBOpportunityService iBOpportunityService;
     @Autowired
     private IBOpportunitygiveupService iBOpportunitygiveupService;
+    @Autowired
+    private IVCustomergwlistSelectService iVCustomergwlistSelectService;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
     @RequestMapping(value = "/mCustomerYXJLLoseDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mCustomerYXJLLoseDetail_Select(@RequestBody JSONObject jsonParam) {
     	try{
-            Map paramMap = (HashMap)jsonParam.get("_param");
-    		
-    		CSearchModel model = JSON.parseObject(JSON.toJSONString(paramMap), CSearchModel.class);
-            CustomerModel customerModel = new CustomerModel();
-            List<Map<String,Object>> CustomerObj = iVOpportunityService.OpportunityInfo(model.getOpportunityID());
-            if (CustomerObj != null  && CustomerObj.size() > 0){
-                String customerModeType = CustomerModeType.顾问_客户_详情.getTypeID();
-                customerModel = iVOpportunityService.InitCustomerModeData(model, "GWGiveUpCustomer.json", CustomerObj.get(0), customerModeType);
-                return Result.ok(JSONObject.toJSON(customerModel));
-            }else{
-            	return Result.errormsg(11,"不存在客户信息！");
-            }
+    		JSONObject paramMap = jsonParam.getJSONObject("_param");
+    		return iVCustomergwlistSelectService.GiveUpDetail(paramMap);
+//    		
+//    		CSearchModel model = JSON.parseObject(JSON.toJSONString(paramMap), CSearchModel.class);
+//            CustomerModel customerModel = new CustomerModel();
+//            List<Map<String,Object>> CustomerObj = iVOpportunityService.OpportunityInfo(model.getOpportunityID());
+//            if (CustomerObj != null  && CustomerObj.size() > 0){
+//                String customerModeType = CustomerModeType.顾问_客户_详情.getTypeID();
+//                customerModel = iVOpportunityService.InitCustomerModeData(model, "GWGiveUpCustomer.json", CustomerObj.get(0), customerModeType);
+//                return Result.ok(JSONObject.toJSON(customerModel));
+//            }else{
+//            	return Result.errormsg(11,"不存在客户信息！");
+//            }
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
