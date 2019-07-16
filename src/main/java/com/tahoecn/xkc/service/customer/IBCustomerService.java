@@ -60,4 +60,9 @@ public interface IBCustomerService extends IService<BCustomer> {
     void CustomerGuidePrintDetail_Insert(Map<String, Object> result);
 
     void CustomerGuidePrintDetail_Update(Map<String, Object> result);
+
+    /*
+     * 线上预约客户列表
+     */
+	IPage<Map<String, Object>> mCustomerShareList_Select(IPage page, String UserID, String ProjectID);
 }

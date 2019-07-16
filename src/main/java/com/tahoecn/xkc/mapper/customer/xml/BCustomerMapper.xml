@@ -1143,4 +1143,31 @@
             WHERE ca.ID = #{id}
         ]]>
     </select>
+    
+    <!-- 线上预约客户列表 -->
+    <select id="mCustomerShareList_Select" resultType="java.util.Map" parameterType="java.util.Map">
+        <![CDATA[
+		SELECT 
+			ROW_NUMBER() OVER(ORDER BY a.CreateTime) num,
+			a.ID,
+			b.ID OpportunityID,
+			c.ID ClueID,
+			b.CustomerID,
+			a.CustomerName,
+			a.CustomerMobile,
+			a.CustomerCount,
+			a.AppointmentTime,
+			dbo.F_GetClueStatusName(c.Status,b.Status) OpportunityStatus,
+			b.Status OpportunityStatusValue,
+			dbo.F_GetClueStatusName(c.Status,0) ClueStatus,
+			CASE WHEN ISNULL(b.SaleUserID,'') <> '' THEN 1 ELSE 0 END IsAlloc 
+		FROM dbo.A_ShareCustomers a LEFT JOIN dbo.C_WXUser d ON d.ID = a.WXUserID 
+											 LEFT JOIN dbo.B_Opportunity b ON b.CustomerMobile = d.Mobile 
+											 LEFT JOIN dbo.B_Clue c ON c.ID = b.ClueID
+		WHERE b.ProjectID = #{ProjectID}
+				AND b.SaleUserID = #{UserID}
+				AND a.IsDel = 0
+
+        ]]>
+    </select>
 </mapper>

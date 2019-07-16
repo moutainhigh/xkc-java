@@ -191,4 +191,12 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     public List<Map<String, Object>> IsProjectOwner_Select(String projectId, String phone) {
         return baseMapper.IsProjectOwner_Select(projectId, phone);
     }
+
+    /*
+     * 线上预约客户列表
+     */
+	@Override
+	public IPage<Map<String, Object>> mCustomerShareList_Select(IPage page, String UserID, String ProjectID) {
+		return baseMapper.mCustomerShareList_Select(page, UserID, ProjectID);
+	}
 }

@@ -1,6 +1,8 @@
 package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.date.DateTime;
 import com.tahoecn.xkc.common.utils.NetUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
@@ -9,6 +11,7 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.BAppupgrade;
 import com.tahoecn.xkc.model.sys.BSystemad;
 import com.tahoecn.xkc.model.sys.SFormsession;
+import com.tahoecn.xkc.service.customer.IBCustomerService;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
@@ -57,6 +60,8 @@ public class AppSystemController extends TahoeBaseController {
 	private CsSendSmsLogService csSendSmsLogService;
     @Autowired 
     private ISFormsessionService iSFormsessionService;
+    @Autowired 
+    private IBCustomerService iBCustomerService;
 
 	@ResponseBody
     @ApiOperation(value = "广告接口", notes = "广告接口")
@@ -154,4 +159,31 @@ public class AppSystemController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	
+	@ResponseBody
+    @ApiOperation(value = "线上预约客户列表", notes = "线上预约客户列表")
+    @RequestMapping(value = "/mCustomerShareList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerShareList_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+    		// 直接将json信息打印出来
+            System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String UserID = (String)paramMap.get("UserID").toString();
+            String ProjectID = (String)paramMap.get("ProjectID").toString();
+            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+            int PageSize = (int)paramMap.get("PageSize");//每页数量
+            IPage page = new Page(PageIndex, PageSize);
+
+    		IPage<Map<String, Object>> ataAd = iBCustomerService.mCustomerShareList_Select(page, UserID, ProjectID);
+    		
+    		Map<String,Object> map = new HashMap<String,Object>();
+    		map.put("List", ataAd.getRecords());
+    		map.put("AllCount", ataAd.getTotal());
+    		map.put("PageSize", ataAd.getSize());
+    		return Result.ok(map);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
 }
