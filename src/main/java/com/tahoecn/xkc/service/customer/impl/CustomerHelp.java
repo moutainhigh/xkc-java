@@ -82,7 +82,7 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
 			customerModel = InitCustomerModelByFileName(jsonFileName);
 			if (customerModel != null) {
-				List<DicInfo> dicList = InitCustomerDicModel();
+				List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
 				if (!CustomerObj.isEmpty()) {
 					customerModel.setCustomerID(CustomerObj.getString("CustomerID"));
 					customerModel.setOpportunityID(CustomerObj.getString("OpportunityID"));
@@ -478,25 +478,27 @@ public class CustomerHelp implements ICustomerHelp {
 		return customerModel;
 	}
 
+	@Override
 	public CustomerModelVo InitCustomerModelByFileName(String jsonFile) {
 		String jsonStr = "";
-		if (redisTemplate.hasKey("GWDetailCustomer.json")) {
-			jsonStr = redisTemplate.opsForValue().get("GWDetailCustomer.json");
+		if (redisTemplate.hasKey(jsonFile)) {
+			jsonStr = redisTemplate.opsForValue().get(jsonFile);
 		} else {
-			jsonStr = JSONUtil.readJsonFile("GWDetailCustomer.json");
-			redisTemplate.opsForValue().set("GWDetailCustomer.json", jsonStr);
+			jsonStr = JSONUtil.readJsonFile(jsonFile);
+			redisTemplate.opsForValue().set(jsonFile, jsonStr);
 		}
 		CustomerModelVo customerModelVo = JSONObject.parseObject(jsonStr,CustomerModelVo.class);
 		return customerModelVo;
 	}
-
-	public List<DicInfo> InitCustomerDicModel() {
+	
+	@Override
+	public List<DicInfo> InitCustomerDicModel(String jsonFile) {
 		String jsonStr = "";
-		if (redisTemplate.hasKey("CustomerDic.json")) {
-			jsonStr = redisTemplate.opsForValue().get("CustomerDic.json");
+		if (redisTemplate.hasKey(jsonFile)) {
+			jsonStr = redisTemplate.opsForValue().get(jsonFile);
 		} else {
-			jsonStr = JSONUtil.readJsonFile("CustomerDic.json");
-			redisTemplate.opsForValue().set("CustomerDic.json", jsonStr);
+			jsonStr = JSONUtil.readJsonFile(jsonFile);
+			redisTemplate.opsForValue().set(jsonFile, jsonStr);
 		}
 		List<DicInfo> list = JSONArray.parseArray(jsonStr, DicInfo.class);
 		return list;
@@ -675,7 +677,7 @@ public class CustomerHelp implements ICustomerHelp {
 	@Override
 	public JSONObject GetParameters(CGWDetailModel model) {
 		JSONObject json = new JSONObject();
-		List<DicInfo> dicList = InitCustomerDicModel();
+		List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
 		Item item = new Item();
 		for (DicInfo dicInfo : dicList) {
 			List<Item> itemList = model.getItemList();
@@ -703,7 +705,7 @@ public class CustomerHelp implements ICustomerHelp {
 	public JSONObject GetParameters(CGWDetailModel model, JSONObject obj) {
 		JSONObject json = new JSONObject();
 		if (obj != null && obj.size() > 0){
-			List<DicInfo> dicList = InitCustomerDicModel();
+			List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
 			Item item = null;
             for (DicInfo dicInfo : dicList){
                 List<Item> itemList = model.getItemList();

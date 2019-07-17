@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.job.SJobsMapper">
-    <insert id="userOrgInsert" >
+    <insert id="userJobInsert" >
         INSERT INTO dbo.S_Jobs
         ( ID ,
           JobCode ,
@@ -88,4 +88,46 @@
         )
         ORDER BY LEN(JobName),JobName
     </select>
+
+    <select id="SystemOrgUserList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        ID,
+        UserName,
+        EmployeeName,
+        Gender,
+        OfficeTel,
+        EmployeeCode,
+        OfficeMail,
+        Mobile,
+        Status,
+        IsDel
+        FROM
+        dbo.S_Account A
+        WHERE
+        ( #{UserName} = '' OR A.UserName LIKE  CONCAT('%',#{UserName},'%') )
+        AND ( #{EmployeeName} = '' OR A.EmployeeName LIKE  CONCAT('%',#{EmployeeName},'%'))
+        AND NOT EXISTS ( SELECT 1 FROM S_JobsUserRel jur WHERE jur.JobID = #{JobID} AND jur.AccountID = A.ID )
+        AND A.IsDel = 0
+        ) t
+    </select>
+
+    <insert id="SystemJobUserRel_Insert" >
+        INSERT INTO dbo.S_JobsUserRel ( ID, JobID, AccountID )
+        SELECT
+        NEWID(),
+        #{JobID},
+        a.ID
+        FROM
+        dbo.fn_split ( #{UserIDS}, ',' ) t
+        INNER JOIN S_Account a ON t.AllItem = a.UserName
+        LEFT JOIN S_JobsUserRel r ON r.AccountID= a.ID
+        AND r.JobID = #{JobID}
+        WHERE
+        a.ID IS NOT NULL
+        AND r.ID IS NULL
+    </insert>
 </mapper>

@@ -33,7 +33,7 @@ import java.util.List;
  * @since 2019-06-26
  */
 @RestController
-@RequestMapping("/sDictionary")
+@RequestMapping("/webapi/sDictionary")
 public class SDictionaryController extends TahoeBaseController {
     @Autowired
     private ISDictionaryService dictionaryService;

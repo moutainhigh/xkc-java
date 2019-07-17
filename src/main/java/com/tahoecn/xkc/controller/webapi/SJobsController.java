@@ -10,6 +10,7 @@ import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
 import com.tahoecn.xkc.service.job.ISJobsService;
+import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISCommonjobsService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,11 +35,14 @@ import java.util.Map;
  * @since 2019-07-04
  */
 @RestController
-@RequestMapping("/sJobs")
+@RequestMapping("/webapi/sJobs")
 public class SJobsController extends TahoeBaseController {
 
     @Autowired
     private ISJobsService jobsService;
+
+    @Autowired
+    private ISAccountService accountService;
 
     @ApiOperation(value = "获取岗位列表", notes = "获取岗位列表")
     @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
@@ -94,8 +98,15 @@ public class SJobsController extends TahoeBaseController {
         jobsService.updateById(jobs);
         return Result.errormsg(99,"新增失败");
     }
-
-
+    @ApiOperation(value = "岗位功能授权", notes = "岗位功能授权")
+    @RequestMapping(value = "/SystemJobAuth_Insert", method = {RequestMethod.POST})
+    public Result SystemJobAuth_Insert(String Menus,String JobID){
+        boolean b=jobsService.SystemJobAuth_Insert(Menus,JobID);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"授权失败");
+    }
 
     @ApiOperation(value = "获取岗位下的人员", notes = "获取岗位下的人员")
     @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
@@ -105,5 +116,34 @@ public class SJobsController extends TahoeBaseController {
         IPage page=new Page(Pageindex,Pagesize);
         IPage<SAccount> list=jobsService.SystemUserList_Select(page,JobID,AuthCompanyID);
         return Result.ok(list);
+    }
+
+
+    @ApiOperation(value = "岗位人员新增", notes = "岗位人员新增")
+    @RequestMapping(value = "/SystemJobUser_Insert", method = {RequestMethod.POST})
+    public Result SystemJobUser_Insert(SAccount account,String JobID){
+        boolean save =jobsService.SystemJobUser_Insert(account,JobID);
+
+        if (save){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"人员新增失败");
+    }
+
+    @ApiOperation(value = "获取所有人员", notes = "获取所有人员")
+    @RequestMapping(value = "/SystemOrgUserList_Select", method = {RequestMethod.POST})
+    public Result SystemOrgUserList_Select(String UserName,String EmployeeName,String JobID,int Pageindex, int Pagesize){
+        IPage page=new Page(Pageindex,Pagesize);
+        IPage<SAccount> list=jobsService.SystemOrgUserList_Select(page,UserName,EmployeeName,JobID);
+        return Result.ok(list);
+    }
+//    UserIDS 逗号分隔
+    @ApiOperation(value = "组织岗位引入人员", notes = "组织岗位引入人员")
+    @RequestMapping(value = "/SystemJobUserRel_Insert", method = {RequestMethod.POST})
+    public Result SystemJobUserRel_Insert(String UserIDS,String JobID){
+        boolean b=jobsService.SystemJobUserRel_Insert(UserIDS,JobID);
+
+
+        return Result.ok("");
     }
 }

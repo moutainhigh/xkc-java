@@ -34,7 +34,7 @@ import java.util.Map;
  * @since 2019-07-09
  */
 @RestController
-@RequestMapping("/sAccount")
+@RequestMapping("/webapi/sys/sAccount")
 public class SAccountController extends TahoeBaseController {
     @Autowired
     private ISAccountService accountService;

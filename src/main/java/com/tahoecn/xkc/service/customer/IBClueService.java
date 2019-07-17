@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.customer.BClue;
 
@@ -62,5 +63,14 @@ public interface IBClueService extends IService<BClue> {
 	/**
 	 * 待确认查询
 	 */
-	List<Map<String, Object>> CaseFieToBeConfirmedList_Select(Map<String, Object> paramMap);
+	IPage<Map<String, Object>> CaseFieToBeConfirmedList_Select(IPage page, String Status, String ProjectID, String sqlWhere);
+
+	/**
+	 * 待分配
+	 */
+	IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID, String sqlWhere);
+	/**
+	 * 报备信息列表
+	 */
+	IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, String projectID, String sqlWhere);
 }

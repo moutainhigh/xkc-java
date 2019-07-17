@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
+import com.tahoecn.xkc.model.vo.CustomerActionVo;
 
 /**
  * 
@@ -203,6 +204,10 @@ public interface IVCustomergwlistSelectService extends IService<VCustomergwlistS
 	  * @return
 	  */
 	 public Result UserFollowList_Select(JSONObject paramAry);
+	 
+	 public Result CustomerOpportunityFollowUpDetail_Update(String opportunityID,String userID);
+	 
+	 public Result CustomerFollowUp_Insert(CustomerActionVo customerActionVo);
 	 
 	 
 	 

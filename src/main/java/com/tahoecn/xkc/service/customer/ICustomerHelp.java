@@ -8,6 +8,7 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
+import com.tahoecn.xkc.model.vo.DicInfo;
 
 public interface ICustomerHelp {
 	
@@ -54,4 +55,8 @@ public interface ICustomerHelp {
 	public JSONObject OpportunityCustomer(String opportunityID);
 	
 	public Boolean CustomerIsCanOperate(String opportunityID,String userID);
+	
+	public CustomerModelVo InitCustomerModelByFileName(String jsonFile);
+	
+	public List<DicInfo> InitCustomerDicModel(String jsonFile);
 }

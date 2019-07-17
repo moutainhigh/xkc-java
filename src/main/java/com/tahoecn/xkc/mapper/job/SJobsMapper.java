@@ -25,4 +25,8 @@ public interface SJobsMapper extends BaseMapper<SJobs> {
     IPage<SAccount> SystemUserList_Select(IPage page, @Param("JobID")String jobID, @Param("AuthCompanyID")String authCompanyID);
 
     IPage<Map<String,Object>> SystemJobAllList_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
+
+    IPage<SAccount> SystemOrgUserList_Select(IPage page, @Param("UserName")String userName, @Param("EmployeeName")String employeeName, @Param("JobID")String jobID);
+
+    void SystemJobUserRel_Insert(@Param("UserIDS") String userIDS, @Param("JobID")String jobID);
 }

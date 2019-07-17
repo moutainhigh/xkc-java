@@ -841,10 +841,10 @@ public class AppKCController extends TahoeBaseController {
             	//判断该兼职是否有所属专员
             	Map<String, Object> objChannelUser = iBChanneltaskService.mChannelUserByID_Select(UserID);
     			String reportUserID = (String) objChannelUser.get("ReportUserID");//专员ID
-    			if(reportUserID != null) {
+    			if(reportUserID != null && reportUserID.length() > 0) {
     				IPage<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(page, whereStr, JZCode);
-    	    		if(objData.getCurrent() > 0) {
-    	    			String Creator = (String) objData.getRecords().get(0).get("Creator");
+    	    		if(objData.getTotal() > 0) {
+    	    			String Creator = (String) objData.getRecords().get(0).get("Creator");//任务创建者
     	    			if(Creator != reportUserID) {
     	    				List data = new ArrayList();
     	    				data.add("{\"List\": [],\"AllCount\": 0,\"PageSize\": 10}");

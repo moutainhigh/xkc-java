@@ -358,6 +358,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         return re;
 	}
 	
+	@Override
+	@Transactional(readOnly=false)
 	public Result CustomerOpportunityFollowUpDetail_Update(String opportunityID,String userID){
 		Result re = new Result();
 		try {
@@ -375,6 +377,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         return re;
     }
 	
+	@Override
+	@Transactional(readOnly=false)
 	public Result CustomerFollowUp_Insert(CustomerActionVo customerActionVo) {
 		Result re = new Result();
 		try {
@@ -1144,7 +1148,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                 CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
                                 this.CustomerFollowUp_Insert(customerActionVo);
                                 //客户到访
-                                if ( FollwUpType == "售场接待"){//售场接待
+                                if ( "售场接待".equals(FollwUpType)){//售场接待
                                 	String tClueID = parameter.getString("OpportunitySource");
                                     Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select("", tClueID);
                                     String reportUserID = "";

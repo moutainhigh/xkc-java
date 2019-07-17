@@ -689,7 +689,14 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             String IconClass = menu.getIconClass();
             Integer IsHomePage = menu.getIsHomePage();
             Integer IsShow = menu.getIsShow();
-            Integer Levels = menu.getLevels();
+            String pid=menu.getPid();
+            Integer Levels;
+            if (pid!="-1"){
+                SMenusXkc sMenusXkc = baseMapper.selectById(pid);
+                Levels=sMenusXkc.getLevels()+1;
+            }else {
+                Levels=1;
+            }
             Integer ListIndex = menu.getListIndex();
             Integer IsLast = menu.getIsLast();
             String Editor = ThreadLocalUtils.getUserName();
@@ -773,14 +780,15 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     public Map<String, Object> CommonJobFunctions(String jobID) {
         List<Map<String, Object>> list=baseMapper.getCommonJobFunctions(jobID);
         List<Map<String, Object>> list1=baseMapper.CommonJobFunctions(jobID);
+        List result=new ArrayList();
         Map<String, Object> objectMap=new HashMap<>();
         for (Map<String, Object> map : list) {
-            objectMap.put("IDS",map.get("IDS"));
+            result.add(map.get("IDS"));
         }
         for (Map<String, Object> map : list1) {
-            objectMap.put("IDS",map.get("IDS"));
+            result.add(map.get("IDS"));
         }
-
+        objectMap.put("IDS",result);
         return objectMap;
     }
 
