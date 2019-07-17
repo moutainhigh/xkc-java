@@ -2,7 +2,6 @@ package com.tahoecn.xkc.service.opportunity.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BCustomerfollowupMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
@@ -20,6 +19,7 @@ import com.tahoecn.xkc.model.salegroup.BSalesgroupmember;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -304,12 +304,36 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 	/**
 	 * 撞单客户列表
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Map<String,Object> mCustomerZDList_Select(Map<String,Object> paramMap) {
 		List<List<?>> result = baseMapper.mCustomerZDList_Select(paramMap);
-		List<?> list = result.get(0);
+		List<?> list1 = result.get(0);
 		List<?> recordCount = result.get(1);
-		Map<String,Object> map = new HashMap<String,Object>();
+		
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		Map<String,Object> objList = new HashMap<String,Object>();
+        int num = (Integer.parseInt(paramMap.get("PageIndex").toString()) - 1) * Integer.parseInt(paramMap.get("PageSize").toString());
+        for (Object i : list1){
+        	Map<String,Object> item = (Map<String, Object>) i;
+        	
+            String CustomerMobile = (String) item.get("CustomerMobile");
+            if (objList.get(CustomerMobile) == null){
+            	List<Map<String,Object>> Child = new ArrayList<Map<String,Object>>();
+                Child.add(item);
+                Map<String,Object> obj = new HashMap<String,Object>();
+                obj.put("Name", "撞单机会" + num);
+                obj.put("Child", Child);
+                objList.put(CustomerMobile, obj);
+                num++;
+            }else{
+            	((List)((Map) objList.get(CustomerMobile)).get("Child")).add(item);
+            }
+        }
+        for (String key : objList.keySet()){
+            list.add((Map)objList.get(key));
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
 		map.put("List", list);
 		map.put("AllCount", recordCount.get(0));
 		map.put("PageSize", paramMap.get("PageSize"));

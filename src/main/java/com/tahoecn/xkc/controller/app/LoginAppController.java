@@ -180,7 +180,7 @@ public class LoginAppController extends TahoeBaseController {
     /// <param name="AgentTeamIsShowHouseStyle">代理团队是否展示房源页 0.不展示 1.展示</param>
     /// <param name="debug"></param>
     /// <returns></returns>
-    public String getRoleList(String ProjectID, String JobCode, String AccountType, int HouseStyle, String MobileSiteUrl, int OutUserAllowModifyPwd, int OutUserIsShowHouseStyle, String ChannelType, int SelfSoldTeamIsShowHouseStyle, int AgentTeamIsShowHouseStyle) {
+    public String getRoleList(String ProjectID, String JobCode, String AccountType, Integer HouseStyle, String MobileSiteUrl, Integer OutUserAllowModifyPwd, Integer OutUserIsShowHouseStyle, String ChannelType, Integer SelfSoldTeamIsShowHouseStyle, Integer AgentTeamIsShowHouseStyle) {
         String jsonStr = "";
 		List<HashMap<String,String>> MenuAndFunList = accountService.GetMenuAndFunList_Select(JobCode,ProjectID);
 		if (MenuAndFunList.size() != 0) {

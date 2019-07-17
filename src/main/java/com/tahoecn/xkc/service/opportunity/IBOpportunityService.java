@@ -3,7 +3,6 @@ package com.tahoecn.xkc.service.opportunity;
 import java.util.List;
 import java.util.Map;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 
