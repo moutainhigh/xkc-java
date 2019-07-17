@@ -35,4 +35,6 @@ public interface ISJobsService extends IService<SJobs> {
     boolean SystemJobUserRel_Delete(String userIDS, String jobID);
 
     boolean SystemJobAuthOrg_Insert(String orgIDS, String jobID);
+
+    boolean SystemJobUser_Update(SAccount account);
 }

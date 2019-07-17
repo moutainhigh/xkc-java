@@ -1,12 +1,14 @@
 package com.tahoecn.xkc.controller.webapi.channel;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mysql.jdbc.Constants;
 import com.mysql.jdbc.TimeUtil;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
@@ -261,12 +263,12 @@ public class ChannelController extends TahoeBaseController {
 
     @ApiOperation(value = "推荐渠道列表", notes = "推荐渠道列表")
     @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
-    public JSONResult AgenList_SelectN(){
+    public Result AgenList_SelectN(int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
+            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,int Pageindex, int Pagesize){
+        IPage page=new Page(Pageindex,Pagesize);
+        IPage<Map<String,Object>> list=channeluserService.AgenList_SelectN(page,PageType,ProjectID,ChannelTypeID,Name,PassStatu
+                ,CreateStartTime,CreateEndTime,ApprovalUserID);
 
-        List<Map<String,String>> list=channeluserService.AgenApproverList();
-        JSONResult jsonResult=new JSONResult();
-        jsonResult.setMsg("SUCCESS");
-        jsonResult.setData(list);
-        return jsonResult;
+        return Result.ok(list);
     }
 }

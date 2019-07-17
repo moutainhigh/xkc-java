@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,8 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	 * 行销拓客兼职注册
 	 */
 	void mChannelRegistJZ_Insert(Map<String, Object> paramMap);
-	
 
+
+    IPage<Map<String, Object>> AgenList_SelectN(IPage page, int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
+            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID);
 }

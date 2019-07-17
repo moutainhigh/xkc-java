@@ -9,6 +9,7 @@ import com.tahoecn.xkc.model.job.BProjectjobrel;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.job.SJobsmenurel;
 import com.tahoecn.xkc.model.job.SJobsuserrel;
+import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
 import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
@@ -17,6 +18,7 @@ import com.tahoecn.xkc.service.job.IBProjectjobrelService;
 import com.tahoecn.xkc.service.job.ISJobsService;
 import com.tahoecn.xkc.service.job.ISJobsmenurelService;
 import com.tahoecn.xkc.service.job.ISJobsuserrelService;
+import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,8 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private ISMenusService menusService;
     @Autowired
     private IBProjectjobrelService projectjobrelService;
+    @Autowired
+    private IBSalesuserService salesuserService;
 
     @Override
     public List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID) {
@@ -208,5 +212,28 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
         }
 
         return save;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean SystemJobUser_Update(SAccount account) {
+        try {
+            account.setEditTime(new Date());
+            account.setEditor(ThreadLocalUtils.getUserName());
+            accountService.updateById(account);
+//         得同时更改掉B_SalesUser表里面的信息
+            BSalesuser salesuser=new BSalesuser();
+            salesuser.setId(account.getId());
+            salesuser.setUserName(account.getUserName());
+            salesuser.setTelPhone(account.getMobile());
+            salesuser.setEditor(account.getEditor());
+            salesuser.setEditTime(account.getEditTime());
+            salesuserService.updateById(salesuser);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
     }
 }

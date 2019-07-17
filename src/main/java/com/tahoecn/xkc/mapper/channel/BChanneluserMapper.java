@@ -120,4 +120,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	List<Map<String, Object>> GetChannelOrgID_Select(Map<String, Object> obj);
 
 	void insertBChannelUser(Map<String, Object> map);
+
+    IPage<Map<String, Object>> AgenList_SelectN(IPage page, @Param("where")String where);
 }
