@@ -791,7 +791,10 @@ public class AppKCController extends TahoeBaseController {
             if(paramMap.get("ChannelTaskCode") != null) {
             	ChannelTaskCode = (String)paramMap.get("ChannelTaskCode").toString();
             }
-            String TaskStatus = (String)paramMap.get("TaskStatus").toString();
+            String TaskStatus = "";
+            if(paramMap.get("TaskStatus") != null) {
+            	TaskStatus = (String)paramMap.get("TaskStatus").toString();
+            }
             int PageIndex = (int)paramMap.get("PageIndex");//页面索引
             int PageSize = (int)paramMap.get("PageSize");//每页数量
             IPage page = new Page(PageIndex, PageSize);
@@ -841,7 +844,12 @@ public class AppKCController extends TahoeBaseController {
             	//判断该兼职是否有所属专员
             	Map<String, Object> objChannelUser = iBChanneltaskService.mChannelUserByID_Select(UserID);
     			String reportUserID = (String) objChannelUser.get("ReportUserID");//专员ID
+    			
     			if(reportUserID != null && reportUserID.length() > 0) {
+    				
+    				System.out.println(reportUserID);
+        			System.out.println(whereStr);
+        			System.out.println(JZCode);
     				IPage<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(page, whereStr, JZCode);
     	    		if(objData.getTotal() > 0) {
     	    			String Creator = (String) objData.getRecords().get(0).get("Creator");//任务创建者
