@@ -367,7 +367,7 @@
                    AND C.Status < 3
             LEFT JOIN dbo.B_Project P
                 ON C.ProjectID = P.ID
-        WHERE A.ChannelType = '兼职'
+        WHERE (A.ChannelType = '兼职' or a.ChannelType = '自由经纪')
               AND A.UserName = #{userName}
         ORDER BY C.ID DESC
         ]]>
