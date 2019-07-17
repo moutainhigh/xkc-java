@@ -12,6 +12,7 @@ import com.tahoecn.xkc.model.sys.BAppupgrade;
 import com.tahoecn.xkc.model.sys.BSystemad;
 import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
+import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
@@ -62,7 +63,8 @@ public class AppSystemController extends TahoeBaseController {
     private ISFormsessionService iSFormsessionService;
     @Autowired 
     private IBCustomerService iBCustomerService;
-
+    @Autowired 
+    private IBSalesuserService iBSalesuserService;
 	@ResponseBody
     @ApiOperation(value = "广告接口", notes = "广告接口")
     @RequestMapping(value = "/SystemAD_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -186,4 +188,47 @@ public class AppSystemController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
+	
+	@ResponseBody
+    @ApiOperation(value = "分享项目信息", notes = "分享项目信息")
+    @RequestMapping(value = "/mShareAppDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mShareAppDetail_Select(@RequestBody JSONObject jsonParam) {
+    	try{
+    		// 直接将json信息打印出来
+            System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String ShareProjectID = (String)paramMap.get("ShareProjectID").toString();
+            String imgSiteUrl = (String)paramMap.get("imgSiteUrl").toString();//后台地址
+            String yuanshiID = (String)paramMap.get("yuanshiID").toString();//原始ID
+            String ShareUrl = (String)paramMap.get("ShareUrl").toString();//备用地址
+            String WXDetailPagePath = (String)paramMap.get("WXDetailPagePath").toString();//微信小程序项目详情路径
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("ShareProjectID", ShareProjectID);
+            map.put("imgSiteUrl", imgSiteUrl);
+            WXDetailPagePath = "/"+WXDetailPagePath;
+            System.out.println(WXDetailPagePath);
+            map.put("WXDetailPagePath", WXDetailPagePath);
+            String str = iBSalesuserService.mShareAppDetail_Select1(map);  
+            String url = "";
+            String[] str1 = str.split(",");
+            System.out.println(str1[0]);
+            url = str1[0];
+            map.put("Url", url);
+            List<Map<String, Object>> data = iBSalesuserService.mShareAppDetail_Select(map); 
+            if(data.size() == 0 ) {
+            	return Result.errormsg(1,"该项目没有分享传播模块信息");
+            }
+            else {
+            	Map<String,Object> obj = new HashMap<String,Object>();
+            	obj.put("List", data);
+            	obj.put("UserName", yuanshiID);
+            	obj.put("ShareUrl", ShareUrl);
+            	return Result.ok(obj);
+            }
+    	}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
+	
 }
