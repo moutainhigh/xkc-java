@@ -797,7 +797,10 @@ public class AppKCController extends TahoeBaseController {
             }
             int PageIndex = (int)paramMap.get("PageIndex");//页面索引
             int PageSize = (int)paramMap.get("PageSize");//每页数量
-            IPage page = new Page(PageIndex, PageSize);
+            
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("PageIndex", PageIndex);
+            map.put("PageSize", PageSize);
             
             String errmsg = "";
             StringBuilder whereStr = new StringBuilder();
@@ -838,6 +841,8 @@ public class AppKCController extends TahoeBaseController {
             		JZCode.append(" AND ChannelUserID = '").append(UserID).append("'");
             	}
             }
+            map.put("whereStr", whereStr);
+            map.put("JZCode", JZCode);
             //
             //搜索任务时
             if(JobCode.equals("JZ") && ChannelTaskCode != null && ChannelTaskCode.length() > 0) {
@@ -847,12 +852,13 @@ public class AppKCController extends TahoeBaseController {
     			
     			if(reportUserID != null && reportUserID.length() > 0) {
     				
-    				System.out.println(reportUserID);
-        			System.out.println(whereStr);
-        			System.out.println(JZCode);
-    				IPage<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(page, whereStr, JZCode);
-    	    		if(objData.getTotal() > 0) {
-    	    			String Creator = (String) objData.getRecords().get(0).get("Creator");//任务创建者
+    				System.out.println(whereStr);
+    				System.out.println(JZCode);
+    				List<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(map);
+    				int All = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
+    				
+    	    		if(All > 0) {
+    	    			String Creator = (String) objData.get(0).get("Creator");//任务创建者
     	    			if(Creator != reportUserID) {
     	    				List data = new ArrayList();
     	    				data.add("{\"List\": [],\"AllCount\": 0,\"PageSize\": 10}");
@@ -863,12 +869,13 @@ public class AppKCController extends TahoeBaseController {
     	    		}
     			}
             }
-            IPage<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(page, whereStr, JZCode);
+            List<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(map);
+            int AllCount = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
     		Map<String, Object> result = new HashMap<String, Object>();
-    		result.put("List", objListData.getRecords());
-    		result.put("AllCount", objListData.getTotal());
+    		result.put("List", objListData);
+    		result.put("AllCount", AllCount);
     		//result.put("AllCount", objListData.getCurrent() > 0 ? objListData.getCurrent() : "未找到对应任务");
-    		result.put("PageSize", objListData.getSize());
+    		result.put("PageSize", PageSize);
     		return re.ok(result);
     	}catch (Exception e) {
 			e.printStackTrace();

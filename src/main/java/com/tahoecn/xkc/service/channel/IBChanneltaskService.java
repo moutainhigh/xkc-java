@@ -133,7 +133,8 @@ public interface IBChanneltaskService extends IService<BChanneltask> {
 	/*
 	 * 任务列表查询
 	 */
-	IPage<Map<String, Object>> mChannelTaskList_Select(IPage page, StringBuilder whereStr, StringBuilder JZCode);
+	List<Map<String, Object>> mChannelTaskList_Select(Map<String, Object> map);
+	int mChannelTaskList_SelectAllCount(Map<String, Object> map);
 
 	/*
 	 * 专员团队管理列表

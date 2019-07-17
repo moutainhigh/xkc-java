@@ -231,10 +231,13 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 	 * 任务列表查询
 	 */
 	@Override
-	public IPage<Map<String, Object>> mChannelTaskList_Select(IPage page, StringBuilder whereStr,
-			StringBuilder JZCode) {
+	public List<Map<String, Object>> mChannelTaskList_Select(Map<String, Object> map) {
 		
-		return bChanneltaskMapper.mChannelTaskList_Select(page, whereStr, JZCode);
+		return bChanneltaskMapper.mChannelTaskList_Select(map);
+	}
+	@Override
+	public int mChannelTaskList_SelectAllCount(Map<String, Object> map) {
+		return bChanneltaskMapper.mChannelTaskList_SelectAllCount(map);
 	}
 
 	/*
@@ -266,8 +269,4 @@ public class BChanneltaskServiceImpl extends ServiceImpl<BChanneltaskMapper, BCh
 		return bChanneltaskMapper.mChannelTempPersonList_SelectAllCount(map);
 	}
 
-
-
-
-	
 }
