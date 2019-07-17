@@ -75,14 +75,15 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
         List<Map<String, Object>> list= baseMapper.SystemOrganizationChec_Select(pid);
         List<Map<String, Object>> result=new ArrayList<>();
         if (!"-1".equals(pid)){
+            //父项
             SOrganization organization = baseMapper.selectById(pid);
             for (Map<String, Object> map : list) {
                 List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
+                map.put("subjectOrg",organization.getOrgName());
                 if (sub.size()>0){
-                    map.put("hasChild",1);
-                    map.put("subjectOrg",organization.getOrgName());
+                    map.put("hasChild",true);
                 }else {
-                    map.put("hasChild",0);
+                    map.put("hasChild",false);
                 }
                 result.add(map);
             }
@@ -90,9 +91,9 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
             for (Map<String, Object> map : list) {
                 List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
                 if (sub.size()>0){
-                    map.put("hasChild",1);
+                    map.put("hasChild",true);
                 }else {
-                    map.put("hasChild",0);
+                    map.put("hasChild",false);
                 }
                 result.add(map);
             }

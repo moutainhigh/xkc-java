@@ -258,4 +258,15 @@ public class ChannelController extends TahoeBaseController {
         return jsonResult;
     }
 
+
+    @ApiOperation(value = "推荐渠道列表", notes = "推荐渠道列表")
+    @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
+    public JSONResult AgenList_SelectN(){
+
+        List<Map<String,String>> list=channeluserService.AgenApproverList();
+        JSONResult jsonResult=new JSONResult();
+        jsonResult.setMsg("SUCCESS");
+        jsonResult.setData(list);
+        return jsonResult;
+    }
 }

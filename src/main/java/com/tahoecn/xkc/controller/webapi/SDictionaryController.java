@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -48,6 +49,14 @@ public class SDictionaryController extends TahoeBaseController {
         wrapper.orderByAsc("Levels","ListIndex");
         IPage page1 = dictionaryService.page(page, wrapper);
         return Result.ok(page1);
+    }
+
+    @ApiOperation(value = "获取所有参数--树形", notes = "获取所有参数--树形")
+    @RequestMapping(value = "/SystemAllParams_Select_Tree", method = {RequestMethod.POST})
+    public Result SystemAllParams_Select_Tree(String PID){
+        List<Map<String,Object>> list=dictionaryService.SystemAllParams_Select_Tree(PID);
+
+        return Result.ok(list);
     }
 
     @ApiOperation(value = "启用/禁用参数", notes = "启用/禁用参数")

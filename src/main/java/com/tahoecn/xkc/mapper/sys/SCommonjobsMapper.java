@@ -18,7 +18,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SCommonjobsMapper extends BaseMapper<SCommonjobs> {
 	
-	List<SCommonjobs> SystemCommonJobsList_Select(IPage page,@Param("AuthCompanyID")String AuthCompanyID, @Param("ProductID")String ProductID, @Param("JobName")String JobName);
+	List<SCommonjobs> SystemCommonJobsList_Select(@Param("AuthCompanyID")String AuthCompanyID, @Param("ProductID")String ProductID, @Param("JobName")String JobName);
 	
 	List<SCommonjobs> SystemCommonJobsList_SelectList();
 	

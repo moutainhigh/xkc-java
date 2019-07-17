@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -104,5 +105,22 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<Map<String, Object>> SystemAllParams_Select_Tree(String pid) {
+        List<Map<String,Object>> list=baseMapper.list(pid);
+        List<Map<String, Object>> result=new ArrayList<>();
+
+            for (Map<String, Object> map : list) {
+                List<Map<String, Object>> id = baseMapper.list((String) map.get("ID"));
+                if (id.size()>0){
+                    map.put("hasChild",true);
+                }else {
+                    map.put("hasChild",false);
+                }
+                result.add(map);
+            }
+        return result;
     }
 }

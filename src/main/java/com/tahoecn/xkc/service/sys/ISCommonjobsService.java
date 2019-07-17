@@ -18,7 +18,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ISCommonjobsService extends IService<SCommonjobs> {
 
-	List<SCommonjobs> SystemCommonJobsList_Select(IPage page,String AuthCompanyID,String ProductID,String JobName);
+	List<SCommonjobs> SystemCommonJobsList_Select(String AuthCompanyID,String ProductID,String JobName);
 	
 	List<SCommonjobs> SystemCommonJobsList_SelectList();
 	

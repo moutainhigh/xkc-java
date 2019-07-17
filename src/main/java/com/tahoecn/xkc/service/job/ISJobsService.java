@@ -18,11 +18,11 @@ import java.util.Map;
  */
 public interface ISJobsService extends IService<SJobs> {
 
-    IPage<Map<String,Object>> SystemJobList_Select(IPage page, String authCompanyID, String productID, String orgID);
+    List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID);
 
-    IPage<SAccount> SystemUserList_Select(IPage page, String jobID, String authCompanyID);
+    List<SAccount> SystemUserList_Select(String jobID, String authCompanyID);
 
-    IPage<Map<String,Object>> SystemJobAllList_Select(IPage page, String authCompanyID, String productID, String orgID);
+    IPage<Map<String,Object>> SystemJobAllList_Select(IPage page,String authCompanyID, String productID, String orgID);
 
     boolean SystemJobUser_Insert(SAccount account, String jobID);
 
@@ -31,4 +31,8 @@ public interface ISJobsService extends IService<SJobs> {
     boolean SystemJobUserRel_Insert(String userIDS, String jobID);
 
     boolean SystemJobAuth_Insert(String menus, String jobID);
+
+    boolean SystemJobUserRel_Delete(String userIDS, String jobID);
+
+    boolean SystemJobAuthOrg_Insert(String orgIDS, String jobID);
 }

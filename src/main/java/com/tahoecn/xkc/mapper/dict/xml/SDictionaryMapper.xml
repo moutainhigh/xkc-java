@@ -56,4 +56,8 @@
         DictCode,
         ListIndex
     </select>
+
+    <select id="list" parameterType="string" resultType="java.util.HashMap">
+        SELECT * FROM S_Dictionary WHERE PID=#{pid} AND Status=1 AND IsDel=0
+    </select>
 </mapper>

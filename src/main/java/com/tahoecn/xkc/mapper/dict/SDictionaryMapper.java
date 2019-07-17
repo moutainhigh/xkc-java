@@ -20,4 +20,6 @@ public interface SDictionaryMapper extends BaseMapper<SDictionary> {
     List<Map<String, String>> AgenCertificatesList_SelectN();
 
     List<Map<String,Object>> ListByCode_Select(@Param("DictCodes") String dictCodes);
+
+    List<Map<String, Object>> list(@Param("pid") String pid);
 }

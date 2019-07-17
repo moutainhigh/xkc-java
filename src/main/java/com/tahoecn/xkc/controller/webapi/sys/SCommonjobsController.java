@@ -48,15 +48,14 @@ public class SCommonjobsController extends TahoeBaseController {
     private ISMenusService menusService;
 	
 //已测
-//    @ApiOperation(value = "获取通用岗位列表(查询)", notes = "分页获取获取通用岗位列表（查询）")
-//    @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
-//            @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
-//    @RequestMapping(value = "/SystemCommonJobsList_Select", method = {RequestMethod.POST})
-//    public Result SystemCommonJobsList_Select(String AuthCompanyID,String ProductID,String JobName,int Pageindex,int Pagesize){
-//        IPage page = new Page(Pageindex, Pagesize);
-//    	List list = ISCommonjobsService.SystemCommonJobsList_Select(page,AuthCompanyID,ProductID,JobName);
-//    	return Result.ok(list);
-//    }
+    @ApiOperation(value = "获取通用岗位列表(查询)", notes = "分页获取获取通用岗位列表（查询）")
+    @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
+            @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
+    @RequestMapping(value = "/SystemCommonJobsList_Select", method = {RequestMethod.POST})
+    public Result SystemCommonJobsList_Select(String AuthCompanyID,String ProductID,String JobName){
+    	List list = ISCommonjobsService.SystemCommonJobsList_Select(AuthCompanyID,ProductID,JobName);
+    	return Result.ok(list);
+    }
     
     @ApiOperation(value = "获取通用岗位列表", notes = "分页获取获取通用岗位列表")
     @RequestMapping(value = "/SystemCommonJobsList_SelectList", method = {RequestMethod.POST})
