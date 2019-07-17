@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomerxsjlsalesuserlistSelectMapper">
+	<!-- 案场销售经理盘客销售顾问查询 -->
+	<select id="mCustomerXSJLSalesUserList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT ProjectID,SaleUserID,SaleUserName,SaleUserMobil,#{SiteUrl}+HeadImg HeadImg,SaleGroupName,TotalCount,UnsettledCount,OverdueCount,RecycleCount,CloseRate,IntegrityRungs,IsDel,Status,CreateTime
+			From  V_CustomerXSJLSalesUserList_Select 
+			Where  isdel =0 and SaleGroupID=#{OrgID} AND ProjectID =#{ProjectID}  ${WHERE} ${ORDER}
+		]]>
+	</select>
+</mapper>

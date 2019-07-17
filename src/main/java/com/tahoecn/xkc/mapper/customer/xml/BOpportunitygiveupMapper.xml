@@ -238,6 +238,125 @@
 	    ]]>
 	</update>
 	<!-- 回收-end -->
+	<select id="mCustomerXSJLList_Select_GJKH" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  LostID ,
+				LostReason ,
+				LostTime ,
+				RecoveryID ,
+				OpportunityID ,
+				CustomerID ,
+				CustomerName ,
+				CustomerMobile ,
+				dbo.F_DictName(OpportunitySource) AS OpportunitySource ,
+				dbo.F_DictName(CustomerLevelValue) AS CustomerLevel ,
+				CONVERT(VARCHAR, FollowupCountValue) + '次' AS FollowupCount ,
+				CASE WHEN TheLatestFollowUpDateTime IS NULL THEN '无'
+					 ELSE dbo.F_FormatDateTimeForCountBefore(TheLatestFollowUpDateTime, GETDATE(), '前')
+				END AS TheLatestFollowUpDate ,
+				AdviserID ,
+				dbo.F_GetSaleMobile(AdviserID) AdviserMobile ,
+				dbo.F_GetSaleUserName(AdviserID) AdviserName ,
+				AdviserOrgID ,
+				dbo.F_GetSaleGroupName(AdviserID, ProjectID) AS AdviserOrgName ,
+				dbo.F_GetStatusName(OpportunityStatusValue) OpportunityStatus ,
+				IsYJ ,
+				YJTime ,
+				IsCooperat
+			FROM    ( SELECT    * ,
+							ROW_NUMBER() OVER ( ${ORDER} ) num
+				  FROM      ( SELECT    o.ProjectID ,
+										o.ID OpportunityID ,
+										o.CustomerID ,
+										o.CustomerName ,
+										o.CustomerMobile ,
+										o.OpportunitySource ,
+										o.CustomerLevel CustomerLevelValue ,
+										o.FollowupCount FollowupCountValue ,
+										ISNULL(o.TheLatestFollowUpDate, '') TheLatestFollowUpDateTime ,
+										o.SaleUserID AdviserID ,
+										dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
+										o.Status OpportunityStatusValue ,
+										'' RecoveryCreateTime ,
+										'' RecoveryID ,
+										'' LostID ,
+										'' LostReason ,
+										'' LostTime ,
+										'' LostCreateTime ,
+										0 IsYJ ,
+										'' YJTime ,
+		            (CASE WHEN ISNULL(o.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
+							  FROM      dbo.B_Opportunity AS o
+							  WHERE     o.ProjectID = #{ProjectID}
+										AND o.IsDel = 0
+										AND o.Status <> 6
+		            AND LEN(o.SaleUserID) > 0
+							) A
+				  WHERE     ProjectID = #{ProjectID}  ${WHERE}
+				) t
+			WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+				AND t.num <= ${PageIndex} * ${PageSize}
+		]]>
+	</select>
+	<select id="mCustomerXSJLList_Select_GJKH_count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM    ( SELECT    o.ProjectID ,
+							o.CustomerName ,
+							o.CustomerMobile ,
+							o.CustomerLevel CustomerLevelValue ,
+							o.FollowupCount FollowupCountValue ,
+							dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
+							o.Status OpportunityStatusValue ,
+							o.SaleUserID AdviserID ,
+							'' RecoveryID ,
+							'' LostID
+				  FROM      dbo.B_Opportunity AS o
+				  WHERE     o.ProjectID = #{ProjectID}
+							AND o.IsDel = 0
+							AND o.Status <> 6
+		      AND LEN(o.SaleUserID) > 0
+				) A
+		WHERE   ProjectID = #{ProjectID}  ${WHERE}
+		]]>
+	</select>
+	<select id="mCustomerXSJLList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  *
+	        FROM    ( SELECT    LostID ,
+	                            LostReason ,
+	                            LostTime ,
+	                            RecoveryID ,
+	                            OpportunityID ,
+	                            CustomerID ,
+	                            CustomerName ,
+	                            CustomerMobile ,
+	                            OpportunitySource ,
+	                            CustomerLevel ,
+	                            FollowupCount ,
+	                            TheLatestFollowUpDate ,
+	                            AdviserID ,
+	                            AdviserMobile ,
+	                            AdviserName ,
+	                            AdviserOrgName ,
+	                            OpportunityStatus ,
+	                            IsYJ ,
+	                            YJTime ,
+	                            ROW_NUMBER() OVER (  ${ORDER} ) num
+	                  FROM      V_CustomerXSJLList_Select
+	                  WHERE     ProjectID = #{ProjectID} ${WHERE}
+	                ) t
+	        WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+	                AND t.num <= ${PageIndex} * ${PageSize};
+		]]>
+	</select>
 	
+	<select id="mCustomerXSJLList_Select_count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT  COUNT(1) recordCount
+	        FROM    V_CustomerXSJLList_Select
+	        WHERE   ProjectID = #{ProjectID}  ${WHERE}
+		]]>
+	</select>
 	
 </mapper>

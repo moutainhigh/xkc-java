@@ -58,4 +58,8 @@ public interface IBOpportunitygiveupService extends IService<BOpportunitygiveup>
 	 * 客户回收
 	 */
 	void mCustomerYXJLRecovery_Update(Map<String, Object> paramMap);
+	/**
+	 * 案场销售经理客户列表
+	 */
+	Map<String, Object> mCustomerXSJLList_Select(Map<String, Object> map);
 }

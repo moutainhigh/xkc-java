@@ -6,6 +6,7 @@ import com.tahoecn.xkc.mapper.customer.BOpportunitygiveupMapper;
 import com.tahoecn.xkc.model.customer.BOpportunitygiveup;
 import com.tahoecn.xkc.service.customer.IBOpportunitygiveupService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,5 +125,21 @@ public class BOpportunitygiveupServiceImpl extends ServiceImpl<BOpportunitygiveu
 		baseMapper.updBOpportunity_Recovery(paramMap);
 		//9
 		baseMapper.insSTask(paramMap);
+	}
+	/**
+	 * 案场销售经理客户列表
+	 */
+	@Override
+	public Map<String, Object> mCustomerXSJLList_Select(Map<String, Object> map) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if("GJKH".equals(map.get("Type"))){
+			result.put("List", baseMapper.mCustomerXSJLList_Select_GJKH(map));
+			result.put("AllCount", baseMapper.mCustomerXSJLList_Select_GJKH_count(map));
+		}else{
+			result.put("List", baseMapper.mCustomerXSJLList_Select(map));
+			result.put("AllCount", baseMapper.mCustomerXSJLList_Select_count(map));
+		}
+		result.put("PageSize", map.get("PageSize"));
+		return result;
 	}
 }
