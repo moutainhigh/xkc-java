@@ -65,5 +65,12 @@ public interface BOpportunitygiveupMapper extends BaseMapper<BOpportunitygiveup>
 	void insSMessage_Recovery(Map<String, Object> paramMap);
 	void updBOpportunity_Recovery(Map<String, Object> paramMap);
 	//回收-end
+	/**
+	 * 案场销售经理客户列表
+	 */
+	List<Map<String,Object>> mCustomerXSJLList_Select_GJKH(Map<String, Object> map);
+	int mCustomerXSJLList_Select_GJKH_count(Map<String, Object> map);
+	List<Map<String,Object>> mCustomerXSJLList_Select(Map<String, Object> map);
+	int mCustomerXSJLList_Select_count(Map<String, Object> map);
 
 }
