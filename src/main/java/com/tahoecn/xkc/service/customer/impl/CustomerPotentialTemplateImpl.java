@@ -1,245 +1,243 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.hutool.core.date.DateUtil;
+
+import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
+import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
+import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
+import com.tahoecn.xkc.model.vo.CGWDetailModel;
+import com.tahoecn.xkc.model.vo.CGWDetailModel.Item;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
+import com.tahoecn.xkc.model.vo.ChildItem;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
+import com.tahoecn.xkc.model.vo.DicInfo;
+import com.tahoecn.xkc.model.vo.OptionItem;
+import com.tahoecn.xkc.model.vo.PanelItem;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
+import com.tahoecn.xkc.service.customer.IProjectService;
 
 @Service
 @Transactional(readOnly=true)
 public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate {
 
 	@Resource
+	private BCustomerpotentialMapper bCustomerpotentialMapper;
+	@Resource
+	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
+	@Resource
 	private ICustomerHelp iCustomerHelp;
+	@Resource
+	private IProjectService iProjectService;
 	
 	@Override
 	public CustomerModelVo InitCustomerPotentialModeData(CSearchModelVo model,
 			String jsonFileName, JSONObject CustomerObj,
-			String customerPotentialModeType) {/*
+			String customerPotentialModeType) {
         CustomerModelVo customerModel = null;
         try{
             customerModel = iCustomerHelp.InitCustomerModelByFileName(jsonFileName);
             if (customerModel != null){
-                var dicList = InitCustomerDicModel();
-                if (CustomerObj.Count > 0)
-                {
-                    customerModel.ClueID = Convert.ToString(CustomerObj["ClueID"]);
-                    customerModel.CustomerID = Convert.ToString(CustomerObj["CustomerPotentialID"]);
-                    string fieldKey = string.Empty;
-                    foreach (DicInfo item in dicList)
-                    {
-                        fieldKey = (item.Type == "Option" || item.Type == "OptionRadio") ? item.FieldName + "Name" : item.FieldName;
-                        item.Value = Convert.ToString(CustomerObj[fieldKey]);
-                        item.ValueID = Convert.ToString(CustomerObj[item.FieldName]).Replace("\r\n  ", "").Replace("\r", "").Replace("\n", "");
+            	List<DicInfo> dicList = iCustomerHelp.InitCustomerDicModel("CustomerPotentialDic.json");
+                if (CustomerObj.size() > 0){
+                	customerModel.setClueID(CustomerObj.getString("ClueID"));
+                    customerModel.setCustomerID(CustomerObj.getString("CustomerPotentialID"));
+                    String fieldKey ="";
+                    for(DicInfo item : dicList){
+                        fieldKey = ("Option".equals(item.getType()) || "OptionRadio".equals(item.getType())) ? item.getFieldName() + "Name" : item.getFieldName();
+                        item.setValue(CustomerObj.getString(fieldKey));
+                        String FieldName = CustomerObj.getString(item.getFieldName());
+                        if(!StringUtils.isEmpty(FieldName)){
+                        	FieldName.replaceAll("\r\n  ", "").replaceAll("\r", "").replaceAll("\n", "");
+                        }
+                        item.setValueID(FieldName);
                     }
                 }
-                customerModel.OrgID = model.OrgID;
+                customerModel.setOrgID(model.getOrgID());
                 //查询当前项目信息
-                var project = new ProjectService().Detail_FindById(model.ProjectID, debug);
-                int IsNoMobileVerify = ConvertHelper.ToInt(((JObject)project.Data)["IsNoMobileVerify"]);
-                int IsNoCustomerRank = ConvertHelper.ToInt(((JObject)project.Data)["IsNoCustomerRank"]);
-                DicInfo dicInfo;
+                Result project = iProjectService.Detail_FindById(model.getProjectID());
+                JSONObject projectData = (JSONObject)project.getData();
+                int IsNoMobileVerify = projectData.getIntValue("IsNoMobileVerify");
+                int IsNoCustomerRank = projectData.getIntValue("IsNoCustomerRank");
+                DicInfo dicInfo = null;
                 int panelIndex = 0;
-                Dictionary<string, ChildItem> deleteItem = new Dictionary<string, ChildItem>();
-                foreach (PanelItem panelItem in customerModel.Panel)
-                {
+                Map<String,ChildItem> deleteItem = new HashMap<String,ChildItem>();
+                for(PanelItem panelItem : customerModel.getPanel()){
                     int childIndex = 0;
-                    foreach (ChildItem childItem in panelItem.Child)
-                    {
+                    for(ChildItem childItem : panelItem.getChild()){
                         //处理选项项目
-                        if (childItem.Type == "Option" || childItem.Type == "OptionTag" || childItem.Type == "OptionCity" || childItem.Type == "OptionRadio" || childItem.Type == "OptionTextArea")
-                        { //初始化option值
-                            switch (childItem.ID)
-                            {
-                                case "C4FBE218-B26A-48A0-88FF-F6CB2DCD1A72"://归属任务
-                                    {
-                                        if (customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_新潜在客户 ||
-                                            customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_老潜在客户 || customerPotentialModeType == CustomerPotentialModeType.自渠_客户_更新)
-                                        {
-                                            JObject paramAry = new JObject();
-                                            string whereStr = string.Format(" AND b.ProjectID='{0}'", Convert.ToString(model.ProjectID));
-                                            if (model.JobCode == "JZ")
-                                            {
-                                                whereStr += string.Format(" AND a.ChannelUserID='{0}'", Convert.ToString(model.UserID));
+                        if ("Option".equals(childItem.getType()) || "OptionTag".equals(childItem.getType()) || "OptionCity".equals(childItem.getType()) || "OptionRadio".equals(childItem.getType()) || "OptionTextArea".equals(childItem.getType())){ 
+                        	//初始化option值
+                            switch (childItem.getID()){
+                                case "C4FBE218-B26A-48A0-88FF-F6CB2DCD1A72":{//归属任务
+                                        if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_新潜在客户.getTypeID()) ||
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_老潜在客户.getTypeID()) || 
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_客户_更新.getTypeID())){
+                                        	Map<String,Object> paramAry = new HashMap<String, Object>();
+                                            String whereStr = " AND b.ProjectID='"+model.getProjectID()+"'";
+                                            if ("JZ".equals(model.getJobCode())){
+                                                whereStr += " AND a.ChannelUserID='"+model.getUserID()+"'";
+                                            }else{
+                                                whereStr +=" AND b.Creator='"+model.getUserID()+"'";
                                             }
-                                            else
-                                            {
-                                                whereStr += string.Format(" AND b.Creator='{0}'", Convert.ToString(model.UserID));
-                                            }
-
-                                            paramAry.Add("WHERE", whereStr);
-                                            JArray optionList = ((JArray)JsonDataHelper.GetListData("mChannelTaskListZQ_Select", paramAry, out errmsg, debug));
-                                            if (customerPotentialModeType == CustomerPotentialModeType.自渠_客户_更新)
-                                            {
-                                                if (!string.IsNullOrWhiteSpace(model.ClueID))
-                                                {
-                                                    JObject param = new JObject();
-                                                    param.Add("ClueID", model.ClueID);
-                                                    optionList = ((JArray)JsonDataHelper.GetListData("mChannelTaskGetByClueID_Select", param, out errmsg, debug));
+                                            paramAry.put("WHERE", whereStr);
+                                            List<Map<String, Object>> optionList = bCustomerpotentialMapper.mChannelTaskListZQ_Select(paramAry);
+                                            if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_客户_更新.getTypeID())){
+                                                if (!StringUtils.isEmpty(model.getClueID().trim())){
+                                                	Map<String,Object> param = new HashMap<String, Object>();
+                                                    param.put("ClueID", model.getClueID());
+                                                    optionList =bCustomerpotentialMapper.mChannelTaskGetByClueID_Select(param);
                                                 }
                                             }
-                                            if (optionList.Count > 0)
-                                            {
-                                                childItem.Value = Convert.ToString(optionList[0]["Name"]);
-                                                childItem.ValueID = Convert.ToString(optionList[0]["ID"]);
-                                                childItem.Option = JsonHelper.DeserializeJsonToList<OptionItem>(optionList.ToString());
+                                            if (optionList.size() > 0){
+                                            	childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
+                                                childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
+                                                String optionL = JSONArray.toJSONString(optionList);
+            									childItem.setOption(JSONArray.parseArray(optionL, OptionItem.class));
                                             }
-                                            if (optionList.Count <= 1)
-                                            {
-                                                childItem.IsEdit = 0;
+                                            if (optionList.size() <= 1){
+                                                childItem.setIsEdit(0);
                                             }
-                                        }
-                                        else
-                                        {
-                                            deleteItem.Add(childItem.ID + "_" + panelIndex, childItem);
+                                        }else{
+                                            deleteItem.put(childItem.getID() + "_" + panelIndex, childItem);
                                         }
                                     }
                                     break;
-                                case "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D"://意向项目
-                                    {
-                                        if (customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_新潜在客户 ||
-                                            customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_老潜在客户)
-                                        {
-                                            JObject paramAry = new JObject();
-                                            paramAry.Add("WHERE", " and ID='" + Convert.ToString(model.ProjectID) + "' and level='1'");
-                                            JArray optionList = ((JArray)JsonDataHelper.GetListData("sProject_Select", paramAry, out errmsg, debug));
-                                            if (optionList.Count > 0)
-                                            {
-                                                childItem.Value = Convert.ToString(optionList[0]["Name"]);
-                                                childItem.ValueID = Convert.ToString(optionList[0]["ID"]);
-                                                childItem.Option = JsonHelper.DeserializeJsonToList<OptionItem>(optionList.ToString());
+                                case "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D":{//意向项目
+                                        if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_新潜在客户.getTypeID()) ||
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_老潜在客户)){
+                                            String where = " and ID='" + model.getProjectID() + "' and level='1'";
+                                            List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
+                                            if (optionList.size() > 0){
+                                                childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
+                                                childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
+                                                String optionL = JSONArray.toJSONString(optionList);
+            									childItem.setOption(JSONArray.parseArray(optionL, OptionItem.class));
                                             }
                                         }
                                     }
                                     break;
-                                case "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602"://认知途径
-                                    {
-                                        JObject paramAry = new JObject();
-                                        paramAry.Add("Project", model.ProjectID);
-                                        paramAry.Add("UserID", model.UserID);
-                                        paramAry.Add("ChannelTypeID", model.ChannelTypeID);
-                                        JArray optionList = ((JArray)JsonDataHelper.GetListData("SystemDictionaryZQRZTJList_Select", paramAry, out errmsg, debug));
-                                        if (optionList.Count > 0)
-                                        {
-                                            childItem.Value = Convert.ToString(optionList[0]["Name"]);
-                                            childItem.ValueID = Convert.ToString(optionList[0]["ID"]);
-                                            childItem.Option = JsonHelper.DeserializeJsonToList<OptionItem>(optionList.ToString());
+                                case "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602":{//认知途径
+                                		Map<String,Object> paramAry = new HashMap<String, Object>();
+                                        paramAry.put("Project", model.getProjectID());
+                                        paramAry.put("UserID", model.getUserID());
+                                        paramAry.put("ChannelTypeID", model.getChannelTypeID());
+                                        List<Map<String, Object>> optionList = bCustomerpotentialMapper.SystemDictionaryZQRZTJList_Select(paramAry);
+                                        if (optionList.size() > 0){
+                                            childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
+                                            childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
+                                            String optionL = JSONArray.toJSONString(optionList);
+        									childItem.setOption(JSONArray.parseArray(optionL, OptionItem.class));
                                         }
-                                        if (customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_新潜在客户 ||
-                                            customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_老潜在客户)
-                                        {
-                                            childItem.IsEdit = 1;
+                                        if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_新潜在客户.getTypeID())||
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_老潜在客户.getTypeID())){
+                                            childItem.setIsEdit(1);
                                         }
-                                        if (optionList.Count <= 1)
-                                        {
-                                            childItem.IsEdit = 0;
+                                        if (optionList.size() <= 1){
+                                            childItem.setIsEdit(0);
                                         }
                                     }
                                     break;
-                                case "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0"://认知媒体
-                                    {
-                                        childItem.Option = new List<OptionItem>();
-                                        if (customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_新潜在客户 ||
-                                            customerPotentialModeType == CustomerPotentialModeType.自渠_新线索_老潜在客户 ||
-                                            customerPotentialModeType == CustomerPotentialModeType.自渠_客户_更新)
-                                        {
-                                            childItem.Option = GetRZMTOptionList(model.ProjectID, debug);
+                                case "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0":{//认知媒体
+                                        childItem.setOption(new ArrayList<OptionItem>());
+                                        if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_新潜在客户.getTypeID())||
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_老潜在客户.getTypeID())||
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_客户_更新.getTypeID())){
+                                            childItem.setOption(iCustomerHelp.GetRZMTOptionList(model.getProjectID()));
                                         }
                                     }
                                     break;
-                                case "480B60B2-1EE1-4A31-A810-072184A1E9D7"://跟进方式
-                                    {
-                                        childItem.Option = GetOptionList(childItem.ID, debug);
-                                        for (int i = 0; i < childItem.Option.Count; i++)
-                                        {
-                                            if (childItem.Option[i].ID == "E30825AA-B894-4A5F-AF55-24CAC34C8F1F")
-                                            {//删除售场接待
-                                                childItem.Option.Remove(childItem.Option[i]);
+                                case "480B60B2-1EE1-4A31-A810-072184A1E9D7":{//跟进方式
+                                        childItem.setOption(iCustomerHelp.GetOptionList(childItem.getID(), false));
+                                        for (int i = 0; i < childItem.getOption().size(); i++){
+                                            if ("E30825AA-B894-4A5F-AF55-24CAC34C8F1F".equals(childItem.getOption().get(i).getID())){
+                                            	//删除售场接待
+                                                childItem.getOption().remove(childItem.getOption().get(i));
                                                 break;
                                             }
                                         }
                                     }
                                     break;
                                 default:
-                                    childItem.Option = GetOptionList(childItem.ID, debug);
+                                    childItem.setOption(iCustomerHelp.GetOptionList(childItem.getID(), false));
                                     break;
                             }
                         }
-                        dicInfo = dicList.Where(p => p.DicID == childItem.ID).FirstOrDefault();
-                        if (dicInfo != null)
-                        {//字典存在
-
-                            childItem.Value = string.IsNullOrEmpty(dicInfo.Value) ? childItem.Value : dicInfo.Value;
-                            childItem.ValueID = string.IsNullOrEmpty(dicInfo.ValueID) ? childItem.ValueID : dicInfo.ValueID;
-                            #region 通用处理信息
-                            if (childItem.ID == "8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36")
-                            {//来访时间
-                                if (string.IsNullOrWhiteSpace(childItem.Value))
-                                {
-                                    childItem.Value = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
-                                    childItem.ValueID = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
+                        for (DicInfo p : dicList) {
+							if (p.getDicID().equals(childItem.getID())) {
+								dicInfo = p;
+								break;
+							}
+						}
+                        if (dicInfo != null){//字典存在
+                            childItem.setValue(StringUtils.isEmpty(dicInfo.getValue()) ? childItem.getValue() : dicInfo.getValue());
+                            childItem.setValueID(StringUtils.isEmpty(dicInfo.getValueID())? childItem.getValueID() : dicInfo.getValueID());
+                            if ("8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36".equals(childItem.getID())){
+                            	//来访时间
+                                if (StringUtils.isEmpty(childItem.getValue().trim())){
+                                    childItem.setValue(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
+									childItem.setValueID(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
                                 }
                             }
-                            if (childItem.ID == "21685728-54C5-4268-8371-62413CE42841")
-                            {//电话
-                                if (IsNoMobileVerify == 1)
-                                {
-                                    childItem.Type = "Text";
+                            if ("21685728-54C5-4268-8371-62413CE42841".equals(childItem.getID())){//电话
+                                if (IsNoMobileVerify == 1){
+                                    childItem.setType("Text");
                                 }
-                                if (string.IsNullOrWhiteSpace(childItem.Value))
-                                {
-                                    childItem.Value = model.Mobile;
+                                if (StringUtils.isEmpty(childItem.getValue().trim())){
+                                    childItem.setValue(model.getMobile());
                                 }
                             }
-                            if (childItem.ID == "61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")
-                            {//客户级别
-                                if (IsNoCustomerRank == 1)
-                                {
-                                    deleteItem.Add(childItem.ID + "_" + panelIndex, childItem);
+                            if ("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC".equals(childItem.getID())){//客户级别
+                                if (IsNoCustomerRank == 1){
+                                    deleteItem.put(childItem.getID() + "_" + panelIndex, childItem);
                                 }
                             }
-                            switch (customerPotentialModeType)
-                            {
-                                case CustomerPotentialModeType.自渠_老线索_老潜在客户:
+                            switch (customerPotentialModeType){
+                                case "1":
                                     break;
-                                case CustomerPotentialModeType.自渠_新线索_新潜在客户:
-                                    if (childItem.ID == "4D35ABCF-E61C-4650-9F55-0D2D66548CF0")
-                                    {//备注
-                                        childItem.Value = "";
-                                        childItem.ValueID = "";
+                                case "3":
+                                    if ("4D35ABCF-E61C-4650-9F55-0D2D66548CF0".equals(childItem.getID())){//备注
+                                        childItem.setValue("");
+                                        childItem.setValueID("");
                                     }
                                     break;
-                                case CustomerPotentialModeType.自渠_新线索_老潜在客户:
-                                    if (childItem.ID == "4D35ABCF-E61C-4650-9F55-0D2D66548CF0")
-                                    {//备注
-                                        childItem.Value = "";
-                                        childItem.ValueID = "";
+                                case "2":
+                                    if ("4D35ABCF-E61C-4650-9F55-0D2D66548CF0".equals(childItem.getID())){//备注
+                                    	childItem.setValue("");
+                                        childItem.setValueID("");
                                     }
                                     break;
-                                case CustomerPotentialModeType.自渠_客户_详情:
+                                case "81":
                                     break;
-                                case CustomerPotentialModeType.自渠_客户_更新:
+                                case "82":
                                     break;
-                                case CustomerPotentialModeType.无:
+                                case "99":
                                     break;
                                 default:
                                     break;
                             }
-                            if (childItem.ID == "480B60B2-1EE1-4A31-A810-072184A1E9D7")
-                            {//跟进方式
-                                childItem.Value = "";
-                                childItem.ValueID = "";
+                            if ("480B60B2-1EE1-4A31-A810-072184A1E9D7".equals(childItem.getID())){//跟进方式
+                            	childItem.setValue("");
+                                childItem.setValueID("");
                             }
-                            if (childItem.ID == "600DEB36-F5E0-4BA3-B7FA-1A244F0773AB")
-                            {//跟进内容
-                                childItem.Value = "";
-                                childItem.ValueID = "";
+                            if ("600DEB36-F5E0-4BA3-B7FA-1A244F0773AB".equals(childItem.getID())){//跟进内容
+                            	childItem.setValue("");
+                                childItem.setValueID("");
                             }
                         }else{//字典不存在
                          //childItem.Value = "";
@@ -249,17 +247,79 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                     }
                     panelIndex++;
                 }
-                foreach (var item in deleteItem)
-                {
-                    int index = ConvertHelper.ToInt(item.Key.Split('_')[1]);
-                    customerModel.Panel[index].Child.Remove(item.Value);
-                }
+                for (Map.Entry<String, ChildItem> entry : deleteItem.entrySet()) {
+					String mapKey = entry.getKey();
+					ChildItem mapValue = entry.getValue();
+					int index = Integer.parseInt(mapKey.split("_")[1]);
+					customerModel.getPanel().get(index).getChild().remove(mapValue);
+				}
             }
-        }
-        catch (Exception e){
+        }catch (Exception e){
             throw e;
         }
         return customerModel;
-	*/
-		return null;}
+	}
+
+	@Override
+	public JSONObject GetParameters(CGWDetailModel model) {
+		List<DicInfo> dicList = iCustomerHelp.InitCustomerDicModel("CustomerPotentialDic.json");
+		JSONObject parameter = new JSONObject();
+        Item item = null;
+        for(DicInfo dicInfo : dicList){
+            for(Item it : model.getItemList()){
+            	if(it.getID().equals(dicInfo.getDicID())){
+            		item = it;
+            		break;
+            	}
+            }
+            dicInfo.setValue(item != null?item.getValue():"");
+            parameter.put(dicInfo.getFieldName(), dicInfo.getValue().replaceAll("'", ""));
+        }
+        parameter.put("ClueID", model.getClueID());
+        parameter.put("CustomerID'", model.getCustomerID());
+        parameter.put("ProjectID", model.getProjectID());
+        parameter.put("JobID", model.getJobID());
+        parameter.put("OrgID", model.getOrgID());
+        parameter.put("UserID", model.getUserID());
+        parameter.put("Editor", model.getUserID());
+        return parameter;
+	}
+
+	@Override
+	public JSONObject GetParameters(CGWDetailModel model, JSONObject obj) {
+		if (obj != null && obj.size() > 0){
+			List<DicInfo> dicList = iCustomerHelp.InitCustomerDicModel("CustomerPotentialDic.json");
+			JSONObject parameter = new JSONObject();
+            Item item = null;
+            for(DicInfo dicInfo : dicList){
+                for(Item it : model.getItemList()){
+                	if(it.getID().equals(dicInfo.getDicID())){
+                		item = it;
+                		break;
+                	}
+                }
+                if (item == null){//字典不包含参数则初始化历史值补空
+                    dicInfo.setValue(obj.getString(dicInfo.getFieldName()));
+                }else{//字典包含参数 参数值赋值到对应字典值
+                    dicInfo.setValue(item.getValue());
+                }
+                if (StringUtils.isEmpty(dicInfo.getValue().trim())){//如果字典值
+                    dicInfo.setValue("");
+                }
+                parameter.put(dicInfo.getFieldName(), dicInfo.getValue().replaceAll("'", ""));
+            }
+            parameter.put("ClueID", model.getClueID());
+            parameter.put("CustomerID'", StringUtils.isEmpty(model.getCustomerID())?obj.getString("CustomerID"):"");
+            parameter.put("ProjectID", model.getProjectID());
+            parameter.put("JobID", model.getJobID());
+            parameter.put("JobCode", model.getJobCode());
+            parameter.put("OrgID", model.getOrgID());
+            parameter.put("UserID", model.getUserID());
+            parameter.put("Editor", model.getUserID());
+            return parameter;
+        }else{
+            return GetParameters(model);
+        }
+	}
+
 }

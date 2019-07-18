@@ -527,7 +527,7 @@ public class CustomerController extends TahoeBaseController {
     @RequestMapping(value = "/CustomerLockRoomPageList_Select", method = {RequestMethod.GET})
     public Result CustomerLockRoomPageList_Select(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize,
                                                   String ProjectID, String CustomerMobile,String IsExcel,String checkarr[]){
-        IPage page = new Page<>(pageNum,pageSize);
+        IPage page = new Page(pageNum,pageSize);
         StringBuilder sqlWhere = new StringBuilder();
 
         if (StringUtils.isNotEmpty(ProjectID)) {

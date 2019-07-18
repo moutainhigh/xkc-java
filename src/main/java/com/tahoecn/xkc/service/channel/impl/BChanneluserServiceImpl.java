@@ -425,7 +425,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public IPage<Map<String, Object>> ChannelOrgList_Select(Integer pageNum, Integer pageSize, String s) {
-        return bChanneluserMapper.ChannelOrgList_Select(new Page<>(pageNum,pageSize), s);
+        return bChanneluserMapper.ChannelOrgList_Select(new Page(pageNum,pageSize), s);
     }
 
     @Override
