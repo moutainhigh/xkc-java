@@ -530,5 +530,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         }
     }
 
+    @Override
+    public boolean AgenInfo_UpdateN(String id, String channelTypeID) {
+
+        return false;
+    }
+
 
 }

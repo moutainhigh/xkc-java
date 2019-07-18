@@ -503,11 +503,20 @@ public class ChannelController extends TahoeBaseController {
         }
         return Result.errormsg(99,"修改失败");
     }
+    @ApiOperation(value = "分销中介、推荐渠道列表-身份列表查询", notes = "分销中介、推荐渠道列表-身份列表查询")
+    @RequestMapping(value = "/AgenChannelTypeList_SelectN", method = {RequestMethod.GET})
+    public Result AgenChannelTypeList_SelectN(String ID, String ChannelTypeID){
+        boolean b=channeluserService.AgenInfo_UpdateN(ID,ChannelTypeID);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
+    }
 
     @ApiOperation(value = "分销中介、推荐渠道信息编辑", notes = "分销中介、推荐渠道信息编辑")
     @RequestMapping(value = "/AgenInfo_UpdateN", method = {RequestMethod.GET})
-    public Result AgenInfo_UpdateN(String ID, int Status){
-        boolean b=channeluserService.AgenStatus_UpdateN(ID,Status);
+    public Result AgenInfo_UpdateN(String ID, String ChannelTypeID){
+        boolean b=channeluserService.AgenInfo_UpdateN(ID,ChannelTypeID);
         if (b){
             return Result.okm("成功");
         }
