@@ -27,8 +27,10 @@ import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
 import com.tahoecn.xkc.service.customer.IBOpportunitygiveupService;
+import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.customer.IVCustomerxsjlsalesuserlistSelectService;
+import com.tahoecn.xkc.service.customer.impl.CustomerHelp;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 
 import io.swagger.annotations.Api;
@@ -63,6 +65,8 @@ public class AppCustomerController extends TahoeBaseController {
     private IBCustomerpublicpoolService iBCustomerpublicpoolService;
     @Autowired
     private IVCustomerxsjlsalesuserlistSelectService iVCustomerxsjlsalesuserlistSelectService;
+    @Autowired
+    private ICustomerHelp iCustomerHelp;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -1198,6 +1202,93 @@ public class AppCustomerController extends TahoeBaseController {
 			map.put("PageSize", result.getSize());
             
             return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "案场销售经理盘客客户查询", notes = "案场销售经理盘客销售顾问客户查询")
+	@RequestMapping(value = "/mCustomerXSJLSalesUserCustomerList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLSalesUserCustomerList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String Sort = (String) paramMap.get("Sort");
+			String Filter = (String) paramMap.get("Filter");
+			String SaleUserID = (String) paramMap.get("SaleUserID");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+			int PageSize = (int)paramMap.get("PageSize");//每页数量
+			StringBuilder whereSb = new StringBuilder();
+            StringBuilder OrderSb = new StringBuilder();
+            if (!StringUtils.isEmpty(Filter)){
+                if ("9114DF84-58E7-BD3A-B63A-5807821EA272".equals(Filter)){//  "最近跟进>=30天
+                    whereSb.append("and  IntervalDay >=30");
+                }
+                if ("E6A0BEFC-FEF9-7FFF-E495-AF01391AF341".equals(Filter)){//  最近跟进>=60天
+                    whereSb.append("and  IntervalDay >=30");
+                }
+                if ("12070050-1CEB-A085-51EB-B732B5E0717D".equals(Filter)){//  最近跟进>=90天
+                    whereSb.append("and  IntervalDay >=90");
+                }
+                if ("2AB369D1-99B6-60FD-4998-A7A36242FF48".equals(Filter)){//  即将回收<=1天
+                    whereSb.append("and  RecycleDay <=1");
+                }
+                if ("2464F001-B98A-A232-E627-45E6556A4E6A".equals(Filter)){//  即将回收<=3天
+                    whereSb.append("and  RecycleDay <=3");
+                }
+                if ("B76DCF24-7A87-EF66-C176-645844E5EFC8".equals(Filter)){//  即将回收<=5天
+                    whereSb.append("and  RecycleDay <=5");
+                }
+            }
+            if (!StringUtils.isEmpty(Sort)){
+                if ("2C92B9B1-4628-C62F-4277-94F40B9D7510".equals(Sort)){//最近创建
+                    whereSb.append(" ORDER BY  CreateTime desc");
+                }
+                if ("E0B27CA7-B76C-0643-63B6-EA6F27BD7578".equals(Sort)){//最远创建
+                    whereSb.append(" ORDER BY  CreateTime asc ");
+                }
+                if ("7F903589-EB0A-94C5-8E3D-E44178871EB7".equals(Sort)){//最近跟进
+                    whereSb.append(" ORDER BY  IntervalDay asc, FollowState desc");
+                }
+                if ("05D73D87-4657-F4DC-3E27-AE47D005C7EC".equals(Sort)){//最远跟进
+                    whereSb.append(" ORDER BY  IntervalDay desc , FollowState asc  ");
+                }
+            }else{
+                whereSb.append(" ORDER BY  CreateTime desc");
+            }
+
+            IPage page = new Page(PageIndex,PageSize);
+			IPage<Map<String,Object>> result = 
+					iVCustomerxsjlsalesuserlistSelectService.mCustomerXSJLSalesUserCustomerList_Select(page,SaleUserID,ProjectID,whereSb.toString(),OrderSb.toString());
+			Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", result.getRecords());
+			map.put("AllCount", result.getTotal());
+			map.put("PageSize", result.getSize());
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "案场销售经理客户丢失审批", notes = "案场营销经理客户丢失审批")
+	@RequestMapping(value = "/mCustomerYXJLLoseDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYXJLLoseDetail_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String approveState = (String) paramMap.get("ApproveState");
+            if ("1".equals(approveState)){//驳回申请
+                iBOpportunitygiveupService.mCustomerYXJLLoseDetail_Rejected(paramMap);
+            }
+            if ("2".equals(approveState)){//通过申请
+                iBOpportunitygiveupService.mCustomerYXJLLoseDetail_Pass(paramMap);
+                //丢失审核后协作人置空
+                iBOpportunitygiveupService.mCustomerYXJLSalePartnerSetNull_Update(paramMap);
+                //同步明源客户数据
+                iCustomerHelp.SyncCustomer(paramMap.get("OpportunityID").toString(), 0);
+            }
+			return Result.ok(new ArrayList());
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");

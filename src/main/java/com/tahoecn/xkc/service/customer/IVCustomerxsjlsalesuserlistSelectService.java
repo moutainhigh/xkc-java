@@ -20,5 +20,10 @@ public interface IVCustomerxsjlsalesuserlistSelectService extends IService<VCust
 	 */
 	IPage<Map<String, Object>> mCustomerXSJLSalesUserList_Select(IPage<Map<String, Object>> page, 
 			String orgID, String projectID, String whereSb, String OrderSb, String siteUrl);
+	/**
+	 * 案场销售经理盘客销售顾问客户查询
+	 */
+	IPage<Map<String, Object>> mCustomerXSJLSalesUserCustomerList_Select(IPage<Map<String, Object>> page, 
+			String SaleUserID, String projectID, String whereSb, String OrderSb);
 
 }

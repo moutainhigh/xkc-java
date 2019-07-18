@@ -72,5 +72,18 @@ public interface BOpportunitygiveupMapper extends BaseMapper<BOpportunitygiveup>
 	int mCustomerXSJLList_Select_GJKH_count(Map<String, Object> map);
 	List<Map<String,Object>> mCustomerXSJLList_Select(Map<String, Object> map);
 	int mCustomerXSJLList_Select_count(Map<String, Object> map);
+	//客户丢失销售顾问---start
+	void updBOpportunityGiveUp(Map<String, Object> paramMap);
+	void updSMessage(Map<String, Object> paramMap);
+	void insSMessage(Map<String, Object> paramMap);
+	void updBOpportunity_Pass(Map<String, Object> paramMap);
+	void updSMessage_Pass(Map<String, Object> paramMap);
+	void insSMessage_Pass1(Map<String, Object> paramMap);
+	void insSMessage_Pass2(Map<String, Object> paramMap);
+	void updBClue_Pass1(Map<String, Object> paramMap);
+	void insBCustomerTrack_Pass(Map<String, Object> paramMap);
+	void updBClue_Pass2(Map<String, Object> paramMap);
+	void insSTask_Pass(Map<String, Object> paramMap);
+	//客户丢失销售顾问---end
 
 }

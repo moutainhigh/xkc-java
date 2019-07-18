@@ -25,5 +25,11 @@ public interface VCustomerxsjlsalesuserlistSelectMapper extends BaseMapper<VCust
 	IPage<Map<String, Object>> mCustomerXSJLSalesUserList_Select(IPage<Map<String, Object>> page, 
 			@Param("OrgID")String orgID, @Param("ProjectID")String projectID,
 			@Param("WHERE")String whereSb, @Param("ORDER")String orderSb, @Param("SiteUrl")String siteUrl);
+	/**
+	 * 案场销售经理盘客销售顾问客户查询
+	 */
+	IPage<Map<String, Object>> mCustomerXSJLSalesUserCustomerList_Select(IPage<Map<String, Object>> page, 
+			@Param("SaleUserID")String SaleUserID, @Param("ProjectID")String projectID,
+			@Param("WHERE")String whereSb, @Param("ORDER")String orderSb);
 
 }

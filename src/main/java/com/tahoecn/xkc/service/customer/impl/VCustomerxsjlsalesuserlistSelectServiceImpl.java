@@ -28,5 +28,13 @@ public class VCustomerxsjlsalesuserlistSelectServiceImpl extends ServiceImpl<VCu
 			String orgID, String projectID, String whereSb, String OrderSb, String siteUrl) {
 		return baseMapper.mCustomerXSJLSalesUserList_Select(page, orgID, projectID, whereSb, OrderSb, siteUrl);
 	}
+	/**
+	 * 案场销售经理盘客销售顾问客户查询
+	 */
+	@Override
+	public IPage<Map<String, Object>> mCustomerXSJLSalesUserCustomerList_Select(IPage<Map<String, Object>> page, 
+			String SaleUserID, String projectID, String whereSb, String OrderSb) {
+		return baseMapper.mCustomerXSJLSalesUserCustomerList_Select(page, SaleUserID, projectID, whereSb, OrderSb);
+	}
 
 }
