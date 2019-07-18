@@ -315,7 +315,8 @@ public class AppKCController extends TahoeBaseController {
             map.put("CheckDate", CheckDate);
             map.put("ChannelTaskID", ChannelTaskID);
     		List<Map<String,Object>> a = iBChanneluserService.mChannelCheckClockPage_Select(map);
-    		return re.ok(a);
+    		Map<String, Object> b = a.get(0);
+    		return re.ok(b);
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1, "系统异常，请联系管理员");
