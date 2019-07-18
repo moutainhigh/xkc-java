@@ -45,7 +45,7 @@
         ]]>
     </select>
 
-    <select id="QuitUserSalesTeamList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="QuitUserChannelList_Select" parameterType="java.util.Map" resultType="java.util.Map">
         <![CDATA[
             SELECT T.*,
             (SELECT COUNT(1) FROM Clue_List_Select WHERE ReportUserID=UserID) CustomerCount

@@ -77,6 +77,13 @@ public interface IPotentialCustomerService {
 	public Result mCustomerPotentialZQDetail_Update(JSONObject paramAry);
 	
 	/**
+	 * 客户跟进记录新增
+	 * @param paramAry
+	 * @return
+	 */
+	public Result mCustomerPotentialFollowUpDetail_Insert(JSONObject paramAry);
+	
+	/**
 	 * 自渠潜在客户登记
 	 * @param paramAry
 	 * @return

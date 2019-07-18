@@ -14,7 +14,6 @@ import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
 import com.tahoecn.xkc.service.rule.IRuleAppService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -24,11 +23,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -229,4 +226,117 @@ public class RuleAppController extends TahoeBaseController {
 		}
 	}
 
+//    //保存线索规则
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "ID", value = "ID", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "UserID", value = "UserID", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "ProjectID", value = "ProjectID", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "CalMode", value = "CalMode", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "RuleName", value = "RuleName", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "RuleType", value = "RuleType", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "ProtectSource", value = "ProtectSource", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "IsUpdateGroup", value = "IsUpdateGroup", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "ValidationMode", value = "ValidationMode", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "IsOnlyAllowNew", value = "IsOnlyAllowNew", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "ProtectTypeID", value = "ProtectTypeID", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "OverdueTime", value = "OverdueTime", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "OldOwnerLimit", value = "OldOwnerLimit", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "FollowUpOverdueDays", value = "FollowUpOverdueDays", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "IsPermanent", value = "IsPermanent", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "IsSelect", value = "IsSelect", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "IsPreIntercept", value = "IsPreIntercept", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "PreInterceptTime", value = "PreInterceptTime", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "UserBehaviorID", value = "UserBehaviorID", required = true, dataType = "String"),
+//            @ApiImplicitParam(name = "IsProtectVisit", value = "IsProtectVisit", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "ProtectVisitTime", value = "ProtectVisitTime", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "ProtectVisitRemindTime", value = "ProtectVisitRemindTime", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "IsProtect", value = "IsProtect", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "ProtectTime", value = "ProtectTime", required = true, dataType = "Integer"),
+//            @ApiImplicitParam(name = "ProtectRemindTime", value = "ProtectRemindTime", required = true, dataType = "Integer")
+//    })
+//    @ApiOperation(value = "保存线索规则接口", notes = "保存线索规则接口")
+//    @RequestMapping(value = "/RuleClue_Update", method = { RequestMethod.GET })
+//    public ResponseMessage RuleClue_Update(@RequestParam(required = true) String ID,
+//                                           @RequestParam(required = true) String UserID,
+//                                           @RequestParam(required = true) String ProjectID,
+//                                           @RequestParam(required = true) String CalMode,
+//                                           @RequestParam(required = true) String RuleName,
+//                                           @RequestParam(required = true) String RuleType,
+//                                           @RequestParam(required = true) String ProtectSource,
+//                                           @RequestParam(required = true) String IsUpdateGroup,
+//                                           @RequestParam(required = true) String ValidationMode,
+//                                           @RequestParam(required = true) String IsOnlyAllowNew,
+//                                           @RequestParam(required = true) String ProtectTypeID,
+//                                           @RequestParam(required = true) String OverdueTime,
+//                                           @RequestParam(required = true) String OldOwnerLimit,
+//                                           @RequestParam(required = true) String FollowUpOverdueDays,
+//                                           @RequestParam(required = true) String IsPermanent,
+//                                           @RequestParam(required = true) String IsSelect,
+//                                           @RequestParam(required = true) String IsPreIntercept,
+//                                           @RequestParam(required = true) String PreInterceptTime,
+//                                           @RequestParam(required = true) String UserBehaviorID,
+//                                           @RequestParam(required = true) String IsProtectVisit,
+//                                           @RequestParam(required = true) String ProtectVisitTime,
+//                                           @RequestParam(required = true) String ProtectVisitRemindTime,
+//                                           @RequestParam(required = true) String IsProtect,
+//                                           @RequestParam(required = true) String ProtectTime,
+//                                           @RequestParam(required = true) String ProtectRemindTime) {
+//
+//
+//
+//        return null;
+//    }
+
+    @ApiOperation(value = "保存线索规则接口", notes = "保存线索规则接口")
+    @RequestMapping(value = "/RuleClue_Update", method = { RequestMethod.GET })
+    public ResponseMessage RuleClue_Update(@RequestParam(required = true) BCluerule bCluerule,@RequestParam(required = true) String IsUpdateGroup,@RequestParam(required = true) String grouplist){
+
+        if (bCluerule.getProtectSource() == 1)//自有渠道
+        {
+            if (bCluerule.getFollowUpOverdueDays() <= 3)
+            {
+                return ResponseMessage.error("保护期需大于3天");
+            }
+        }
+
+        if (bCluerule.getProtectSource()==null)
+        {
+            bCluerule.setProtectSource(0);
+        }
+        if (bCluerule.getOldOwnerLimit()==null)
+        {
+            bCluerule.setOldOwnerLimit(0);
+        }
+        if (bCluerule.getIsPermanent()==null)
+        {
+            bCluerule.setIsPermanent(0);
+        }
+        if(bCluerule.getIsPreIntercept()==null)
+        {
+            bCluerule.setIsPreIntercept(0);
+        }
+        if (bCluerule.getPreInterceptTime()==null)
+        {
+            bCluerule.setPreInterceptTime(0);
+        }
+        if(bCluerule.getOverdueTime()==null)
+        {
+            bCluerule.setOverdueTime(0);
+        }
+        if(bCluerule.getProtectTypeID()==null)
+        {
+            bCluerule.setProtectTypeID(0);
+        }
+        if(bCluerule.getRuleType()==1)//竞争带看默认变成实时验证
+        {
+            bCluerule.setValidationMode(2);
+        }
+
+        if(IsUpdateGroup!=null && !"".equals(IsUpdateGroup)) {
+            iBClueruleService.saveOrUpdate(bCluerule);
+        }else{
+            iBClueruleAdvisergroupService.RuleClue_Update(bCluerule,grouplist);
+        }
+        return ResponseMessage.ok();
+    }
 }

@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.mapper.rule;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +22,6 @@ public interface BClueruleAdvisergroupMapper extends BaseMapper<BClueruleAdviser
     String selectID(@Param("OrgID")String orgID, @Param("rProjectID")String rProjectID);
 
     void deleteByID(@Param("UserID")String userID,@Param("ID")String ID);
+
+    void RuleClue_Update(@Param("bCluerule") BCluerule bCluerule,@Param("grouplist") String grouplist);
 }

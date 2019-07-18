@@ -860,11 +860,11 @@ public class AppKCController extends TahoeBaseController {
     	    		if(All > 0) {
     	    			String Creator = (String) objData.get(0).get("Creator");//任务创建者
     	    			if(Creator != reportUserID) {
-    	    				List data = new ArrayList();
-    	    				data.add("{\"List\": [],\"AllCount\": 0,\"PageSize\": 10}");
-    	    				data.add("只能领取所属专员的任务");
-    	    				data.add(9);
-    	    				return re.ok(data);
+    	    				Map<String, Object> a = new HashMap<String, Object>();
+    	    	    		a.put("List", "[]");
+    	    	    		a.put("AllCount", 0);
+    	    	    		a.put("PageSize", PageSize);
+    	    				return re.on(a);
     	    			}
     	    		}
     			}

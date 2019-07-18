@@ -2,15 +2,15 @@ package com.tahoecn.xkc.service.rule.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.rule.BClueruleAdvisergroupMapper;
+import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
+import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zookeeper.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.util.Date;
 
 /**
  * <p>
@@ -23,6 +23,8 @@ import java.util.Date;
 @Service
 public class BClueruleAdvisergroupServiceImpl extends ServiceImpl<BClueruleAdvisergroupMapper, BClueruleAdvisergroup> implements IBClueruleAdvisergroupService {
 
+    @Autowired
+    private BClueruleAdvisergroupMapper bClueruleAdvisergroupMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -66,5 +68,10 @@ public class BClueruleAdvisergroupServiceImpl extends ServiceImpl<BClueruleAdvis
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }*/
+    }
+
+    @Override
+    public void RuleClue_Update(BCluerule bCluerule,String grouplist) {
+        bClueruleAdvisergroupMapper.RuleClue_Update(bCluerule,grouplist);
     }
 }

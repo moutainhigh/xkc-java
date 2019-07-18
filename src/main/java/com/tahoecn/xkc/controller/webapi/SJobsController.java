@@ -124,6 +124,16 @@ public class SJobsController extends TahoeBaseController {
         return Result.errormsg(99,"授权失败");
     }
 
+
+    @ApiOperation(value = "岗位数据授权列表", notes = "岗位数据授权列表")
+    @RequestMapping(value = "/SystemJobAuthOrg_Select", method = {RequestMethod.POST})
+    public Result SystemJobAuthOrg_Select(String PID,String JobID){
+        List<Map<String, Object>> list=jobsService.SystemJobAuthOrg_Select(PID,JobID);
+
+        return Result.ok(list);
+    }
+
+
     @ApiOperation(value = "岗位数据授权", notes = "岗位数据授权")
     @RequestMapping(value = "/SystemJobAuthOrg_Insert", method = {RequestMethod.POST})
     public Result SystemJobAuthOrg_Insert(String OrgIDS,String JobID){

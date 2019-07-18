@@ -122,7 +122,7 @@
         #{JobID},
         a.ID
         FROM
-        dbo.fn_split ( #{UserIDS}, ',' ) t
+        dbo.fn_split (#{UserIDS}, ',' ) t
         INNER JOIN S_Account a ON t.AllItem = a.UserName
         LEFT JOIN S_JobsUserRel r ON r.AccountID= a.ID
         AND r.JobID = #{JobID}
