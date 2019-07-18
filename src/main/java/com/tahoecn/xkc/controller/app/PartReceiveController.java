@@ -30,4 +30,31 @@ public class PartReceiveController extends TahoeBaseController{
 		JSONObject json = paramAry.getJSONObject("_param");
 		return iPartReceiveService.CustomerList(json);
     }
+	
+	@ResponseBody
+    @ApiOperation(value = "分接顾问查询", notes = "分接顾问查询")
+    @RequestMapping(value = "/mCustomerFJSearch_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerFJSearch_Select(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iPartReceiveService.mCustomerFJSearch_Select(json);
+    }
+	
+	@ResponseBody
+    @ApiOperation(value = "案场分接客户登记", notes = "案场分接客户登记")
+    @RequestMapping(value = "/mCustomerFJDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerFJDetail_Insert(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iPartReceiveService.mCustomerFJDetail_Insert(json);
+    }
+	
+	
+	@ResponseBody
+    @ApiOperation(value = "分接顾问查询", notes = "分接顾问查询")
+    @RequestMapping(value = "/mCustomerFJAdviserList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerFJAdviserList_Select(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iPartReceiveService.CounselorList(json);
+    }
+	
+	
 }
