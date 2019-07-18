@@ -1016,6 +1016,4 @@ VALUES  ( #{ClueID},
 		]]>
 	</select>
 
-
-
 </mapper>

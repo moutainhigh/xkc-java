@@ -16,6 +16,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
+import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
@@ -31,6 +32,7 @@ import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
 import com.tahoecn.xkc.service.customer.IPotentialCustomerService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
+import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -45,6 +47,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	private IVCustomergwlistSelectService iVCustomergwlistSelectService;
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
+	@Resource
+	private ISystemMessageService iSystemMessageService;
 
 	@Override
 	public Result mCustomerPotentialTagDetail_Insert(JSONObject paramAry) {
@@ -1008,6 +1012,63 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        re_map.put("AllCount", recordCount);
 	        re_map.put("PageSize", paramAry.get("PageSize"));
 	        re.setData(re_map);
+	        re.setErrcode(0);
+	        re.setErrmsg("成功");
+		} catch (Exception e) {
+			re.setErrcode(1);
+	        re.setErrmsg("服务器异常！");
+			e.printStackTrace();
+		}
+        return re;
+	}
+
+	@Override
+	public Result mCustomerPotentialFollowUpDetail_Insert(JSONObject Parameter) {
+		Result re = new Result();
+		try {
+			Parameter.put("FollwUpUserID",Parameter.getString("UserID"));
+	        String ChannelTaskID = Parameter.getString("ChannelTaskID");
+	        if (!StringUtils.isEmpty(ChannelTaskID)){//渠道任务ID
+	            Map<String,Object> channelTaskParam = new HashMap<String, Object>();
+	            channelTaskParam.put("ChannelTaskID",ChannelTaskID);
+	            Result channelTaskEntiry = mChannelTaskDetail_Select(channelTaskParam);
+	            if (channelTaskEntiry.getErrcode() == 0){
+	                JSONObject channelTaskList = (JSONObject)channelTaskEntiry.getData();
+	                if (channelTaskList!=null && channelTaskList.size() > 0){
+	                    String Creator = channelTaskList.getString("Creator");
+	                    if (Creator.length() > 0){
+	                        Parameter.put("FollwUpUserID",Creator);
+	                    }
+	                }
+	            }
+	        }
+	        //Frame.DBhelper.JsonDataHelper.SetNormalData("mCustomerPotentialFollowUpDetail_Insert", Parameter, out errmsg, debug);
+	        //增加跟进记录
+	        String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(Parameter.getString("Mode"));
+	        if (!StringUtils.isEmpty(FollwUpType)){
+	        	JSONObject obj = new JSONObject();
+	            obj.put("FollwUpType", FollwUpType);
+	            obj.put("SalesType", 3);
+	            obj.put("NewSaleUserName", "");
+	            obj.put("OldSaleUserName", "");
+	            obj.put("FollwUpUserID",Parameter.getString("FollwUpUserID"));
+	            obj.put("FollwUpWay",Parameter.getString("Mode"));
+	            obj.put("FollowUpContent",Parameter.getString("Content"));
+	            obj.put("IntentionLevel",Parameter.getString("Level"));
+	            obj.put("OrgID",Parameter.getString("OrgID"));
+	            obj.put("FollwUpUserRole", Parameter.getString("JobID"));
+	            obj.put("OpportunityID", "");
+	            obj.put("ClueID", Parameter.getString("ClueID"));
+	            obj.put("NextFollowUpDate", Parameter.getString("NextTime"));
+	            obj.put("Creator", Parameter.getString("UserID"));
+	            obj.put("Editor", Parameter.getString("UserID"));
+	            
+	            CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(),CustomerActionVo.class);
+	            iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+	        }
+	        CustomerPotentialClueFollowUpDetail_Update(Parameter);//潜在客户线索跟进记录更新
+	        //处理跟进类待办为已办
+	        iSystemMessageService.DetailByHandle_Update(new String[]{Parameter.getString("ClueID")}, "Clue", MessageHandleType.新增跟进.getValue());
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
 		} catch (Exception e) {
