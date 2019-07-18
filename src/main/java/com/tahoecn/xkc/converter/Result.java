@@ -1,5 +1,7 @@
 package com.tahoecn.xkc.converter;
 
+import java.util.Map;
+
 public class Result {
     /**
      * 反馈数据
@@ -75,4 +77,7 @@ public class Result {
     public void setErrcode(int errcode) {
         this.errcode = errcode;
     }
+	public Result on(Object data) {
+		return new Result(data,"只能领取所属专员的任务",9);
+	}
 }
