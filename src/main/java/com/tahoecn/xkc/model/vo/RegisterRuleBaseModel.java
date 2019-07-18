@@ -1,6 +1,10 @@
 package com.tahoecn.xkc.model.vo;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
+
+import cn.hutool.core.date.DateUtil;
 
 public class RegisterRuleBaseModel implements Serializable {
 	
@@ -17,6 +21,34 @@ public class RegisterRuleBaseModel implements Serializable {
 	private ImmissionRule ImmissionRule;
     /// 保护期规则
 	private ProtectRule ProtectRule;
+	
+	public String ComeOverdueTime;
+	public String TradeOverdueTime;
+
+	public String getComeOverdueTime() {
+        if (this.ProtectRule.getIsSelect() == 0 || this.ProtectRule == null || this.ProtectRule.getProtectVisitTime() == 0 || this.ProtectRule.getIsPermanent() == 1)
+            return "";
+        //如果是按天计算，则在当前日期增加天数作为到访逾期时间，否则在当前时间增加天数作为到访逾期时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, this.ProtectRule.getProtectVisitTime()+1);
+        Date time = calendar.getTime();
+        return DateUtil.format(time, "yyyy/MM/dd");
+	}
+	public void setComeOverdueTime(String comeOverdueTime) {
+		ComeOverdueTime = comeOverdueTime;
+	}
+	public String getTradeOverdueTime() {
+		if (this.ProtectRule == null || this.ProtectRule.getIsSelect() == 1 || this.ProtectRule.getProtectTime() == 0 || this.ProtectRule.getIsPermanent() == 1)
+            return "";
+        //如果是按天计算，则在当前日期增加天数作为成交逾期时间，否则在当前时间增加天数作为成交逾期时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, this.ProtectRule.getProtectTime()+1);
+        Date time = calendar.getTime();
+        return DateUtil.format(time, "yyyy/MM/dd");
+	}
+	public void setTradeOverdueTime(String tradeOverdueTime) {
+		TradeOverdueTime = tradeOverdueTime;
+	}
 	public String getRuleID() {
 		return RuleID;
 	}

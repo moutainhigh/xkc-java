@@ -143,23 +143,23 @@ public class GWCustomerPageDto implements Serializable {
 	}
 
 	public class FilterItem {
-		public String tagID;
-		public List<String> child;
+		public String TagID;
+		public List<String> Child;
 
 		public String getTagID() {
-			return tagID;
+			return TagID;
 		}
 
-		public void setTagID(String tagID) {
-			this.tagID = tagID;
+		public void setTagID(String TagID) {
+			this.TagID = TagID;
 		}
 
 		public List<String> getChild() {
-			return child;
+			return Child;
 		}
 
-		public void setChild(List<String> child) {
-			this.child = child;
+		public void setChild(List<String> Child) {
+			this.Child = Child;
 		}
 
 	}

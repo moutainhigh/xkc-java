@@ -10,6 +10,7 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
+import com.tahoecn.xkc.service.sys.IASharelogService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISAppdeviceService;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * <p>
@@ -50,6 +52,8 @@ public class LoginAppController extends TahoeBaseController {
 
     @Autowired
     private ISAccountService accountService;
+    @Autowired
+    private IASharelogService iASharelogService;
 
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
@@ -503,5 +507,38 @@ public class LoginAppController extends TahoeBaseController {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
+    }
+    @ResponseBody
+    @ApiOperation(value = "分享埋点", notes = "分享记录")
+    @RequestMapping(value = "/mShareAppLog_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mShareAppLog_Insert(@RequestBody JSONObject jsonParam) {
+    	try{
+    		Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+    		String Category = (String)paramMap.get("Category");
+    		Map<String,Object> data = new HashMap<String,Object>();
+            String ID = UUID.randomUUID().toString();
+            String pagepath = "";
+            paramMap.put("ID", ID);
+            if (Category != null && !"".equals(Category)){
+                switch (Category){
+                    case "1":
+                        pagepath = "/pages/detail/index";
+                        break;
+                    case "4":
+                        pagepath = "/pages/detail/index";
+                        break;
+                    default:
+                        pagepath = "";
+                        break;
+                }
+            }
+            paramMap.put("PagePath", pagepath);
+            iASharelogService.mShareAppLog_Insert(paramMap);
+            data.put("ShareLogID", ID);
+    		return Result.ok(data);
+    	}catch (Exception e) {
+    		e.printStackTrace();
+    		return Result.errormsg(1,"系统异常，请联系管理员");
+    	}
     }
 }

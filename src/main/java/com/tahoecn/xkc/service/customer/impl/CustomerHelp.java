@@ -90,7 +90,7 @@ public class CustomerHelp implements ICustomerHelp {
 					model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID"));
 					String fieldKey = null;
 					for (DicInfo item : dicList) {
-						fieldKey = (item.getType() == "Option" || item.getType() == "OptionRadio") ? item.getFieldName() + "Name" : item.getFieldName();
+						fieldKey = ("Option".equals(item.getType()) || "OptionRadio".equals(item.getType())) ? item.getFieldName() + "Name" : item.getFieldName();
 						item.setValue(CustomerObj.getString(fieldKey));
 						String tvalueID = CustomerObj.getString(item.getFieldName());
 						if(tvalueID!=null){
@@ -175,13 +175,11 @@ public class CustomerHelp implements ICustomerHelp {
 							}
 								break;
 							case "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0": {// 认知媒体
-								childItem.setOption(GetRZMTOptionList(model
-										.getProjectID()));
+								childItem.setOption(GetRZMTOptionList(model.getProjectID()));
 							}
 								break;
-							case "480B60B2-1EE1-4A31-A810-072184A1E9D7":// 跟进方式
-								List<OptionItem> itemList = GetOptionList(
-										childItem.getID(), false);
+							case "480B60B2-1EE1-4A31-A810-072184A1E9D7":{// 跟进方式
+								List<OptionItem> itemList = GetOptionList(childItem.getID(), false);
 								if (itemList != null && jobCode.equals("GW")
 										&& IsNoAllotRole == 0) {// 开启分接置业顾问只能录入来电、去电、问询、外展接待
 									List<String> followIdList = new ArrayList<String>();
@@ -202,10 +200,10 @@ public class CustomerHelp implements ICustomerHelp {
 								} else {
 									childItem.setOption(itemList);
 								}
+							}
 								break;
 							default:
-								childItem.setOption(GetOptionList(
-										childItem.getID(), false));
+								childItem.setOption(GetOptionList(childItem.getID(), false));
 								break;
 							}
 						}
@@ -504,13 +502,13 @@ public class CustomerHelp implements ICustomerHelp {
 		return list;
 	}
 
+	@Override
 	public List<OptionItem> GetRZMTOptionList(String projectID) {
 		List<OptionItem> list = new ArrayList<OptionItem>();
 		try {
 			if (list == null || list.size() == 0) {
 				list = new ArrayList<OptionItem>();
-				List<Map<String, Object>> jarry = vCustomergwlistSelectMapper
-						.SystemDictionaryRZMTList_Select(projectID);
+				List<Map<String, Object>> jarry = vCustomergwlistSelectMapper.SystemDictionaryRZMTList_Select(projectID);
 				if (jarry.size() > 0) {
 					JSONObject PIDObject = new JSONObject();
 					for (Map<String, Object> item : jarry) {
@@ -533,8 +531,7 @@ public class CustomerHelp implements ICustomerHelp {
 							optionItem.setID(ID);
 							optionItem.setName(Name);
 							optionItem.setChild(new ArrayList<OptionItem>());
-							list.get(list.size() - 1).getChild()
-									.add(optionItem);
+							list.get(list.size() - 1).getChild().add(optionItem);
 						}
 					}
 				}
@@ -546,24 +543,22 @@ public class CustomerHelp implements ICustomerHelp {
 		return list;
 	}
 
+	@Override
 	public List<OptionItem> GetOptionList(String pid, Boolean isall) {
 		List<OptionItem> list = new ArrayList<OptionItem>();
 		try {
 			if (list == null || list.size() == 0) {
 				List<Map<String, Object>> jarry = new ArrayList<Map<String, Object>>();
 				if (isall) {
-					jarry = vCustomergwlistSelectMapper
-							.DictionaryAllList_Select(pid);
+					jarry = vCustomergwlistSelectMapper.DictionaryAllList_Select(pid);
 				} else {
-					jarry = vCustomergwlistSelectMapper
-							.DictionaryList_Select(pid);
+					jarry = vCustomergwlistSelectMapper.DictionaryList_Select(pid);
 				}
 				if (jarry.size() > 0) {
 					for (Map<String, Object> item : jarry) {
 						OptionItem optionItem = new OptionItem();
 						optionItem.setID(String.valueOf(item.get("ID")));
-						optionItem
-								.setName(String.valueOf(item.get("DictName")));
+						optionItem.setName(String.valueOf(item.get("DictName")));
 						list.add(optionItem);
 					}
 				}

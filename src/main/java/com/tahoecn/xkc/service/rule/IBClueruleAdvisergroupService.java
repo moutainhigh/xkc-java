@@ -1,8 +1,8 @@
 package com.tahoecn.xkc.service.rule;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -15,4 +15,6 @@ import org.apache.ibatis.annotations.Param;
 public interface IBClueruleAdvisergroupService extends IService<BClueruleAdvisergroup> {
 
     boolean updateRules(String OrgID,String UserID,String rProjectID,String ClueRuleID,String ProjectIDWhere);
+
+    void RuleClue_Update(BCluerule bCluerule,String grouplist);
 }

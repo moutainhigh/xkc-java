@@ -134,6 +134,9 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	void mChannelRegistJZ_Insert(Map<String, Object> paramMap);
 
 
+    IPage<Map<String, Object>> ChannelOrgList_Select(Integer pageNum, Integer pageSize, String s);
+
+	void ChannelOrgImport_Insert(String orgID, String projectID, String userID,String RuleIDs);
     IPage<Map<String, Object>> AgenList_SelectN(IPage page, int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
             , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID);
 

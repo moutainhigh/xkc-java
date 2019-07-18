@@ -13,4 +13,5 @@ import com.tahoecn.xkc.model.channel.BPojectchannelorgrel;
  */
 public interface IBPojectchannelorgrelService extends IService<BPojectchannelorgrel> {
 
+    void updateToDelete(String orgId,String userId);
 }

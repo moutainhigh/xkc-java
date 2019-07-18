@@ -114,6 +114,12 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
 
     void CustomerGuidePrintDetail_Update(Map<String, Object> result);
 
+    IPage<Map<String,Object>> CustomerLockRoomPageList_Select(IPage page, @Param("sqlWhere")String sqlWhere);
+
+    List<Map<String,Object>> CustomerLockRoomDownLoadByIDList_Select(@Param("arr")String s);
+
+    List<Map<String,Object>> CustomerLockRoomDownLoadList_Select(@Param("sqlWhere")StringBuilder sqlWhere);
+
     /*
      * 线上预约客户列表
      */
