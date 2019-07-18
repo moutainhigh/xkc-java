@@ -376,6 +376,9 @@ public class ChannelController extends TahoeBaseController {
         return jsonResult;
     }
 
+    /**
+     *
+     * 重复了 都不用
 
     @ApiOperation(value = "分销中介、推荐渠道列表", notes = "分销中介、推荐渠道列表")
     @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
@@ -396,29 +399,9 @@ public class ChannelController extends TahoeBaseController {
         jsonResult.setMsg("SUCCESS");
         return jsonResult;
     }
+//新增或更新渠道机构
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //新增或更新渠道机构
-
-    /**
      * {"_datatype":"text","_param":{
      * "ProjectID":"cd69e423-63b5-e711-80c7-00505686c900",
      * "OrgID":"a38bd356-5906-4784-9a9e-495cbb64114c",
@@ -433,7 +416,7 @@ public class ChannelController extends TahoeBaseController {
      * "ProjectIDs":"CD69E423-63B5-E711-80C7-00505686C900",
      * "RuleIDs":["CD69E423-63B5-E711-80C7-00505686C900,835107BA-7B40-4D65-B7DF-6F263CBB5D73"],
      * "UserID":"6C883173-489C-47A4-97D2-3601CB7CEDFD"}}:
-     */
+
     @Deprecated
     @ApiOperation(value = "新增或修改渠道机构", notes = "新增或修改渠道机构")
     @RequestMapping(value = "/ChannelDetail_InsertN", method = {RequestMethod.GET})
@@ -478,6 +461,26 @@ public class ChannelController extends TahoeBaseController {
         jsonResult.setMsg("SUCCESS");
         return jsonResult;
     }
+
+     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @ApiOperation(value = "推荐渠道列表", notes = "推荐渠道列表")
