@@ -155,7 +155,6 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
                 sb.substring(0,sb.length()-2);
                 String jobID = (String) job.get("JobID");
                 String ID=sb.toString();
-                System.out.println("ID = " + ID);
                 List<HashMap<String, Object>> otherResult =menusXkcService.getOtherResult(jobID,ID);
                 for (HashMap<String, Object> map : otherResult) {
                     result.add(map);

@@ -41,10 +41,11 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "获取所有参数", notes = "获取所有参数")
     @RequestMapping(value = "/SystemAllParams_Select", method = {RequestMethod.POST})
-    public Result SystemAllParams_Select(String AuthCompanyID,String ProductID,int Pageindex,int Pagesize){
+    public Result SystemAllParams_Select(String PID,String AuthCompanyID,String ProductID,int Pageindex,int Pagesize){
         IPage page=new Page(Pageindex,Pagesize);
         QueryWrapper<SDictionary> wrapper=new QueryWrapper<>();
         wrapper.eq("IsDel",0).eq("AuthCompanyID",AuthCompanyID).eq("ProductID",ProductID);
+        wrapper.eq("PID",PID);
         wrapper.lt("Levels",3);
         wrapper.orderByAsc("Levels","ListIndex");
         IPage page1 = dictionaryService.page(page, wrapper);

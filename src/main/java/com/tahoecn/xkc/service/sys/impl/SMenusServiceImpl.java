@@ -754,7 +754,7 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
             List<Map<String,Object>>  userFunctions= menusXkcService.UserFunctions(userID,authCompanyID,productID);
 //        该岗位已有的菜单和功能
             Map<String,Object> ids=menusXkcService.CommonJobFunctions(jobID);
-            System.out.println("ids = " + ids.size());
+
             result = new HashMap();
             result.put("UserMenus",userMenus);
             result.put("UserFunctions",userFunctions);
