@@ -36,5 +36,19 @@ public interface BCustomerpublicpoolMapper extends BaseMapper<BCustomerpublicpoo
 	 * @return
 	 */
 	Map<String,Object> mGetPublicPoolDetail_Select(Map<String, Object> obj);
+	/**
+	 * 公共池抢客
+	 */
+	String mCustomerGGCList_Insert(Map<String, Object> paramMap);
+	/**
+	 * 获取自渠所在组织
+	 */
+	Map<String, Object> fromBSalesGroupMember(Map<String, Object> param);
+	/**
+	 * 创建线索
+	 */
+	void newBClue(Map<String, Object> param);
+	//添加跟进记录
+	void insBCustomerPotentialFollowUp(Map<String, Object> param);
 
 }

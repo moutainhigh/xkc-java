@@ -240,4 +240,11 @@ public class BSalesgroupServiceImpl extends ServiceImpl<BSalesgroupMapper, BSale
             bChanneluserMapper.update(channeluser1,updateChannelUserWrapper);
         }
     }
+    /**
+     * 查询渠道身份
+     */
+	@Override
+	public Map<String, Object> mShareChannelTypeID_Select(Map<String, Object> channelTypeObj) {
+		return baseMapper.mShareChannelTypeID_Select(channelTypeObj);
+	}
 }

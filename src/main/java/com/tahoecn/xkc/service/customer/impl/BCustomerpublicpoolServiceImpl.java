@@ -2,20 +2,25 @@ package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
 import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.model.customer.BClue;
+import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.BCustomerpublicpool;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -33,6 +38,8 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 	private BOpportunityMapper bOpportunityMapper;
 	@Autowired
 	private BClueMapper bClueMapper;
+	@Autowired
+	private BCustomerpotentialMapper bCustomerpotentialMapper;
 	/**
 	 * 客户公共池查询
 	 */
@@ -119,9 +126,66 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 		bOpportunityMapper.updateById(unity);
 		BClue clue = new BClue();
 		clue.setStatus(3);
-		clue.setId(map.get("ClueID").toString());
+		clue.setId(map.get("ClueID")==null ? "" : map.get("ClueID").toString());
 		bClueMapper.updateById(clue);
 		return map;
+	}
+	/**
+	 * 公共池抢客
+	 */
+	@Override
+	public String mCustomerGGCList_Insert(Map<String, Object> paramMap) {
+		String str = baseMapper.mCustomerGGCList_Insert(paramMap);
+		return str;
+	}
+	/**
+	 * 自渠抢客公共池客户
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void mGGCCustomerByZQDetail_Update(Map<String, Object> param) {
+		String ClueID = param.get("ClueID").toString();
+		String UserID = param.get("UserID").toString();
+		String PublicID = param.get("PublicID").toString();
+		String OrgName = "";
+		String OrgID = "";
+		String AdviserGroupID = "";
+		String NewClueID = "";
+		String CustomerPotentialID = "";
+		String CustomerPotentialName = "";
+		String CustomerPotentialMobile = "";
+		//新线索ID
+		NewClueID = UUID.randomUUID().toString();
+		//获取该线索的潜在客户ID
+		BClue clue = bClueMapper.selectById(ClueID);
+		CustomerPotentialID = clue.getCustomerPotentialID();
+		//获取潜在客户信息
+		BCustomerpotential tial = bCustomerpotentialMapper.selectById(CustomerPotentialID);
+		CustomerPotentialMobile = tial.getMobile();
+		CustomerPotentialName = tial.getName();
+		//获取自渠所在组织
+		Map<String,Object> map = baseMapper.fromBSalesGroupMember(param);
+		OrgName = map.get("").toString();
+		OrgID = map.get("").toString();
+		AdviserGroupID = map.get("").toString();
+		//创建线索
+		param.put("NewClueID", NewClueID);
+		param.put("OrgName", OrgName);
+		param.put("AdviserGroupID", AdviserGroupID);
+		baseMapper.newBClue(param);
+		//添加跟进记录
+		param.put("CustomerPotentialName", CustomerPotentialName);
+		param.put("CustomerPotentialMobile", CustomerPotentialMobile);
+		param.put("NewClueID", NewClueID);
+		param.put("OrgID", OrgID);
+		baseMapper.insBCustomerPotentialFollowUp(param);
+		//修改公共池状态
+		BCustomerpublicpool pool = new BCustomerpublicpool();
+		pool.setIsDel(1);
+		pool.setEditor(UserID);
+		pool.setEditeTime(new Date());
+		pool.setId(PublicID);
+		baseMapper.updateById(pool);
 	}
 
 }
