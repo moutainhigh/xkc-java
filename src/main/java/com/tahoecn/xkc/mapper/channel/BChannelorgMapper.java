@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.mapper.channel;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.dto.ChannelDto;
@@ -25,7 +26,7 @@ public interface BChannelorgMapper extends BaseMapper<BChannelorg> {
 
     void ChannelDetail_InsertN(ChannelInsertDto channelInsertDto);
 
-    List<Map<String, String>> ChannelOrgAllList_SelectN(String projectID, String pOrgName);
+    List<Map<String, String>> ChannelOrgAllList_SelectN(@Param("ProjectID")String projectID, @Param("pOrgName")String pOrgName);
 
     Integer getRecordCount(@Param("ProjectID")String projectID, @Param("sqlWhere")String sqlWhere);
 
@@ -35,4 +36,7 @@ public interface BChannelorgMapper extends BaseMapper<BChannelorg> {
 
     String getOrgCode();
 
+    List<Map<String,Object>> ChannelExcelList_SelectN(@Param("projectID")String projectID, @Param("sqlWhere")StringBuilder sqlWhere);
+
+    IPage<Map<String,String>> AgenList_SelectN(IPage page, @Param("where")StringBuffer where, @Param("orderBy")StringBuffer orderBy);
 }

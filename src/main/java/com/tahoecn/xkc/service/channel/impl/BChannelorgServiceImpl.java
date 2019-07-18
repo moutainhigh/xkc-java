@@ -3,6 +3,8 @@ package com.tahoecn.xkc.service.channel.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.security.SecureUtil;
@@ -88,12 +90,22 @@ public class BChannelorgServiceImpl extends ServiceImpl<BChannelorgMapper, BChan
 
     @Override
     public int ChannelOrgNameIsExist_SelectN(String orgName,String sqlWhere) {
-        return baseMapper.ChannelOrgNameIsExist_SelectN(orgName,null);
+        return baseMapper.ChannelOrgNameIsExist_SelectN(orgName,sqlWhere);
     }
 
     @Override
     public String getOrgCode() {
         return String.format("%06d", Integer.valueOf(baseMapper.getOrgCode()) + 1);
+    }
+
+    @Override
+    public IPage<Map<String, String>> AgenList_SelectN(IPage page,StringBuffer where, StringBuffer orderBy) {
+        return baseMapper.AgenList_SelectN(page,where,orderBy);
+    }
+
+    @Override
+    public List<Map<String, Object>> ChannelExcelList_SelectN(String projectID, StringBuilder sqlWhere) {
+        return baseMapper.ChannelExcelList_SelectN(projectID,sqlWhere);
     }
 
     /**

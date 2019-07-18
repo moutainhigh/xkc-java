@@ -17,4 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BPojectchannelorgrelServiceImpl extends ServiceImpl<BPojectchannelorgrelMapper, BPojectchannelorgrel> implements IBPojectchannelorgrelService {
 
+    public void updateToDelete(String orgId, String userId) {
+        baseMapper.updateToDelete(orgId,userId);
+    }
 }

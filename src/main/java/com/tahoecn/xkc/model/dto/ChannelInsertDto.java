@@ -18,150 +18,130 @@ public class ChannelInsertDto implements Serializable {
      * "RuleIDs":["CD69E423-63B5-E711-80C7-00505686C900,"],
      * "UserID":"6C883173-489C-47A4-97D2-3601CB7CEDFD"}
      */
-    private String ProjectID;
-    private String OrgID;
-    private String OrgName;
-    private String OrgShortName;
-    private String Bizlicense;
-    private String LeaderID;
-    private String UserName;
-    private String Name;
-    private String Mobile;
-    private String Status;
-    private String ProjectIDs;
-    private String RuleIDs;
-    private String UserID;
-    private String OrgCode;
+    private String projectID;
+    private String orgID;
+    private String orgName;
+    private String orgShortName;
+    private String bizlicense;
+    private String leaderID;
+    private String userName;
+    private String name;
+    private String mobile;
+    private String status;
+    private String projectIDs;
+    private String ruleIDs;
+    private String userID;
+    private String orgCode;
 
     public String getProjectID() {
-        return ProjectID;
+        return projectID;
     }
 
     public void setProjectID(String projectID) {
-        ProjectID = projectID;
+        this.projectID = projectID;
     }
 
     public String getOrgID() {
-        return OrgID;
+        return orgID;
     }
 
     public void setOrgID(String orgID) {
-        OrgID = orgID;
+        this.orgID = orgID;
     }
 
     public String getOrgName() {
-        return OrgName;
+        return orgName;
     }
 
     public void setOrgName(String orgName) {
-        OrgName = orgName;
+        this.orgName = orgName;
     }
 
     public String getOrgShortName() {
-        return OrgShortName;
+        return orgShortName;
     }
 
     public void setOrgShortName(String orgShortName) {
-        OrgShortName = orgShortName;
+        this.orgShortName = orgShortName;
     }
 
     public String getBizlicense() {
-        return Bizlicense;
+        return bizlicense;
     }
 
     public void setBizlicense(String bizlicense) {
-        Bizlicense = bizlicense;
+        this.bizlicense = bizlicense;
     }
 
     public String getLeaderID() {
-        return LeaderID;
+        return leaderID;
     }
 
     public void setLeaderID(String leaderID) {
-        LeaderID = leaderID;
+        this.leaderID = leaderID;
     }
 
     public String getUserName() {
-        return UserName;
+        return userName;
     }
 
     public void setUserName(String userName) {
-        UserName = userName;
+        this.userName = userName;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getMobile() {
-        return Mobile;
+        return mobile;
     }
 
     public void setMobile(String mobile) {
-        Mobile = mobile;
+        this.mobile = mobile;
     }
 
     public String getStatus() {
-        return Status;
+        return status;
     }
 
     public void setStatus(String status) {
-        Status = status;
+        this.status = status;
     }
 
     public String getProjectIDs() {
-        return ProjectIDs;
+        return projectIDs;
     }
 
     public void setProjectIDs(String projectIDs) {
-        ProjectIDs = projectIDs;
+        this.projectIDs = projectIDs;
     }
 
     public String getRuleIDs() {
-        return RuleIDs;
+        return ruleIDs;
     }
 
     public void setRuleIDs(String ruleIDs) {
-        RuleIDs = ruleIDs;
+        this.ruleIDs = ruleIDs;
     }
 
     public String getUserID() {
-        return UserID;
+        return userID;
     }
 
     public void setUserID(String userID) {
-        UserID = userID;
+        this.userID = userID;
     }
 
     public String getOrgCode() {
-        return OrgCode;
+        return orgCode;
     }
 
     public void setOrgCode(String orgCode) {
-        OrgCode = orgCode;
-    }
-
-    @Override
-    public String toString() {
-        return "ChannelInsertDto{" +
-                "ProjectID='" + ProjectID + '\'' +
-                ", OrgID='" + OrgID + '\'' +
-                ", OrgName='" + OrgName + '\'' +
-                ", OrgShortName='" + OrgShortName + '\'' +
-                ", Bizlicense='" + Bizlicense + '\'' +
-                ", LeaderID='" + LeaderID + '\'' +
-                ", UserName='" + UserName + '\'' +
-                ", Name='" + Name + '\'' +
-                ", Mobile='" + Mobile + '\'' +
-                ", Status='" + Status + '\'' +
-                ", ProjectIDs='" + ProjectIDs + '\'' +
-                ", RuleIDs='" + RuleIDs + '\'' +
-                ", UserID='" + UserID + '\'' +
-                ", OrgCode='" + OrgCode + '\'' +
-                '}';
+        this.orgCode = orgCode;
     }
 }

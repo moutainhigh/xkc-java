@@ -6,7 +6,7 @@
         UPDATE B_ClueRule_AdviserGroup SET IsDel=1,Editor=#{UserID},EditTime=GETDATE() WHERE ID IN (
         SELECT CRAG.ID FROM dbo.B_ClueRule CR
         INNER JOIN dbo.B_ClueRule_AdviserGroup CRAG ON CR.ID=CRAG.ClueRuleID AND CRAG.IsDel=0
-        WHERE CR.IsDel=0 AND CRAG.AdviserGroupID=#{OrgID} AND CR.ProjectID NOT IN (${ProjectIDWhere})
+        WHERE CR.IsDel=0 AND CRAG.AdviserGroupID=#{orgID} AND CR.ProjectID NOT IN (${projectIDWhere})
         )
     </update>
 

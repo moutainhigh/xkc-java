@@ -177,6 +177,21 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     }
 
     @Override
+    public IPage<Map<String, Object>> CustomerLockRoomPageList_Select(IPage page, String sqlWhere) {
+        return baseMapper.CustomerLockRoomPageList_Select(page,sqlWhere);
+    }
+
+    @Override
+    public List<Map<String, Object>> CustomerLockRoomDownLoadByIDList_Select(String s) {
+        return baseMapper.CustomerLockRoomDownLoadByIDList_Select(s);
+    }
+
+    @Override
+    public List<Map<String, Object>> CustomerLockRoomDownLoadList_Select(StringBuilder sqlWhere) {
+        return baseMapper.CustomerLockRoomDownLoadList_Select(sqlWhere);
+    }
+
+    @Override
     public Map<String, Object> CustomerGuidePrintDetail_Select(String ProjectID, String UserID, String ID) {
         int num = baseMapper.getB_CustomerGuide(ProjectID);
         String num1 = baseMapper.getB_Project(ProjectID);

@@ -39,24 +39,24 @@ WHERE bc.IsDel=0 AND bc.Status=1 AND bc.Approver IS NOT NULL AND bc.Approver<>''
         )
         VALUES
         (
-        #{LeaderID},
-        #{UserName},
+        #{leaderID},
+        #{userName},
         '32C92DA0-DA13-4C21-A55E-A1D16955882C',
         '中介同行',
         UPPER (
         SUBSTRING ( sys.fn_sqlvarbasetostr ( HashBytes ( 'MD5', '123321' )), 3, 32 )),
-        #{Mobile},
-        #{Name},
-        #{OrgCode},
-        #{OrgID},
+        #{mobile},
+        #{name},
+        #{orgCode},
+        #{orgID},
         0,
         1,
-        #{UserID},
+        #{userID},
         getdate(),
-        #{UserID},
+        #{userID},
         getdate(),
         0,
-        #{Status}
+        #{status}
         )
     </insert>
 
@@ -414,6 +414,28 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 
     ]]>
     </select>
+    <select id="ChannelOrgList_Select" resultType="java.util.Map">
+        <![CDATA[
+            Select
+                   a.ID,
+                   a.OrgCode,
+                   a.OrgName,
+                   a.CreateTime,
+                   Responsible,
+                   Mobile
+            From B_ChannelOrg a
+            Where 1 = 1
+              and isnull(a.PID, '') = ''
+              And a.IsDel = 0
+              AND a.Status = 1 ${sql}
+        ]]>
+    </select>
+    <select id="getB_PojectChannelOrgRel" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM B_PojectChannelOrgRel
+        WHERE OrgID = #{OrgID}
+        AND ProjectID = #{ProjectID}
+    </select>
 
     <insert id="insertBChannelUser" parameterType="java.util.Map">
         INSERT INTO dbo.B_ChannelUser
@@ -433,5 +455,13 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         SELECT CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
         INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID AND b.ID=#{ID}
         WHERE a.IsDel=0),#{UserID},GETDATE(),0,1 FROM dbo.S_Account WHERE id=#{MemberID}
+    </insert>
+    <insert id="ChannelOrgImport_Insert_B_PojectChannelOrgRel">
+        INSERT INTO dbo.B_PojectChannelOrgRel(ID, OrgID, ProjectID, Creator, CreateTime, IsDel, Status)
+        VALUES (NEWID(), #{orgID}, #{projectID}, #{userID}, GETDATE(), 0, 1)
+    </insert>
+    <insert id="ChannelOrgImport_Insert_B_ClueRule_AdviserGroup">
+        INSERT INTO dbo.B_ClueRule_AdviserGroup(ID, ClueRuleID, AdviserGroupID, Creator, CreateTime, IsDel, Status)
+        VALUES (NEWID(), #{RuleIDs}, #{OrgID}, #{UserID}, GETDATE(), 0, 1)
     </insert>
 </mapper>

@@ -27,7 +27,7 @@ public class BClueruleAdvisergroupServiceImpl extends ServiceImpl<BClueruleAdvis
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateRules(String OrgID, String UserID, String rProjectID, String ClueRuleID, String ProjectIDWhere) {
-        try {
+        /*try {*/
             //先删除掉这个机构删掉的项目对应的规则
             baseMapper.deleteByOrgID(OrgID, UserID, ProjectIDWhere);
             //然后进行修改/新增操作
@@ -60,11 +60,11 @@ public class BClueruleAdvisergroupServiceImpl extends ServiceImpl<BClueruleAdvis
                 baseMapper.updateById(clueruleAdvisergroup);
             }
             return true;
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             e.printStackTrace();
             //出错手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
-        }
+        }*/
     }
 }

@@ -131,6 +131,9 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	 * 行销拓客兼职注册
 	 */
 	void mChannelRegistJZ_Insert(Map<String, Object> paramMap);
-	
 
+
+    IPage<Map<String, Object>> ChannelOrgList_Select(Integer pageNum, Integer pageSize, String s);
+
+	void ChannelOrgImport_Insert(String orgID, String projectID, String userID,String RuleIDs);
 }

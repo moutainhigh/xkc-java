@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.channel.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.converter.Result;
@@ -10,7 +11,6 @@ import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dict.SDictionary;
-import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -422,7 +421,23 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 		wrapper.eq("IsDel", 0);
 		return bChanneluserMapper.selectCount(wrapper);
 	}
-	/**
+
+    @Override
+    public IPage<Map<String, Object>> ChannelOrgList_Select(Integer pageNum, Integer pageSize, String s) {
+        return bChanneluserMapper.ChannelOrgList_Select(new Page<>(pageNum,pageSize), s);
+    }
+
+    @Override
+    public void ChannelOrgImport_Insert(String orgID, String projectID, String userID,String RuleIDs) {
+        Integer count = bChanneluserMapper.getB_PojectChannelOrgRel(orgID,projectID);
+        if (count == 0){
+            bChanneluserMapper.ChannelOrgImport_Insert_B_PojectChannelOrgRel(orgID, projectID, userID);
+        }else{
+            bChanneluserMapper.ChannelOrgImport_Insert_B_ClueRule_AdviserGroup(RuleIDs==null?"":RuleIDs, orgID, userID);
+        }
+    }
+
+    /**
 	 * 行销拓客兼职注册
 	 */
 	@Override

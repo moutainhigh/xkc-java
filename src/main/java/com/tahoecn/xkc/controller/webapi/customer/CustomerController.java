@@ -1,9 +1,6 @@
 package com.tahoecn.xkc.controller.webapi.customer;
 
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -12,30 +9,25 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
-import com.tahoecn.xkc.common.utils.ExcelUtilsTest;
-import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletOutputStream;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static org.apache.coyote.http11.Constants.a;
 
 /**
  * <p>
@@ -462,7 +454,7 @@ public class CustomerController extends TahoeBaseController {
     }
 
     @ApiOperation(value = "带看确认单打印")
-    @RequestMapping(value = "/CustomerGuidePrintDetail_Select", method = {RequestMethod.POST})
+    @RequestMapping(value = "/CustomerGuidePrintDetail_Select", method = {RequestMethod.GET})
     public Result CustomerGuidePrintDetail_Select(String ProjectID, String UserID, String ID){
         Map<String,Object> result = customerService.CustomerGuidePrintDetail_Select(ProjectID, UserID, ID);
         StringBuilder OpenHtml = new StringBuilder();
@@ -530,5 +522,76 @@ public class CustomerController extends TahoeBaseController {
         }
         return Result.ok(OpenHtml.toString() + html.toString() + html.toString() + "</div>");
     }
+
+    @ApiOperation(value = "锁房列表")
+    @RequestMapping(value = "/CustomerLockRoomPageList_Select", method = {RequestMethod.GET})
+    public Result CustomerLockRoomPageList_Select(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize,
+                                                  String ProjectID, String CustomerMobile,String IsExcel,String checkarr[]){
+        IPage page = new Page<>(pageNum,pageSize);
+        StringBuilder sqlWhere = new StringBuilder();
+
+        if (StringUtils.isNotEmpty(ProjectID)) {
+            sqlWhere.append(" AND clr.ProjectID='").append(ProjectID).append("'");
+        }else{
+            return Result.ok("");
+        }
+
+        if (StringUtils.isNotEmpty(CustomerMobile)) {
+            sqlWhere.append(" AND c.Mobile like '%").append(CustomerMobile).append("%'");
+        }
+
+        if (StringUtils.isNotEmpty(IsExcel)) {
+            SetExcelToCustomerList(sqlWhere,checkarr);
+            return null;
+        }
+
+        IPage<Map<String,Object>> result = customerService.CustomerLockRoomPageList_Select(page,sqlWhere.toString());
+        return Result.ok(result);
+    }
+
+    private void SetExcelToCustomerList(StringBuilder sqlWhere, String[] checkarr) {
+
+        List<Map<String, Object>> result;
+        if (checkarr != null && checkarr.length != 0) {
+            StringBuilder arr = new StringBuilder();
+            arr.append(" and  clr.ID IN ( ");
+            for (int i = 0; i < checkarr.length; i++) {
+                if (i + 1 == checkarr.length) {
+                    arr.append("'").append(checkarr[i]).append("'");
+                } else {
+                    arr.append("'").append(checkarr[i]).append("'").append(",");
+                }
+            }
+            arr.append(" )");
+            result = customerService.CustomerLockRoomDownLoadByIDList_Select(arr.toString());
+        } else {
+            result = customerService.CustomerLockRoomDownLoadList_Select(sqlWhere);
+        }
+
+        List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+        entity.add(new ExcelExportEntity("客户姓名", "Name"));
+        entity.add(new ExcelExportEntity("手机号", "Mobile"));
+        entity.add(new ExcelExportEntity("户型", "Huxing"));
+        entity.add(new ExcelExportEntity("房间名称", "RoomCode"));
+        entity.add(new ExcelExportEntity("建筑面积", "YsBldArea"));
+        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
+        entity.add(new ExcelExportEntity("渠道来源", "SourceType"));
+        entity.add(new ExcelExportEntity("渠道人员", "ReportUserName"));
+        entity.add(new ExcelExportEntity("渠道人员电话", "ReportUserMobile"));
+        entity.add(new ExcelExportEntity("所属机构", "OrgName"));
+        entity.add(new ExcelExportEntity("申请人", "SaleUserName"));
+        entity.add(new ExcelExportEntity("申请时间", "CreateTime"));
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 }
