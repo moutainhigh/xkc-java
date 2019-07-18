@@ -9,6 +9,7 @@ import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.DicInfo;
+import com.tahoecn.xkc.model.vo.OptionItem;
 
 public interface ICustomerHelp {
 	
@@ -59,4 +60,8 @@ public interface ICustomerHelp {
 	public CustomerModelVo InitCustomerModelByFileName(String jsonFile);
 	
 	public List<DicInfo> InitCustomerDicModel(String jsonFile);
+	
+	public List<OptionItem> GetRZMTOptionList(String projectID);
+	
+	public List<OptionItem> GetOptionList(String pid, Boolean isall);
 }

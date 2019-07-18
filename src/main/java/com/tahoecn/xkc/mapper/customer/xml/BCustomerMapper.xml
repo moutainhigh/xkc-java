@@ -1143,11 +1143,100 @@
             WHERE ca.ID = #{id}
         ]]>
     </select>
-    
+    <select id="CustomerLockRoomPageList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT dbo.F_DictName(m.AdviserGroupID) SourceType,
+            *
+            FROM (
+            SELECT clr.ID,
+            clr.ImgUrl,
+            clr.CreateTime,
+            CASE WHEN ISNULL(clr.CustomerName, '') <> '' THEN clr.CustomerName ELSE c.Name END Name,
+            c.Name                                                                             CustomerName,
+            STUFF(c.Mobile, 4, 4, '****')                                                      Mobile,--客户手机号
+            r.RoomCode,
+            r.HuXing,
+            r.YsBldArea,
+            dbo.F_GetSaleUserName(clr.Creator)                                                 SaleUserName,
+            cl.AdviserGroupID,
+            cl.ReportUserName,
+            cl.ReportUserMobile,--手机号
+            co.OrgName
+            FROM dbo.B_CustomerLockRoom clr
+            LEFT JOIN dbo.B_Customer c ON c.ID = clr.CustomerID
+            LEFT JOIN dbo.B_Room r ON r.ID = clr.RoomID
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
+            LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
+            WHERE clr.IsDel = 0 ${sqlWhere}
+            ) m
+        ]]>
+    </select>
+    <select id="CustomerLockRoomDownLoadByIDList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ROW_NUMBER() OVER (ORDER BY CreateTime DESC) num,
+            dbo.F_DictName(m.AdviserGroupID)             SourceType,
+            *
+            FROM (
+            SELECT clr.ID,
+            clr.ImgUrl,
+            clr.CreateTime,
+            CASE WHEN ISNULL(clr.CustomerName, '') <> '' THEN clr.CustomerName ELSE c.Name END Name,
+            c.Name                                                                             CustomerName,
+            STUFF(c.Mobile, 4, 4, '****')                                                      Mobile,--客户手机号
+            r.RoomCode,
+            r.HuXing,
+            r.YsBldArea,
+            dbo.F_GetSaleUserName(clr.Creator)                                                 SaleUserName,
+            cl.AdviserGroupID,
+            cl.ReportUserName,
+            cl.ReportUserMobile,--手机号
+            co.OrgName
+            FROM dbo.B_CustomerLockRoom clr
+            LEFT JOIN dbo.B_Customer c ON c.ID = clr.CustomerID
+            LEFT JOIN dbo.B_Room r ON r.ID = clr.RoomID
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
+            LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
+            WHERE 1 = 1 ${arr}
+            ) m
+        ]]>
+    </select>
+    <select id="CustomerLockRoomDownLoadList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ROW_NUMBER() OVER (ORDER BY CreateTime DESC) num,
+       dbo.F_DictName(m.AdviserGroupID)             SourceType,
+       *
+FROM (
+         SELECT clr.ID,
+                clr.ImgUrl,
+                clr.CreateTime,
+                CASE WHEN ISNULL(clr.CustomerName, '') <> '' THEN clr.CustomerName ELSE c.Name END Name,
+                c.Name                                                                             CustomerName,
+                STUFF(c.Mobile, 4, 4, '****')                                                      Mobile,--客户手机号
+                r.RoomCode,
+                r.HuXing,
+                r.YsBldArea,
+                dbo.F_GetSaleUserName(clr.Creator)                                                 SaleUserName,
+                cl.AdviserGroupID,
+                cl.ReportUserName,
+                cl.ReportUserMobile,--手机号
+                co.OrgName
+         FROM dbo.B_CustomerLockRoom clr
+                  LEFT JOIN dbo.B_Customer c ON c.ID = clr.CustomerID
+                  LEFT JOIN dbo.B_Room r ON r.ID = clr.RoomID
+                  LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
+                  LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
+                  LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
+         WHERE clr.IsDel = 0 ${sqlWhere}
+     ) m
+        ]]>
+    </select>
+
     <!-- 线上预约客户列表 -->
     <select id="mCustomerShareList_Select" resultType="java.util.Map" parameterType="java.util.Map">
         <![CDATA[
-		SELECT 
+		SELECT
 			ROW_NUMBER() OVER(ORDER BY a.CreateTime) num,
 			a.ID,
 			b.ID OpportunityID,
@@ -1160,9 +1249,9 @@
 			dbo.F_GetClueStatusName(c.Status,b.Status) OpportunityStatus,
 			b.Status OpportunityStatusValue,
 			dbo.F_GetClueStatusName(c.Status,0) ClueStatus,
-			CASE WHEN ISNULL(b.SaleUserID,'') <> '' THEN 1 ELSE 0 END IsAlloc 
-		FROM dbo.A_ShareCustomers a LEFT JOIN dbo.C_WXUser d ON d.ID = a.WXUserID 
-											 LEFT JOIN dbo.B_Opportunity b ON b.CustomerMobile = d.Mobile 
+			CASE WHEN ISNULL(b.SaleUserID,'') <> '' THEN 1 ELSE 0 END IsAlloc
+		FROM dbo.A_ShareCustomers a LEFT JOIN dbo.C_WXUser d ON d.ID = a.WXUserID
+											 LEFT JOIN dbo.B_Opportunity b ON b.CustomerMobile = d.Mobile
 											 LEFT JOIN dbo.B_Clue c ON c.ID = b.ClueID
 		WHERE b.ProjectID = #{ProjectID}
 				AND b.SaleUserID = #{UserID}

@@ -2,7 +2,9 @@ package com.tahoecn.xkc.service.channel.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microsoft.schemas.office.visio.x2012.main.PageType;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
@@ -10,7 +12,6 @@ import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dict.SDictionary;
-import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -422,7 +422,23 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 		wrapper.eq("IsDel", 0);
 		return bChanneluserMapper.selectCount(wrapper);
 	}
-	/**
+
+    @Override
+    public IPage<Map<String, Object>> ChannelOrgList_Select(Integer pageNum, Integer pageSize, String s) {
+        return bChanneluserMapper.ChannelOrgList_Select(new Page(pageNum,pageSize), s);
+    }
+
+    @Override
+    public void ChannelOrgImport_Insert(String orgID, String projectID, String userID,String RuleIDs) {
+        Integer count = bChanneluserMapper.getB_PojectChannelOrgRel(orgID,projectID);
+        if (count == 0){
+            bChanneluserMapper.ChannelOrgImport_Insert_B_PojectChannelOrgRel(orgID, projectID, userID);
+        }else{
+            bChanneluserMapper.ChannelOrgImport_Insert_B_ClueRule_AdviserGroup(RuleIDs==null?"":RuleIDs, orgID, userID);
+        }
+    }
+
+    /**
 	 * 行销拓客兼职注册
 	 */
 	@Override
@@ -452,6 +468,45 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 		user.setCreator(user.getId());
 		bChanneluserMapper.updateById(user);
 	}
+
+    @Override
+    public IPage<Map<String, Object>> AgenList_SelectN(IPage page,int PageType,String ProjectID,String ChannelTypeID,String Name,String PassStatu
+                                                        ,Date CreateStartTime,Date CreateEndTime,String ApprovalUserID) {
+        StringBuilder where=new StringBuilder();
+        if (PageType==0){
+            where.append(" and cu.ChannelTypeID IN ('32C92DA0-DA13-4C21-A55E-A1D16955882C','E55FC76C-4696-40F9-8640-EF18572822CD') AND Job<>0");
+            if (StringUtils.isNotBlank(ProjectID)){
+                where.append(" and o.ID in (SELECT DISTINCT OrgID FROM [dbo].[B_PojectChannelOrgRel] WHERE ProjectID='" + ProjectID + "' AND IsDel=0 AND Status=1)");
+            }
+        }else {
+            where.append(" and cu.ChannelTypeID IN ('725FA5F6-EC92-4DC6-8D47-A8E74B7829AD','EB4AD331-F4AD-46D6-889A-D45575ECEE66', '46830C26-0E01-4041-8054-3865CCDD26AD')");
+            if (StringUtils.isNotBlank(ChannelTypeID)&&!StringUtils.equals("-1",ChannelTypeID)){
+                where.append(" and cu.ChannelTypeID='" + ChannelTypeID + "'");
+            }
+        }
+        if (StringUtils.isNotBlank(Name)){
+            where.append(" and cu.Name like '%" + Name + "%'");
+        }
+        if (StringUtils.isNotBlank(PassStatu)&&!StringUtils.equals("-1",PassStatu)){
+            where.append(" and cu.ApprovalStatus= '" + PassStatu + "'");
+        }
+        if (CreateStartTime!=null){
+            where.append(" and cu.CreateTime > '" + CreateStartTime + "'");
+        }
+        if (CreateEndTime!=null){
+            where.append(" and cu.CreateTime < '" + CreateEndTime + "'");
+        }
+        if (StringUtils.isNotBlank(ApprovalUserID)){
+            where.append(" and cu.Approver = '" +ApprovalUserID + "'");
+        }
+        if (CreateEndTime!=null){
+            where.append(" and cu.CreateTime < '" + CreateEndTime + "'");
+        }
+        //是否有机构和//项目ID没判断 貌似不需要了
+        IPage<Map<String,Object>> list=baseMapper.AgenList_SelectN(page,where.toString());
+
+        return list;
+    }
 
 
 }

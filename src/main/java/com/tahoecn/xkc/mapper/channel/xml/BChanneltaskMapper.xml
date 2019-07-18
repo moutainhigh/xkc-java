@@ -384,8 +384,10 @@
 	</select>
 	
 	<!-- 任务列表查询 -->
-    <select id="mChannelTaskList_Select" parameterType="String" resultType="java.util.Map">
+    <select id="mChannelTaskList_Select" parameterType="java.util.Map" resultType="java.util.Map">
 		<![CDATA[
+		SELECT  *
+		FROM    (
 		SELECT  a.ID ,
 		        a.ProjectID ,
 		        a.Name ,
@@ -415,6 +417,21 @@
 		WHERE   a.IsDel = 0 ${whereStr}
 		GROUP BY a.ID ,a.ProjectID ,a.Name ,a.TaskType ,a.TaskCode , a.StartTime ,a.EndTime
 			 , a.TaskAreaID ,a.TaskAreaName , c.Longitude ,c.Dimension ,a.WorkStartTime ,a.WorkEndTime ,a.WorkRange ,a.CustomerTarget ,a.Creator,a.CreateTime,a.Status
+	    ) t
+		WHERE   t.num > ( #{PageIndex} - 1 ) * #{PageSize}
+		        AND t.num <= #{PageIndex} * #{PageSize};
+	    ]]>
+	</select>
+	<select id="mChannelTaskList_SelectAllCount" parameterType="java.util.Map" resultType="int">
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM (
+		SELECT a.ID
+		FROM    dbo.B_ChannelTask a
+		LEFT JOIN dbo.B_ChannelTask_ChannelUser b ON a.ID = b.ChannelTaskID
+		WHERE   a.IsDel = 0 ${whereStr} 
+		GROUP BY a.ID 
+		) a
 	    ]]>
 	</select>
 	
@@ -422,28 +439,39 @@
 	<!-- 任务兼职列表 -->
 	<select id="mChannelTaskTempPersonList_Select" parameterType="java.util.Map" resultType="java.util.Map">
 		<![CDATA[
-		SELECT * FROM ( 
-		SELECT  a.ID ,
+		SELECT  *
+		FROM    (SELECT  a.ID ,
+		        a.ProjectID ,
 		        a.Name ,
-		        a.Mobile ,
-		        a.HeadImg ,
-		        dbo.GetPYFirst(a.Name) FirstChar ,
+		        a.TaskType ,
+		        dbo.F_DictName(a.TaskType) TaskTypeName ,
+		        a.TaskCode ,
+		        a.StartTime ,
+		        a.EndTime ,
+		        a.TaskAreaID ,
+		        a.TaskAreaName ,
+		        c.Longitude ,
+		        c.Dimension ,
+		        a.WorkStartTime ,
+		        a.WorkEndTime ,
+		        a.WorkRange ,
+		        a.CustomerTarget ,
+		        a.Creator,
 		        ( SELECT    COUNT(1)
-		          FROM      dbo.B_Clue 
-		          WHERE     ChannelUserID = a.ID AND ChannelTaskID = #{ChannelTaskID}
+		          FROM      dbo.B_Clue b
+		          WHERE     b.ChannelTaskID = a.ID ${JZCode}
 		        ) CustomerCount ,
-		        b.IsDel,
-		        ROW_NUMBER() OVER ( ORDER BY dbo.GetPYFirst(a.Name) DESC ) num
-		FROM    dbo.B_ChannelUser a
-		        INNER JOIN dbo.B_ChannelTask_ChannelUser b ON a.ID = b.ChannelUserID
-		        INNER JOIN dbo.B_ChannelTask c ON b.ChannelTaskID = c.ID
-		                                          AND c.IsDel = 0  ${taskID}
-		WHERE   1 = 1
-		        AND a.Isdel = 0  ${sqlWhere}
-		GROUP BY a.ID ,a.Name , a.Mobile ,a.HeadImg ,b.IsDel
-		) t
-		WHERE   t.num > ( #{PageIndex} - 1 ) * #{PageSize}
-		        AND t.num <= #{PageIndex} * #{PageSize};   
+		        a.Status,
+		        ROW_NUMBER() OVER ( ORDER BY a.CreateTime DESC ) num
+		FROM    dbo.B_ChannelTask a
+		        LEFT JOIN dbo.B_ChannelTask_ChannelUser b ON a.ID = b.ChannelTaskID
+		        LEFT JOIN dbo.B_ChannelTaskArea c ON c.ID = a.TaskAreaID
+		WHERE   a.IsDel = 0 ${WHERE}
+		GROUP BY a.ID ,a.ProjectID ,a.Name ,a.TaskType ,a.TaskCode , a.StartTime ,a.EndTime
+			 , a.TaskAreaID ,a.TaskAreaName , c.Longitude ,c.Dimension ,a.WorkStartTime ,a.WorkEndTime ,a.WorkRange ,a.CustomerTarget ,a.Creator,a.CreateTime,a.Status
+		        ) t
+		WHERE   t.num > ( #{PageIndex} - 1 ) * {PageSize}
+		        AND t.num <= #{PageIndex} * #{PageSize};
 	    ]]>
 	</select>
 	<select id="mChannelTaskTempPersonList_SelectAllCount" parameterType="java.util.Map" resultType="int">

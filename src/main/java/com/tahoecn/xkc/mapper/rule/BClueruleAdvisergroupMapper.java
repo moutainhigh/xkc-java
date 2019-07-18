@@ -17,9 +17,9 @@ public interface BClueruleAdvisergroupMapper extends BaseMapper<BClueruleAdviser
 
     void deleteByOrgID(@Param("orgID") String orgID, @Param("UserID")String UserID, @Param("projectIDWhere")String projectIDWhere);
 
-    int selectDeleteCount(@Param("orgID") String orgID,@Param("rProjectID") String rProjectID);
+    int selectDeleteCount(@Param("OrgID") String orgID,@Param("rProjectID") String rProjectID);
 
-    String selectID(@Param("orgID")String orgID, @Param("rProjectID")String rProjectID);
+    String selectID(@Param("OrgID")String orgID, @Param("rProjectID")String rProjectID);
 
     void deleteByID(@Param("UserID")String userID,@Param("ID")String ID);
 

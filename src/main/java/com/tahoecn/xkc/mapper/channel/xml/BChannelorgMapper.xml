@@ -56,27 +56,27 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
         )
         VALUES
         (
-        #{OrgID},
-        #{OrgCode},
-        #{OrgName},
-        #{OrgShortName},
+        #{orgID},
+        #{orgCode},
+        #{orgName},
+        #{orgShortName},
         '32C92DA0-DA13-4C21-A55E-A1D16955882C',
         '',
         1,
-        #{Mobile},
-        #{Name},
+        #{mobile},
+        #{name},
         1,
         getdate(),
-        #{UserID},
+        #{userID},
         getdate(),
-        #{Bizlicense},
+        #{bizlicense},
         0,
         1
         )
 
     </insert>
 
-    <select id="ChannelOrgAllList_SelectN" resultType="java.util.HashMap">
+    <select id="ChannelOrgAllList_SelectN" resultType="java.util.Map">
         SELECT
         ID,
         OrgCode,
@@ -106,5 +106,113 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
 
     <select id="getOrgCode" resultType="string">
         SELECT MAX(OrgCode) as OrgCode  FROM [B_ChannelOrg]
+    </select>
+    <select id="ChannelExcelList_SelectN" resultType="java.util.Map">
+        SELECT ROW_NUMBER() OVER ( ORDER BY a.CreateTime DESC ) num,
+        a.ID,
+        a.OrgCode,
+        a.OrgName,
+        a.OrgShortName,
+        a.BizLicense,
+        a.[Status],
+        a.CreateTime,
+        a.ProjectID,
+        CASE a.[Status]
+        WHEN 0
+        THEN '禁用'
+        WHEN 1
+        THEN '启用'
+        ELSE ''
+        END                             AS           StatuName,
+        sa.EmployeeName                     AS           CreatorName,
+        b.ID                                AS           LeaderID,
+        b.UserName,
+        b.[Password                 ],
+        b.Name                              AS           OrgLeaderName,
+        STUFF(b.Mobile, 4, 4, '****')       AS           OrgLeaderMobileSt,
+        b.Mobile                            AS           OrgLeaderMobile,
+        b.[Status]                          AS           OrgLeaderStatu,
+        CASE b.[Status]
+        WHEN 0
+        THEN '禁用'
+        WHEN 1
+        THEN '启用'
+        ELSE ''
+        END                             AS           OrgLeaderStatuName,
+        a.[Status]                          AS           OrgStatu,
+        CASE a.[Status]
+        WHEN 0
+        THEN '禁用'
+        WHEN 1
+        THEN '启用'
+        ELSE ''
+        END                             AS           OrgStatuName,
+        a.ChannelTypeID,
+        [DBO].[F_DictName](a.ChannelTypeID) AS           ChannelType
+        FROM [DBO].[B_ChannelOrg] a
+        LEFT JOIN
+        dbo.B_ChannelUser b
+        ON
+        a.ID = b.ChannelOrgID
+        AND b.IsDel = 0
+        AND b.job = 0
+        LEFT JOIN
+        S_Account sa
+        ON
+        a.Creator = sa.id
+        WHERE a.IsDel = 0
+        AND a.OrgCategory = 1
+        AND a.ID IN
+        (
+        SELECT DISTINCT OrgID
+        FROM [DBO].[B_PojectChannelOrgRel]
+        WHERE ProjectID = #{projectID}
+        AND IsDel = 0
+        AND Status = 1) ${sqlWhere}
+    </select>
+    <select id="AgenList_SelectN" resultType="java.util.Map">
+        <![CDATA[
+            SELECT cu.ID,
+            cu.UserName,
+            cu.Mobile                                                                                        as MobileSt,
+            cu.Mobile,
+            cu.CertificatesType,
+            cu.Name,
+            d3.DictName                                                                                      as Gender,
+            cu.CertificatesNo,
+            cu.CertificatesPicFace,
+            cu.CertificatesPicBack,
+            cu.BankCardPerson,
+            cu.BankCardCreate,
+            cu.BankCard,
+            cu.BankCardPic,
+            cu.ChannelOrgID,
+            cu.CreateTime,
+            cu.[Status],
+            case cu.[Status] when 0 then '禁用' when 1 then '启用' else '' end                                   as StatusName,
+            cu.ApprovalDate,
+            o.OrgName                                                                                        as ChannelOrgName,
+            o.OrgCode                                                                                        as ChannelOrgCode,
+            cu.ChannelTypeID,
+            d.DictName,
+            d2.DictName                                                                                      as CertificatesTypeName,
+            a1.[EmployeeName]                                                                                as InviterName,
+            case cu.ApprovalStatus
+            when '0' then '待审核'
+            when '1' then '通过'
+            when '2' then '不通过'
+            else '待审核' end                                                                               as ApprovalStatuss
+            ,
+            a.[EmployeeName]                                                                                 as ApproverName
+            FROM dbo.B_ChannelUser cu
+            left join S_Dictionary d on cu.ChannelTypeID = d.id
+            left join S_Dictionary d2 on cu.CertificatesType = d2.id
+            left join S_Dictionary d3 on cu.Gender = d3.id
+            left join S_Account a on cu.Approver = a.id
+            left join S_Account a1 on cu.Inviter = a1.id
+            left join B_ChannelOrg o on cu.ChannelOrgID = o.ID
+            WHERE 1 = 1
+            and cu.IsDel = 0 ${where} ${orderBy}
+        ]]>
     </select>
 </mapper>

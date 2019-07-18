@@ -50,7 +50,6 @@ public class SJobsController extends TahoeBaseController {
             @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
     @RequestMapping(value = "/SystemJobList_Select", method = {RequestMethod.POST})
     public Result SystemJobList_Select(String AuthCompanyID,String ProductID,String OrgID){
-        String substring = OrgID.substring(0, 10);
         List<Map<String,Object>> list=jobsService.SystemJobList_Select(AuthCompanyID,ProductID,OrgID);
         return Result.ok(list);
     }
@@ -80,7 +79,7 @@ public class SJobsController extends TahoeBaseController {
 
     @ApiOperation(value = "更新Jobs信息", notes = "更新Jobs信息")
     @RequestMapping(value = "/SystemJob_Update", method = {RequestMethod.POST})
-    public Result SystemJob_Update(SJobs jobs){
+    public Result SystemJob_Update(@RequestBody SJobs jobs){
         jobs.setEditor(ThreadLocalUtils.getUserName());
         jobs.setEditTime(new Date());
         boolean update = jobsService.updateById(jobs);
@@ -90,14 +89,30 @@ public class SJobsController extends TahoeBaseController {
         return Result.errormsg(99,"更新失败");
     }
 
+    @ApiOperation(value = "启用/禁用岗位", notes = "启用/禁用岗位")
+    @RequestMapping(value = "/SystemJob_Status", method = {RequestMethod.POST})
+    public Result SystemJob_Status(String ID,int Status){
+        SJobs jobs=new SJobs();
+        jobs.setId(ID);
+        jobs.setStatus(Status);
+        boolean b = jobsService.updateById(jobs);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"启用/禁用失败");
+    }
+
     @ApiOperation(value = "删除岗位", notes = "删除岗位")
     @RequestMapping(value = "/SystemJob_Delete", method = {RequestMethod.POST})
     public Result SystemJob_Delete(String ID){
         SJobs jobs=new SJobs();
         jobs.setId(ID);
         jobs.setIsDel(1);
-        jobsService.updateById(jobs);
-        return Result.errormsg(99,"新增失败");
+        boolean b = jobsService.updateById(jobs);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"删除失败");
     }
     @ApiOperation(value = "岗位功能授权", notes = "岗位功能授权")
     @RequestMapping(value = "/SystemJobAuth_Insert", method = {RequestMethod.POST})
@@ -124,7 +139,6 @@ public class SJobsController extends TahoeBaseController {
             @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
     @RequestMapping(value = "/SystemUserList_Select", method = {RequestMethod.POST})
     public Result SystemUserList_Select(String JobID,String AuthCompanyID){
-
         List<SAccount> list=jobsService.SystemUserList_Select(JobID,AuthCompanyID);
         return Result.ok(list);
     }
@@ -132,13 +146,51 @@ public class SJobsController extends TahoeBaseController {
 
     @ApiOperation(value = "岗位人员新增", notes = "岗位人员新增")
     @RequestMapping(value = "/SystemJobUser_Insert", method = {RequestMethod.POST})
-    public Result SystemJobUser_Insert(SAccount account,String JobID){
-        boolean save =jobsService.SystemJobUser_Insert(account,JobID);
+    public Result SystemJobUser_Insert(String jobID,String userName,int accountType,String employeeCode,String employeeName,int gender
+            ,String officeTel,String mobile,String officeMail,String postCode,int status,String address,String authCompanyID,String productID){
+        SAccount sAccount=new SAccount();
+        sAccount.setUserName(userName);
+        sAccount.setAccountType(accountType);
+        sAccount.setEmployeeCode(employeeCode);
+        sAccount.setEmployeeName(employeeName);
+        sAccount.setGender(gender);
+        sAccount.setOfficeTel(officeTel);
+        sAccount.setMobile(mobile);
+        sAccount.setOfficeMail(officeMail);
+        sAccount.setPostCode(postCode);
+        sAccount.setStatus(status);
+        sAccount.setAddress(address);
+        sAccount.setAuthCompanyID(authCompanyID);
+        sAccount.setProductID(productID);
+
+        boolean save =jobsService.SystemJobUser_Insert(sAccount,jobID);
 
         if (save){
             return Result.okm("成功");
         }
         return Result.errormsg(99,"人员新增失败");
+    }
+
+    //SystemUser_Update
+    @ApiOperation(value = "岗位人员编辑", notes = "岗位人员编辑")
+    @RequestMapping(value = "/SystemJobUser_Update", method = {RequestMethod.POST})
+    public Result SystemJobUser_Update(SAccount account){
+        boolean save =jobsService.SystemJobUser_Update(account);
+
+        if (save){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"人员新增失败");
+    }
+
+    @ApiOperation(value = "岗位人员启用/禁用", notes = "岗位人员启用/禁用")
+    @RequestMapping(value = "/SystemJobUser_Status", method = {RequestMethod.POST})
+    public Result SystemJobUser_Status(SAccount account){
+        boolean save =accountService.updateById(account);
+        if (save){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"失败");
     }
 
     @ApiOperation(value = "获取所有人员", notes = "获取所有人员")

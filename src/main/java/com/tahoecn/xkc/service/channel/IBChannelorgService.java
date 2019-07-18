@@ -1,13 +1,11 @@
 package com.tahoecn.xkc.service.channel;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.model.channel.BChannelorg;
-import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,4 +32,8 @@ public interface IBChannelorgService extends IService<BChannelorg> {
     String getOrgCode();
 
     JSONResult insertOrg(Map<String,String>  map);
+
+    List<Map<String, Object>> ChannelExcelList_SelectN(String projectID, StringBuilder sqlWhere);
+
+    IPage<Map<String, String>> AgenList_SelectN(IPage page,StringBuffer where, StringBuffer orderBy);
 }

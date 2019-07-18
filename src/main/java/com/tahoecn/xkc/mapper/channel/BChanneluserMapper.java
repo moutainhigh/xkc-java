@@ -2,6 +2,7 @@ package com.tahoecn.xkc.mapper.channel;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 import java.util.HashMap;
@@ -120,4 +121,14 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	List<Map<String, Object>> GetChannelOrgID_Select(Map<String, Object> obj);
 
 	void insertBChannelUser(Map<String, Object> map);
+
+    IPage<Map<String, Object>> AgenList_SelectN(IPage page, @Param("where")String where);
+
+    IPage<Map<String,Object>> ChannelOrgList_Select(IPage<Object> objectPage, @Param("sql")String s);
+
+	Integer getB_PojectChannelOrgRel(@Param("OrgID")String orgID,@Param("ProjectID")String projectID);
+
+	void ChannelOrgImport_Insert_B_PojectChannelOrgRel(@Param("orgID")String orgID, @Param("projectID")String projectID, @Param("userID")String userID);
+
+	void ChannelOrgImport_Insert_B_ClueRule_AdviserGroup(@Param("RuleIDs")String RuleIDs, @Param("OrgID")String OrgID, @Param("UserID")String UserID);
 }

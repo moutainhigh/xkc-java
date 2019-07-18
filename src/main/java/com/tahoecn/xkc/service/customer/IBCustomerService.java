@@ -61,6 +61,12 @@ public interface IBCustomerService extends IService<BCustomer> {
 
     void CustomerGuidePrintDetail_Update(Map<String, Object> result);
 
+    IPage<Map<String,Object>> CustomerLockRoomPageList_Select(IPage page, String sqlWhere);
+
+    List<Map<String,Object>> CustomerLockRoomDownLoadByIDList_Select(String s);
+
+    List<Map<String,Object>> CustomerLockRoomDownLoadList_Select(StringBuilder sqlWhere);
+
     /*
      * 线上预约客户列表
      */

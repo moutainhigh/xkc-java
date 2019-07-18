@@ -130,8 +130,8 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	/*
 	 * 任务列表查询
 	 */
-	IPage<Map<String, Object>> mChannelTaskList_Select(IPage page, @Param("whereStr")StringBuilder whereStr, @Param("JZCode")StringBuilder JZCode);
-	
+	List<Map<String, Object>> mChannelTaskList_Select(Map<String, Object> map);
+	int mChannelTaskList_SelectAllCount(Map<String, Object> map);
 	/*
 	 * 专员团队管理列表
 	 * 任务兼职列表
@@ -143,8 +143,6 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	 * 兼职列表
 	 */
 	List<Map<String, Object>> mChannelTempPersonList_Select(Map<String, Object> map);
-	int mChannelTempPersonList_SelectAllCount(Map<String, Object> map);
-
-	
+	int mChannelTempPersonList_SelectAllCount(Map<String, Object> map);	
 
 }

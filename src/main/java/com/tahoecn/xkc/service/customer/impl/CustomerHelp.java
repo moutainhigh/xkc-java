@@ -504,13 +504,13 @@ public class CustomerHelp implements ICustomerHelp {
 		return list;
 	}
 
+	@Override
 	public List<OptionItem> GetRZMTOptionList(String projectID) {
 		List<OptionItem> list = new ArrayList<OptionItem>();
 		try {
 			if (list == null || list.size() == 0) {
 				list = new ArrayList<OptionItem>();
-				List<Map<String, Object>> jarry = vCustomergwlistSelectMapper
-						.SystemDictionaryRZMTList_Select(projectID);
+				List<Map<String, Object>> jarry = vCustomergwlistSelectMapper.SystemDictionaryRZMTList_Select(projectID);
 				if (jarry.size() > 0) {
 					JSONObject PIDObject = new JSONObject();
 					for (Map<String, Object> item : jarry) {
@@ -533,8 +533,7 @@ public class CustomerHelp implements ICustomerHelp {
 							optionItem.setID(ID);
 							optionItem.setName(Name);
 							optionItem.setChild(new ArrayList<OptionItem>());
-							list.get(list.size() - 1).getChild()
-									.add(optionItem);
+							list.get(list.size() - 1).getChild().add(optionItem);
 						}
 					}
 				}
@@ -546,24 +545,22 @@ public class CustomerHelp implements ICustomerHelp {
 		return list;
 	}
 
+	@Override
 	public List<OptionItem> GetOptionList(String pid, Boolean isall) {
 		List<OptionItem> list = new ArrayList<OptionItem>();
 		try {
 			if (list == null || list.size() == 0) {
 				List<Map<String, Object>> jarry = new ArrayList<Map<String, Object>>();
 				if (isall) {
-					jarry = vCustomergwlistSelectMapper
-							.DictionaryAllList_Select(pid);
+					jarry = vCustomergwlistSelectMapper.DictionaryAllList_Select(pid);
 				} else {
-					jarry = vCustomergwlistSelectMapper
-							.DictionaryList_Select(pid);
+					jarry = vCustomergwlistSelectMapper.DictionaryList_Select(pid);
 				}
 				if (jarry.size() > 0) {
 					for (Map<String, Object> item : jarry) {
 						OptionItem optionItem = new OptionItem();
 						optionItem.setID(String.valueOf(item.get("ID")));
-						optionItem
-								.setName(String.valueOf(item.get("DictName")));
+						optionItem.setName(String.valueOf(item.get("DictName")));
 						list.add(optionItem);
 					}
 				}
