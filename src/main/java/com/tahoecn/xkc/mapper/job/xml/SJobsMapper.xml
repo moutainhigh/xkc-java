@@ -89,7 +89,7 @@
         ORDER BY LEN(JobName),JobName
     </select>
 
-    <select id="SystemOrgUserList_Select" resultType="java.util.HashMap" parameterType="string">
+    <select id="SystemOrgUserList_Select" resultType="com.tahoecn.xkc.model.sys.SAccount" parameterType="string">
         SELECT
         *
         FROM

@@ -20,11 +20,11 @@ import java.util.Map;
 public interface SJobsMapper extends BaseMapper<SJobs> {
     void userJobInsert(@Param("UserID") String UserID, @Param("RoleID") String RoleID,@Param("ProjectID") String ProjectID);
 
-    IPage<Map<String,Object>> SystemJobList_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
+    List<Map<String,Object>> SystemJobList_Select( @Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
 
-    IPage<SAccount> SystemUserList_Select(IPage page, @Param("JobID")String jobID, @Param("AuthCompanyID")String authCompanyID);
+    List<SAccount> SystemUserList_Select(@Param("JobID")String jobID, @Param("AuthCompanyID")String authCompanyID);
 
-    IPage<Map<String,Object>> SystemJobAllList_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
+    IPage<Map<String,Object>> SystemJobAllList_Select(IPage page,@Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
 
     IPage<SAccount> SystemOrgUserList_Select(IPage page, @Param("UserName")String userName, @Param("EmployeeName")String employeeName, @Param("JobID")String jobID);
 

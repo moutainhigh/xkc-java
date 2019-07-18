@@ -86,9 +86,7 @@ public class SMenusController extends TahoeBaseController {
             }
             map.put("children",temp);
             resultListNew.add(map);
-
         }
-        System.out.println(resultListNew.size());
         return Result.ok(resultListNew);
     }
 

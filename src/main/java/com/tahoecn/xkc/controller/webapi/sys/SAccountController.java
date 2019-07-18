@@ -44,10 +44,10 @@ public class SAccountController extends TahoeBaseController {
 
     //已测
     @ApiOperation(value = "获取组织下的人员(用户管理)", notes = "获取组织下的人员(用户管理)")
-    @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.POST})
-    public Result SystemUserListByOrgID_Select(String AuthCompanyID,String OrgID,String Key,int Pageindex,int Pagesize) {
+    @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.GET})
+    public Result SystemUserListByOrgID_Select(String AuthCompanyID,String Name,int Type,int Pageindex,int Pagesize) {
         IPage page = new Page(Pageindex, Pagesize);
-        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_Select(page,AuthCompanyID,OrgID,Key);
+        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_Select(page,AuthCompanyID,Name,Type);
         return Result.ok(list);
     }
 
@@ -55,7 +55,7 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "新增人员(用户管理)", notes = "新增人员(用户管理)")
     @RequestMapping(value = "/SystemUser_Insert", method = {RequestMethod.POST})
     public Result SystemUser_Insert(@RequestBody SAccount account) {
-//        account.setCreator(ThreadLocalUtils.getUserName());
+        account.setCreator(ThreadLocalUtils.getUserName());
         account.setCreateTime(new Date());
         account.setIsDel(0);
         accountService.save(account);
@@ -65,7 +65,7 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "编辑人员(用户管理)", notes = "编辑人员(用户管理)")
     @RequestMapping(value = "/SystemUser_Update", method = {RequestMethod.POST})
     public Result SystemUser_Update(@RequestBody SAccount account) {
-//        account.setEditor(ThreadLocalUtils.getUserName());
+        account.setEditor(ThreadLocalUtils.getUserName());
         account.setEditTime(new Date());
 
         accountService.updateById(account);
@@ -74,7 +74,6 @@ public class SAccountController extends TahoeBaseController {
         salesuser.setId(account.getId());
         salesuser.setUserName(account.getUserName());
         salesuser.setTelPhone(account.getMobile());
-//        salesuser.setEditor(ThreadLocalUtils.getUserName());
         salesuser.setEditTime(new Date());
         salesuserService.updateById(salesuser);
         return Result.okm("成功");

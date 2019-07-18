@@ -5,16 +5,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.mapper.job.SJobsMapper;
+import com.tahoecn.xkc.model.job.BProjectjobrel;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.job.SJobsmenurel;
 import com.tahoecn.xkc.model.job.SJobsuserrel;
+import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
 import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
 import com.tahoecn.xkc.model.sys.SMenus;
+import com.tahoecn.xkc.service.job.IBProjectjobrelService;
 import com.tahoecn.xkc.service.job.ISJobsService;
 import com.tahoecn.xkc.service.job.ISJobsmenurelService;
 import com.tahoecn.xkc.service.job.ISJobsuserrelService;
+import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,19 +49,23 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private ISJobsmenurelService jobsmenurelService;
     @Autowired
     private ISMenusService menusService;
+    @Autowired
+    private IBProjectjobrelService projectjobrelService;
+    @Autowired
+    private IBSalesuserService salesuserService;
 
     @Override
-    public IPage<Map<String,Object>> SystemJobList_Select(IPage page, String authCompanyID, String productID, String orgID) {
-        return baseMapper.SystemJobList_Select(page,authCompanyID,productID,orgID);
+    public List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID) {
+        return baseMapper.SystemJobList_Select(authCompanyID,productID,orgID);
     }
 
     @Override
-    public IPage<SAccount> SystemUserList_Select(IPage page, String jobID, String authCompanyID) {
-        return baseMapper.SystemUserList_Select(page,jobID,authCompanyID);
+    public List<SAccount> SystemUserList_Select(String jobID, String authCompanyID) {
+        return baseMapper.SystemUserList_Select(jobID,authCompanyID);
     }
 
     @Override
-    public IPage<Map<String,Object>> SystemJobAllList_Select(IPage page, String authCompanyID, String productID, String orgID) {
+    public IPage<Map<String,Object>> SystemJobAllList_Select(IPage page,String authCompanyID, String productID, String orgID) {
         return baseMapper.SystemJobAllList_Select(page,authCompanyID,productID,orgID);
     }
 
@@ -106,6 +114,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean SystemJobAuth_Insert(String menus, String jobID) {
         boolean save =false;
         try {
@@ -153,5 +162,78 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             return false;
         }
         return save;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean SystemJobUserRel_Delete(String userIDS, String jobID) {
+        try {
+            String[] split = userIDS.split(",");
+            for (String s : split) {
+                QueryWrapper<SJobsuserrel> wrapper=new QueryWrapper<>();
+                wrapper.eq("JobID",jobID);
+                wrapper.eq("AccountID",s);
+                jobsuserrelService.remove(wrapper);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean SystemJobAuthOrg_Insert(String orgIDS, String jobID) {
+        boolean save=false;
+        try {
+            String[] split = orgIDS.split(",");
+            QueryWrapper<BProjectjobrel> wrapper=new QueryWrapper<>();
+            wrapper.eq("JobID",jobID);
+            List<BProjectjobrel> list = projectjobrelService.list(wrapper);
+            for (BProjectjobrel projectjobrel : list) {
+                projectjobrel.setIsDel(1);
+                projectjobrelService.updateById(projectjobrel);
+            }
+            for (String s : split) {
+                BProjectjobrel projectjobrel=new BProjectjobrel();
+                projectjobrel.setCreator(ThreadLocalUtils.getUserName());
+                projectjobrel.setJobID(jobID);
+                projectjobrel.setProjectID(s);
+                projectjobrel.setCreateTime(new Date());
+                projectjobrel.setIsDel(0);
+                projectjobrel.setStatus(1);
+                save = projectjobrelService.save(projectjobrel);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return save;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean SystemJobUser_Update(SAccount account) {
+        try {
+            account.setEditTime(new Date());
+            account.setEditor(ThreadLocalUtils.getUserName());
+            accountService.updateById(account);
+//         得同时更改掉B_SalesUser表里面的信息
+            BSalesuser salesuser=new BSalesuser();
+            salesuser.setId(account.getId());
+            salesuser.setUserName(account.getUserName());
+            salesuser.setTelPhone(account.getMobile());
+            salesuser.setEditor(account.getEditor());
+            salesuser.setEditTime(account.getEditTime());
+            salesuserService.updateById(salesuser);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
     }
 }

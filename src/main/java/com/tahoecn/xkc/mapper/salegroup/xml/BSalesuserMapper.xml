@@ -29,4 +29,21 @@
             </if>
         </where>
     </select>
+    
+    <!-- 分享项目信息 -->
+    <select id="mShareAppDetail_Select" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+     SELECT
+      A.ID,
+			A.Name,
+			A.Name DevelopersName,
+			#{imgSiteUrl}+#{Url} ImgUrl,
+			#{WXDetailPagePath} PagePath
+	 FROM dbo.A_ShareProject A 
+	 WHERE A.ID = #{ShareProjectID} AND A.IsDel = 0 AND A.Status = 1 
+    </select>
+    <select id="mShareAppDetail_Select1" resultType="String" parameterType="java.util.HashMap">
+     SELECT TOP 1 ImgSrc FROM dbo.A_ShareBanner
+		WHERE IsDel=0 AND Status=1 AND Category=1 AND ShareProjectID=#{ShareProjectID} AND ImgType=0 
+		ORDER BY ListIndex ASC,CreateTime DESC
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.channel;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -11,6 +12,7 @@ import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
@@ -477,4 +479,15 @@ public class ChannelController extends TahoeBaseController {
         return jsonResult;
     }
 
+
+    @ApiOperation(value = "推荐渠道列表", notes = "推荐渠道列表")
+    @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
+    public Result AgenList_SelectN(int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
+            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,int Pageindex, int Pagesize){
+        IPage page=new Page(Pageindex,Pagesize);
+        IPage<Map<String,Object>> list=channeluserService.AgenList_SelectN(page,PageType,ProjectID,ChannelTypeID,Name,PassStatu
+                ,CreateStartTime,CreateEndTime,ApprovalUserID);
+
+        return Result.ok(list);
+    }
 }

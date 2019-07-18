@@ -15,7 +15,7 @@
 		<if test="ProductID != null and ProductID != ''">
 			and ProductID = #{ProductID}
 		</if>
-		<if test="ProductID != null and ProductID != ''">
+		<if test="JobName != null and JobName != ''">
 			AND JobName LIKE  '%'+ #{JobName} +'%'
 		</if>		
       ORDER BY JobName 

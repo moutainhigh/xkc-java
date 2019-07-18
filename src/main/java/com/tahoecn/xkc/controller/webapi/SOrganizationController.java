@@ -54,7 +54,7 @@ public class SOrganizationController extends TahoeBaseController {
     @ApiOperation(value = "新增组织", notes = "新增组织")
     @RequestMapping(value = "/SystemOrganizationDetail_Insert", method = {RequestMethod.POST})
     public Result SystemOrganizationDetail_Insert(int OrgCategory,String AuthCompanyID,String ProductID,
-                                                  String OrgName,String OrgShortName,String pid) {
+                                                  String OrgName,String OrgShortName,String pid,int ListIndex) {
         SOrganization organization=new SOrganization();
         SOrganization byId = organizationService.getById(pid);
         String FullPath=byId.getFullPath()+"/"+OrgName;
@@ -64,7 +64,7 @@ public class SOrganizationController extends TahoeBaseController {
         organization.setStatus(1);
         organization.setIsDel(0);
         organization.setCurrentPoint(0d);
-
+        organization.setListIndex(ListIndex);
         organization.setOrgCategory(OrgCategory);
         organization.setLevels(byId.getLevels()+1);
         organization.setAuthCompanyID(AuthCompanyID);
@@ -74,14 +74,24 @@ public class SOrganizationController extends TahoeBaseController {
         organization.setPid(pid);
         boolean save = organizationService.save(organization);
         if (save){
-            return Result.okm("成功");
+            return Result.ok(organization);
         }
         return Result.errormsg(99,"新增失败");
     }
 
     @ApiOperation(value = "修改更新组织", notes = "修改更新组织")
     @RequestMapping(value = "/SystemOrganizationDetail_Update", method = {RequestMethod.POST})
-    public Result SystemOrganizationDetail_Update(@RequestBody SOrganization organization) {
+    public Result SystemOrganizationDetail_Update(String ID,int OrgCategory,String AuthCompanyID,String ProductID,
+                                                  String OrgName,String OrgShortName,String pid,int ListIndex) {
+        SOrganization organization=new SOrganization();
+        organization.setOrgCategory(OrgCategory);
+        organization.setAuthCompanyID(AuthCompanyID);
+        organization.setProductID(ProductID);
+        organization.setOrgName(OrgName);
+        organization.setOrgShortName(OrgShortName);
+        organization.setListIndex(ListIndex);
+        organization.setId(ID);
+        organization.setPid(pid);
         boolean b=organizationService.SystemOrganizationDetail_Updatez(organization);
         if (b){
             return Result.okm("成功");
@@ -95,8 +105,7 @@ public class SOrganizationController extends TahoeBaseController {
         SOrganization organization=new SOrganization();
         organization.setId(ID);
         organization.setStatus(Status);
-        System.out.println("+++++++++++"+ThreadLocalUtils.getUserName());
-        organization.setEditor(ThreadLocalUtils.getUserName());
+//        organization.setEditor(ThreadLocalUtils.getUserName());
         organization.setEditTime(new Date());
         boolean b = organizationService.updateById(organization);
         if (b){

@@ -24,4 +24,16 @@ public class BSalesuserServiceImpl extends ServiceImpl<BSalesuserMapper, BSalesu
     public List<Map<String, Object>> UserSalesList_Select(String projectID, String teamID) {
         return baseMapper.UserSalesList_Select(projectID,teamID);
     }
+
+    /*
+     * 分享项目信息
+     */
+	@Override
+	public List<Map<String, Object>> mShareAppDetail_Select(Map<String, Object> map) {
+		return baseMapper.mShareAppDetail_Select(map);
+	}
+	@Override
+	public String mShareAppDetail_Select1(Map<String, Object> map) {
+		return baseMapper.mShareAppDetail_Select1(map);
+	}
 }

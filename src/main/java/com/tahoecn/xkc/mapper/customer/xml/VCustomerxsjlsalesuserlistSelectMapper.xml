@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomerxsjlsalesuserlistSelectMapper">
+	<!-- 案场销售经理盘客销售顾问查询 -->
+	<select id="mCustomerXSJLSalesUserList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT ProjectID,SaleUserID,SaleUserName,SaleUserMobil,#{SiteUrl}+HeadImg HeadImg,SaleGroupName,
+			TotalCount,UnsettledCount,OverdueCount,RecycleCount,CloseRate,IntegrityRungs,IsDel,Status,CreateTime
+			From  V_CustomerXSJLSalesUserList_Select 
+			Where  isdel =0 and SaleGroupID=#{OrgID} AND ProjectID =#{ProjectID}  ${WHERE} ${ORDER}
+		]]>
+	</select>
+	<!-- 案场销售经理盘客销售顾问客户查询 -->
+	<select id="mCustomerXSJLSalesUserCustomerList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			Select ProjectID,OpportunityID,IntegrityRungs,CustomerID,CustomerName,CustomerMobile,SaleUserID,
+			SaleUserName,IntentionLevel,FollowState,OpportunitySource, dbo.F_FormatDate(CreateDate) CreateDate,
+			FollowupCount,AllocationCount,IntervalDay,RecycleTime,RecycleDay,dbo.F_FormatDate(CreateTime) CreateTime, 
+			dbo.F_FormatDate(FollowUpDate) FollowUpDate,dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate
+			From  V_CustomerXSJLSalesUserCustomerList_Select 
+			Where ProjectID =#{ProjectID} and SaleUserID=#{SaleUserID}  ${WHERE} ${ORDER}
+		]]>
+	</select>
+</mapper>

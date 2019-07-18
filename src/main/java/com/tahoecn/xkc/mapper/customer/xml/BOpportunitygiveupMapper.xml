@@ -238,6 +238,211 @@
 	    ]]>
 	</update>
 	<!-- 回收-end -->
+	<select id="mCustomerXSJLList_Select_GJKH" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  LostID ,
+				LostReason ,
+				LostTime ,
+				RecoveryID ,
+				OpportunityID ,
+				CustomerID ,
+				CustomerName ,
+				CustomerMobile ,
+				dbo.F_DictName(OpportunitySource) AS OpportunitySource ,
+				dbo.F_DictName(CustomerLevelValue) AS CustomerLevel ,
+				CONVERT(VARCHAR, FollowupCountValue) + '次' AS FollowupCount ,
+				CASE WHEN TheLatestFollowUpDateTime IS NULL THEN '无'
+					 ELSE dbo.F_FormatDateTimeForCountBefore(TheLatestFollowUpDateTime, GETDATE(), '前')
+				END AS TheLatestFollowUpDate ,
+				AdviserID ,
+				dbo.F_GetSaleMobile(AdviserID) AdviserMobile ,
+				dbo.F_GetSaleUserName(AdviserID) AdviserName ,
+				AdviserOrgID ,
+				dbo.F_GetSaleGroupName(AdviserID, ProjectID) AS AdviserOrgName ,
+				dbo.F_GetStatusName(OpportunityStatusValue) OpportunityStatus ,
+				IsYJ ,
+				YJTime ,
+				IsCooperat
+			FROM    ( SELECT    * ,
+							ROW_NUMBER() OVER ( ${ORDER} ) num
+				  FROM      ( SELECT    o.ProjectID ,
+										o.ID OpportunityID ,
+										o.CustomerID ,
+										o.CustomerName ,
+										o.CustomerMobile ,
+										o.OpportunitySource ,
+										o.CustomerLevel CustomerLevelValue ,
+										o.FollowupCount FollowupCountValue ,
+										ISNULL(o.TheLatestFollowUpDate, '') TheLatestFollowUpDateTime ,
+										o.SaleUserID AdviserID ,
+										dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
+										o.Status OpportunityStatusValue ,
+										'' RecoveryCreateTime ,
+										'' RecoveryID ,
+										'' LostID ,
+										'' LostReason ,
+										'' LostTime ,
+										'' LostCreateTime ,
+										0 IsYJ ,
+										'' YJTime ,
+		            (CASE WHEN ISNULL(o.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
+							  FROM      dbo.B_Opportunity AS o
+							  WHERE     o.ProjectID = #{ProjectID}
+										AND o.IsDel = 0
+										AND o.Status <> 6
+		            AND LEN(o.SaleUserID) > 0
+							) A
+				  WHERE     ProjectID = #{ProjectID}  ${WHERE}
+				) t
+			WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+				AND t.num <= ${PageIndex} * ${PageSize}
+		]]>
+	</select>
+	<select id="mCustomerXSJLList_Select_GJKH_count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM    ( SELECT    o.ProjectID ,
+							o.CustomerName ,
+							o.CustomerMobile ,
+							o.CustomerLevel CustomerLevelValue ,
+							o.FollowupCount FollowupCountValue ,
+							dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
+							o.Status OpportunityStatusValue ,
+							o.SaleUserID AdviserID ,
+							'' RecoveryID ,
+							'' LostID
+				  FROM      dbo.B_Opportunity AS o
+				  WHERE     o.ProjectID = #{ProjectID}
+							AND o.IsDel = 0
+							AND o.Status <> 6
+		      AND LEN(o.SaleUserID) > 0
+				) A
+		WHERE   ProjectID = #{ProjectID}  ${WHERE}
+		]]>
+	</select>
+	<select id="mCustomerXSJLList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  *
+	        FROM    ( SELECT    LostID ,
+	                            LostReason ,
+	                            LostTime ,
+	                            RecoveryID ,
+	                            OpportunityID ,
+	                            CustomerID ,
+	                            CustomerName ,
+	                            CustomerMobile ,
+	                            OpportunitySource ,
+	                            CustomerLevel ,
+	                            FollowupCount ,
+	                            TheLatestFollowUpDate ,
+	                            AdviserID ,
+	                            AdviserMobile ,
+	                            AdviserName ,
+	                            AdviserOrgName ,
+	                            OpportunityStatus ,
+	                            IsYJ ,
+	                            YJTime ,
+	                            ROW_NUMBER() OVER (  ${ORDER} ) num
+	                  FROM      V_CustomerXSJLList_Select
+	                  WHERE     ProjectID = #{ProjectID} ${WHERE}
+	                ) t
+	        WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+	                AND t.num <= ${PageIndex} * ${PageSize};
+		]]>
+	</select>
+	
+	<select id="mCustomerXSJLList_Select_count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT  COUNT(1) recordCount
+	        FROM    V_CustomerXSJLList_Select
+	        WHERE   ProjectID = #{ProjectID}  ${WHERE}
+		]]>
+	</select>
+	<!-- 客户丢失销售顾问start -->
+	<update id="updBOpportunityGiveUp" parameterType="java.util.Map" >
+		<![CDATA[
+			UPDATE  B_OpportunityGiveUp  
+			set Approver=#{UserID}, ApprovalStatus =#{ApproveState}, ApprovalDate=GETDATE(), Editor=#{UserID},EditeTime=getdate()  
+			where  ID  In (Select name FROM F_StrToTable(#{LostID}) Where name <>'')  and ApprovalStatus=0;
+	    ]]>
+	</update>
+	<update id="updSMessage" parameterType="java.util.Map" >
+		<![CDATA[
+			UPDATE S_Message 
+			SET IsApprove = 1, Editor = #{UserID}, EditTime = GETDATE() 
+			WHERE BizType = 'OpportunityGiveUp' AND ISNULL(IsApprove,0) = 0 
+			AND BizID IN (Select name FROM F_StrToTable(#{LostID}) Where name <>'');
+	    ]]>
+	</update>
+	<insert id="insSMessage" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status) 
+    		SELECT  NEWID(), #{ProjectID}, ID, 'OpportunityGiveUp', '客户丢失通知',dbo.F_GetSaleUserName(#{UserID})+'经理已驳回'+CustomerName+'丢失审批', #{UserID}, GETDATE(), 'DD81CE6E-C855-F065-DAA2-7D0C80310088', Creator, 0, 0,1, #{UserID}, GETDATE(), 0, 1 
+    		FROM  dbo.B_OpportunityGiveUp WHERE ID IN (SELECT name FROM F_StrToTable(#{LostID})  Where name <>'');
+	    ]]>
+	</insert>
+	<update id="updBOpportunity_Pass" parameterType="java.util.Map" >
+		<![CDATA[
+			PDATE B_Opportunity 
+			SET Status = 6 
+			WHERE ID IN( SELECT OpportunityID FROM dbo.B_OpportunityGiveUp WHERE ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> ''));
+	    ]]>
+	</update>
+	<update id="updSMessage_Pass" parameterType="java.util.Map" >
+		<![CDATA[
+			UPDATE S_Message 
+			SET IsApprove = 1, Editor = #{UserID}, EditTime = GETDATE() 
+			WHERE BizType = 'Opportunity' AND ISNULL(IsApprove,0) = 0 
+			AND BizID IN( SELECT OpportunityID FROM dbo.B_OpportunityGiveUp WHERE ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> ''));
+
+	    ]]>
+	</update>
+	<insert id="insSMessage_Pass1" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status) 
+			SELECT NEWID(), #{ProjectID}, ID, 'OpportunityGiveUp', '客户丢失通知', dbo.F_GetSaleUserName(#{UserID}) + '经理已通过' + CustomerName + '丢失审批', #{UserID}, GETDATE(), 'DD81CE6E-C855-F065-DAA2-7D0C80310088', Creator, 0, 0, 1, #{UserID}, GETDATE(), 0, 1 
+			FROM dbo.B_OpportunityGiveUp WHERE ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> '' );
+	    ]]>
+	</insert>
+	<insert id="insSMessage_Pass2" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status) 
+			SELECT NEWID(), #{ProjectID}, l.LostID, 'OpportunityGiveUp', '客户丢失通知', c.Name + '(' + c.Mobile + ') 已丢失', #{UserID}, GETDATE(), 'DD81CE6E-C855-F065-DAA2-7D0C80310088', c.ReportUserID, 0, 0, 1, #{UserID}, GETDATE(), 0, 1 
+			FROM dbo.B_Opportunity o INNER JOIN dbo.B_Clue c ON o.ClueID = c.ID 
+			INNER JOIN( SELECT OpportunityID, ID LostID FROM dbo.B_OpportunityGiveUp WHERE ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> '' ) ) l ON l.OpportunityID = o.ID 
+			WHERE c.ReportUserID <> '' AND c.ReportUserID IS NOT NULL;
+	    ]]>
+	</insert>
+	<update id="updBClue_Pass1" parameterType="java.util.Map" >
+		<![CDATA[
+			UPDATE dbo.B_Clue 
+			SET Status = 3,InvalidType = 10,InvalidTime=GETDATE(),InvalidReason='跟进丢失' 
+			WHERE ID IN( SELECT ClueID FROM dbo.B_Opportunity o WHERE o.ID IN( SELECT OpportunityID FROM dbo.B_OpportunityGiveUp WHERE ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> '')));
+	    ]]>
+	</update>
+	<insert id="insBCustomerTrack_Pass" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO B_CustomerTrack 
+			SELECT NewID() ID, B.CustomerID, B.CustomerMobile, B.CustomerName, B.OpportunityID, getdate() TrackTime, A.ID TrackUserID, A.Name TrackUserName, A.TelPhone TrackUserMobile, '9956D7FB-6870-5C32-9243-FEC4D5268075' TrackType, A.OrgID, A.ID Creator, getdate() CreateTime, A.ID Editor, getdate() EditeTime, 0 IsDel, 1 Status 
+			FROM( SELECT #{UserID} UserID, K.OpportunityID, P.CustomerID, P.CustomerName, P.CustomerMobile FROM B_OpportunityGiveUp K JOIN B_Opportunity P ON K.OpportunityID = P.ID WHERE K.ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> '' ) ) B JOIN V_SalesGroupUser A ON A.ID = B.UserID WHERE A.ID = #{UserID} AND ProjectID = #{ProjectID};
+	    ]]>
+	</insert>
+	<update id="updBClue_Pass2" parameterType="java.util.Map" >
+		<![CDATA[
+			UPDATE B_Clue 
+			SET Status = 3 
+			WHERE ID IN( SELECT P.ClueID FROM B_OpportunityGiveUp K JOIN B_Opportunity P ON K.OpportunityID = P.ID WHERE K.ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> '') AND P.ClueID <> '' AND P.ClueID IS NOT NULL);
+	    ]]>
+	</update>
+	<insert id="insSTask_Pass" parameterType="java.util.Map" >
+		<![CDATA[
+			INSERT INTO dbo.S_Task( ID, TaskType, TaskPara, StartTime, CreateTime) 
+			SELECT NEWID() ID, 'SyncOpportunity' TaskType, OpportunityID TaskPara, GETDATE() StartTime, GETDATE() CreateTime 
+			FROM dbo.B_OpportunityGiveUp WHERE ID IN( SELECT name FROM F_StrToTable(#{LostID}) WHERE name <> '');
+	    ]]>
+	</insert>
+	<!-- 客户丢失销售顾问end -->
+	
 	
 	
 </mapper>

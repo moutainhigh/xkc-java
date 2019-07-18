@@ -47,8 +47,8 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
     private ISMenusService menusService;
 
 	@Override
-	public List<SCommonjobs> SystemCommonJobsList_Select(IPage page, String AuthCompanyID, String ProductID, String JobName) {
-		List<SCommonjobs> list = SCommonjobsMapper.SystemCommonJobsList_Select(page, AuthCompanyID, ProductID, JobName);
+	public List<SCommonjobs> SystemCommonJobsList_Select(String AuthCompanyID, String ProductID, String JobName) {
+		List<SCommonjobs> list = SCommonjobsMapper.SystemCommonJobsList_Select(AuthCompanyID, ProductID, JobName);
 		return list;
 	}
 

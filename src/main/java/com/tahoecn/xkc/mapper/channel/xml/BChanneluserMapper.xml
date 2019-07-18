@@ -193,7 +193,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
     </select>
     
-    <select id="ChannelUser_Detail_FindById" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="ChannelUser_Detail_FindById" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.channel.BChanneluser">
 		<![CDATA[
 	    SELECT 	'1' as ProjectID, OrgCode,pid ,OrgName, [B_ChannelUser].* 
 	    FROM 	[B_ChannelUser]
@@ -373,7 +373,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
     </select>
     
     <!-- 考勤异常 -->
-    <select id="mChannelUserAbnormal_Select" parameterType="java.util.Map" resultType="String">
+    <select id="mChannelUserAbnormal_Select" parameterType="String" resultType="java.util.HashMap">
 	SELECT  Name,AbnormalDesc,Mobile,HeadImg
 	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
 	                    ChannelUserName Name ,
@@ -464,4 +464,27 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         INSERT INTO dbo.B_ClueRule_AdviserGroup(ID, ClueRuleID, AdviserGroupID, Creator, CreateTime, IsDel, Status)
         VALUES (NEWID(), #{RuleIDs}, #{OrgID}, #{UserID}, GETDATE(), 0, 1)
     </insert>
+
+    <select id="AgenList_SelectN" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT
+        cu.ID,cu.UserName,cu.Mobile as MobileSt,cu.Mobile,cu.CertificatesType,
+        cu.Name,d3.DictName as Gender,cu.CertificatesNo,cu.CertificatesPicFace,cu.CertificatesPicBack,
+        cu.BankCardPerson,cu.BankCardCreate,cu.BankCard,cu.BankCardPic,cu.ChannelOrgID,cu.CreateTime,cu.[Status],
+        case cu.[Status] when 0 then '禁用' when 1 then '启用' else '' end as StatusName,cu.ApprovalDate,
+        o.OrgName as ChannelOrgName,o.OrgCode as ChannelOrgCode,cu.ChannelTypeID,d.DictName,
+        d2.DictName as CertificatesTypeName,a1.[EmployeeName] as InviterName,
+        case cu.ApprovalStatus  when '0' then '待审核' when '1' then '通过' when '2' then '不通过' else '待审核' end as ApprovalStatuss
+        ,a.[EmployeeName] as ApproverName
+        FROM dbo.B_ChannelUser cu
+        left join S_Dictionary d on cu.ChannelTypeID=d.id
+        left join S_Dictionary d2 on cu.CertificatesType=d2.id
+        left join S_Dictionary d3 on cu.Gender=d3.id
+        left join S_Account a on cu.Approver=a.id
+        left join S_Account a1 on cu.Inviter=a1.id
+        left join B_ChannelOrg o on cu.ChannelOrgID=o.ID
+        WHERE 1=1 and cu.IsDel=0 ${where}
+        order by cu.createtime desc
+        ]]>
+    </select>
 </mapper>

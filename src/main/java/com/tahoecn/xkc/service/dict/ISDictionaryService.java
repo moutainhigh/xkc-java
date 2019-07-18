@@ -23,4 +23,6 @@ public interface ISDictionaryService extends IService<SDictionary> {
     boolean SystemParam_Delete(String id);
 
     boolean SystemParam_Update(SDictionary dictionary);
+
+    List<Map<String, Object>> SystemAllParams_Select_Tree(String pid);
 }

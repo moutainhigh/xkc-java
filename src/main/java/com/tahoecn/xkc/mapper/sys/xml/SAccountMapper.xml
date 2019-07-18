@@ -484,15 +484,17 @@
               INNER JOIN dbo.S_JobsUserRel jur ON a.IsDel = 0 AND a.ID = jur.AccountID
               INNER JOIN dbo.S_Jobs j ON jur.JobID = j.ID AND j.IsDel = 0
               INNER JOIN S_Organization o ON j.JobOrgID = o.ID AND o.IsDel = 0
-      WHERE   a.AuthCompanyID = #{AuthCompanyID}
+      <where>  a.AuthCompanyID = #{AuthCompanyID}
               AND ( #{Key} = ''
                     OR a.UserName LIKE concat('%',#{Key},'%')
                     OR a.EmployeeName LIKE concat('%',#{Key},'%')
                   )
-              AND o.FullPath LIKE ( SELECT FullPath FROM dbo.S_Organization WHERE ID = #{OrgID} ) + '%'
+             <!--   AND o.FullPath LIKE ( SELECT FullPath FROM dbo.S_Organization WHERE ID = #{OrgID} ) + '%'-->
+          <if test="Type != 0">
+          and AccountType = #{Type}
+          </if>
               AND a.IsDel = 0
-              AND a.IsDel = 0
-
+      </where>
     </select>
 
     <select id="insertJob" resultType="java.util.HashMap" parameterType="string">

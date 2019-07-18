@@ -15,20 +15,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
-import com.tahoecn.xkc.model.vo.CSearchModel;
-import com.tahoecn.xkc.model.vo.CustomerModel;
+import com.tahoecn.xkc.model.customer.BCustomerfiltergroup;
+import com.tahoecn.xkc.model.vo.FilterItem;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
+import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
 import com.tahoecn.xkc.service.customer.IBOpportunitygiveupService;
+import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
-import com.tahoecn.xkc.service.customer.IVOpportunityService;
+import com.tahoecn.xkc.service.customer.IVCustomerxsjlsalesuserlistSelectService;
+import com.tahoecn.xkc.service.customer.impl.CustomerHelp;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 
 import io.swagger.annotations.Api;
@@ -50,8 +52,6 @@ public class AppCustomerController extends TahoeBaseController {
 	@Value("${SiteUrl}")
     private String SiteUrl;
     @Autowired
-    private IVOpportunityService iVOpportunityService;
-    @Autowired
     private IBCustomerpotentialfiltergroupService iBCustomerpotentialfiltergroupService;
     @Autowired
     private IBCustomerfiltergroupService iBCustomerfiltergroupService;
@@ -61,6 +61,12 @@ public class AppCustomerController extends TahoeBaseController {
     private IBOpportunitygiveupService iBOpportunitygiveupService;
     @Autowired
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
+    @Autowired
+    private IBCustomerpublicpoolService iBCustomerpublicpoolService;
+    @Autowired
+    private IVCustomerxsjlsalesuserlistSelectService iVCustomerxsjlsalesuserlistSelectService;
+    @Autowired
+    private ICustomerHelp iCustomerHelp;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -674,6 +680,614 @@ public class AppCustomerController extends TahoeBaseController {
             iBOpportunitygiveupService.mCustomerYXJLAdviser_Update(paramMap);
             //2.营销经理重新分配【协作人】置空
             iBOpportunitygiveupService.mCustomerYXJLSalePartnerSetNull_Update(paramMap);
+			return Result.ok(new ArrayList());
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "客户列表页", notes = "案场销售经理客户查询")
+	@RequestMapping(value = "/mCustomerXSJLList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			List<FilterItem> Filter = (List) paramMap.get("Filter");
+			String KeyWord = (String) paramMap.get("KeyWord");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			String OrgID = (String) paramMap.get("OrgID");
+			String Type = (String) paramMap.get("Type");
+			String Sort = (String) paramMap.get("Sort");
+			StringBuilder whereSb = new StringBuilder();
+            StringBuilder OrderSb = new StringBuilder();
+            if (!StringUtils.isEmpty(KeyWord)){
+                whereSb.append(" and (CustomerMobile like '%" + KeyWord + "%' OR CustomerName like '%" + KeyWord + "%')");
+            }
+            if (!OrgID.equals(ProjectID)){
+                whereSb.append(" and AdviserOrgID='" + OrgID + "'");
+            }
+			
+            switch (Type){
+                case "GJKH"://跟进客户
+                    whereSb.append(" and OpportunityStatusValue <> 6 and RecoveryID = '' and LostID = ''");
+                    if (Filter != null && Filter.size() > 0){
+                        for (FilterItem filterItem : Filter){
+                            if (filterItem != null && filterItem.getTagID() != null && filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                                switch (filterItem.getTagID()){
+                                    case "691CC268-51A0-4D45-9266-516926C3DD55"://客户状态
+                                        for (int i = 0; i < filterItem.getChild().size(); i++){
+                                            switch (filterItem.getChild().get(i)){
+                                                case "05867891-C4B0-43F7-896F-FBB48C340147": filterItem.getChild().get(i).equals("1"); break;//问询
+                                                case "A53F17C1-A9F7-46FA-A185-E3242B8BDBB4": filterItem.getChild().get(i).equals("2"); break;//看房
+                                                case "114B5471-EA83-4A6E-B038-E7304ACA5C8C": filterItem.getChild().get(i).equals("3"); break;//认购中
+                                                case "B2761972-56A1-4759-9A94-D8256D377D88": filterItem.getChild().get(i).equals("4"); break;//认购
+                                                case "519E5657-4CC4-44B5-A547-B479689670F5": filterItem.getChild().get(i).equals("5"); break;//签约
+                                                case "ED2E370A-21B2-40C7-B7AF-C299D23A2077": filterItem.getChild().get(i).equals("7"); break;//退房
+                                            }
+                                        }
+                                        whereSb.append(" and OpportunityStatusValue in('" + String.join("','", filterItem.getChild()) + "')");
+                                        break;
+                                    case "087DF0A6-F8D6-4F59-9D1F-F4679CF5607C"://意向等级
+                                        for (int i = 0; i < filterItem.getChild().size(); i++){
+                                            switch (filterItem.getChild().get(i)){
+                                                case "D32508DC-4192-4275-AD55-BD1DF0790C5B": filterItem.getChild().get(i).equals("2A357E4A-90D7-5D69-C209-E26CFA5839FA"); break;//必买
+                                                case "FA5364B5-7A31-43AB-834D-9E1F11278BFF": filterItem.getChild().get(i).equals("DF2057E2-303B-1F14-4075-069668D3A3BE"); break;//较高
+                                                case "8F09F3E0-5181-4310-83E1-5FC72FFB9A18": filterItem.getChild().get(i).equals("FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D"); break;//低
+                                                case "CD396C52-11F6-4385-B033-148B41679F1E": filterItem.getChild().get(i).equals("9CEA46E8-A3ED-409E-646C-F38A5EAC383E"); break;//一般
+                                                case "692BD4F1-6445-4271-AC83-0A1002303523": filterItem.getChild().get(i).equals("84640879-F4A7-CB87-E39B-F18070BCA568"); break;//无
+                                            }
+                                        }
+                                        whereSb.append(" and CustomerLevelValue in('" + String.join("','", filterItem.getChild()) + "')");
+                                        break;
+                                    case "443DF083-51C0-487F-A1C6-C33884BCB9D5"://置业顾问
+                                        whereSb.append(" and AdviserID in('" + String.join("','", filterItem.getChild()) + "')");
+                                        break;
+                                    case "D75EFC06-0BC9-470D-9508-41F26AE2098E"://未跟进
+                                        int days = 0;
+                                        for (int i = 0; i < filterItem.getChild().size(); i++){
+                                            switch (filterItem.getChild().get(i)){
+                                                case "C98D5943-64D9-4DFC-9315-B57C5595C48B":
+                                                    if (i == 0) days = 3;
+                                                    days = days >= 3 ? 3 : days;
+                                                    break;//≥3天
+                                                case "C03AD70E-31BE-421B-9237-6D9445B90B56":
+                                                    if (i == 0) days = 5;
+                                                    days = days >= 5 ? 5 : days;
+                                                    break;//≥5天
+                                                case "16561320-9678-4F09-BE4D-89F395EFD3EF":
+                                                    if (i == 0) days = 7;
+                                                    days = days >= 7 ? 7 : days;
+                                                    break;//≥7天
+                                            }
+                                        }
+                                        if (days > 0){
+                                            whereSb.append(" and TheLatestFollowUpDateTime <= DATEADD(d,-" + days + ",GETDATE())");
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    if (!StringUtils.isEmpty(Sort)){
+                        if ("CB162139-5453-4AC9-B04F-EBC45C71C0D1".equals(Sort)){//最新跟新
+                            OrderSb.append(" ORDER BY  TheLatestFollowUpDateTime desc");
+                        }
+                        if ("077BD4D7-53D3-4E6B-9459-C63D421A9905".equals(Sort)){//最早跟进
+                            OrderSb.append(" ORDER BY  TheLatestFollowUpDateTime asc ");
+                        }
+                        if ("F14E1843-1738-4F03-BBA2-972CADCC6C2B".equals(Sort)){//最多跟进
+                            OrderSb.append(" ORDER BY  FollowupCountValue desc");
+                        }
+                        if ("1DA39A0C-AB62-497F-B3CC-74CE49CEF122".equals(Sort)){//最少跟进
+                            OrderSb.append(" ORDER BY  FollowupCountValue asc ");
+                        }
+                    }else{
+                        OrderSb.append(" ORDER BY  TheLatestFollowUpDateTime DESC");
+                    }
+                    if (OrderSb.length() == 0){
+                        OrderSb.append(" ORDER BY  TheLatestFollowUpDateTime DESC");
+                    }
+                    break;
+                case "GGKH"://公共客户
+                    whereSb.append(" and RecoveryID <> ''");
+                    if (Filter != null && Filter.size() > 0){
+                        for (FilterItem filterItem : Filter){
+                            if (filterItem != null && filterItem.getTagID() != null && filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                                switch (filterItem.getTagID()){
+                                    case "4D6878A8-C939-4F5C-A8CF-68F64D825BE8"://置业顾问
+                                        whereSb.append(" and AdviserID in('" + String.join("','", filterItem.getChild()) + "')");
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    if (!StringUtils.isEmpty(Sort)){
+                        if ("8ECAA16B-A707-43F6-B220-164782840879".equals(Sort)){//最新回收
+                            OrderSb.append(" ORDER BY  RecoveryCreateTime desc");
+                        }
+                        if ("27ECECF6-63C4-4CC1-B542-618657F43219".equals(Sort)){//最早回收
+                            OrderSb.append(" ORDER BY  RecoveryCreateTime asc ");
+                        }
+                        if ("80697595-0188-4FE2-ACB5-E6AF9F2A81E0".equals(Sort)){//最多跟进
+                            OrderSb.append(" ORDER BY  FollowupCountValue desc");
+                        }
+                        if ("821D3346-041F-41A7-AEC5-99A2DCF57B7D".equals(Sort)){//最少跟进
+                            OrderSb.append(" ORDER BY  FollowupCountValue asc ");
+                        }
+                    }else{
+                        OrderSb.append(" ORDER BY  RecoveryCreateTime DESC");
+                    }
+                    if (OrderSb.length() == 0){
+                        OrderSb.append(" ORDER BY  RecoveryCreateTime DESC");
+                    }
+                    break;
+                case "DSKH"://丢失客户
+                    whereSb.append(" AND OpportunityStatusValue=6 AND LEN(AdviserID) = 36 AND LostID IS NOT NULL AND LostID<>'' ");
+                    if (Filter != null && Filter.size() > 0){
+                        for (FilterItem filterItem : Filter){
+                            if (filterItem != null && filterItem.getTagID() != null && filterItem.getChild() != null && filterItem.getChild().size() > 0)
+                            {
+                                switch (filterItem.getTagID()){
+                                    case "19DCCE1C-557B-4ECC-8001-376578B3EF07"://置业顾问
+                                        whereSb.append(" and AdviserID in('" + String.join("','", filterItem.getChild()) + "')");
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    if (!StringUtils.isEmpty(Sort)){
+                        if ("45D66D53-F5B5-4B09-B3A9-5AF652F23093".equals(Sort)){//最新丢失
+                            OrderSb.append(" ORDER BY  LostCreateTime desc");
+                        }
+                        if ("3635B58D-A7B1-4846-90A7-F485F1336A15".equals(Sort)){//最早丢失
+                            OrderSb.append(" ORDER BY  LostCreateTime asc ");
+                        }
+                    } else{
+                        OrderSb.append(" ORDER BY  LostCreateTime DESC");
+                    }
+                    if (OrderSb.length() == 0)
+                    {
+                        OrderSb.append(" ORDER BY  LostCreateTime DESC");
+                    }
+                    break;
+            }
+            paramMap.put("WHERE", whereSb.toString());
+            paramMap.put("ORDER", OrderSb.toString());
+			
+			Map<String, Object> ob = iBOpportunitygiveupService.mCustomerXSJLList_Select(paramMap);
+			return Result.ok(ob);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "客户公共池", notes = "客户公共池查询")
+	@RequestMapping(value = "/mCustomerGGCList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerGGCList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String KeyWord = (String) paramMap.get("KeyWord");
+			List<FilterItem> Filter = (List) paramMap.get("Filter");
+			String GroupID = (String) paramMap.get("GroupID");
+			String Sort = (String) paramMap.get("Sort");
+			
+			StringBuilder whereSb = new StringBuilder();
+            StringBuilder orderSb = new StringBuilder();
+//            boolean isMobile = Regex.IsMatch(KeyWord, @"^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$");
+            //手机或姓名
+            if (!StringUtils.isEmpty(KeyWord)){
+                whereSb.append(" and (CustomerName Like'%"+KeyWord+"%' or CustomerMobile Like'%"+KeyWord+"%') ");
+            }
+            if (Filter != null && Filter.size() > 0){
+                if (Filter.contains("EB4DEEF7-26E2-412E-B946-1695742A6704")){
+                	paramMap.put("GroupID", Filter.get(0).getChild().get(0));
+                    String filterstr = mGetFilterGroupList_Select(GroupID);
+                    if (filterstr != null && !filterstr.equals("")){
+                    	List<FilterItem> filter = JSONObject.parseArray(filterstr, FilterItem.class);
+                        Filter = filter;
+                    }else{
+                        Filter = null;
+                    }
+                }
+                for (FilterItem filterItem : Filter){
+                    if (filterItem != null && filterItem.getTagID() != null){
+                        //客储等级
+                        if ("EB4DEEF7-26E2-412E-B946-1695742A6702".equals(filterItem.getTagID())){
+                            if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                                for (int i = 0; i < filterItem.getChild().size(); i++){
+                                    switch (filterItem.getChild().get(i)){
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6706": "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA".equals(filterItem.getChild().get(i)); break;//1级
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6707": "FC420696-6F6C-40B1-BE17-96FCEC75B0F2".equals(filterItem.getChild().get(i)); break;//1.5级
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6708": "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42".equals(filterItem.getChild().get(i)); break;//2级
+                                    }
+                                }
+                                whereSb.append(" and A.CustomerRank in('" + String.join("','", filterItem.getChild()) + "')");
+                            }
+                        }
+                        //意向级别
+                        if ("EB4DEEF7-26E2-412E-B946-1695742A6703".equals(filterItem.getTagID())){
+                            if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                                for (int i = 0; i < filterItem.getChild().size(); i++){
+                                    switch (filterItem.getChild().get(i)){
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6709": "2A357E4A-90D7-5D69-C209-E26CFA5839FA".equals(filterItem.getChild().get(i)); break;//A级
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6710": "DF2057E2-303B-1F14-4075-069668D3A3BE".equals(filterItem.getChild().get(i)); break;//B级
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6711": "9CEA46E8-A3ED-409E-646C-F38A5EAC383E".equals(filterItem.getChild().get(i)); break;//C级
+                                        case "EB4DEEF7-26E2-412E-B946-1695742A6712": "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D".equals(filterItem.getChild().get(i)); break;//D级
+                                    }
+                                }
+                                whereSb.append(" and A.CustomerLevel in('" + String.join("','", filterItem.getChild()) + "')");
+                            }
+                        }
+                    }
+                }
+            }
+            //排序字段
+            if ("BB4DEEF7-26E2-412E-B946-1695742A6702".equals(Sort) || "AB4DEEF7-26E2-412E-B946-1695742A6702".equals(Sort))
+            {//创建时间正序
+                orderSb.append(" ORDER BY  A.CreateTime  ");
+            }else if ("BB4DEEF7-26E2-412E-B946-1695742A6703".equals(Sort) || "AB4DEEF7-26E2-412E-B946-1695742A6703".equals(Sort))
+            {//创建时间倒序
+                orderSb.append(" ORDER BY A.TheLatestFollowUpDate desc ");
+            }else if ("BB4DEEF7-26E2-412E-B946-1695742A6704".equals(Sort) || "AB4DEEF7-26E2-412E-B946-1695742A6704".equals(Sort))
+            {//跟进时间正序
+                orderSb.append(" ORDER BY A.TheLatestFollowUpDate  ");
+            }else if ("BB4DEEF7-26E2-412E-B946-1695742A6705".equals(Sort) || "AB4DEEF7-26E2-412E-B946-1695742A6705".equals(Sort))
+            {//跟进时间倒序
+                orderSb.append(" ORDER BY A.TheLatestFollowUpDate  desc ");
+            }else{
+                orderSb.append(" ORDER BY  A.TheLatestFollowUpDate desc ");
+            }
+			
+            paramMap.put("WHERE", whereSb.toString());
+            paramMap.put("ORDER", orderSb.toString());
+            Map<String,Object> data = iBCustomerpublicpoolService.mCustomerGGCList_Select(paramMap);
+            data = iBCustomerpublicpoolService.mCustomerGGCGrabDetail_Select(data, paramMap);
+			return Result.ok(data);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	private String mGetFilterGroupList_Select(String groupID) {
+		QueryWrapper<BCustomerfiltergroup> wrapper = new QueryWrapper<BCustomerfiltergroup>();
+		wrapper.eq("ID", groupID);
+//		SELECT Filter FROM dbo.B_CustomerFilterGroup WHERE ID='{GroupID}'
+		BCustomerfiltergroup g = iBCustomerfiltergroupService.getOne(wrapper);
+		return g.getFilter();
+	}
+	@ResponseBody
+	@ApiOperation(value = "分享传播池", notes = "分享传播池查询")
+	@RequestMapping(value = "/mCustomerFXCBList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerFXCBList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String KeyWord = (String) paramMap.get("KeyWord");
+			
+			StringBuilder whereSb = new StringBuilder();
+            //手机或姓名
+            if (!StringUtils.isEmpty(KeyWord)){
+                whereSb.append(" and (CWXU.NickName Like'%"+KeyWord+"%' or CWXU.Mobile Like'%"+KeyWord+"%') ");
+            }
+			
+            paramMap.put("Where", whereSb.toString());
+            Map<String,Object> data = iBCustomerpublicpoolService.mCustomerSharePageList_Select(paramMap);
+            data = iBCustomerpublicpoolService.mCustomerFXCBGrabDetail_Select(data, paramMap);
+			return Result.ok(data);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "公共池抢客", notes = "客户公共池抢客")
+	@RequestMapping(value = "/mCustomerGGCList_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerGGCList_Insert(@RequestBody JSONObject jsonParam) {
+		try{
+			return null;/*
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String JobID = (String) paramMap.get("JobID");
+			String PublicIDs = (String) paramMap.get("PublicIDs");
+			if (!StringUtils.isEmpty(JobID) && "48FC928F-6EB5-4735-BF2B-29B1F591A582".equals(JobID)){//自渠
+                if (PublicIDs != null && !"".equals(PublicIDs)){
+                    StringBuilder sucbuilder = new StringBuilder();
+                    StringBuilder errbuilder = new StringBuilder();
+                    String[] arr = PublicIDs.split(",");
+                    for (String item : arr){
+                        if (StringUtils.isEmpty(item)){
+                            continue;
+                        }else{
+                            Map<String,Object> obj = new HashMap<String,Object>();
+                            obj.put("PublicID", item);
+                            //获取公共池客户的机会，线索以及状态， 并且将其置为无效
+                            Map<String,Object> data = iBCustomerpublicpoolService.mGetPublicPoolDetail_Select(obj);
+                            if (data != null && data.size() > 0){
+                                if (data.get("IsDel") != null && "0".equals(data.get("IsDel")) ){
+                                    String userId = (String) paramMap.get("UserID");
+                                    String projectId = (String) paramMap.get("ProjectID");
+                                    String mobile = (String) data.get("Mobile");
+                                    String name = (String) data.get("Name");
+                                    String channelTypeId = new WeChat.WeChatService().GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
+                                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId, debug);
+                                    if (string.IsNullOrEmpty(channelRegisterModel.UserRule.RuleID))
+                                    {
+                                        re.ErrCode = 21;
+                                        re.ErrMsg = "未找到该渠道的报备规则";
+                                        return re;
+                                    }
+                                    var CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId, debug);
+                                    if (CustomerValidate.InvalidType != 0)
+                                    {
+                                        re.ErrCode = CustomerValidate.InvalidType;
+                                        re.ErrMsg = channelRegisterModel.GetMessageForReturn(CustomerValidate.InvalidType, channelRegisterModel.UserRule);
+                                        //抢客失败，将线索机会返还之前的状态
+                                        JObject jParameter = new JObject();
+                                        jParameter.Add("OpportunityID", ConvertHelper.ToString(data["OpportunityID"]));
+                                        jParameter.Add("ClueID", ConvertHelper.ToString(data["ClueID"]));
+                                        jParameter.Add("OpportunityStatus", ConvertHelper.ToString(data["OpportunityStatus"]));
+                                        jParameter.Add("ClueStatus", ConvertHelper.ToString(data["ClueStatus"]));
+                                        JObject bean = (JObject)JsonDataHelper.GetNormalData("mSetCustomerDetail_Update", jParameter, out errmsg, debug);
+                                        if (errbuilder.Length > 0)
+                                        {
+                                            errbuilder.Append("," + name);
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            errbuilder.Append(name);
+                                            continue;
+                                        }
+                                    }
+                                    JObject param = new JObject();
+                                    param.Add("ClueID",data["ClueID"]);
+                                    param.Add("ProjectID", paramAry["ProjectID"]);
+                                    param.Add("UserID", paramAry["UserID"]);
+                                    param.Add("RoleID", paramAry["JobID"]);
+                                    param.Add("PublicID", item);
+                                    JObject jobject = (JObject)JsonDataHelper.GetNormalData("mGGCCustomerByZQDetail_Update", param, out errmsg, debug);
+                                    //符合报备规则
+                                    if (sucbuilder.Length > 0)
+                                    {
+                                        sucbuilder.Append("," + data["Name"]);
+                                    }
+                                    else
+                                    {
+                                        sucbuilder.Append(data["Name"]);
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    if (errbuilder.Length > 0)
+                                    {
+                                        errbuilder.Append("," + data["Name"]);
+                                    }
+                                    else
+                                    {
+                                        errbuilder.Append(data["Name"]);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    if (sucbuilder.Length > 0)
+                    {
+                        re.ErrMsg += sucbuilder + "抢客成功;";
+                    }
+                    if (errbuilder.Length > 0)
+                    {
+                        re.ErrMsg += errbuilder + "抢客失败;";
+                    }
+                }
+
+            }
+            else if(paramAry["JobID"] != null && paramAry["JobID"].ToString() == "0269F35E-B32D-4D12-8496-4E6E4CE597B7")//置业顾问
+            {
+                data = (JObject)JsonDataHelper.GetNormalData("mCustomerGGCList_Insert", paramAry, out errmsg, debug);
+                if (data["Msg"].ToString() == "0")
+                {
+                    re.ErrMsg = "抢客成功";
+                }
+                else
+                {
+                    re.ErrMsg = data["Msg"].ToString();
+                }
+            }
+            else
+            {
+                re.ErrMsg = "当前身份不符，没有抢客权限";
+            }
+			return Result.ok("");
+		*/}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "传播池抢客", notes = "传播池抢客")
+	@RequestMapping(value = "/mCustomerFXCBList_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerFXCBList_Insert(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String KeyWord = (String) paramMap.get("KeyWord");
+			
+			return Result.ok("");
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "盘客列表", notes = "案场销售经理盘客销售顾问查询")
+	@RequestMapping(value = "/mCustomerXSJLSalesUserList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLSalesUserList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String Sort = (String) paramMap.get("Sort");
+			String Filter = (String) paramMap.get("Filter");
+			String OrgID = (String) paramMap.get("OrgID");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+			int PageSize = (int)paramMap.get("PageSize");//每页数量
+			StringBuilder whereSb = new StringBuilder();
+            StringBuilder OrderSb = new StringBuilder();
+            if (!StringUtils.isEmpty(Filter)){
+                if ("82F40CAC-AA13-9930-F056-D343E9B3363D".equals(Filter)){//  <=10% 资料完整度
+                    whereSb.append(" and IntegrityRungs <=10");
+                }
+                if ("934AD524-2A4A-45F8-CEAE-16BEE872C5B1".equals(Filter)){
+                    whereSb.append(" and IntegrityRungs <=20");
+                }
+                if ("D19C87C3-4AAC-A0C3-84F4-B5725549FA68".equals(Filter)){
+                    whereSb.append(" and IntegrityRungs <=30");
+                }
+                if ("845CC1B4-8560-3419-EF2F-3A3F7F6579AC".equals(Filter)){
+                    whereSb.append(" and IntegrityRungs <=40");
+                }
+                if ("B1E47E14-8154-D9B2-6E01-A7378CAB2073".equals(Filter)){
+                    whereSb.append(" and IntegrityRungs <=60");
+                }
+                if ("E08D654A-CCBC-8828-B4F6-DC74E7302841".equals(Filter)){
+                    whereSb.append(" and IntegrityRungs <=70");
+                }
+                if ("329E9467-FB43-096B-ABF2-242CA939CA31".equals(Filter)){
+                    whereSb.append(" and IntegrityRungs >70");
+                }
+            }
+            if (!StringUtils.isEmpty(Sort)){
+                if ("D0744FA8-7597-0632-4314-72E08B35C48C".equals(Sort)){//累计客户最多
+                    whereSb.append(" ORDER BY  TotalCount desc");
+                }
+                if ("A9451ED9-71C0-774C-1C68-FC51E2E69311".equals(Sort)){//累计客户最少
+                    whereSb.append(" ORDER BY  TotalCount asc ");
+                }
+                if ("BD616A5B-3F6E-A44E-1776-018EA33F35DE".equals(Sort)){//未成交客户最多
+                    whereSb.append(" ORDER BY  UnsettledCount desc");
+                }
+                if ("57E86DCA-72E1-DF73-DEFD-DD08C33BFE8B".equals(Sort)){//未成交客户最少
+                    whereSb.append(" ORDER BY  UnsettledCount asc ");
+                }
+                if ("BD5C9F06-D039-C03D-512D-5CC3045900F5".equals(Sort)){//即将逾期最多
+                    whereSb.append(" ORDER BY  OverdueCount Desc ");
+                }
+                if ("0145A667-A4E7-8B55-CC68-59460941FFD5".equals(Sort)) {//即将逾期最少
+                    whereSb.append(" ORDER BY  OverdueCount asc ");
+                }
+                if ("732BF8BC-5B41-DF50-F00F-D22F292E360F".equals(Sort)) {//即将回收最多
+                    whereSb.append(" ORDER BY  RecycleCount Desc ");
+                }
+                if ("CA46A147-EF3D-D122-13FD-75817FF9585D".equals(Sort)){//即将回收最少
+                    whereSb.append(" ORDER BY  RecycleCount asc ");
+                }
+            }else{
+                whereSb.append(" ORDER BY  CreateTime desc");
+            }
+            IPage page = new Page(PageIndex,PageSize);
+            IPage<Map<String,Object>> result = 
+            		iVCustomerxsjlsalesuserlistSelectService.mCustomerXSJLSalesUserList_Select(page,OrgID,ProjectID,whereSb.toString(),OrderSb.toString(),SiteUrl);
+            Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", result.getRecords());
+			map.put("AllCount", result.getTotal());
+			map.put("PageSize", result.getSize());
+            
+            return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "案场销售经理盘客客户查询", notes = "案场销售经理盘客销售顾问客户查询")
+	@RequestMapping(value = "/mCustomerXSJLSalesUserCustomerList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerXSJLSalesUserCustomerList_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String Sort = (String) paramMap.get("Sort");
+			String Filter = (String) paramMap.get("Filter");
+			String SaleUserID = (String) paramMap.get("SaleUserID");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
+			int PageSize = (int)paramMap.get("PageSize");//每页数量
+			StringBuilder whereSb = new StringBuilder();
+            StringBuilder OrderSb = new StringBuilder();
+            if (!StringUtils.isEmpty(Filter)){
+                if ("9114DF84-58E7-BD3A-B63A-5807821EA272".equals(Filter)){//  "最近跟进>=30天
+                    whereSb.append("and  IntervalDay >=30");
+                }
+                if ("E6A0BEFC-FEF9-7FFF-E495-AF01391AF341".equals(Filter)){//  最近跟进>=60天
+                    whereSb.append("and  IntervalDay >=30");
+                }
+                if ("12070050-1CEB-A085-51EB-B732B5E0717D".equals(Filter)){//  最近跟进>=90天
+                    whereSb.append("and  IntervalDay >=90");
+                }
+                if ("2AB369D1-99B6-60FD-4998-A7A36242FF48".equals(Filter)){//  即将回收<=1天
+                    whereSb.append("and  RecycleDay <=1");
+                }
+                if ("2464F001-B98A-A232-E627-45E6556A4E6A".equals(Filter)){//  即将回收<=3天
+                    whereSb.append("and  RecycleDay <=3");
+                }
+                if ("B76DCF24-7A87-EF66-C176-645844E5EFC8".equals(Filter)){//  即将回收<=5天
+                    whereSb.append("and  RecycleDay <=5");
+                }
+            }
+            if (!StringUtils.isEmpty(Sort)){
+                if ("2C92B9B1-4628-C62F-4277-94F40B9D7510".equals(Sort)){//最近创建
+                    whereSb.append(" ORDER BY  CreateTime desc");
+                }
+                if ("E0B27CA7-B76C-0643-63B6-EA6F27BD7578".equals(Sort)){//最远创建
+                    whereSb.append(" ORDER BY  CreateTime asc ");
+                }
+                if ("7F903589-EB0A-94C5-8E3D-E44178871EB7".equals(Sort)){//最近跟进
+                    whereSb.append(" ORDER BY  IntervalDay asc, FollowState desc");
+                }
+                if ("05D73D87-4657-F4DC-3E27-AE47D005C7EC".equals(Sort)){//最远跟进
+                    whereSb.append(" ORDER BY  IntervalDay desc , FollowState asc  ");
+                }
+            }else{
+                whereSb.append(" ORDER BY  CreateTime desc");
+            }
+
+            IPage page = new Page(PageIndex,PageSize);
+			IPage<Map<String,Object>> result = 
+					iVCustomerxsjlsalesuserlistSelectService.mCustomerXSJLSalesUserCustomerList_Select(page,SaleUserID,ProjectID,whereSb.toString(),OrderSb.toString());
+			Map<String, Object> map = new HashMap<String,Object>();
+			map.put("List", result.getRecords());
+			map.put("AllCount", result.getTotal());
+			map.put("PageSize", result.getSize());
+			return Result.ok(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "案场销售经理客户丢失审批", notes = "案场营销经理客户丢失审批")
+	@RequestMapping(value = "/mCustomerYXJLLoseDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCustomerYXJLLoseDetail_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String approveState = (String) paramMap.get("ApproveState");
+            if ("1".equals(approveState)){//驳回申请
+                iBOpportunitygiveupService.mCustomerYXJLLoseDetail_Rejected(paramMap);
+            }
+            if ("2".equals(approveState)){//通过申请
+                iBOpportunitygiveupService.mCustomerYXJLLoseDetail_Pass(paramMap);
+                //丢失审核后协作人置空
+                iBOpportunitygiveupService.mCustomerYXJLSalePartnerSetNull_Update(paramMap);
+                //同步明源客户数据
+                iCustomerHelp.SyncCustomer(paramMap.get("OpportunityID").toString(), 0);
+            }
 			return Result.ok(new ArrayList());
 		}catch (Exception e) {
 			e.printStackTrace();
