@@ -18,6 +18,7 @@ import com.tahoecn.xkc.service.job.IBProjectjobrelService;
 import com.tahoecn.xkc.service.job.ISJobsService;
 import com.tahoecn.xkc.service.job.ISJobsmenurelService;
 import com.tahoecn.xkc.service.job.ISJobsuserrelService;
+import com.tahoecn.xkc.service.org.ISOrganizationService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,8 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private IBProjectjobrelService projectjobrelService;
     @Autowired
     private IBSalesuserService salesuserService;
+    @Autowired
+    private ISOrganizationService organizationService;
 
     @Override
     public List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID) {
@@ -246,5 +250,25 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> SystemJobAuthOrg_Select(String pid, String jobID) {
+        List<Map<String, Object>> list = organizationService.SystemOrganizationChec_Select(pid);
+        List<Map<String, Object>> result=new ArrayList<>();
+        for (Map<String, Object> map : list) {
+            QueryWrapper<BProjectjobrel> wrapper=new QueryWrapper<>();
+            wrapper.eq("JobID",jobID);
+            wrapper.eq("ProjectID",map.get("ID"));
+            List<BProjectjobrel> projectjobrels = projectjobrelService.list(wrapper);
+            if (projectjobrels.size()!=0){
+                map.put("IsAuth",true);
+            }else {
+                map.put("IsAuth",false);
+            }
+            result.add(map);
+        }
+
+        return result;
     }
 }
