@@ -159,6 +159,9 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	}else{
         		orderSb.append(" ORDER BY  TheLatestFollowUpDate Desc ");
         	}
+        	if(orderSb.length()==0){
+        		orderSb.append(" ORDER BY  TheLatestFollowUpDate Desc ");
+        	}
         	model.setWhere(whereSb.toString());
         	model.setOrder(orderSb.toString());
         	//设置分页

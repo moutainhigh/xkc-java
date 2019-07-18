@@ -90,7 +90,7 @@ public class CustomerHelp implements ICustomerHelp {
 					model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID"));
 					String fieldKey = null;
 					for (DicInfo item : dicList) {
-						fieldKey = (item.getType() == "Option" || item.getType() == "OptionRadio") ? item.getFieldName() + "Name" : item.getFieldName();
+						fieldKey = ("Option".equals(item.getType()) || "OptionRadio".equals(item.getType())) ? item.getFieldName() + "Name" : item.getFieldName();
 						item.setValue(CustomerObj.getString(fieldKey));
 						String tvalueID = CustomerObj.getString(item.getFieldName());
 						if(tvalueID!=null){
@@ -175,13 +175,11 @@ public class CustomerHelp implements ICustomerHelp {
 							}
 								break;
 							case "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0": {// 认知媒体
-								childItem.setOption(GetRZMTOptionList(model
-										.getProjectID()));
+								childItem.setOption(GetRZMTOptionList(model.getProjectID()));
 							}
 								break;
-							case "480B60B2-1EE1-4A31-A810-072184A1E9D7":// 跟进方式
-								List<OptionItem> itemList = GetOptionList(
-										childItem.getID(), false);
+							case "480B60B2-1EE1-4A31-A810-072184A1E9D7":{// 跟进方式
+								List<OptionItem> itemList = GetOptionList(childItem.getID(), false);
 								if (itemList != null && jobCode.equals("GW")
 										&& IsNoAllotRole == 0) {// 开启分接置业顾问只能录入来电、去电、问询、外展接待
 									List<String> followIdList = new ArrayList<String>();
@@ -202,10 +200,10 @@ public class CustomerHelp implements ICustomerHelp {
 								} else {
 									childItem.setOption(itemList);
 								}
+							}
 								break;
 							default:
-								childItem.setOption(GetOptionList(
-										childItem.getID(), false));
+								childItem.setOption(GetOptionList(childItem.getID(), false));
 								break;
 							}
 						}
