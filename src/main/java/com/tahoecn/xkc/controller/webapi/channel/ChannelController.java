@@ -128,13 +128,11 @@ public class ChannelController extends TahoeBaseController {
 
     @ApiOperation(value = "推荐渠道列表-审核人查询", notes = "推荐渠道列表-审核人查询")
     @RequestMapping(value = "/AgenApproverList_SelectN", method = {RequestMethod.GET})
-    public JSONResult AgenApproverList_SelectN(){
+    public Result AgenApproverList_SelectN(){
 
         List<Map<String,String>> list=channeluserService.AgenApproverList();
-        JSONResult jsonResult=new JSONResult();
-        jsonResult.setMsg("SUCCESS");
-        jsonResult.setData(list);
-        return jsonResult;
+
+        return Result.ok(list);
     }
 
     //新增
@@ -261,7 +259,7 @@ public class ChannelController extends TahoeBaseController {
     }
 
 
-    @ApiOperation(value = "推荐渠道列表", notes = "推荐渠道列表")
+    @ApiOperation(value = "分销/推荐渠道列表PageType=0分销,PageType=1推荐渠道", notes = "推荐渠道列表")
     @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
     public Result AgenList_SelectN(int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
             , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,int Pageindex, int Pagesize){
@@ -270,5 +268,25 @@ public class ChannelController extends TahoeBaseController {
                 ,CreateStartTime,CreateEndTime,ApprovalUserID);
 
         return Result.ok(list);
+    }
+
+    @ApiOperation(value = "分销中介、推荐渠道修改状态", notes = "分销中介、推荐渠道修改状态")
+    @RequestMapping(value = "/AgenStatus_UpdateN", method = {RequestMethod.GET})
+    public Result AgenStatus_UpdateN(String ID, int Status){
+        boolean b=channeluserService.AgenStatus_UpdateN(ID,Status);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
+    }
+
+    @ApiOperation(value = "分销中介、推荐渠道信息编辑", notes = "分销中介、推荐渠道信息编辑")
+    @RequestMapping(value = "/AgenInfo_UpdateN", method = {RequestMethod.GET})
+    public Result AgenInfo_UpdateN(String ID, int Status){
+        boolean b=channeluserService.AgenStatus_UpdateN(ID,Status);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
     }
 }

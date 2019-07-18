@@ -103,14 +103,25 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     @Transactional(rollbackFor = Exception.class)
     public boolean SystemJobUserRel_Insert(String userIDS, String jobID) {
         try {
-            baseMapper.SystemJobUserRel_Insert(userIDS,jobID);
+            String[] split = userIDS.split(",");
+            for (String userID : split) {
+                QueryWrapper<SJobsuserrel> wrapper=new QueryWrapper<>();
+                wrapper.eq("JobID",jobID);
+                wrapper.eq("AccountID",userID);
+                SJobsuserrel one = jobsuserrelService.getOne(wrapper);
+                if (one==null){
+                    SJobsuserrel jobsuserrel=new SJobsuserrel();
+                    jobsuserrel.setJobID(jobID);
+                    jobsuserrel.setAccountID(userID);
+                    jobsuserrelService.save(jobsuserrel);
+                }
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
-
     }
 
     @Override

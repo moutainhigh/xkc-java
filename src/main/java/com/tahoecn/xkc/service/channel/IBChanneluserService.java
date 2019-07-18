@@ -136,4 +136,6 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
     IPage<Map<String, Object>> AgenList_SelectN(IPage page, int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
             , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID);
+
+    boolean AgenStatus_UpdateN(String id, int status);
 }
