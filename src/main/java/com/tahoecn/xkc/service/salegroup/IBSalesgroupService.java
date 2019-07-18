@@ -17,4 +17,9 @@ public interface IBSalesgroupService extends IService<BSalesgroup> {
     void UserTeam_DeleteNew(Map<String, Object> map);
 
     void UserTeamStatus_Update(Map<String, Object> map);
+
+    /**
+     * 查询渠道身份
+     */
+	Map<String, Object> mShareChannelTypeID_Select(Map<String, Object> channelTypeObj);
 }

@@ -6,6 +6,8 @@ import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,5 +86,39 @@ public class BClueruleServiceImpl extends ServiceImpl<BClueruleMapper, BCluerule
 		wrapper.eq("status", 1);
 		wrapper.eq("IsDel", 0);
 		return bClueruleMapper.selectOne(wrapper);
+	}
+	/**
+	 * 验证渠道人员是否在做重复报备
+	 */
+	@Override
+	public boolean IsRepeatedReg(String mobile, String projectId, String channelUserId) {
+		Map<String, Object> obj = new HashMap<String, Object>();
+        obj.put("Mobile", mobile);
+        obj.put("IntentProjectID", projectId);
+        obj.put("ReportUserID", channelUserId);
+        List<Map<String,Object>> data = bClueruleMapper.IsRepeatedReg_Select(obj);
+        return data.size() == 0 ? false : true;
+	}
+	/**
+	 * 验证是否存在一条有效线索模式为报备保护
+	 */
+	@Override
+	public boolean isExistReportProtectClue(String mobile, String projectId) {
+		Map<String, Object> obj = new HashMap<String, Object>();
+		obj.put("Mobile", mobile);
+		obj.put("IntentProjectID", projectId);
+		List<Map<String,Object>> data = bClueruleMapper.IsExistReportProtectClue_Select(obj);
+		return data.size() == 0 ? false : true;
+	}
+	/**
+	 * 判断是否存在销售机会（不区分有效无效）
+	 */
+	@Override
+	public boolean IsExistOpportunity(String mobile, String projectId) {
+		Map<String, Object> obj = new HashMap<String, Object>();
+		obj.put("CustomerMobile", mobile);
+		obj.put("ProjectID", projectId);
+		List<Map<String,Object>> data = bClueruleMapper.IsExistOpportunity_Select(obj);
+		return data.size() == 0 ? false : true;
 	}
 }
