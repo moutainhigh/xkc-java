@@ -2,11 +2,11 @@ package com.tahoecn.xkc.service.quit.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tahoecn.uc.sso.utils.StringUtils;
 import com.tahoecn.xkc.mapper.quit.BQuituserMapper;
 import com.tahoecn.xkc.model.quit.BQuituser;
 import com.tahoecn.xkc.service.quit.IBQuituserService;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
