@@ -312,8 +312,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                         }
                         String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(FollwUpWay);
                         if (SaleUserID.length() > 0){
-                            paramAry.put("Name", paramAry.getString("LastName")+paramAry.getString("FirstName"));
-                            Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                        	parameter.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
+                            Map<String,Object> pmap =JSONObject.parseObject(parameter.toJSONString(), Map.class);
                             if(sqlKey.equals("mCustomerFJDetail_Update")){
                             	Map<String, Object> step1_map = vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step1(pmap);
                             	if(step1_map!=null && step1_map.size()>0){

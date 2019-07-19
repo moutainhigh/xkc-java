@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.ipad.IpadMapper">
+
+	<select id="mLFProjectList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  C.ID AreaID ,
+		        C.OrgName AreaName ,
+		        B.ID OrganizationID ,
+		        B.OrgName OrganizationName ,
+		        A.ID ProjectID ,
+		        A.Name ProjectName ,
+		        IsNoAllotRole
+		FROM    dbo.B_Project (NOLOCK) A
+		        JOIN dbo.S_Organization (NOLOCK) B ON A.BUGUID = B.ID
+		        JOIN dbo.S_Organization (NOLOCK) C ON B.PID = C.ID
+		        JOIN dbo.B_SalesGroupMember sgm ON sgm.ProjectID = A.ID
+		                                           AND sgm.IsDel = 0
+		                                           AND sgm.Status = 1
+		                                           AND sgm.RoleID = '8100EAF4-FBCE-408B-A51D-B7247A3ADB19'
+		                                           AND sgm.MemberID = #{UserID}
+		WHERE   A.Level = 1
+		        AND A.IsDel = 0
+		        AND A.Status = 1
+		        AND A.IsNoAllotRole = 0
+		        AND A.Name LIKE '%#{ProjectName}%'
+		ORDER BY C.OrgName ,
+		        A.Name
+	    ]]>
+	</select>
+	
+	<select id="mUserProjectChange_Update_valid" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT UserID FROM S_AccountUserProject WHERE UserID = #{UserID}
+		]]>
+	</select>
+	
+	<insert id="mUserProjectChange_Update_insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT INTO S_AccountUserProject VALUES(#{UserID}, #{ProjectID})
+		]]>
+	</insert>
+	
+	<update id="mUserProjectChange_Update_update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE S_AccountUserProject SET ProjectID = #{ProjectID} WHERE UserID = #{UserID}
+		]]>
+	</update>
+	
+	<select id="Project_Detail_FindById" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    select * from  B_Project where ID=#{ID}
+	    ]]>
+	</select>
+	
+	<select id="mLFCustomerDetailByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT  
+	            o.ProjectID ,
+	            dbo.F_ChannelName(o.ClueID) AS ChannelName ,
+	            o.CustomerID ,
+	            o.CustomerName ,
+	            c.Mobile CustomerMobile,
+	            ISNULL(c.Gender,cc.Gender) Gender,
+	            dbo.F_DictName(ISNULL(c.Gender,cc.Gender)) AS CustomerGender ,
+	            o.OpportunitySource ,
+	            dbo.F_DictName(o.OpportunitySource) AS OpportunitySourceName ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+				      #{SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
+	            o.VisitsCount ,
+	            c.Remark,
+	            cc.CreateTime ReportTime,
+	            o.TheFirstVisitDate,
+	            (SELECT TOP 1 VisitTime FROM dbo.B_ClueAllocation WHERE ClueID = o.ClueID ORDER BY VisitTime DESC) VisitTime,
+	            dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) AS CustomerTag
+	    FROM    dbo.B_Opportunity AS o
+	            INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+	            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+	            LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+	            LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID AND sgm.IsDel = 0 AND sgm.Status = 1 AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND sgm.ProjectID = #{ProjectID}
+	            LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+	            LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+	            LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID AND sgm1.IsDel = 0 AND sgm1.Status = 1 AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND sgm1.ProjectID = #{ProjectID}
+	            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+	    WHERE c.Mobile = #{Mobile}' AND o.ProjectID = #{ProjectID}   
+	    ]]>
+	</select>
+	
+	<select id="sCustomerPotentialClue" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT AdviserGroupID, RuleType, clueID ID, clueName Name, IsChoose FROM V_CustomerPotentialClue
+   		WHERE  1=1   ${WHERE}
+		]]>
+	</select>
+	
+	<select id="mLFCustomerPotentialDetailByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  cc.IntentProjectID ProjectID ,
+		        dbo.F_ChannelName(cc.ID) AS ChannelName ,
+		        cc.CustomerPotentialID ,
+		        cp.Name CustomerName ,
+		        cp.Mobile CustomerMobile ,
+		        cp.Gender ,
+		        dbo.F_DictName(cp.Gender) AS CustomerGender,
+		        cr.RuleType 
+		FROM    dbo.B_CustomerPotential cp
+		        LEFT JOIN dbo.B_Clue cc ON cc.CustomerPotentialID = cp.ID
+		        LEFT JOIN dbo.B_ClueRule cr ON cc.RuleID = cr.ID
+		WHERE   cp.Mobile = #{Mobile}
+		        AND cc.IntentProjectID = #{ProjectID}
+		 ]]>
+	</select>
+	
+	<select id="mCustomerPublicPoolByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  *
+		FROM    dbo.B_CustomerPublicPool cpp
+		        INNER JOIN dbo.B_Opportunity o ON cpp.OpportunityID = o.ID
+		                                          AND cpp.IsDel = 0
+		WHERE   o.CustomerMobile = #{Mobile}
+		        AND o.ProjectID = #{ProjectID}
+	   ]]>
+	</select>
+	
+	<select id="mCustomerClueStatus_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT TOP 1 Status FROM dbo.B_Clue WHERE ID = #{clueID} ORDER BY CreateTime DESC
+	   ]]>
+	</select>
+	
+	
+</mapper>
