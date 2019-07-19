@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.mapper.rule;
 
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.rule.BCluerule;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -47,4 +49,16 @@ public interface BClueruleMapper extends BaseMapper<BCluerule> {
 	void updateAdviserGroupById(Map<String, Object> map);
 
     Map<String, Object> getRegisterRule(@Param("ProjectID") String projectId, @Param("AdviserGroupID") String adviserGroupID);
+    /**
+	 * 验证渠道人员是否在做重复报备
+	 */
+	List<Map<String,Object>> IsRepeatedReg_Select(Map<String, Object> obj);
+	/**
+	 * 验证是否存在一条有效线索模式为报备保护
+	 */
+	List<Map<String, Object>> IsExistReportProtectClue_Select(Map<String, Object> obj);
+	/**
+	 * 验证是否存在销售机会（不区分机会状态）
+	 */
+	List<Map<String, Object>> IsExistOpportunity_Select(Map<String, Object> obj);
 }

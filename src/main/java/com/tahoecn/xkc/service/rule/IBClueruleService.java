@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.rule;
 
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -50,4 +51,16 @@ public interface IBClueruleService extends IService<BCluerule> {
 	 * 获取规则信息
 	 */
 	BCluerule CaseFieRuleDetail_Select(Map<String, Object> ruleP);
+	/**
+	 * 验证渠道人员是否在做重复报备
+	 */
+	boolean IsRepeatedReg(String mobile, String projectId, String channelUserId);
+	/**
+	 * 验证是否存在一条有效线索模式为报备保护
+	 */
+	boolean isExistReportProtectClue(String mobile, String projectId);
+	/**
+	 * 判断是否存在销售机会（不区分有效无效）
+	 */
+	boolean IsExistOpportunity(String phone, String projectId);
 }

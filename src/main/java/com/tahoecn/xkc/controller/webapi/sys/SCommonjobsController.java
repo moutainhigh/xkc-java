@@ -135,7 +135,6 @@ public class SCommonjobsController extends TahoeBaseController {
 	   	return Result.okm("成功");
    }
 
-
     @ApiOperation(value = "通用岗位功能授权", notes = "通用岗位功能授权")
     @RequestMapping(value = "/SystemCommonJobAuth_Insert", method = {RequestMethod.POST})
     public Result SystemCommonJobAuth_Insert(String OldMenus,String OldFunctions,String Menus,

@@ -39,4 +39,13 @@ public interface IBCustomerpublicpoolService extends IService<BCustomerpublicpoo
 	 */
 	Map<String,Object> mGetPublicPoolDetail_Select(Map<String, Object> obj);
 
+	/**
+	 * 公共池抢客
+	 */
+	String mCustomerGGCList_Insert(Map<String, Object> paramMap);
+	/**
+	 * 自渠抢客公共池客户
+	 */
+	void mGGCCustomerByZQDetail_Update(Map<String, Object> param);
+
 }

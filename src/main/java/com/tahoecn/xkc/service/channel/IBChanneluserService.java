@@ -139,4 +139,8 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	void ChannelOrgImport_Insert(String orgID, String projectID, String userID,String RuleIDs);
     IPage<Map<String, Object>> AgenList_SelectN(IPage page, int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
             , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID);
+
+    boolean AgenStatus_UpdateN(String id, int status);
+
+    boolean AgenInfo_UpdateN(String id, String channelTypeID);
 }

@@ -1,11 +1,11 @@
 package com.tahoecn.xkc.controller.webapi.channel;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
@@ -376,6 +376,69 @@ public class ChannelController extends TahoeBaseController {
         return jsonResult;
     }
 
+    private void SetExcelN(List<Map<String,Object>> result,Integer PageType) {
+
+        String ExcelName;
+        List<ExcelExportEntity> entity;
+        if (PageType == 0) {
+            ExcelName = "渠道-分销中介";
+            entity = new ArrayList<ExcelExportEntity>();
+            entity.add(new ExcelExportEntity("经纪人用户名", "UserName"));
+            entity.add(new ExcelExportEntity("经纪人姓名", "Name"));
+            entity.add(new ExcelExportEntity("性别", "Gender"));
+            entity.add(new ExcelExportEntity("经纪人手机号", "Mobile"));
+            entity.add(new ExcelExportEntity("证件", "CertificatesTypeName"));
+            entity.add(new ExcelExportEntity("证件号", "CertificatesNo"));
+            entity.add(new ExcelExportEntity("证件照上", "CertificatesPicFace"));
+            entity.add(new ExcelExportEntity("证件照下", "CertificatesPicBack"));
+            entity.add(new ExcelExportEntity("开户行", "BankCardCreate"));
+            entity.add(new ExcelExportEntity("银行卡号", "BankCard"));
+            entity.add(new ExcelExportEntity("银行卡照片", "BankCardPic"));
+            entity.add(new ExcelExportEntity("所属机构编码", "ChannelOrgCode"));
+            entity.add(new ExcelExportEntity("所属机构", "ChannelOrgName"));
+            entity.add(new ExcelExportEntity("渠道身份", "DictName"));
+            entity.add(new ExcelExportEntity("注册时间", "CreateTime"));
+            entity.add(new ExcelExportEntity("帐号状态", "StatusName"));
+            entity.add(new ExcelExportEntity("邀请人", "InviterName"));
+            entity.add(new ExcelExportEntity("审核人", "ApproverName"));
+            entity.add(new ExcelExportEntity("审核时间", "ApprovalDate"));
+            entity.add(new ExcelExportEntity("审核状态", "ApprovalStatuss"));
+        } else {
+            //推荐渠道
+            ExcelName = "渠道-推荐渠道";
+            entity = new ArrayList<ExcelExportEntity>();
+            entity.add(new ExcelExportEntity("经纪人用户名", "UserName"));
+            entity.add(new ExcelExportEntity("经纪人姓名", "Name"));
+            entity.add(new ExcelExportEntity("性别", "Gender"));
+            entity.add(new ExcelExportEntity("经纪人手机号", "Mobile"));
+            entity.add(new ExcelExportEntity("证件", "CertificatesTypeName"));
+            entity.add(new ExcelExportEntity("证件号", "CertificatesNo"));
+            entity.add(new ExcelExportEntity("证件照上", "CertificatesPicFace"));
+            entity.add(new ExcelExportEntity("证件照下", "CertificatesPicBack"));
+            entity.add(new ExcelExportEntity("开户行", "BankCardCreate"));
+            entity.add(new ExcelExportEntity("银行卡号", "BankCard"));
+            entity.add(new ExcelExportEntity("银行卡照片", "BankCardPic"));
+            entity.add(new ExcelExportEntity("渠道身份", "DictName"));
+            entity.add(new ExcelExportEntity("注册时间", "CreateTime"));
+            entity.add(new ExcelExportEntity("帐号状态", "StatusName"));
+            entity.add(new ExcelExportEntity("邀请人", "InviterName"));
+            entity.add(new ExcelExportEntity("审核人", "ApproverName"));
+            entity.add(new ExcelExportEntity("审核时间", "ApprovalDate"));
+            entity.add(new ExcelExportEntity("审核状态", "ApprovalStatuss"));
+        }
+
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      *
      * 重复了 都不用
@@ -483,14 +546,52 @@ public class ChannelController extends TahoeBaseController {
 
 
 
-    @ApiOperation(value = "推荐渠道列表", notes = "推荐渠道列表")
+
+    @ApiOperation(value = "分销/推荐渠道列表PageType=0分销,PageType=1推荐渠道", notes = "推荐渠道列表")
     @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
-    public Result AgenList_SelectN(int PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
-            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,int Pageindex, int Pagesize){
+    public Result AgenList_SelectN(Integer PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
+            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,@RequestParam(defaultValue = "1") Integer Pageindex, @RequestParam(defaultValue = "10") Integer Pagesize,String IsExcel){
+        if (StringUtils.isNotEmpty(IsExcel)) {
+            Pagesize = -1;
+        }
         IPage page=new Page(Pageindex,Pagesize);
         IPage<Map<String,Object>> list=channeluserService.AgenList_SelectN(page,PageType,ProjectID,ChannelTypeID,Name,PassStatu
                 ,CreateStartTime,CreateEndTime,ApprovalUserID);
 
+        if (StringUtils.isNotEmpty(IsExcel)) {
+            SetExcelN(list.getRecords(),PageType);
+            return null;
+        }
+
         return Result.ok(list);
+    }
+
+    @ApiOperation(value = "分销中介、推荐渠道修改状态", notes = "分销中介、推荐渠道修改状态")
+    @RequestMapping(value = "/AgenStatus_UpdateN", method = {RequestMethod.GET})
+    public Result AgenStatus_UpdateN(String ID, int Status){
+        boolean b=channeluserService.AgenStatus_UpdateN(ID,Status);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
+    }
+    @ApiOperation(value = "分销中介、推荐渠道列表-身份列表查询", notes = "分销中介、推荐渠道列表-身份列表查询")
+    @RequestMapping(value = "/AgenChannelTypeList_SelectN", method = {RequestMethod.GET})
+    public Result AgenChannelTypeList_SelectN(String ID, String ChannelTypeID){
+        boolean b=channeluserService.AgenInfo_UpdateN(ID,ChannelTypeID);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
+    }
+
+    @ApiOperation(value = "分销中介、推荐渠道信息编辑", notes = "分销中介、推荐渠道信息编辑")
+    @RequestMapping(value = "/AgenInfo_UpdateN", method = {RequestMethod.GET})
+    public Result AgenInfo_UpdateN(String ID, String ChannelTypeID){
+        boolean b=channeluserService.AgenInfo_UpdateN(ID,ChannelTypeID);
+        if (b){
+            return Result.okm("成功");
+        }
+        return Result.errormsg(99,"修改失败");
     }
 }

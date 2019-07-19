@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -315,7 +316,8 @@ public class AppKCController extends TahoeBaseController {
             map.put("CheckDate", CheckDate);
             map.put("ChannelTaskID", ChannelTaskID);
     		List<Map<String,Object>> a = iBChanneluserService.mChannelCheckClockPage_Select(map);
-    		return re.ok(a);
+    		Map<String, Object> b = a.get(0);
+    		return re.ok(b);
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1, "系统异常，请联系管理员");
@@ -801,7 +803,6 @@ public class AppKCController extends TahoeBaseController {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("PageIndex", PageIndex);
             map.put("PageSize", PageSize);
-            
             String errmsg = "";
             StringBuilder whereStr = new StringBuilder();
             StringBuilder JZCode = new StringBuilder();;
@@ -854,9 +855,8 @@ public class AppKCController extends TahoeBaseController {
     				
     				System.out.println(whereStr);
     				System.out.println(JZCode);
-    				List<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(map);
     				int All = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
-    				
+    				List<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(map);
     	    		if(All > 0) {
     	    			String Creator = (String) objData.get(0).get("Creator");//任务创建者
     	    			if(Creator != reportUserID) {
@@ -869,8 +869,19 @@ public class AppKCController extends TahoeBaseController {
     	    		}
     			}
             }
-            List<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(map);
             int AllCount = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
+            List<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(map);
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            for(int x=0;x<AllCount;x++) {
+            	String sd1 = sdf.format(objListData.get(x).get("WorkStartTime"));
+            	objListData.get(x).put("WorkStartTime", sd1);
+            	String sd2 = sdf.format(objListData.get(x).get("EndTime"));
+            	objListData.get(x).put("EndTime", sd2);
+            	String sd3 = sdf.format(objListData.get(x).get("WorkEndTime"));
+            	objListData.get(x).put("WorkEndTime", sd3);
+            	String sd4 = sdf.format(objListData.get(x).get("StartTime"));
+            	objListData.get(x).put("StartTime", sd4);
+            }
     		Map<String, Object> result = new HashMap<String, Object>();
     		result.put("List", objListData);
     		result.put("AllCount", AllCount);

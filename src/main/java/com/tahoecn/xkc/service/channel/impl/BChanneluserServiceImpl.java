@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microsoft.schemas.office.visio.x2012.main.PageType;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
@@ -506,6 +507,33 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         IPage<Map<String,Object>> list=baseMapper.AgenList_SelectN(page,where.toString());
 
         return list;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean AgenStatus_UpdateN(String id, int status) {
+        try {
+            BChanneluser channeluser=new BChanneluser();
+            channeluser.setId(id);
+            channeluser.setStatus(status);
+            channeluser.setEditeTime(new Date());
+            channeluser.setEditor(ThreadLocalUtils.getUserName());
+            int i = baseMapper.updateById(channeluser);
+            if (i==1){
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean AgenInfo_UpdateN(String id, String channelTypeID) {
+
+        return false;
     }
 
 
