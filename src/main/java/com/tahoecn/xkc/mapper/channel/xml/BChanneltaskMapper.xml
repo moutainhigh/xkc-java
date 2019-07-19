@@ -405,10 +405,7 @@
 		        a.WorkRange ,
 		        a.CustomerTarget ,
 		        a.Creator,
-		        ( SELECT    COUNT(1)
-		          FROM      dbo.B_Clue b
-		          WHERE     b.ChannelTaskID = a.ID ${JZCode}
-		        ) CustomerCount ,
+		        
 		        a.Status,
 		        ROW_NUMBER() OVER ( ORDER BY a.CreateTime DESC ) num
 		FROM    dbo.B_ChannelTask a
