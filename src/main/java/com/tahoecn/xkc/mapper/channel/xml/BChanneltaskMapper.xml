@@ -418,8 +418,8 @@
 		GROUP BY a.ID ,a.ProjectID ,a.Name ,a.TaskType ,a.TaskCode , a.StartTime ,a.EndTime
 			 , a.TaskAreaID ,a.TaskAreaName , c.Longitude ,c.Dimension ,a.WorkStartTime ,a.WorkEndTime ,a.WorkRange ,a.CustomerTarget ,a.Creator,a.CreateTime,a.Status
 	    ) t
-		WHERE   t.num > 0
-		        AND t.num <= 10;
+		WHERE    t.num > ( #{PageIndex} - 1 ) * #{PageSize}
+        		AND t.num <= #{PageIndex} * #{PageSize};
 	    ]]>
 	</select>
 	<select id="mChannelTaskList_SelectAllCount" parameterType="java.util.Map" resultType="int">

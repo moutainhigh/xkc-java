@@ -803,7 +803,6 @@ public class AppKCController extends TahoeBaseController {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("PageIndex", PageIndex);
             map.put("PageSize", PageSize);
-            
             String errmsg = "";
             StringBuilder whereStr = new StringBuilder();
             StringBuilder JZCode = new StringBuilder();;
@@ -856,9 +855,8 @@ public class AppKCController extends TahoeBaseController {
     				
     				System.out.println(whereStr);
     				System.out.println(JZCode);
-    				List<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(map);
     				int All = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
-    				
+    				List<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(map);
     	    		if(All > 0) {
     	    			String Creator = (String) objData.get(0).get("Creator");//任务创建者
     	    			if(Creator != reportUserID) {
@@ -871,8 +869,8 @@ public class AppKCController extends TahoeBaseController {
     	    		}
     			}
             }
-            List<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(map);
             int AllCount = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
+            List<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(map);
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             for(int x=0;x<AllCount;x++) {
             	String sd1 = sdf.format(objListData.get(x).get("WorkStartTime"));
