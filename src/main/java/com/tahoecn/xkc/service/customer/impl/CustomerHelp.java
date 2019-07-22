@@ -55,11 +55,13 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
 			String where = "  AND ID ='" + opportunityID + "' ";
 			Map<String, Object> map = vCustomergwlistSelectMapper.OpportunityDetail_Select(where);
-			return new JSONObject(map);
+			if(map!=null && map.size()>0){
+            	return new JSONObject(map);
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new JSONObject();
 		}
+		return null;
 	}
 	
 	@Override
@@ -67,11 +69,13 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
             String where  = "  AND ProjectID ='" + ProjectID + "' AND Mobile='" + Mobile + "' ORDER BY CreateTime DESC ";
             Map<String, Object> map = vCustomergwlistSelectMapper.OpportunityDetail_Select(where);
-			return new JSONObject(map);
+            if(map!=null && map.size()>0){
+            	return new JSONObject(map);
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new JSONObject();
 		}
+		return null;
 	}
 
 	@Override
@@ -124,7 +128,7 @@ public class CustomerHelp implements ICustomerHelp {
 							case "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D": {// 意向项目
 								String where = " and ID='"+ model.getProjectID()+ "' and level='1'";
 								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
-								if (optionList.size() > 0) {
+								if (optionList!=null && optionList.size() > 0) {
 									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
 									childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
 									String optionL = JSONArray.toJSONString(optionList);
@@ -135,7 +139,7 @@ public class CustomerHelp implements ICustomerHelp {
 							case "BFD616A1-118F-4C9F-986F-BAA32A1A7EA3": {// 意向项目分期
 								String where = " and PID='"+ model.getProjectID()+ "' and level='2'";
 								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
-								if (optionList.size() > 0) {
+								if (optionList!=null && optionList.size() > 0) {
 									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
 									childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
 									String optionL = JSONArray.toJSONString(optionList);
@@ -145,7 +149,7 @@ public class CustomerHelp implements ICustomerHelp {
 								break;
 							case "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602": {// 认知途径
 								List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.SystemDictionaryXSRZTJList_Select();
-								if (optionList.size() > 0) {
+								if (optionList!=null && optionList.size() > 0) {
 									childItem.setValue(String.valueOf(optionList.get(0).get("Name")));
 									childItem.setValueID(String.valueOf(optionList.get(0).get("ID")));
 									String optionL = JSONArray.toJSONString(optionList);
@@ -267,7 +271,7 @@ public class CustomerHelp implements ICustomerHelp {
 								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
 									String where = " and ClueID='"+ customerModel.getClueID() + "'";
 									Map<String, Object> ClueObj = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
-									if (ClueObj.size() > 0) {
+									if (ClueObj!=null && ClueObj.size() > 0) {
 										childItem.setValue(String.valueOf(ClueObj.get("Name")));
 										childItem.setValueID(String.valueOf(ClueObj.get("ID")));
 									}
@@ -444,7 +448,7 @@ public class CustomerHelp implements ICustomerHelp {
 								}
 							}
 							if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
-								if (childItem.getOption().size() <= 1) {
+								if (childItem.getOption()!=null && childItem.getOption().size() <= 1) {
 									childItem.setIsEdit(0);
 								}
 							}
@@ -509,7 +513,7 @@ public class CustomerHelp implements ICustomerHelp {
 			if (list == null || list.size() == 0) {
 				list = new ArrayList<OptionItem>();
 				List<Map<String, Object>> jarry = vCustomergwlistSelectMapper.SystemDictionaryRZMTList_Select(projectID);
-				if (jarry.size() > 0) {
+				if (jarry!=null && jarry.size() > 0) {
 					JSONObject PIDObject = new JSONObject();
 					for (Map<String, Object> item : jarry) {
 						String PID = String.valueOf(item.get("PID"));
@@ -554,7 +558,7 @@ public class CustomerHelp implements ICustomerHelp {
 				} else {
 					jarry = vCustomergwlistSelectMapper.DictionaryList_Select(pid);
 				}
-				if (jarry.size() > 0) {
+				if (jarry!=null && jarry.size() > 0) {
 					for (Map<String, Object> item : jarry) {
 						OptionItem optionItem = new OptionItem();
 						optionItem.setID(String.valueOf(item.get("ID")));
@@ -596,7 +600,7 @@ public class CustomerHelp implements ICustomerHelp {
 		}
 		Map<String, Object> optionList = vCustomergwlistSelectMapper
 				.sCustomerPotentialClue(where);
-		if (optionList.size() > 0) {// 存在线索
+		if (optionList!=null && optionList.size() > 0) {// 存在线索
 			List<OptionItem> ClueList = new ArrayList<OptionItem>();
 			int RuleType = (int) optionList.get("RuleType");
 			Boolean HasChoose = false;
@@ -647,7 +651,7 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
 			// 如果开启销支，验证客储等级
 			Map<String, Object> objRank = vCustomergwlistSelectMapper.mCustomerAllotRoleAndRank_Select(opportunityID);
-			if (objRank.size() == 0) {
+			if (objRank!=null && objRank.size() == 0) {
 				if (optionType == 0 || optionType == 1) {
 					String where = "  AND OpportunityID ='" + opportunityID+ "' ";
 					Map<String, Object> customerObj = vCustomergwlistSelectMapper.OpportunityDetail_Select(where);
@@ -673,8 +677,8 @@ public class CustomerHelp implements ICustomerHelp {
 	public JSONObject GetParameters(CGWDetailModel model) {
 		JSONObject json = new JSONObject();
 		List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
-		Item item = new Item();
 		for (DicInfo dicInfo : dicList) {
+			Item item = null;
 			List<Item> itemList = model.getItemList();
 			for (Item it : itemList) {
 				if (it.getID().equals(dicInfo.getDicID())) {
@@ -745,7 +749,7 @@ public class CustomerHelp implements ICustomerHelp {
 			param.put("ProjectID", ProjectID);
 			param.put("Mobile", Mobile);
 			result = vCustomergwlistSelectMapper.CustomerOpportunity_Exist(param);
-			if (result.size() > 0) {
+			if (result!=null && result.size() > 0) {
 				customerObj.put("CustomerObj", new JSONObject(result));
 				customerObj.put("status", true);
 			} else {
@@ -762,10 +766,10 @@ public class CustomerHelp implements ICustomerHelp {
 	public JSONObject CustomerExist(String Mobile) {
 		JSONObject customerObj = new JSONObject();
         try{
-        	Map<String, Object> result = vCustomergwlistSelectMapper.Customer_Exist(Mobile);
-        	if(result.size()>0){
+        	List<Map<String, Object>> result = vCustomergwlistSelectMapper.Customer_Exist(Mobile);
+        	if(result!=null && result.size()>0){
         		customerObj.put("status", true);
-        		customerObj.put("CustomerObj", new JSONObject(result));
+        		customerObj.put("CustomerObj", new JSONObject(result.get(0)));
         	}else{
         		customerObj.put("status", false);
         	}
@@ -797,7 +801,7 @@ public class CustomerHelp implements ICustomerHelp {
         }else{
             String where = " and  Status in (1,2) and Isdel = 0 and ClueID ='" + OpportunitySource + "'";
             Map<String, Object> clueInfo = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
-            if (clueInfo.size() == 0){//未找到线索则渠道仍然是自然来访
+            if (clueInfo!=null && clueInfo.size() == 0){//未找到线索则渠道仍然是自然来访
                 opportunitySourceID = "0390CD8C-D6D4-4C92-995B-08C7E18E6EC2";
             }else{//找到线索则判断线索的渠道
                 ClueID = OpportunitySource;
@@ -822,7 +826,7 @@ public class CustomerHelp implements ICustomerHelp {
                 //1 验证是否存在已选线索
             	String projectID = parameter.getString("ProjectID");
             	List<Map<String,Object>> clueSiblingList = vCustomergwlistSelectMapper.sClueSiblingList_Select(clueID, projectID);
-                if (clueSiblingList.size() > 0){//1.1 Y存在已选线索
+                if (clueSiblingList!=null && clueSiblingList.size() > 0){//1.1 Y存在已选线索
                     //1.1.2.1 Y存在多条线索， 则更新当前线索的潜在客户的其他线索置为失效状态 
                     ClueCustomerUpdate(parameter);
                 }else{
@@ -835,7 +839,7 @@ public class CustomerHelp implements ICustomerHelp {
                 String mobile = parameter.getString("Mobile");
                 String projectID =parameter.getString("ProjectID");
                 List<Map<String,Object>> clueList = ClueCustomerList_Select(mobile, projectID);
-                if (clueList.size() == 0){//1.1 不存在手机号码客户创建全新线索
+                if (clueList!=null && clueList.size() == 0){//1.1 不存在手机号码客户创建全新线索
                     parameter.put("ClueID", UUID.randomUUID().toString());
                     ClueCustomerInsert(parameter);
                 }else{
@@ -1035,7 +1039,7 @@ public class CustomerHelp implements ICustomerHelp {
 		//1.根据机会判断是否为机会客户
         try{
             Map<String,Object> result = vCustomergwlistSelectMapper.sCustomerGWSearch_Select(opportunityID);
-            if (result.size() > 0){
+            if (result!=null && result.size() > 0){
                 String AllCustomer ="";
                 if(result.get("AllCustomer")!=null){
                 	AllCustomer = result.get("AllCustomer").toString();
@@ -1052,18 +1056,18 @@ public class CustomerHelp implements ICustomerHelp {
                     result.put("SubscriberCustomer", AllCustomer);
                 }
                 result.put("SubscriberCustomerName", result.get("CustomerName"));
+                return new JSONObject(result);
             }
-            return new JSONObject(result);
         }catch (Exception e){
         	e.printStackTrace();
-            return new JSONObject();
         }
+        return null;
 	}
 
 	@Override
 	public Boolean CustomerIsCanOperate(String opportunityID,String userID) {
         List<Map<String,Object>> obj = vCustomergwlistSelectMapper.mCustomerSalePartnerIsCanOperate_Select(opportunityID, userID);
-        if (obj.size() > 0){
+        if (obj!=null && obj.size() > 0){
             return false;
         }
         return true;

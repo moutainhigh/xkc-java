@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageType;
@@ -93,8 +95,16 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 
 	        Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
 	        
-	        List<VCustomerfjlistSelect> data = vCustomerfjlistSelectMapper.sCustomerFJList_Select(pmap);
-	        entity.setData(data);
+	        IPage<VCustomerfjlistSelect> page =new Page<>();
+	    	page.setSize(paramAry.getLongValue("PageSize"));
+	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+	    	
+	    	IPage<VCustomerfjlistSelect> data = vCustomerfjlistSelectMapper.sCustomerFJList_Select(page,pmap);
+	    	JSONObject j_data = new JSONObject();
+	    	j_data.put("List", data.getRecords());
+	    	j_data.put("AllCount", data.getTotal());
+	    	j_data.put("PageSize", data.getSize());
+	        entity.setData(j_data);
 	        entity.setErrcode(0);
 	        entity.setErrmsg("成功");
 		} catch (Exception e) {
@@ -164,7 +174,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	            }else{//存在客户信息
 	            	CustomerObj = j_re_1.getJSONObject("CustomerObj");
 	            	JSONObject OldCustomerObj = customerTemplate.OpportunityInfo(model.getProjectID(), model.getMobile());
-	                if (OldCustomerObj.size() > 0){//本项目存在历史机会,直接分配给之前的顾问
+	                if (OldCustomerObj!=null && OldCustomerObj.size() > 0){//本项目存在历史机会,直接分配给之前的顾问
 	                    //jsonFile = "FJOldCustomer.json";
 	                    jsonFile = "FJNewCustomer.json";
 	                    customerModeType = CustomerModeType.分接_新机会_老客户.getTypeID();
@@ -194,6 +204,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	public Result mCustomerFJDetail_Insert(JSONObject paramAry) {
 		Result entity = new Result();
 		entity.setErrcode(0);
+		entity.setErrmsg("成功");
         try{
             if (!StringUtils.isEmpty(paramAry.getString("FormSessionID"))){
             	Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
@@ -216,7 +227,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
             	parameter.put("IsIPad", "0");
                 String OldSaleUserID = "";
                 String SaleUserID = parameter.getString("SaleUserID");
-                if (parameter.size() > 0){
+                if (parameter!=null && parameter.size() > 0){
                     Boolean IsNew = true;
                     String sqlKey = "";
                     String Mobile =parameter.getString("Mobile").trim();
@@ -273,7 +284,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                             	CustomerObj = re_j_1.getJSONObject("CustomerObj");
                             	parameter.put("CustomerID", CustomerObj.getString("CustomerID"));
                             	JSONObject OldCustomerObj = customerTemplate.OpportunityInfo(model.getProjectID(), Mobile);
-                                if (OldCustomerObj.size() > 0){
+                                if (OldCustomerObj!=null && OldCustomerObj.size() > 0){
                                 	//本项目存在历史机会,直接分配给之前的顾问
                                     parameter.put("LastName",OldCustomerObj.getString("LastName"));
                                     parameter.put("FirstName",OldCustomerObj.getString("FirstName"));
@@ -483,7 +494,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                         String userID = parameter.getString("SaleUserID");
                                         Result Account = iSystemAccountService.SystemAccountDetail_Select(userID);
                                         String NewSaleUserName = "";
-                                        if (Account.getErrcode() == 0){
+                                        if (Account.getErrcode() == 0 && Account.getData()!=null){
                                         	JSONObject AccountData = (JSONObject) Account.getData();
                                             if (AccountData.size() > 0){
                                                 NewSaleUserName = AccountData.getString("EmployeeName");
@@ -571,7 +582,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                             String userID = parameter.getString("SaleUserID");
                                             Result Account = iSystemAccountService.SystemAccountDetail_Select(userID);
                                             String NewSaleUserName = "";
-                                            if (Account.getErrcode() == 0){
+                                            if (Account.getErrcode() == 0 && Account.getData()!=null){
                                             	JSONObject AccountData = (JSONObject) Account.getData();
                                                 if (AccountData.size() > 0){
                                                     NewSaleUserName =AccountData.getString("EmployeeName");
@@ -708,9 +719,18 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
             paramAry.put("ORDER", OrderSb.toString());
 
             paramAry.put("SiteUrl", SiteUrl);
+            
+            IPage<Map<String,Object>> page =new Page<>();
+	    	page.setSize(paramAry.getLongValue("PageSize"));
+	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+            
             Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
-            List<Map<String, Object>> data = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select(pmap);
-            entity.setData(data);
+            IPage<Map<String, Object>> data = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select(page,pmap);
+            JSONObject j_data = new JSONObject();
+	    	j_data.put("List", data.getRecords());
+	    	j_data.put("AllCount", data.getTotal());
+	    	j_data.put("PageSize", data.getSize());
+            entity.setData(j_data);
             entity.setErrcode(0);
 	        entity.setErrmsg("成功");
         }catch (Exception e){

@@ -1601,6 +1601,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                     if (re.getBoolean("status")){//客户信息已存在
                     	CustomerObj = re.getJSONObject("CustomerObj");
                         Map<String,Object> pmap = JSONObject.parseObject(parameter.toJSONString(),Map.class);
+                        pmap.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
                         vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step1(pmap);
                         List<Map<String,Object>> step2_map = vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step2_valid(pmap);
                         if(step2_map!=null && step2_map.size()>0){

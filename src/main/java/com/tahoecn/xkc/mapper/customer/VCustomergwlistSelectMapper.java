@@ -337,7 +337,7 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param mobile
 	 * @return
 	 */
-	Map<String,Object> Customer_Exist(@Param("mobile")String mobile);
+	List<Map<String,Object>> Customer_Exist(@Param("mobile")String mobile);
 	
 	/**
 	 * 渠道分配消息设置查询step1

@@ -1,10 +1,12 @@
 package com.tahoecn.xkc.model.customer;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>
@@ -82,6 +84,7 @@ public class VCustomerfjlistSelect implements Serializable {
 
     private Long num;
 
+    @JsonProperty("ID")
     public String getId() {
         return id;
     }
@@ -89,6 +92,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+    
+    @JsonProperty("CustomerID")
     public String getCustomerID() {
         return CustomerID;
     }
@@ -96,6 +101,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setCustomerID(String CustomerID) {
         this.CustomerID = CustomerID;
     }
+    
+    @JsonProperty("Assignor")
     public String getAssignor() {
         return Assignor;
     }
@@ -103,6 +110,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setAssignor(String Assignor) {
         this.Assignor = Assignor;
     }
+    
+    @JsonProperty("ReportID")
     public String getReportID() {
         return ReportID;
     }
@@ -110,6 +119,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setReportID(String ReportID) {
         this.ReportID = ReportID;
     }
+    
+    @JsonProperty("ReportName")
     public String getReportName() {
         return ReportName;
     }
@@ -117,6 +128,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setReportName(String ReportName) {
         this.ReportName = ReportName;
     }
+    
+    @JsonProperty("ReportTime")
     public String getReportTime() {
         return ReportTime;
     }
@@ -124,6 +137,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setReportTime(String ReportTime) {
         this.ReportTime = ReportTime;
     }
+    
+    @JsonProperty("VisitingTime")
     public String getVisitingTime() {
         return VisitingTime;
     }
@@ -131,6 +146,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setVisitingTime(String VisitingTime) {
         this.VisitingTime = VisitingTime;
     }
+    
+    @JsonProperty("AttendNum")
     public String getAttendNum() {
         return AttendNum;
     }
@@ -138,6 +155,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setAttendNum(String AttendNum) {
         this.AttendNum = AttendNum;
     }
+    
+    @JsonProperty("ProjectID")
     public String getProjectID() {
         return ProjectID;
     }
@@ -145,6 +164,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setProjectID(String ProjectID) {
         this.ProjectID = ProjectID;
     }
+    
+    @JsonProperty("CustomerName")
     public String getCustomerName() {
         return CustomerName;
     }
@@ -152,6 +173,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setCustomerName(String CustomerName) {
         this.CustomerName = CustomerName;
     }
+    
+    @JsonProperty("CustomerMobile")
     public String getCustomerMobile() {
         return CustomerMobile;
     }
@@ -159,6 +182,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setCustomerMobile(String CustomerMobile) {
         this.CustomerMobile = CustomerMobile;
     }
+    
+    @JsonProperty("CustomerSource")
     public String getCustomerSource() {
         return CustomerSource;
     }
@@ -166,6 +191,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setCustomerSource(String CustomerSource) {
         this.CustomerSource = CustomerSource;
     }
+    
+    @JsonProperty("CustomerType")
     public String getCustomerType() {
         return CustomerType;
     }
@@ -173,6 +200,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setCustomerType(String CustomerType) {
         this.CustomerType = CustomerType;
     }
+    
+    @JsonProperty("CustomerMode")
     public String getCustomerMode() {
         return CustomerMode;
     }
@@ -180,6 +209,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setCustomerMode(String CustomerMode) {
         this.CustomerMode = CustomerMode;
     }
+    
+    @JsonProperty("AdviserID")
     public String getAdviserID() {
         return AdviserID;
     }
@@ -187,6 +218,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setAdviserID(String AdviserID) {
         this.AdviserID = AdviserID;
     }
+    
+    @JsonProperty("AdviserName")
     public String getAdviserName() {
         return AdviserName;
     }
@@ -194,6 +227,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setAdviserName(String AdviserName) {
         this.AdviserName = AdviserName;
     }
+    
+    @JsonProperty("AdviserMobile")
     public String getAdviserMobile() {
         return AdviserMobile;
     }
@@ -201,6 +236,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setAdviserMobile(String AdviserMobile) {
         this.AdviserMobile = AdviserMobile;
     }
+    
+    @JsonProperty("IsDel")
     public Integer getIsDel() {
         return IsDel;
     }
@@ -208,6 +245,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setIsDel(Integer IsDel) {
         this.IsDel = IsDel;
     }
+    
+    @JsonProperty("Status")
     public Integer getStatus() {
         return Status;
     }
@@ -215,6 +254,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setStatus(Integer Status) {
         this.Status = Status;
     }
+    
+    @JsonProperty("IsDay")
     public Integer getIsDay() {
         return IsDay;
     }
@@ -222,6 +263,8 @@ public class VCustomerfjlistSelect implements Serializable {
     public void setIsDay(Integer IsDay) {
         this.IsDay = IsDay;
     }
+    
+    @JsonProperty("Num")
     public Long getNum() {
         return num;
     }
