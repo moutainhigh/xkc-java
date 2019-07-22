@@ -74,4 +74,25 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @return
 	 */
 	Map<String,Object> mCustomerClueStatus_Select(@Param("clueID")String clueID);
+	
+	/**
+	 * 待分配列表查询
+	 * @param pmap
+	 * @return
+	 */
+	List<Map<String,Object>> mLFCustomerNeedFPList_Select(Map<String,Object> pmap);
+	
+	/**
+	 * 接待记录列表
+	 * @param pmap
+	 * @return
+	 */
+	List<Map<String,Object>> mLFReceptRecordList_Select(Map<String,Object> pmap);
+	
+	/**
+	 * 根据顾问筛选的接待记录客户列表
+	 * @param pmap
+	 * @return
+	 */
+	List<Map<String,Object>> mLFReceptRecordCustomerList_Select(Map<String,Object> pmap);
 }

@@ -39,4 +39,25 @@ public interface IIpadService {
 	 * @return
 	 */
 	public Result mLFCustomerDetail_Insert(JSONObject paramAry);
+	
+	/**
+	 * 待分配列表
+	 * @param paramAry
+	 * @return
+	 */
+	public Result mLFCustomerNeedFPList_Select(JSONObject paramAry);
+	
+	/**
+	 * 接待记录列表
+	 * @param paramAry
+	 * @return
+	 */
+	public Result mLFReceptRecordList_Select(JSONObject paramAry);
+	
+	/**
+	 * 根据顾问筛选的接待记录客户列表
+	 * @param paramAry
+	 * @return
+	 */
+	public Result mLFReceptRecordCustomerList_Select(JSONObject paramAry);
 }

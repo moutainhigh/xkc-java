@@ -130,5 +130,151 @@
 	   ]]>
 	</select>
 	
+	<select id="mLFCustomerNeedFPList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		 SELECT *
+		 FROM   ( SELECT    o.ProjectID ,
+		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
+		                    o.CustomerID ,
+		                    o.CustomerName ,
+		                    c.Mobile CustomerMobile ,
+		                    c.Gender ,
+		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    cc.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    cc.SourceType
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    INNER JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                                              AND cc.IsDel = 0
+		                                              AND cc.Status <= 2        
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
+		          WHERE     o.ProjectID = #{ProjectID}
+		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND ISNULL(o.SalePartnerID,'') = ''
+		          UNION ALL
+		          SELECT    c.IntentProjectID ProjectID ,
+		                    dbo.F_ChannelName(c.ID) AS ChannelName ,
+		                    c.CustomerPotentialID ,
+		                    cp.Name CustomerName ,
+		                    cp.Mobile CustomerMobile ,
+		                    cp.Gender ,
+		                    dbo.F_DictName(cp.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    c.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    c.SourceType
+		          FROM      dbo.B_CustomerPotential cp
+		                    LEFT JOIN dbo.B_Clue c ON c.CustomerPotentialID = cp.ID
+		                                              AND c.IsDel = 0
+		                                              AND c.Status <= 2
+		                    LEFT JOIN dbo.B_ClueRule cr ON cr.ID = c.RuleID 
+		                    LEFT JOIN dbo.B_Opportunity o ON c.ID = o.ClueID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
+		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND c.IntentProjectID = #{ProjectID}
+		        ) n WHERE 1=1 ${WHERE} 
+		        ORDER BY ReportTime DESC
+	    ]]>
+	</select>
+	
+	<select id="mLFReceptRecordList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT    ROW_NUMBER() OVER ( PARTITION BY o.SaleUserID ORDER BY ca.VisitTime DESC ) RowNum ,
+		                    o.ProjectID ,
+		                    o.CustomerID ,
+		                    o.CustomerName ,
+		                    c.Mobile CustomerMobile ,
+		                    c.Gender ,
+		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    dbo.F_DictName(o.OpportunitySource) AS OpportunitySourceName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+					              #{SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
+		                    cc.CreateTime ReportTime,
+		                    ca.VisitTime
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
+		                                                            AND sgm.IsDel = 0
+		                                                            AND sgm.Status = 1
+		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm.ProjectID = '{ProjectID}'
+		                    LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                            AND sgm1.IsDel=0 
+		                                                            AND sgm1.Status=1 
+		                                                            AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm1.ProjectID = #{ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		                    LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		          WHERE     o.IsDel = 0
+		                    AND o.Status > 0
+		                    AND o.Status <> 6
+		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND o.ProjectID = #{ProjectID}
+		                    ${WHERE}
+		    ]]>
+	</select>
+	
+	<select id="mLFReceptRecordCustomerList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  
+		            o.ProjectID ,
+		            o.CustomerID ,
+		            o.CustomerName ,
+		            c.Mobile CustomerMobile,
+		            dbo.F_DictName(c.Gender) CustomerGender ,
+		            dbo.F_DictName(o.OpportunitySource) OpportunitySourceName ,
+		            o.SaleUserID ,
+		            su.Name SaleUserName ,
+		            sg.Name GroupName,
+		            #{SiteUrl} + su.HeadImg SaleHeadImg,
+		            o.SalePartnerID ,
+		            (CASE WHEN ca.IsOld = 1 THEN su1.Name ELSE '' END) SalePartnerName,
+		            (CASE WHEN ca.IsOld = 1 THEN sg1.Name ELSE '' END) SalePartnerGroupName,
+		            (CASE WHEN ca.IsOld = 1 THEN #{SiteUrl} + su1.HeadImg ELSE '' END) SalePartnerHeadImg,
+		            c.Remark,
+		            cc.ReportUserName ReportName,
+		            cc.ReportUserMobile ReportMobile,
+		            cc.CreateTime ReportTime,
+		            o.TheFirstVisitDate ,
+		            ca.VisitTime
+		    FROM    dbo.B_Opportunity AS o
+		            INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		            LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		            LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID 
+		                                                    AND sgm.IsDel=0 AND sgm.Status=1 
+		                                                    AND sgm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                    AND sgm.ProjectID = #{ProjectID}
+		            LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		            LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		            LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                    AND sgm1.IsDel=0 AND sgm1.Status=1 
+		                                                    AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                    AND sgm1.ProjectID = #{ProjectID}
+		            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		            LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		    WHERE o.IsDel = 0
+		        AND o.Status > 0
+		        AND o.Status <> 6
+		        AND o.SaleUserID IS NOT NULL AND o.SaleUserID ! = ''
+		        AND o.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		        AND o.ProjectID = #{ProjectID}
+		        AND (o.SaleUserID = #{SaleUserID} OR o.SalePartnerID = #{SaleUserID}) ${WHERE}
+		    ORDER BY ca.VisitTime DESC    
+	    ]]>
+	</select>
 	
 </mapper>

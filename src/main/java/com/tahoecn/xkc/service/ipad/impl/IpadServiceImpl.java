@@ -1176,6 +1176,109 @@ public class IpadServiceImpl implements IIpadService {
 		}
         return re;
 	}
+
+	@Override
+	public Result mLFCustomerNeedFPList_Select(JSONObject paramAry) {
+		Result re = new Result();
+        CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
+        StringBuilder whereSb = new StringBuilder();
+        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+            whereSb.append(" AND (CustomerName LIKE '%"+model.getKeyWord()+"%' OR CustomerMobile LIKE '%"+model.getKeyWord()+"%')");
+        }
+        String sourceType = paramAry.getString("SourceType");
+        if (!StringUtils.isEmpty(sourceType.trim())){
+            if ("1".equals(sourceType)) {//分销中介
+                whereSb.append(" AND SourceType = 'E4DFA1D5-95F9-4D89-B754-E7CC81D58196'");
+            }
+            if ("2".equals(sourceType)){//员工推荐
+                whereSb.append(" AND SourceType = 'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E'");
+            }
+            if ("3".equals(sourceType)){ //自由经纪
+                whereSb.append(" AND SourceType = '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'");
+            }
+            if ("4".equals(sourceType)){//自有渠道
+                whereSb.append(" AND (SourceType = '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1' " +
+                    "OR SourceType = '266E0F4F-2EE1-4305-9115-49DDE2186D57'" +
+                    "OR SourceType = 'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2'" +
+                    "OR SourceType = '8FDFDE89-E1F1-43DE-9094-92D77B22FC1F'" +
+                    "OR SourceType = 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'" +
+                    "OR SourceType = '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF' " +
+                    "OR SourceType = '8FDFDE89-E1F1-43DE-9094-92D77B22FC1F')");
+            }
+            if ("5".equals(sourceType)){//老业主推荐
+                whereSb.append(" AND SourceType = '7F4E0089-E21D-0F97-DC48-0DBF0740367D'");
+            }
+        }
+        paramAry.put("WHERE", whereSb.toString());
+        //待分配列表
+        Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+        List<Map<String, Object>> pageObj = ipadMapper.mLFCustomerNeedFPList_Select(pmap);
+        if (pageObj != null && pageObj.size() > 0){
+            re.setErrcode(0);
+            re.setErrmsg("成功");
+            re.setData(pageObj);
+            return re;
+        }
+        re.setErrcode(0);
+        re.setErrmsg("暂无数据");
+        return re;
+	}
+
+	@Override
+	public Result mLFReceptRecordList_Select(JSONObject paramAry) {
+		Result re = new Result();
+		CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
+        StringBuilder whereSb = new StringBuilder();
+        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+            whereSb.append(" AND (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) LIKE '%"+model.getKeyWord()+"%'");
+        }
+        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime").trim())){
+            String time = paramAry.getString("ReceptTime");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) = '"+time+"'");
+        }
+        paramAry.put("WHERE", whereSb.toString());
+        paramAry.put("SiteUrl", SiteUrl);
+        //接待记录列表
+        Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+        List<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordList_Select(pmap);
+        if (pageObj != null && pageObj.size() > 0){
+            re.setErrcode(0);
+            re.setErrmsg("成功");
+            re.setData(pageObj);
+            return re;
+        }
+        re.setErrcode(0);
+        re.setErrmsg("暂无数据");
+        return re;
+	}
+
+	@Override
+	public Result mLFReceptRecordCustomerList_Select(JSONObject paramAry) {
+		Result re = new Result();
+		CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
+        StringBuilder whereSb = new StringBuilder();
+        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+            whereSb.append(" AND (o.CustomerName LIKE '%"+model.getKeyWord()+"%' OR c.Mobile LIKE '%"+model.getKeyWord()+"%')");
+        }
+        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime").trim())){
+            String time = paramAry.getString("ReceptTime");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,120) = '"+time+"'");
+        }
+        paramAry.put("WHERE", whereSb.toString());
+        paramAry.put("SiteUrl", SiteUrl);
+        //接待记录列表
+        Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+        List<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordCustomerList_Select(pmap);
+        if (pageObj != null && pageObj.size() > 0){
+            re.setErrcode(0);
+            re.setErrmsg("成功");
+            re.setData(pageObj);
+            return re;
+        }
+        re.setErrcode(0);
+        re.setErrmsg("暂无数据");
+        return re;
+	}
 	
 
 }
