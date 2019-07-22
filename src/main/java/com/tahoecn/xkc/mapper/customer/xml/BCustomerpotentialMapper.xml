@@ -223,7 +223,7 @@
 		                    '报备' AS Name ,
 		                    CreateTime AS TractTime
 		          FROM      dbo.B_Clue
-		          WHERE     ID = '{ClueID}'
+		          WHERE     ID = #{ClueID}
 		          UNION
 		          SELECT    2 AS Sort ,
 		                    '到访' AS Name ,
