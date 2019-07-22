@@ -875,7 +875,8 @@ public class AppKCController extends TahoeBaseController {
             int AllCount = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
             List<Map<String,Object>> objListData = iBChanneltaskService.mChannelTaskList_Select(map);
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            for(int x=0;x<AllCount;x++) {
+            for(int x=0;x<objListData.size();x++) {
+            	
             	String sd1 = sdf.format(objListData.get(x).get("WorkStartTime"));
             	objListData.get(x).put("WorkStartTime", sd1);
             	String sd2 = sdf.format(objListData.get(x).get("EndTime"));
