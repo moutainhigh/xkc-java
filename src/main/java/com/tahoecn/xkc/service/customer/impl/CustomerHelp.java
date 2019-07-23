@@ -87,7 +87,7 @@ public class CustomerHelp implements ICustomerHelp {
 			customerModel = InitCustomerModelByFileName(jsonFileName);
 			if (customerModel != null) {
 				List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
-				if (!CustomerObj.isEmpty()) {
+				if (CustomerObj!=null) {
 					customerModel.setCustomerID(CustomerObj.getString("CustomerID"));
 					customerModel.setOpportunityID(CustomerObj.getString("OpportunityID"));
 					customerModel.setClueID(CustomerObj.getString("ClueID"));
@@ -99,8 +99,6 @@ public class CustomerHelp implements ICustomerHelp {
 						String tvalueID = CustomerObj.getString(item.getFieldName());
 						if(tvalueID!=null){
 							tvalueID.replaceAll("\r\n", "").replaceAll("\r", "").replaceAll("\n", "");
-						}else{
-							System.out.println(fieldKey);
 						}
 						item.setValueID(tvalueID);
 					}
@@ -1025,8 +1023,12 @@ public class CustomerHelp implements ICustomerHelp {
         JSONObject result = new JSONObject();
         try{
             Map<String,Object> re_map = vCustomergwlistSelectMapper.CustomerPotential_Exist(Mobile);
-            result.put("CustomerObj", new JSONObject(re_map));
-            result.put("status", true);
+            if(re_map!=null && re_map.size()>0){
+            	 result.put("CustomerObj", new JSONObject(re_map));
+                 result.put("status", true);
+            }else{
+            	result.put("status", false);
+            }
         }catch (Exception e){
         	result.put("status", false);
         	e.printStackTrace();

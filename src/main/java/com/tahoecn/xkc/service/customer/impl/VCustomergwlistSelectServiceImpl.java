@@ -1263,7 +1263,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         String jsonFile = "";
         String customerModeType = CustomerModeType.无.getTypeID();
         int isNew = 1;
-        JSONObject CustomerObj = new JSONObject();
+        JSONObject CustomerObj = null;
         //记录用户搜索客户手机号信息
         if (!StringUtils.isEmpty(model.getMobile())){
         	customerTemplate.CustomerMobileSearch(model.getProjectID(), model.getMobile(), model.getJobCode(), model.getUserID());

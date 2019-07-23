@@ -187,7 +187,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                 String customerPotentialModeType = CustomerPotentialModeType.自渠_客户_详情.getTypeID();
                 CustomerModelVo customerModel = iCustomerPotentialTemplate.InitCustomerPotentialModeData(model, "ZQDetailCustomerPotential.json", CustomerObj, customerPotentialModeType);
                 entity.setData(customerModel);
-                entity.setErrcode(1);
+                entity.setErrcode(0);
                 entity.setErrmsg("成功！");
             }else{
                 entity.setErrcode(11);

@@ -25,7 +25,7 @@ import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
  * @since 2019-06-25
  */
 @RestController
-@Api(tags = "APP-职业顾问接口", value = "APP-职业顾问接口")
+@Api(tags = "APP-置业顾问接口", value = "APP-置业顾问接口")
 @RequestMapping("/app/careerCons")
 public class CareerConsCustController extends TahoeBaseController {
 
