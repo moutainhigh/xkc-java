@@ -1017,7 +1017,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        re_map.put("List", data);
 	        re_map.put("AllCount", recordCount);
 	        re_map.put("PageSize", paramAry.get("PageSize"));
-	        re.setData(re_map);
+	        
+	        String dataStr = new JSONObject(re_map).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+            
+	        re.setData(data_re);
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
 		} catch (Exception e) {
