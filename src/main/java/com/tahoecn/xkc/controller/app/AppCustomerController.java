@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -19,13 +21,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tahoecn.core.date.DateTime;
+import com.tahoecn.xkc.common.enums.ActionType;
+import com.tahoecn.xkc.common.enums.MessageType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomerfiltergroup;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
+import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
+import com.tahoecn.xkc.service.customer.IASharepoolService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
@@ -37,6 +45,8 @@ import com.tahoecn.xkc.service.customer.IVCustomerxsjlsalesuserlistSelectService
 import com.tahoecn.xkc.service.customer.impl.CustomerHelp;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
+import com.tahoecn.xkc.service.sys.ISystemMessageService;
+import com.tahoecn.xkc.service.user.ICWxuserService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,6 +86,14 @@ public class AppCustomerController extends TahoeBaseController {
     private IBSalesgroupService iBSalesgroupService;
     @Autowired
     private IBClueService iBClueService;
+    @Autowired
+    private IASharepoolService iASharepoolService;
+    @Autowired
+    private ICWxuserService iCWxuserService;
+    @Autowired
+	private ISystemMessageService iSystemMessageService;
+    @Autowired
+	private BCustomerpotentialMapper bCustomerpotentialMapper;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -1132,15 +1150,372 @@ public class AppCustomerController extends TahoeBaseController {
 	@ApiOperation(value = "传播池抢客", notes = "传播池抢客")
 	@RequestMapping(value = "/mCustomerFXCBList_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerFXCBList_Insert(@RequestBody JSONObject jsonParam) {
-		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			String KeyWord = (String) paramMap.get("KeyWord");
-			
-			return Result.ok("");
-		}catch (Exception e) {
-			e.printStackTrace();
-			return Result.errormsg(1,"系统异常，请联系管理员");
-		}
+		JSONObject Parameter = (JSONObject)jsonParam.getJSONObject("_param");
+		
+		Result entity = new Result();
+        StringBuilder errbuilder = new StringBuilder();
+        StringBuilder successbuilder = new StringBuilder();
+        String errmsg = "成功";
+        try{
+            if (StringUtils.isEmpty(Parameter.get("FXCBIDs"))){
+                entity.setErrmsg("请输入分享传播池ID");
+                entity.setErrcode(99);
+                return entity;
+            }
+            CustomerHelp customerHelp = new CustomerHelp();
+            List<Map<String,Object>> ArrCustomer = new ArrayList();
+            ArrCustomer = iBCustomerpublicpoolService.mShareCustomerList_Select(Parameter);
+            String userId = Parameter.get("UserID") == null ? "" : Parameter.get("UserID").toString();
+            String adviserGroupID = Parameter.get("JobID") == null ? "" : Parameter.get("JobID").toString();
+            String projectId = Parameter.get("ProjectID") == null ? "" : Parameter.get("ProjectID").toString();
+            if (ArrCustomer.size() > 0){
+                for (Map<String,Object> item : ArrCustomer){
+                    Parameter.put("Mobile", item.get("Mobile"));
+                    Parameter.put("NickName", item.get("NickName"));
+                    Parameter.put("Gender", item.get("Gender"));
+                    String mobile = item.get("Mobile") == null ? "" : item.get("Mobile").toString();
+                    int Category = item.get("Category") == null ? 0 : (int) item.get("Category");
+                    String ShareWXUserID = item.get("ShareWXUserID") == null ? "" : item.get("ShareWXUserID").toString();
+                    String nickName = item.get("NickName") == null ? "" : item.get("NickName").toString();
+                    String gender = item.get("Gender") == null ? "" : item.get("Gender").toString();
+                    String SaleUserName = item.get("SaleUserName") == null ? "" : item.get("SaleUserName").toString();
+                    if (adviserGroupID.equalsIgnoreCase("0269F35E-B32D-4D12-8496-4E6E4CE597B7")){
+                        String sqlKey = "";
+                        if (!StringUtils.isEmpty(mobile)){//验证手机号码
+                        	JSONObject j_re = customerHelp.CustomerOpportunityExist(projectId, mobile);
+                            if (j_re.getBoolean("status")){//存在老机会_老客户 
+                                Map<String,Object> para1 = new HashMap<String,Object>();
+                                para1.put("FXCBID", item.get("FXCBID"));
+                                para1.put("Status", 3);
+                                para1.put("UserID", userId);
+                                iASharepoolService.mSharePoolDetail_Update(para1);
+                                if (errbuilder.length() > 0){
+                                    errbuilder.append("," + nickName);
+                                    continue;
+                                }else{
+                                    errbuilder.append(nickName);
+                                    continue;
+                                }
+                            }else{//新机会
+                            	//验证是否存在线索
+                                int IsClueExist = customerHelp.ClueExist(projectId, mobile);
+                                boolean IsNoAllotRole = customerHelp.GetProjectIsNoAllotRole(projectId);
+                                if (IsClueExist >= 0 && IsNoAllotRole){//如果开启分接 则不允许置业顾问操作渠道报备客户
+                                	Map<String,Object> para1 = new HashMap<String,Object>();
+                                	para1.put("FXCBID", item.get("FXCBID"));
+                                    para1.put("Status", 3);
+                                    para1.put("UserID", userId);
+                                    iASharepoolService.mSharePoolDetail_Update(para1);
+                                    errbuilder.append(nickName);
+                                    continue;
+                                }else if (IsClueExist == 1){//竞争带看,不允许置业顾问报备
+                                	Map<String,Object> para1 = new HashMap<String,Object>();
+                                	para1.put("FXCBID", item.get("FXCBID"));
+                                    para1.put("Status", 3);
+                                    para1.put("UserID", userId);
+                                    iASharepoolService.mSharePoolDetail_Update(para1);
+                                    errbuilder.append(nickName);
+                                    continue;
+                                }
+                                j_re = customerHelp.CustomerExist(mobile);
+                                if (!j_re.getBoolean("status")){//新机会_新客户
+                                    Parameter.put("CustomerID", UUID.randomUUID().toString());
+                                    sqlKey = "mFXCBNewCustomerGWDetail_Insert";
+                                    Parameter.put("CustomerName", nickName);
+                                    Parameter.put("FirstName", "");
+                                    Parameter.put("LastName", nickName);
+                                }else{//新机会_老客户
+                                    Parameter.put("CustomerID", ((JSONObject)j_re.get("CustomerObj")).get("CustomerID"));
+                                    sqlKey = "mFXCBOldCustomerGWDetail_Insert";
+                                    Parameter.put("LastName", ((JSONObject)j_re.get("CustomerObj")).get("LastName"));
+                                    Parameter.put("FirstName", ((JSONObject)j_re.get("CustomerObj")).get("FirstName"));
+                                    Parameter.put("CustomerName", ((JSONObject)j_re.get("CustomerObj")).get("CustomerName"));
+                                }
+                            }
+                            //保存数据
+                            if (entity.getErrcode() == 0)
+                            {
+	                            Parameter.put("TrackType", "CCF6D2BF-8915-4EF9-B7CD-67979D00A0E3");//抢客
+	                            Parameter.put("OpportunityID", UUID.randomUUID().toString());
+	                            Parameter.put("Mobile", mobile);
+	                            Parameter.put("SaleUserID", userId);
+	                            Parameter.put("CustomerTag", "");
+	                            Parameter.put("Status", 1);
+	                            Parameter.put("IsCustomerFirstEdit", 0);
+	                            Parameter.put("IntentProjectID", projectId);
+	                            if (Category == 1){
+	                                Parameter.put("CognitiveChannel", item.get("MediaLargeID"));
+	                                Parameter.put("CognitiveChannelSub", item.get("MediaChildID"));
+	                            }else{
+	                                Parameter.put("CognitiveChannel", "");
+	                                Parameter.put("CognitiveChannelSub", "");
+	                            }
+	                            Parameter.put("CustomerFirstEditTime", "");
+	                            Parameter.put("OpportunitySource", "899CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF");//分享传播
+	                            String ClueID = ((JSONObject)j_re.get("CustomerObj")).get("ClueID") != null ? ((JSONObject)j_re.get("CustomerObj")).get("ClueID").toString() : "";
+	                            Parameter.put("ClueID", ClueID);
+	                            Parameter.put("Status", 1);
+	                            Parameter.put("IsCustomerFirstEdit", 1);
+	                            Parameter.put("CustomerFirstEditTime", DateTime.now().toString());
+	                            iASharepoolService.CustomerGWDetail(sqlKey, Parameter);
+	                            //添加线索
+	                            customerHelp.ClueUpdate(Parameter);
+	                            //增加意向项目
+	                            customerHelp.IntentProjectAdd(Parameter);
+	                            if (StringUtils.isEmpty(ClueID)){
+	                            	JSONObject obj1 = new JSONObject();
+	                                Map jobdata = iCWxuserService.mGetShareDetail_Select(Parameter);
+	                                if (!StringUtils.isEmpty(jobdata.get("SaleUserID"))){
+	                                    obj1.put("NewSaleUserName", jobdata.get("SaleUserName"));
+	                                    obj1.put("FollwUpUserID", jobdata.get("SaleUserID"));
+	                                    obj1.put("FollwUpUserRole", jobdata.get("JobID"));
+	                                }else{
+	                                    obj1.put("NewSaleUserName", "");
+	                                    obj1.put("FollwUpUserID", "");
+	                                    obj1.put("FollwUpUserRole", "");
+	                                }
+                                
+	                                obj1.put("FollwUpType", ActionType.分享沉淀.toString());
+	                                obj1.put("SalesType", 1);
+	                                obj1.put("OldSaleUserName", "");
+	                                obj1.put("FollwUpWay", "");
+	                                obj1.put("FollowUpContent", "客户沉淀");
+	                                obj1.put("IntentionLevel", "");
+	                                obj1.put("OrgID", Parameter.get("OrgID"));
+	                                obj1.put("OpportunityID", Parameter.get("OpportunityID"));
+	                                obj1.put("ClueID", "");
+	                                obj1.put("NextFollowUpDate", "");
+	                                CustomerActionVo customerActionVo1 = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+	                                iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo1);
+	                                JSONObject obj2 = new JSONObject();
+	                                obj2.put("FollwUpType", ActionType.顾问报备.toString());
+	                                obj2.put("SalesType", 1);
+	                                obj2.put("NewSaleUserName", "");
+	                                obj2.put("OldSaleUserName", "");
+	                                obj2.put("FollwUpUserID", Parameter.get("UserID"));
+	                                obj2.put("FollwUpWay", "");
+	                                obj2.put("FollowUpContent", "抢客-报备");
+	                                obj2.put("IntentionLevel", "");
+	                                obj2.put("OrgID", Parameter.get("OrgID"));
+	                                obj2.put("FollwUpUserRole", Parameter.get("JobID"));
+	                                obj2.put("OpportunityID", Parameter.get("OpportunityID"));
+	                                obj2.put("ClueID", "");
+	                                obj2.put("NextFollowUpDate", "");
+	                                CustomerActionVo customerActionVo2 = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
+	                                iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo2);
+	                            }
+	                            //增加跟进记录
+	                            JSONObject obj = new JSONObject();
+	                            obj.put("FollwUpType", ActionType.分配顾问.toString());
+	                            obj.put("SalesType", 1);
+	                            obj.put("NewSaleUserName", SaleUserName);
+	                            obj.put("OldSaleUserName", "");
+	                            obj.put("FollwUpUserID", Parameter.get("UserID"));
+	                            obj.put("FollwUpWay", "");
+	                            obj.put("FollowUpContent", "抢客-登记");
+	                            obj.put("IntentionLevel", Parameter.get("CustomerLevel"));
+	                            obj.put("OrgID", Parameter.get("OrgID"));
+	                            obj.put("FollwUpUserRole", Parameter.get("JobID"));
+	                            obj.put("OpportunityID", Parameter.get("OpportunityID"));
+	                            obj.put("ClueID", "");
+	                            obj.put("NextFollowUpDate", Parameter.get("NextFollowUpDate"));
+	                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
+	                            iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+	                            //分配待跟进
+	                            String UserID = userId;
+	                            String ProjectID = (String) Parameter.get("ProjectID");
+	                            String BizID = (String) Parameter.get("OpportunityID");
+	                            String BizType = "Opportunity";
+	                            String Subject = MessageType.分配待跟进.toString();
+	                            String Content = "通过分享传播池抢客所得";
+	                            String Receiver = (String) Parameter.get("UserID");
+	                            iSystemMessageService.Detail_Insert(UserID, ProjectID, BizID, BizType, Subject, Content, Receiver, MessageType.分配待跟进.getTypeID(), true);
+	                            //同步明源客户数据
+	                            customerHelp.SyncCustomer(Parameter.get("OpportunityID").toString(), 0);
+	                            if (successbuilder.length() > 0){
+	                                successbuilder.append("," + nickName);
+	                            }else{
+	                                successbuilder.append(nickName);
+	                            }
+	                            //修改分享传播池信息  置为无效
+	                            Map<String,Object> para = new HashMap<String,Object>();
+	                            para.put("FXCBID", item.get("FXCBID"));
+	                            para.put("Status", 2);
+	                            para.put("UserID", userId);
+	                            iASharepoolService.mSharePoolDetail_Update(para);
+                            }else{
+                                entity.setErrcode(1);
+                                entity.setErrmsg("失败");
+                            }
+                        }else{
+                            entity.setErrcode(1);
+                            entity.setErrmsg("手机号码必填！");
+                        }
+                    }else if (adviserGroupID.equalsIgnoreCase("48FC928F-6EB5-4735-BF2B-29B1F591A582")){   //自渠
+                        String channelTypeId = GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
+                        ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId);
+                        if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
+                            entity.setErrcode(21);
+                            entity.setErrmsg("未找到该渠道的报备规则");
+                            return entity;
+                        }
+                        Map<String,Object> CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId);
+                        if ((int)CustomerValidate.get("InvalidType") != 0){
+                            //修改分享传播池内信息，并返回APP抢客失败信息
+                            entity.setErrcode((int)CustomerValidate.get("InvalidType"));
+                            entity.setErrmsg(channelRegisterModel.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule()));
+                            //修改分享传播池信息  置为无效
+                            Map<String,Object> para1 = new HashMap<String,Object>();
+                            para1.put("FXCBID", item.get("FXCBID"));
+                            para1.put("Status", 3);
+                            para1.put("UserID", userId);
+                            iASharepoolService.mSharePoolDetail_Update(para1);
+                            if (errbuilder.length() > 0){
+                                errbuilder.append("," + nickName);
+                                continue;
+                            }else{
+                                errbuilder.append(nickName);
+                                continue;
+                            }
+                        }
+                        Map<String,Object> jParameter = new HashMap<String,Object>();
+                        jParameter.put("Mobile", mobile);
+                        jParameter.put("Name", nickName);
+                        jParameter.put("Gender", gender);
+                        Map<String,Object> data = iASharepoolService.CustomerPotential_Update(jParameter);
+                        if (data != null && data.size() > 0){
+                            Parameter.put("CustomerID", data.get("CustomerPotentialID"));
+                        }else{
+                            Parameter.put("CustomerID", UUID.randomUUID().toString());
+                        }
+                        Parameter.put("AdviserGroupID", adviserGroupID);
+                        if (Category == 1){
+                            Parameter.put("CognitiveChannel", item.get("MediaLargeID"));
+                            Parameter.put("CognitiveChannelSub", item.get("MediaChildID"));
+                        }else{
+                            Parameter.put("CognitiveChannel", "");
+                            Parameter.put("CognitiveChannelSub", "");
+                        }
+                        Parameter.put("ChannelUserID", "");
+                        Parameter.put("ChannelTaskID", "");
+                        Parameter.put("LastName", nickName);
+                        Parameter.put("CardID", "");
+                        Parameter.put("CardType", "");
+                        Parameter.put("AcceptFactor", "");
+                        Parameter.put("FirstName", "");
+                        Parameter.put("SourceType", "899CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF");//分享传播
+                        Parameter.put("Remark", "");//分享传播
+                        Parameter.put("IntentProjectID", projectId);
+                        Parameter.put("CustomerTag", "");
+                        Parameter.put("ClueID", UUID.randomUUID().toString());
+                        Parameter.put("RuleID", channelRegisterModel.getUserRule().getRuleID());
+                        Parameter.put("InvalidType", CustomerValidate.get("InvalidType"));
+                        Parameter.put("InvalidReason", CustomerValidate.get("Message"));
+                        Parameter.put("InvalidTime", (boolean)CustomerValidate.get("Tag") == true ? "" : DateTime.now().toString());
+                        Parameter.put("ComeOverdueTime", channelRegisterModel.getUserRule().getComeOverdueTime());
+                        Parameter.put("TradeOverdueTime", channelRegisterModel.getUserRule().getTradeOverdueTime());
+                        Parameter.put("IsSelect", channelRegisterModel.getUserRule().getProtectRule().getIsSelect());
+                        Parameter.put("ConfirmUserId", "99");
+                        Parameter.put("OppID", CustomerValidate.get("OppID"));
+                        mCustomerPotentialZQDetail_Insert(Parameter);
+                        JSONObject obj1 = new JSONObject();
+                        Map<String,Object> jobdata = iCWxuserService.mGetShareDetail_Select(Parameter);
+                        if (jobdata.get("SaleUserID") != null && jobdata.get("SaleUserID").toString() != "")
+                        {
+                            obj1.put("NewSaleUserName", jobdata.get("SaleUserName"));
+                            obj1.put("FollwUpUserID", jobdata.get("SaleUserID"));
+                            obj1.put("FollwUpUserRole", jobdata.get("JobID"));
+                        }
+                        else
+                        {
+                            obj1.put("NewSaleUserName", "");
+                            obj1.put("FollwUpUserID", "");
+                            obj1.put("FollwUpUserRole", "");
+                        }
+                        obj1.put("FollwUpType", ActionType.分享沉淀.toString());
+                        obj1.put("SalesType", 1);
+                        obj1.put("OldSaleUserName", "");
+                        obj1.put("FollwUpWay", "");
+                        obj1.put("FollowUpContent", "客户沉淀");
+                        obj1.put("IntentionLevel", "");
+                        obj1.put("OrgID", Parameter.get("OrgID"));
+                        //obj1.Add("FollwUpUserRole", ConvertHelper.ToString(Parameter["JobID"]));
+                        obj1.put("OpportunityID", "");
+                        obj1.put("ClueID", Parameter.get("ClueID"));
+                        obj1.put("NextFollowUpDate", "");
+                        CustomerActionVo customerActionVo1 = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+                        iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo1);
+                        JSONObject obj2 = new JSONObject();
+                        obj2.put("FollwUpType", ActionType.顾问报备.toString());
+                        obj2.put("SalesType", 1);
+                        obj2.put("NewSaleUserName", "");
+                        obj2.put("OldSaleUserName", "");
+                        obj2.put("FollwUpUserID", userId);
+                        obj2.put("FollwUpWay", "");
+                        obj2.put("FollowUpContent", "抢客-报备");
+                        obj2.put("IntentionLevel", "");
+                        obj2.put("OrgID", Parameter.get("OrgID"));
+                        obj2.put("FollwUpUserRole",Parameter.get("JobID"));
+                        obj2.put("OpportunityID", "");
+                        obj2.put("ClueID", Parameter.get("ClueID"));
+                        obj2.put("NextFollowUpDate", "");
+                        CustomerActionVo customerActionVo2 = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
+                        iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo2);
+                        //修改分享传播池信息  置为无效
+                        if (successbuilder.length() > 0){
+                            successbuilder.append("," + nickName);
+                        }else{
+                            successbuilder.append(nickName);
+                        }
+                        Map<String,Object> para = new HashMap<String,Object>();
+                        para.put("FXCBID", item.get("FXCBID"));
+                        para.put("Status", 2);
+                        para.put("UserID", userId);
+                        iASharepoolService.mSharePoolDetail_Update(para);
+                    }
+                }
+            }else{
+                entity.setErrmsg("客户不符合规则");
+                entity.setErrcode(99);
+            }
+        }catch (Exception ex){
+            entity.setErrmsg(ex.getMessage());
+            entity.setErrcode(99);
+        }
+        if (successbuilder.length() > 0)
+        {
+            entity.setErrmsg(entity.getErrmsg() + successbuilder + "抢客成功;");
+        }
+        if (errbuilder.length() > 0)
+        {
+            entity.setErrmsg(entity.getErrmsg() + errbuilder + "抢客失败;");
+        }
+        return entity;
+	}
+	private void mCustomerPotentialZQDetail_Insert(JSONObject parameter) {
+		Map<String,Object> pmap = JSONObject.parseObject(parameter.toJSONString(), Map.class);
+        pmap.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
+		List<Map<String,Object>> valid_1_map = bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_valid_1(pmap);
+        if(valid_1_map!=null && valid_1_map.size()>0){
+        	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step2(pmap);
+        }else{
+        	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step1(pmap);
+        }
+        List<Map<String,Object>> valid_2_map = bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_valid_2(pmap);
+        if(valid_2_map!=null && valid_2_map.size()>0){
+        	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step4(pmap);
+        }else{
+        	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step3(pmap);
+        }
+        bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step5(pmap);
+        bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step6(pmap);
+        bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step7(pmap);
+        if(StringUtils.isEmpty(parameter.getString("OppID"))){
+        	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step8(pmap);
+        }
+        pmap.put("CustomerRank", "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
+    	pmap.put("UpDownStatus", 1);
+    	bCustomerpotentialMapper.P_ClueCustomerRank(pmap);
 	}
 	@ResponseBody
 	@ApiOperation(value = "盘客列表", notes = "案场销售经理盘客销售顾问查询")

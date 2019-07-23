@@ -1,8 +1,10 @@
 package com.tahoecn.xkc.service.dict;
 
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,4 +27,6 @@ public interface ISDictionaryService extends IService<SDictionary> {
     boolean SystemParam_Update(SDictionary dictionary);
 
     List<Map<String, Object>> SystemAllParams_Select_Tree(String pid);
+
+    Result SystemDictionaryDetail(HashMap<String,Object> param);
 }

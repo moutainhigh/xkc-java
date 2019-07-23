@@ -487,4 +487,19 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         order by cu.createtime desc
         ]]>
     </select>
+
+    <select id="AgenChannelTypeList_SelectN" resultType="java.util.HashMap" >
+        SELECT
+        ID,
+        DictName
+        FROM
+        [S_Dictionary]
+        WHERE
+        PID = '5316B9EF-2AA7-43BA-A8C8-14A5CA368C95'
+        AND ID IN ( 'EB4AD331-F4AD-46D6-889A-D45575ECEE66', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', '46830C26-0E01-4041-8054-3865CCDD26AD' )
+        AND IsDel = 0
+        AND [Status] = 1
+        ORDER BY
+        ListIndex
+    </select>
 </mapper>

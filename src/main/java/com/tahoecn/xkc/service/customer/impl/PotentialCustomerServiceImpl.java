@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
@@ -78,7 +80,9 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
         	re.put("List", data);
         	re.put("AllCount", recordCount);
         	re.put("PageSize", paramAry.get("PageSize"));
-        	entity.setData(re);
+        	String dataStr = new JSONObject(re).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+        	entity.setData(data_re);
 			entity.setErrcode(0);
 			entity.setErrmsg("成功");
 		} catch (Exception e) {
@@ -183,7 +187,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                 String customerPotentialModeType = CustomerPotentialModeType.自渠_客户_详情.getTypeID();
                 CustomerModelVo customerModel = iCustomerPotentialTemplate.InitCustomerPotentialModeData(model, "ZQDetailCustomerPotential.json", CustomerObj, customerPotentialModeType);
                 entity.setData(customerModel);
-                entity.setErrcode(1);
+                entity.setErrcode(0);
                 entity.setErrmsg("成功！");
             }else{
                 entity.setErrcode(11);
@@ -214,8 +218,15 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 		Result entity = new Result();
 		try {
 			Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
-			List<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select(pmap);
-			entity.setData(data);
+			IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
+	    	page.setSize(paramAry.getLongValue("PageSize"));
+	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+			IPage<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select(page,pmap);
+			JSONObject j_data = new JSONObject();
+	    	j_data.put("List", data.getRecords());
+	    	j_data.put("AllCount", data.getTotal());
+	    	j_data.put("PageSize", data.getSize());
+			entity.setData(j_data);
             entity.setErrcode(0);
             entity.setErrmsg("成功！");
 		} catch (Exception e) {
@@ -1017,7 +1028,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        re_map.put("List", data);
 	        re_map.put("AllCount", recordCount);
 	        re_map.put("PageSize", paramAry.get("PageSize"));
-	        re.setData(re_map);
+	        
+	        String dataStr = new JSONObject(re_map).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+            
+	        re.setData(data_re);
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
 		} catch (Exception e) {

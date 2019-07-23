@@ -22,4 +22,7 @@ public interface ISOrganizationService extends IService<SOrganization> {
     boolean SystemOrganizationDetail_Updatez(SOrganization organization);
 
     List<Map<String, Object>> SystemOrganizationChec_Select(String pid);
+
+    List<Map<String, Object>> SystemProject_Select(String pid);
+
 }

@@ -39,4 +39,12 @@ public interface ISJobsService extends IService<SJobs> {
     boolean SystemJobUser_Update(SAccount account);
 
     List<Map<String, Object>> SystemJobAuthOrg_Select(String pid, String jobID);
+
+    List<Map<String, Object>> CommonJobList_Select();
+
+    List<Map<String, Object>> MenuOrFunIDList_Select_Tree();
+
+    List<Map<String, Object>> MenuOrFunIDList_Select(String JobID);
+
+    Boolean FunctionAuthorization_Insert(String jobID, String mainID, String sonID);
 }

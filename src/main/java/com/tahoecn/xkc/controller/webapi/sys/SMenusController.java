@@ -52,16 +52,7 @@ public class SMenusController extends TahoeBaseController {
 //        return Result.ok(list);
 //    }
 
-    /**
-     * 数据字典 H5  不应在本类里
-     */
-    @ApiOperation(value = "数据字典", notes = "数据字典")
-    @RequestMapping(value = "/mSystemDictionaryDetail_Select", method = {RequestMethod.POST})
-    public Result mSystemDictionaryDetail_Select(@RequestBody JSONObject jsonParam) {
-        HashMap<String,Object> param=(HashMap)jsonParam.get("_param");
-        Result result=isMenusService.SystemDictionaryDetail(param);
-        return result;
-    }
+
 
     @ApiOperation(value = "获取所有菜单信息", notes = "获取所有菜单信息")
     @RequestMapping(value = "/SystemMenusList_Select", method = {RequestMethod.POST})

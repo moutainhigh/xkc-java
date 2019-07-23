@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.mapper.org.SOrganizationMapper;
 import com.tahoecn.xkc.model.org.SOrganization;
+import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.service.org.ISOrganizationService;
+import com.tahoecn.xkc.service.project.IBProjectService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -28,6 +31,8 @@ import java.util.Map;
 @Service
 public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, SOrganization> implements ISOrganizationService {
 
+    @Autowired
+    private IBProjectService projectService;
     @Override
     public IPage<Map<String,Object>> SystemOrganization_Select(IPage page,String authCompanyID, String orgID, String productID, String pid, String status) {
         return baseMapper.SystemOrganization_Select(page,authCompanyID, orgID, productID, pid, status);
@@ -74,9 +79,14 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
     public List<Map<String, Object>> SystemOrganizationChec_Select(String pid) {
         List<Map<String, Object>> list= baseMapper.SystemOrganizationChec_Select(pid);
         List<Map<String, Object>> result=new ArrayList<>();
-        if (!"-1".equals(pid)){
+        SOrganization organization = baseMapper.selectById(pid);
+            if ("-1".equals(pid)){
+                QueryWrapper<SOrganization> wrapper=new QueryWrapper<>();
+                wrapper.eq("OrgName","泰禾集团").eq("IsDel",0);
+                organization = baseMapper.selectOne(wrapper);
+            }
             //父项
-            SOrganization organization = baseMapper.selectById(pid);
+
             for (Map<String, Object> map : list) {
                 List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
                 map.put("subjectOrg",organization.getOrgName());
@@ -87,19 +97,52 @@ public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, S
                 }
                 result.add(map);
             }
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> SystemProject_Select(String pid) {
+        List<Map<String, Object>> list= baseMapper.SystemProject_Select(pid);
+        List<Map<String, Object>> result=new ArrayList<>();
+            //父项
+        if (!"-1".equals(pid)) {
+            SOrganization organization = baseMapper.selectById(pid);
+            //如果父集是泰禾集团 子集只取地产板块
+            if (StringUtils.equals(organization.getOrgName(), "泰禾集团")) {
+                for (Map<String, Object> map : list) {
+                    if (StringUtils.equals((String) map.get("OrgName"), "地产板块")) {
+                        List<Map<String, Object>> sub = baseMapper.SystemProject_Select((String) map.get("ID"));
+                        if (sub.size() > 0) {
+                            map.put("hasChild", true);
+                        } else {
+                            map.put("hasChild", false);
+                        }
+                        result.add(map);
+                    }
+                }
+            }else {
+                for (Map<String, Object> map : list) {
+                    List<Map<String, Object>> sub = baseMapper.SystemProject_Select((String) map.get("ID"));
+                    if (sub.size() > 0) {
+                        map.put("hasChild", true);
+                    } else {
+                        map.put("hasChild", false);
+                    }
+                    result.add(map);
+                }
+            }
         }else {
             for (Map<String, Object> map : list) {
-                List<Map<String, Object>> sub = baseMapper.SystemOrganizationChec_Select((String) map.get("ID"));
-                if (sub.size()>0){
-                    map.put("hasChild",true);
-                }else {
-                    map.put("hasChild",false);
+                List<Map<String, Object>> sub = baseMapper.SystemProject_Select((String) map.get("ID"));
+                if (sub.size() > 0) {
+                    map.put("hasChild", true);
+                } else {
+                    map.put("hasChild", false);
                 }
                 result.add(map);
             }
-
         }
 
-        return list;
+        return result;
     }
 }
