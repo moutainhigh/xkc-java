@@ -37,7 +37,7 @@ public class GenerateCodeBuilder {
     private static String basePackage="com.tahoecn.xkc";
 
     //要生成的表名
-    private static String[] tables= {"B_CustomerPotential"};
+    private static String[] tables= {"S_JobsMenuRel"};
 
     @Test
     public void generateCodeBuilder(){
