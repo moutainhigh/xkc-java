@@ -149,4 +149,72 @@ public class ReportController extends TahoeBaseController {
         }
     }
 
+    @ApiOperation(value = "渠道客户统计表", notes = "渠道客户统计表")
+    @RequestMapping(value = "/ChannelCustomerReport_Select", method = {RequestMethod.GET})
+    public Result ChannelCustomerReport_Select(String orglevel, String orgID, String startDate, String endDate,String AccountID,
+                                      String isSelect,String IsExcel) {
+        startDate = startDate + " 00:00:00";
+        endDate = endDate + " 23:59:59";
+        StringBuilder sqlWhere = new StringBuilder();
+        if (StringUtils.isNotEmpty(IsExcel)) {
+            List<Map<String,Object>> result = reportService.ChannelCustomerReport_Select(orglevel,AccountID,startDate,endDate,sqlWhere.toString());
+            SetExcel_ChannelCustomerReport(result);
+            return null;
+        }
+
+        if ("4".equals(orglevel)){  //地产
+            sqlWhere.append("SELECT '地产板块' Area,'' City,'' project,SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,'BFD658A5-F645-468C-A11C-FB1689C1A166' haschildren,'5' level FROM kcview WHERE PID='BFD658A5-F645-468C-A11C-FB1689C1A166' GROUP BY PID");
+        }else if ("5".equals(orglevel)) {    //区域
+            if ("0".equals(isSelect)){  //展开查询
+                sqlWhere.append("SELECT  Area,'' City,'' project,SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,haschildren,'6' level FROM kcview WHERE PID='BFD658A5-F645-468C-A11C-FB1689C1A166' GROUP BY Area,haschildren");
+            } else if ("1".equals(isSelect)){   //首次加载和搜索查询
+                sqlWhere.append("SELECT  Area,'' City,'' project,SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,haschildren,'6' level FROM kcview WHERE POrgID='"+orgID+"' GROUP BY Area,haschildren");
+            }
+        } else if ("6".equals(orglevel)){   //城市
+            if ("0".equals(isSelect)){  //展开查询
+                sqlWhere.append("SELECT City Area,'','' project,SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,haschildren,'7' level FROM kcview WHERE POrgID='"+orgID+"' GROUP BY Area,city,haschildren");
+            } else if ("1".equals(isSelect)){   //首次加载和搜索查询
+                sqlWhere.append("SELECT City Area,'','' project,SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,haschildren,'7' level FROM kcview WHERE COrgID='"+orgID+"' GROUP BY Area,city,haschildren");
+            }
+        } else if ("7".equals(orglevel)) {   //项目
+            if ("0".equals(isSelect)){  //展开查询
+                sqlWhere.append("SELECT project Area,'', '',SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,haschildren,'8' level FROM kcview  WHERE COrgID='"+orgID+"' GROUP BY kcview.project,kcview.haschildren");
+            } else if ("1".equals(isSelect)){   //首次加载和搜索查询
+                sqlWhere.append("SELECT project Area,'', '',SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,'{0}' haschildren,'8' level FROM kcview WHERE ProjectID='"+orgID+"' GROUP BY kcview.project,kcview.haschildren");
+            }
+        } else if ("8".equals(orglevel)) {   ////这个表示展开项目了，项目下没东西了，直接返回空的
+            return Result.ok("");
+        }
+
+        List<Map<String,Object>> result = reportService.ChannelCustomerReport_Select(orglevel,AccountID,startDate,endDate,sqlWhere.toString());
+
+        return Result.ok(result);
+    }
+
+    private void SetExcel_ChannelCustomerReport(List<Map<String,Object>> result) {
+        List<ExcelExportEntity> entity = new ArrayList<>();
+        entity.add(new ExcelExportEntity("区域", "area"));
+        entity.add(new ExcelExportEntity("城市", "city"));
+        entity.add(new ExcelExportEntity("项目", "project"));
+        entity.add(new ExcelExportEntity("渠道来源", "DictName"));
+        entity.add(new ExcelExportEntity("报备", "baobeiCount"));
+        entity.add(new ExcelExportEntity("到访", "daofangCount"));
+        entity.add(new ExcelExportEntity("认筹", "BookingCount"));
+        entity.add(new ExcelExportEntity("认购套数", "OrderCount"));
+        entity.add(new ExcelExportEntity("认购金额", "OrderAmount"));
+        entity.add(new ExcelExportEntity("签约套数", "ContractCount"));
+        entity.add(new ExcelExportEntity("签约金额", "ContractAmount"));
+        entity.add(new ExcelExportEntity("退筹", "BookingCancelCount"));
+        entity.add(new ExcelExportEntity("退房", "OrderCancelCount"));
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

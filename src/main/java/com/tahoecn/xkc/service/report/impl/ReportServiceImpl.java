@@ -36,4 +36,9 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
     public List<Map<String, Object>> CustomerRankDetail_Select(String orgID, String startDate, String endDate) {
         return baseMapper.CustomerRankDetail_Select(orgID, startDate, endDate);
     }
+
+    @Override
+    public List<Map<String, Object>> ChannelCustomerReport_Select(String orglevel, String accountID, String startDate, String endDate, String s) {
+        return baseMapper.ChannelCustomerReport_Select(orglevel, accountID, startDate, endDate, s);
+    }
 }

@@ -27,4 +27,7 @@ public interface ReportMapper extends BaseMapper<BChannelorg> {
                                                          @Param("endDate")String endDate, @Param("sql")String sql);
 
     List<Map<String,Object>> CustomerRankDetail_Select(@Param("orgID")String orgID, @Param("startDate")String startDate, @Param("endDate")String endDate);
+
+    List<Map<String,Object>> ChannelCustomerReport_Select(@Param("orglevel")String orglevel, @Param("accountID")String accountID,
+                                                          @Param("startDate")String startDate, @Param("endDate")String endDate, @Param("sql")String sql);
 }
