@@ -25,4 +25,5 @@ public interface SOrganizationMapper extends BaseMapper<SOrganization> {
 
     List<Map<String, Object>> SystemOrganizationChec_Select(@Param("pid")String pid);
 
+    List<Map<String, Object>> SystemProject_Select(@Param("pid")String pid);
 }

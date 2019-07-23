@@ -10,10 +10,7 @@ import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.job.SJobsmenurel;
 import com.tahoecn.xkc.model.job.SJobsuserrel;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
-import com.tahoecn.xkc.model.sys.SAccount;
-import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
-import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
-import com.tahoecn.xkc.model.sys.SMenus;
+import com.tahoecn.xkc.model.sys.*;
 import com.tahoecn.xkc.service.job.IBProjectjobrelService;
 import com.tahoecn.xkc.service.job.ISJobsService;
 import com.tahoecn.xkc.service.job.ISJobsmenurelService;
@@ -21,16 +18,16 @@ import com.tahoecn.xkc.service.job.ISJobsuserrelService;
 import com.tahoecn.xkc.service.org.ISOrganizationService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
+import com.tahoecn.xkc.service.sys.ISCommonjobsfunctionsrelService;
+import com.tahoecn.xkc.service.sys.ISCommonjobsmenurelService;
 import com.tahoecn.xkc.service.sys.ISMenusService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -57,6 +54,10 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private IBSalesuserService salesuserService;
     @Autowired
     private ISOrganizationService organizationService;
+    @Autowired
+    private ISCommonjobsmenurelService commonjobsmenurelService;
+    @Autowired
+    private ISCommonjobsfunctionsrelService commonjobsfunctionsrelService;
 
     @Override
     public List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID) {
@@ -271,4 +272,185 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
 
         return result;
     }
+
+    @Override
+    public List<Map<String, Object>> CommonJobList_Select() {
+        return baseMapper.CommonJobList_Select();
+    }
+
+    @Override
+    public List<Map<String, Object>> MenuOrFunIDList_Select_Tree() {
+        SMenusXkc menus=baseMapper.MenuOrFunIDList_Select_Tree();
+        List<Map<String, Object>> children = getChildren(menus.getId());
+        List<Map<String,Object>> result = new ArrayList<>();
+        //加入单选复选标识
+        for (Map<String, Object> map : children) {
+            if (!(Boolean) map.get("isLeaf")){
+                List<Map<String,Object>> resultChildren=new ArrayList<>();
+                if (StringUtils.equals((String) map.get("MenuName"),"数据")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",false);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"消息")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",true);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"客户")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",true);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"锦囊")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",false);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"团队")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",false);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"考勤")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",false);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"房源页面")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",false);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"任务")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",true);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"作战图")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",true);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                if (StringUtils.equals((String) map.get("MenuName"),"个人中心")){
+                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+                    for (Map<String, Object> objectMap : children1) {
+                        objectMap.put("signal",false);
+                        resultChildren.add(objectMap);
+                    }
+                    map.put("children",resultChildren);
+                }
+                result.add(map);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> MenuOrFunIDList_Select(String JobID) {
+        return  baseMapper.MenuOrFunIDList_Select(JobID);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean FunctionAuthorization_Insert(String jobID, String mainID, String sonID) {
+        try {
+            //先删除jobid 为此参数的项
+            QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
+            wrapper.eq("JobID",jobID);
+            wrapper.eq("IsDel",0);
+            List<SCommonjobsmenurel> commonjobsmenurels = commonjobsmenurelService.list(wrapper);
+            for (SCommonjobsmenurel commonjobsmenurel : commonjobsmenurels) {
+                commonjobsmenurel.setIsDel(1);
+                commonjobsmenurelService.updateById(commonjobsmenurel);
+            }
+            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
+            queryWrapper.eq("JobID",jobID);
+            queryWrapper.eq("IsDel",0);
+            List<SCommonjobsfunctionsrel> commonjobsfunctionsrels = commonjobsfunctionsrelService.list(queryWrapper);
+            for (SCommonjobsfunctionsrel commonjobsfunctionsrel : commonjobsfunctionsrels) {
+                commonjobsfunctionsrel.setIsDel(1);
+                commonjobsfunctionsrelService.updateById(commonjobsfunctionsrel);
+            }
+            //重新添加新增
+            String[] mainIDs = mainID.split(",");
+            for (String id : mainIDs) {
+                SCommonjobsmenurel commonjobsmenurel=new SCommonjobsmenurel();
+                commonjobsmenurel.setMenuID(id);
+                commonjobsmenurel.setJobID(jobID);
+                commonjobsmenurel.setIsDel(0);
+                commonjobsmenurelService.save(commonjobsmenurel);
+            }
+            String[] sonIDs = sonID.split(",");
+            for (String id : sonIDs) {
+                SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
+                commonjobsfunctionsrel.setFuncID(id);
+                commonjobsfunctionsrel.setJobID(jobID);
+                commonjobsfunctionsrel.setIsDel(0);
+                commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
+    public List<Map<String,Object>> getChildren(String PID){
+        List<Map<String,Object>> list = new ArrayList<>();
+        //menu
+        List<Map<String,Object>> children = baseMapper.getChildrenByPID(PID);
+        for (Map<String,Object> typeInfo : children) {
+            List<Map<String,Object>> children1 = getChildren((String) typeInfo.get("ID"));
+            List<Map<String,Object>> FuncChildren = baseMapper.getFuncChildren((String) typeInfo.get("ID"));
+            if (FuncChildren.size()>0){
+                typeInfo.put("isLeaf",false);
+                typeInfo.put("children", FuncChildren);
+            }
+            if (children1.size()>0){
+                typeInfo.put("isLeaf",false);
+                typeInfo.put("children", children1);
+            }else {
+                typeInfo.put("isLeaf",true);
+            }
+            list.add(typeInfo);
+        }
+        return list;
+    }
+
+
+
 }

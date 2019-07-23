@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.dict;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -28,7 +29,7 @@ public class SDictionary implements Serializable {
     @TableField("AuthCompanyID")
     private String AuthCompanyID;
 
-    @TableId("ID")
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     @TableField("IsReadOnly")

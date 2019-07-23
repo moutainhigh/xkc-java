@@ -1,12 +1,15 @@
 package com.tahoecn.xkc.service.sys.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.http.HttpUtil;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.ucapi.UcApiUtils;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
+import com.tahoecn.xkc.model.org.SOrganization;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
+import com.tahoecn.xkc.service.org.ISOrganizationService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +43,9 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private ISOrganizationService organizationService;
 
     @Value("${uc_api_url}")
     private String baseUrl;
@@ -132,8 +138,17 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     }
 
     @Override
-    public IPage<Map<String,Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID, String key,int Type) {
-        return baseMapper.SystemUserListByOrgID_Select(page,authCompanyID,key,Type);
+    public IPage<Map<String,Object>> SystemUserListByOrgID_Select(IPage page, String authCompanyID,String OrgID, String key,int Type) {
+        return baseMapper.SystemUserListByOrgID_Select(page,authCompanyID,OrgID,key,Type);
+    }
+    @Override
+    public IPage<Map<String,Object>> SystemUserListByOrgID_SelectN(IPage page, String authCompanyID,String OrgID, String key,int Type) {
+        SOrganization byId = organizationService.getById(OrgID);
+
+
+
+
+        return baseMapper.SystemUserListByOrgID_SelectN(page,authCompanyID,byId.getFullPath(),key,Type);
     }
 
     @Override

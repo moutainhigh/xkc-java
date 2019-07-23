@@ -479,7 +479,8 @@
               j.JobName,
               a.Address ,
               a.[Status] ,
-              a.AccountType
+              a.AccountType,
+              a.CreateTime
       FROM    [S_Account] a
               INNER JOIN dbo.S_JobsUserRel jur ON a.IsDel = 0 AND a.ID = jur.AccountID
               INNER JOIN dbo.S_Jobs j ON jur.JobID = j.ID AND j.IsDel = 0
@@ -489,12 +490,48 @@
                     OR a.UserName LIKE concat('%',#{Key},'%')
                     OR a.EmployeeName LIKE concat('%',#{Key},'%')
                   )
-             <!--   AND o.FullPath LIKE ( SELECT FullPath FROM dbo.S_Organization WHERE ID = #{OrgID} ) + '%'-->
+                AND o.FullPath LIKE ( SELECT FullPath FROM dbo.S_Organization WHERE ID = #{OrgID} ) + '%'
           <if test="Type != 0">
           and AccountType = #{Type}
           </if>
               AND a.IsDel = 0
       </where>
+        ORDER BY a.CreateTime
+    </select>
+
+
+    <select id="SystemUserListByOrgID_SelectN" resultType="java.util.HashMap" parameterType="string">
+        SELECT t.*,o.FullPath AS OrgName FROM
+        S_Organization o INNER JOIN
+        (
+        SELECT
+        a.[ID] ,
+        a.[UserName] ,
+        a.[EmployeeName] ,
+        a.[Gender] ,
+        a.[OfficeTel] ,
+        a.[EmployeeCode] ,
+        a.[OfficeMail] ,
+        a.[Mobile] ,
+        a.UserOrgID ,
+        a.Address ,
+        a.[Status] ,
+        a.AccountType,
+        a.CreateTime
+        FROM    [S_Account] a
+        WHERE   a.UserOrgID IN (SELECT ID FROM S_Organization WHERE FullPath LIKE '${OrgID}%')
+        AND ( #{Key} = ''
+        OR a.UserName LIKE concat('%',#{Key},'%')
+        OR a.EmployeeName LIKE concat('%',#{Key},'%')
+        )
+        AND a.AuthCompanyID = #{AuthCompanyID}
+        <if test="Type != 0">
+            and AccountType = #{Type}
+        </if>
+        AND a.IsDel=0
+        ) t
+        ON t.UserOrgID=o.ID AND o.IsDel=0
+        ORDER BY t.CreateTime DESC
     </select>
 
     <select id="insertJob" resultType="java.util.HashMap" parameterType="string">

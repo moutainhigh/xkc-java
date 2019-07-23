@@ -13,11 +13,8 @@ import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 
 import java.util.Date;
@@ -43,11 +40,21 @@ public class SAccountController extends TahoeBaseController {
     private IBSalesuserService salesuserService;
 
     //已测
-    @ApiOperation(value = "获取组织下的人员(用户管理)", notes = "获取组织下的人员(用户管理)")
+//    @ApiOperation(value = "获取组织下的人员(用户管理)", notes = "获取组织下的人员(用户管理)")
+//    @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.GET})
+//    public Result SystemUserListByOrgID_Select(String AuthCompanyID,String OrgID, @RequestParam(required = false) String Name, @RequestParam(defaultValue = "0",required = false)int Type,
+//                                               @RequestParam(defaultValue = "1")int Pageindex, @RequestParam(defaultValue = "10")int Pagesize) {
+//        IPage page = new Page(Pageindex, Pagesize);
+//        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_Select(page,AuthCompanyID,OrgID,Name,Type);
+//        return Result.ok(list);
+//    }
+
+    @ApiOperation(value = "获取组织下的人员(改后)", notes = "获取组织下的人员(改后)")
     @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.GET})
-    public Result SystemUserListByOrgID_Select(String AuthCompanyID,String Name,int Type,int Pageindex,int Pagesize) {
+    public Result SystemUserListByOrgID_Select(String AuthCompanyID,String OrgID, @RequestParam(required = false) String Name, @RequestParam(defaultValue = "0",required = false)int Type,
+                                               @RequestParam(defaultValue = "1")int Pageindex, @RequestParam(defaultValue = "10")int Pagesize) {
         IPage page = new Page(Pageindex, Pagesize);
-        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_Select(page,AuthCompanyID,Name,Type);
+        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_SelectN(page,AuthCompanyID,OrgID,Name,Type);
         return Result.ok(list);
     }
 
@@ -56,6 +63,7 @@ public class SAccountController extends TahoeBaseController {
     @RequestMapping(value = "/SystemUser_Insert", method = {RequestMethod.POST})
     public Result SystemUser_Insert(@RequestBody SAccount account) {
         account.setCreator(ThreadLocalUtils.getUserName());
+        account.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");
         account.setCreateTime(new Date());
         account.setIsDel(0);
         accountService.save(account);
@@ -90,7 +98,6 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "启用/禁用(用户管理)", notes = "启用/禁用(用户管理)")
     @RequestMapping(value = "/SystemUser_Status", method = {RequestMethod.POST})
     public Result SystemUser_Status(@RequestBody SAccount account) {
-
         accountService.updateById(account);
         return Result.okm("成功");
     }

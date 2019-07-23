@@ -75,7 +75,7 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "新增参数", notes = "新增参数")
     @RequestMapping(value = "/SystemParam_Insert", method = {RequestMethod.POST})
-    public Result SystemParam_Insert(SDictionary dictionary){
+    public Result SystemParam_Insert(@RequestBody SDictionary dictionary){
         String pid = dictionary.getPid();
         SDictionary byId = dictionaryService.getById(pid);
         String fullPath = byId.getFullPath();
@@ -86,6 +86,10 @@ public class SDictionaryController extends TahoeBaseController {
             newFullPath=fullPath+"/"+dictionary.getDictName();
         }
         dictionary.setFullPath(newFullPath);
+        dictionary.setCreator(ThreadLocalUtils.getUserName());
+        dictionary.setCreateTime(new Date());
+        dictionary.setIsDel(0);
+        dictionary.setStatus(1);
         boolean save = dictionaryService.save(dictionary);
         if (save){
             return Result.okm("成功");
@@ -95,7 +99,7 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "编辑修改参数", notes = "编辑修改参数")
     @RequestMapping(value = "/SystemParam_Update", method = {RequestMethod.POST})
-    public Result SystemParam_Update(SDictionary dictionary){
+    public Result SystemParam_Update(@RequestBody SDictionary dictionary){
         boolean b=dictionaryService.SystemParam_Update(dictionary);
         if (b){
             return Result.okm("成功");
