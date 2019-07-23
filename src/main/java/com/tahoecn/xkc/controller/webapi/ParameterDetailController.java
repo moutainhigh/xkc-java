@@ -2,8 +2,10 @@ package com.tahoecn.xkc.controller.webapi;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.dto.ParameterDto;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BRemindrule;
 import com.tahoecn.xkc.model.rule.BSalescenterrule;
@@ -13,14 +15,17 @@ import com.tahoecn.xkc.service.rule.IBSalescenterruleService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -32,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
-@RequestMapping("/parameter")
+@RequestMapping("/webapi/parameter")
 public class ParameterDetailController extends TahoeBaseController {
     @Autowired
     private IBProjectService iBProjectService;
@@ -74,6 +79,45 @@ public class ParameterDetailController extends TahoeBaseController {
         result.put("remindRuleList",remindRuleList);
 
         return Result.ok(result);
+    }
+
+    @ApiOperation(value = "项目参数修改接口", notes = "项目参数修改接口")
+    @ResponseBody
+    @RequestMapping(value = "/parameterUpdate", method = { RequestMethod.POST })
+    public Result parameterSelect(@RequestBody ParameterDto parameterDto) {
+
+        String UserId = parameterDto.getUserId();
+
+        BProject bProject = parameterDto.getbProject();
+
+        BRemindrule bRemindrule = parameterDto.getbRemindrule();
+
+        BSalescenterrule bSalescenterrule = parameterDto.getbSalescenterrule();
+
+        iBProjectService.updateById(bProject);
+
+        //案场保护期规则更新
+        UpdateWrapper<BSalescenterrule> saleCenterRuleUpdateWrapper = new UpdateWrapper<>();
+        BSalescenterrule updateCenterRule = new BSalescenterrule();
+        updateCenterRule.setStatus(0);
+        updateCenterRule.setEditor(UserId);
+        updateCenterRule.setEditTime(new Date());
+        saleCenterRuleUpdateWrapper.eq("ProjectID",bSalescenterrule.getProjectID());
+        iBSalescenterruleService.update(updateCenterRule,saleCenterRuleUpdateWrapper);
+        //案场保护期规则新增
+        bSalescenterrule.setIsDel(0);
+        bSalescenterrule.setStatus(1);
+        bSalescenterrule.setEditTime(new Date());
+        bSalescenterrule.setEditor(UserId);
+        iBSalescenterruleService.save(updateCenterRule);
+
+        //案场消息提醒
+        UpdateWrapper<BRemindrule> remindruleUpdateWrapper = new UpdateWrapper<>();
+        remindruleUpdateWrapper.eq("ProjectID",bRemindrule.getProjectID());
+        remindruleUpdateWrapper.isNull("VersionEndTime");
+        iBRemindruleService.update(bRemindrule,remindruleUpdateWrapper);
+        iBRemindruleService.save(bRemindrule);
+        return Result.ok("更新成功");
     }
 
 }
