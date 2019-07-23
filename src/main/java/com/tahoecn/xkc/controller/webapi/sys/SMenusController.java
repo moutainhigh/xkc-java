@@ -122,6 +122,7 @@ public class SMenusController extends TahoeBaseController {
         if (b){
             return Result.okm("成功");
         }
+        //随便提交
         return Result.errormsg(99,"修改失败");
     }
 
