@@ -131,4 +131,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	void ChannelOrgImport_Insert_B_PojectChannelOrgRel(@Param("orgID")String orgID, @Param("projectID")String projectID, @Param("userID")String userID);
 
 	void ChannelOrgImport_Insert_B_ClueRule_AdviserGroup(@Param("RuleIDs")String RuleIDs, @Param("OrgID")String OrgID, @Param("UserID")String UserID);
+
+    List<Map<String, Object>> AgenChannelTypeList_SelectN();
 }

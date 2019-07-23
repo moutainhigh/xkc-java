@@ -33,7 +33,7 @@ import java.util.Map;
  * @since 2019-07-04
  */
 @RestController
-@RequestMapping("/webapi/sJobs")
+    @RequestMapping("/webapi/sJobs")
 public class SJobsController extends TahoeBaseController {
 
     @Autowired

@@ -567,7 +567,7 @@ public class ChannelController extends TahoeBaseController {
     }
 
     @ApiOperation(value = "分销中介、推荐渠道修改状态", notes = "分销中介、推荐渠道修改状态")
-    @RequestMapping(value = "/AgenStatus_UpdateN", method = {RequestMethod.GET})
+    @RequestMapping(value = "/AgenStatus_UpdateN", method = {RequestMethod.POST})
     public Result AgenStatus_UpdateN(String ID, int Status){
         boolean b=channeluserService.AgenStatus_UpdateN(ID,Status);
         if (b){
@@ -577,18 +577,29 @@ public class ChannelController extends TahoeBaseController {
     }
     @ApiOperation(value = "分销中介、推荐渠道列表-身份列表查询", notes = "分销中介、推荐渠道列表-身份列表查询")
     @RequestMapping(value = "/AgenChannelTypeList_SelectN", method = {RequestMethod.GET})
-    public Result AgenChannelTypeList_SelectN(String ID, String ChannelTypeID){
-        boolean b=channeluserService.AgenInfo_UpdateN(ID,ChannelTypeID);
-        if (b){
-            return Result.okm("成功");
-        }
-        return Result.errormsg(99,"修改失败");
+    public Result AgenChannelTypeList_SelectN(){
+       List<Map<String,Object>> list=channeluserService.AgenChannelTypeList_SelectN();
+
+        return Result.ok(list);
     }
 
-    @ApiOperation(value = "分销中介、推荐渠道信息编辑", notes = "分销中介、推荐渠道信息编辑")
-    @RequestMapping(value = "/AgenInfo_UpdateN", method = {RequestMethod.GET})
-    public Result AgenInfo_UpdateN(String ID, String ChannelTypeID){
-        boolean b=channeluserService.AgenInfo_UpdateN(ID,ChannelTypeID);
+    @ApiOperation(value = "分销中介、推荐渠道信息编辑/禁用", notes = "分销中介、推荐渠道信息编辑/禁用")
+    @RequestMapping(value = "/AgenInfo_UpdateN", method = {RequestMethod.POST})
+    public Result AgenInfo_UpdateN(@RequestBody BChanneluser channeluser){
+        Result result=channeluserService.AgenInfo_UpdateN(channeluser);
+        return result;
+    }
+
+    @ApiOperation(value = "分销中介、推荐渠道重置密码", notes = "分销中介、推荐渠道重置密码")
+    @RequestMapping(value = "/AgenResetPassword_UpdateN", method = {RequestMethod.POST})
+    public Result AgenResetPassword_UpdateN(String ID){
+        BChanneluser channeluser=new BChanneluser();
+        channeluser.setId(ID);
+        channeluser.setEditor(ThreadLocalUtils.getUserName());
+        channeluser.setEditeTime(new Date());
+        //默认密码 123321
+        channeluser.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");
+        boolean b = channeluserService.updateById(channeluser);
         if (b){
             return Result.okm("成功");
         }

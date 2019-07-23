@@ -18,7 +18,6 @@ import java.util.Map;
  * @since 2019-07-12
  */
 public interface ISMenusXkcService extends IService<SMenusXkc> {
-    Result SystemDictionaryDetail(HashMap<String,Object> param);
 
     List<Map<String,Object>> SystemMenusList_Select();
 
