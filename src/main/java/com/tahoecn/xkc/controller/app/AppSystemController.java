@@ -12,6 +12,7 @@ import com.tahoecn.xkc.model.sys.BAppupgrade;
 import com.tahoecn.xkc.model.sys.BSystemad;
 import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
+import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
@@ -65,6 +66,8 @@ public class AppSystemController extends TahoeBaseController {
     private IBCustomerService iBCustomerService;
     @Autowired 
     private IBSalesuserService iBSalesuserService;
+    @Autowired
+    private ISDictionaryService dictionaryService;
 	@ResponseBody
     @ApiOperation(value = "广告接口", notes = "广告接口")
     @RequestMapping(value = "/SystemAD_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -230,5 +233,12 @@ public class AppSystemController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
-	
+
+    @ApiOperation(value = "数据字典", notes = "数据字典")
+    @RequestMapping(value = "/mSystemDictionaryDetail_Select", method = {RequestMethod.POST})
+    public Result mSystemDictionaryDetail_Select(@RequestBody JSONObject jsonParam) {
+        HashMap<String,Object> param=(HashMap)jsonParam.get("_param");
+        Result result=dictionaryService.SystemDictionaryDetail(param);
+        return result;
+    }
 }

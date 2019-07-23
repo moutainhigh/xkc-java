@@ -531,9 +531,48 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public boolean AgenInfo_UpdateN(String id, String channelTypeID) {
+    public List<Map<String, Object>> AgenChannelTypeList_SelectN() {
+        return baseMapper.AgenChannelTypeList_SelectN();
+    }
 
-        return false;
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result AgenInfo_UpdateN(BChanneluser channeluser) {
+        try {
+            //判断手机号是否重复
+            QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
+            wrapper.eq("Mobile",channeluser.getMobile());
+            wrapper.eq("IsDel",0);
+            wrapper.ne("ID",channeluser.getId());
+            int count = this.count(wrapper);
+            if (count>0){
+                return Result.errormsg(99,"存在重复手机号");
+            }
+            //判断用户名是否重复
+            QueryWrapper<BChanneluser> queryWrapper=new QueryWrapper<>();
+            queryWrapper.eq("UserName",channeluser.getUserName());
+            queryWrapper.eq("IsDel",0);
+            queryWrapper.ne("ID",channeluser.getId());
+            int i = this.count(wrapper);
+            if (i>0){
+                return Result.errormsg(99,"存在重复用户名");
+            }
+            //新增
+            SDictionary dictionary = sDictionaryMapper.selectById(channeluser.getCertificatesType());
+            channeluser.setCertificatesName(dictionary.getDictName());
+            BChannelorg channelorg = channelorgService.getById(channeluser.getChannelOrgID());
+            channeluser.setChannelOrgCode(channelorg.getOrgCode());
+            SDictionary sDictionary = sDictionaryMapper.selectById(channeluser.getChannelTypeID());
+            channeluser.setChannelType(sDictionary.getDictName());
+            channeluser.setEditor(ThreadLocalUtils.getUserName());
+            channeluser.setEditeTime(new Date());
+            this.updateById(channeluser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.errormsg(99,"修改失败");
+        }
+        return Result.ok("成功");
     }
 
 

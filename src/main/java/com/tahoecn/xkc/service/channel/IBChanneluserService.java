@@ -142,5 +142,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
     boolean AgenStatus_UpdateN(String id, int status);
 
-    boolean AgenInfo_UpdateN(String id, String channelTypeID);
+
+
+    List<Map<String, Object>> AgenChannelTypeList_SelectN();
+
+
+    Result AgenInfo_UpdateN(BChanneluser channeluser);
 }

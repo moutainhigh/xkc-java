@@ -50,5 +50,9 @@ public interface BCustomerpublicpoolMapper extends BaseMapper<BCustomerpublicpoo
 	void newBClue(Map<String, Object> param);
 	//添加跟进记录
 	void insBCustomerPotentialFollowUp(Map<String, Object> param);
+	/**
+	 * 分享传播池客户信息
+	 */
+	List<Map<String, Object>> mShareCustomerList_Select(Map<String, Object> parameter);
 
 }
