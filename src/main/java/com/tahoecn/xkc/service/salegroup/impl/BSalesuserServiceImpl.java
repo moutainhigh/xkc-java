@@ -26,10 +26,10 @@ public class BSalesuserServiceImpl extends ServiceImpl<BSalesuserMapper, BSalesu
     }
 
     /*
-     * 分享项目信息
+     * 分享小程序
      */
 	@Override
-	public List<Map<String, Object>> mShareAppDetail_Select(Map<String, Object> map) {
+	public Map<String, Object> mShareAppDetail_Select(Map<String, Object> map) {
 		return baseMapper.mShareAppDetail_Select(map);
 	}
 	@Override
