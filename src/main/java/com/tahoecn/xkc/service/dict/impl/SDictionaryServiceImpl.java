@@ -159,21 +159,17 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
     @Override
     public Result SystemDictionaryDetail(HashMap<String,Object> param) {
         try {
-
-
             String IDAlias = "ID";
             String ChildAlias = "Child";
             String DictNameAlias = "DictName";
             String TypeAlias = "Type";
-
-
             //此处的 Alias不懂
-//        Map<String,String> Alias = (Map<String, String>) param.get("Alias");
-//        if (Alias!=null){
-//            IDAlias=Alias.get("IDAlias");
-//            ChildAlias=Alias.get("ChildAlias");
-//            DictNameAlias=Alias.get("DictNameAlias");
-//        }
+	        Map<String,String> Alias = (Map<String, String>) param.get("Alias");
+	        if (Alias!=null){
+	            IDAlias=Alias.get("IDAlias");
+	            ChildAlias=Alias.get("ChildAlias");
+	            DictNameAlias=Alias.get("DictNameAlias");
+	        }
             boolean isCity = false;
             boolean isKHSXGZGW = false;
             boolean isFPGWSXGZFJ = false;
@@ -189,13 +185,13 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             boolean isKHGGCSXGZZQ = false;
             Map<String,Object> res=new HashMap<>();
             String DictCodes = "";
+            String[] CodeList = param.get("Code").toString().toUpperCase().split(",");
             //遍历参数
-            for (String Code : param.keySet()) {
+            for (String Code : CodeList) {
                 switch (Code){
                     case "CITY":
                         isCity = true;
                         break;
-
                     default:
                         if ("KHSXGZGW".equals(Code))//客户筛选规则(顾问)
                         {
@@ -247,7 +243,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         }
                         if (res.get("Code")== null)
                         {
-                            DictCodes = " OR B.DictCode = '"+Code+"'";
+                            DictCodes = DictCodes + " OR B.DictCode = '"+Code+"'";
 //                        res.Add(new JProperty(Code, new JArray())); 这句不知道啥
                             res.put(Code,new ArrayList<>());
                         }
@@ -258,13 +254,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             if (isCity){
                 QueryWrapper<SCity> wrapper=new QueryWrapper<>();
                 wrapper.eq("Status",1).le("Levels",4).orderByAsc("Levels","StandardIndex");
-                List<SCity> list= new ArrayList<>();
-                try {
-                    list = cityService.list(wrapper);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return Result.errormsg(99,"数据库查询异常");
-                }
+                List<SCity> list =  cityService.list(wrapper);
                 Map<String,Map<String,Object>> province = new HashMap<>();
                 Map<String,Map<String,Object>> city = new HashMap<>();
                 for (SCity sCity : list) {
@@ -338,7 +328,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 int Levels = (int) map.get("Levels");
                 if (Levels == 2)
                 {
-                    if (StringUtils.equals("KHGJFS",PDictCode)&& (StringUtils.equals("ZQ",(String)param.get("JobCode")) ||StringUtils.equals("ZQJL",(String)param.get("JobCode"))||StringUtils.equals("ZQFZR",(String)param.get("JobCode")) ||StringUtils.equals("JZ",(String)param.get("JobCode")) && StringUtils.equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F",(String)map.get("ID"))))
+                    if (StringUtils.equals("KHGJFS",PDictCode)&& (StringUtils.equals("ZQ",(String)param.get("JobCode")) ||StringUtils.equals("ZQJL",(String)param.get("JobCode"))||StringUtils.equals("ZQFZR",(String)param.get("JobCode")) ||StringUtils.equals("JZ",(String)param.get("JobCode"))) && StringUtils.equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F",(String)map.get("ID")))
                     {//排除自渠和自渠经理的售场接待 跟进方式
                     }
                     else if (IsNoAllotRole && StringUtils.equals("KHGJFS",PDictCode) && StringUtils.equals("GW",(String)param.get("JobCode")) && StringUtils.equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F",(String)map.get("ID")))
@@ -362,13 +352,13 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
                 if (Levels == 3)
                 {
-                    if (one.get("PDictCode") != null)
+                    if (one.get(PDictCode) != null)
                     {
                         Map<String,Object> dict = new HashMap<>();
                         dict.put(IDAlias,map.get("ID"));
                         dict.put(DictNameAlias,map.get("DictName"));
-                        Map<String,Object> pDictCode = (Map<String, Object>) one.get("PDictCode");
-                        ArrayList childAlias = (ArrayList) pDictCode.get("ChildAlias");
+                        Map<String,Object> pDictCode = (Map<String, Object>) one.get(PDictCode);
+                        ArrayList childAlias = (ArrayList) pDictCode.get(ChildAlias);
                         childAlias.add(dict);
                     }
                 }
@@ -379,10 +369,10 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 if (Levels == 2)
                 {
                     String DictCode = (String) map.get("DictCode");
-                    if (res.get("PDictCode")!= null && one.get("DictCode") != null)
+                    if (res.get(PDictCode)!= null && one.get(DictCode) != null)
                     {
-                        ArrayList pDictCode = (ArrayList) res.get("PDictCode");
-                        pDictCode.add(one.get("DictCode"));
+                        ArrayList pDictCode = (ArrayList) res.get(PDictCode);
+                        pDictCode.add(one.get(DictCode));
                     }
                 }
             }
@@ -630,15 +620,13 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             if (isKHSXGZZQ)
             {
                 String userID = (String) param.get("UserID");
-                QueryWrapper<BTag> wrapper=new QueryWrapper<>();
-                wrapper.eq("IsDel",0).eq("Status",1).eq("Creator",userID);
-                wrapper.orderByAsc("Name");
-                List<BTag> list= tagService.list(wrapper);
+                List<Map<String,Object>> list= tagService.BTaglist(userID);
 
-                if ("JZ".equals(param.get("JobCode"))){
+                if (!"JZ".equals(param.get("JobCode"))){
                     List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
                     Map<String, Object> map = khsxgzgw.get(3);
                     map.put("Child",list);
+                    khsxgzgw.remove(3);
                     khsxgzgw.add(3,map);
                     res.put("KHSXGZZQ",khsxgzgw);
                 }
@@ -666,17 +654,19 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("FilterDesc",FilterDesc);
                     groupArr.add(dat);
                 }
-                if ("JZ".equals(param.get("JobCode")))
+                if (!"JZ".equals(param.get("JobCode")))
                 {
                     List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
                     Map<String, Object> map = khsxgzgw.get(4);
-                    map.put("Child",list);
+                    map.put("Child",groupArr);
+                    khsxgzgw.remove(4);
                     khsxgzgw.add(4,map);
                     res.put("KHSXGZZQ",khsxgzgw);
                 }else {
                     List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
                     Map<String, Object> map = khsxgzgw.get(2);
-                    map.put("Child",list);
+                    map.put("Child",groupArr);
+                    khsxgzgw.remove(2);
                     khsxgzgw.add(2,map);
                     res.put("KHSXGZZQ",khsxgzgw);
                 }
@@ -744,11 +734,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 khsxgzgw.add(2,map);
                 res.put("KHGGCSXGZZQ",khsxgzgw);
             }
-            List<Map<String, Object>> data=new ArrayList<>();
+            List data=new ArrayList();
             if (res.size() >= 1)
             {
                 for (String key : res.keySet()) {
-                    data.add((Map<String, Object>) res.get(key));
+                    data.add(res.get(key));
                 }
             }
             return Result.ok(data);
