@@ -157,7 +157,7 @@ public class ReportController extends TahoeBaseController {
         endDate = endDate + " 23:59:59";
         StringBuilder sqlWhere = new StringBuilder();
         if (StringUtils.isNotEmpty(IsExcel)) {
-            List<Map<String,Object>> result = reportService.ChannelCustomerReport_Select(orglevel,AccountID,startDate,endDate,sqlWhere.toString());
+            List<Map<String,Object>> result = reportService.ChannelCustomerReportDL_Select(orglevel,AccountID,startDate,endDate);
             SetExcel_ChannelCustomerReport(result);
             return null;
         }
