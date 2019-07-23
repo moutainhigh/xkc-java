@@ -341,4 +341,27 @@
 		 FROM dbo.B_Clue WHERE ID = #{ClueID}		
 		]]>
 	</insert>
+	<!-- 分享传播池客户信息 -->
+	<select id="mShareCustomerList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT 
+				ASP.ID FXCBID,
+				ASP.WXUserID,
+				CWXU.Mobile,
+				CWXU.NickName,
+				CWXU.Gender,
+				ASP.ShareWXUserID,
+				ASQP.SID MediaChildID,
+				BMC.MediaLargeID,
+				ASP.Category,
+		    	#{SaleUserName} SaleUserName
+			 FROM dbo.A_SharePool ASP
+				LEFT JOIN dbo.C_WXUser CWXU ON CWXU.ID = ASP.WXUserID 
+				LEFT JOIN dbo.A_ShareProject ASPR ON ASPR.ID = ASP.ShareProjectID 
+				LEFT JOIN dbo.A_ShareQRCodeParameter ASQP ON ASQP.ID= ASP.ShareWXUserID AND ASQP.Category = 1
+				LEFT JOIN dbo.B_MediaChild BMC ON BMC.ID = ASQP.SID  AND BMC.ProjectID = ASPR.ProjectID
+			WHERE ASP.Status = 1 AND ASP.IsDel =0
+				AND EXISTS (SELECT * from dbo.F_StrToTable(#{FXCBIDs}) AS a WHERE a.name = ASP.ID)
+		]]>
+	</select>
 </mapper>
