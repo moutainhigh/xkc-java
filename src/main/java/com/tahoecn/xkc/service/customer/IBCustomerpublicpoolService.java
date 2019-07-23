@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer;
 
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -47,5 +48,9 @@ public interface IBCustomerpublicpoolService extends IService<BCustomerpublicpoo
 	 * 自渠抢客公共池客户
 	 */
 	void mGGCCustomerByZQDetail_Update(Map<String, Object> param);
+	/**
+	 * 分享传播池客户信息
+	 */
+	List<Map<String,Object>> mShareCustomerList_Select(Map<String,Object> parameter);
 
 }

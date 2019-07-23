@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.CWxuserMapper">
-
+	<!-- 根据电话获取信息 -->
+	<select id="selWXUserByMobil" parameterType="java.util.Map" resultType="java.util.Map">
+	<![CDATA[
+		SELECT b.Category, b.ShareWXUserID, b.ShareLogID
+	  	FROM dbo.C_WXUser a 
+	  	LEFT JOIN dbo.A_ShareLogDetail b ON a.ID = b.WXUserID  
+	  	WHERE a.Mobile =#{Mobile} AND b.IsAuthorize = 1
+	]]>
+	</select>
+	<select id="selJobID" parameterType="java.lang.String" resultType="java.util.Map">
+	<![CDATA[
+		SELECT ISNULL(b.BindChannelUserID,'') as BindChannelUserID,
+			ISNULL(b.BindAdviserGroupID,'') as BindAdviserGroupID 
+		FROM dbo.A_ShareLog a LEFT JOIN dbo.C_WXUser b ON b.ID = a.WXUserID 
+		WHERE a.ID = #{ShareLogID}
+	]]>
+	</select>
+	<select id="selUserID" parameterType="java.lang.String" resultType="java.util.Map">
+	<![CDATA[
+		SELECT ISNULL(BindChannelUserID,'') as SaleUserID,
+			ISNULL(BindAdviserGroupID,'') as JobID 
+		FROM dbo.C_WXUser WHERE ID = #{ShareWXUserID}
+	]]>
+	</select>
+	<!-- 获取该分享人的信息 -->
+	<select id="getShareDetail" parameterType="java.lang.String" resultType="java.util.Map">
+	<![CDATA[
+		SELECT ID SaleUserID,#{JobID} JobID,Name SaleUserName FROM dbo.B_SalesUser WHERE ID = #{SaleUserID}
+	]]>
+	</select>
 </mapper>

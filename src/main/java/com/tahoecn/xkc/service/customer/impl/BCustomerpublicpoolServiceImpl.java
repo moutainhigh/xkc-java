@@ -6,15 +6,18 @@ import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
 import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
+import com.tahoecn.xkc.mapper.salegroup.BSalesuserMapper;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.BCustomerpublicpool;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
+import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,6 +43,8 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 	private BClueMapper bClueMapper;
 	@Autowired
 	private BCustomerpotentialMapper bCustomerpotentialMapper;
+	@Autowired
+	private BSalesuserMapper bSalesuserMapper;
 	/**
 	 * 客户公共池查询
 	 */
@@ -186,6 +191,17 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 		pool.setEditeTime(new Date());
 		pool.setId(PublicID);
 		baseMapper.updateById(pool);
+	}
+	/**
+	 * 分享传播池客户信息
+	 */
+	@Override
+	public List<Map<String,Object>> mShareCustomerList_Select(Map<String,Object> parameter) {
+		String UserID = (String) parameter.get("UserID");
+		BSalesuser bs = bSalesuserMapper.selectById(UserID);
+		String SaleUserName = bs.getName();
+		parameter.put("SaleUserName", SaleUserName);
+		return baseMapper.mShareCustomerList_Select(parameter);
 	}
 
 }
