@@ -1040,4 +1040,100 @@
             DROP TABLE #qianyueB
         ]]>
     </select>
+
+    <select id="mChannelCheckReportList_Select" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT
+        cu.Name ,
+        cu.Mobile ,
+        cu.CertificatesNo ,
+        ccr.CheckDate ,
+        ccr.CheckInTime ,
+        ccr.CheckOutTime ,
+        '' WorkTime,
+        ccr.TaskName ,
+        cur.Name ReportName,
+        dbo.F_DictName ( TaskType ) ChannelTypeName
+        FROM
+        dbo.B_ChannelUser cu
+        LEFT JOIN dbo.B_SalesUser su ON cu.ReportUserID = su.ID
+        LEFT JOIN (
+        SELECT
+        cc.Creator ,
+        MIN ( CASE WHEN cc.CheckType = 0 THEN cc.CreateTime END ) CheckInTime,
+        MAX ( CASE WHEN cc.CheckType = 1 THEN cc.CreateTime END ) CheckOutTime,
+        ct.Name TaskName,
+        ct.TaskType ,
+        ct.ProjectID ,
+        ct.Creator TaskCreator,
+        CONVERT ( NVARCHAR ( 10 ), cc.CheckDate, 111 ) CheckDate
+        FROM
+        dbo.B_CheckClockRecord cc
+        LEFT JOIN dbo.B_ChannelTask ct ON cc.ChannelTaskID = ct.ID
+        GROUP BY
+        cc.Creator ,
+        ct.Name ,
+        ct.TaskType ,
+        ct.ProjectID ,
+        ct.Creator ,
+        cc.CheckDate
+        ) ccr ON cu.ID = ccr.Creator
+        LEFT JOIN dbo.B_ChannelUser cur ON cur.ID = TaskCreator
+        WHERE
+        cu.ChannelType = '兼职'
+        AND ccr.ProjectID = #{ProjectID}
+        AND ccr.CheckInTime >= #{StartTime}
+        AND ccr.CheckInTime <= #{EndTime}
+        ORDER BY
+        ccr.CheckDate
+        ]]>
+    </select>
+
+    <select id="mChannelCheckReportList_Export" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT
+        cu.Name ,
+        cu.Mobile ,
+        cu.CertificatesNo ,
+        ccr.CheckDate ,
+        ccr.CheckInTime ,
+        ccr.CheckOutTime ,
+        '' WorkTime,
+        ccr.TaskName ,
+        cur.Name ReportName,
+        dbo.F_DictName ( TaskType ) ChannelTypeName
+        FROM
+        dbo.B_ChannelUser cu
+        LEFT JOIN dbo.B_SalesUser su ON cu.ReportUserID = su.ID
+        LEFT JOIN (
+        SELECT
+        cc.Creator ,
+        MIN ( CASE WHEN cc.CheckType = 0 THEN cc.CreateTime END ) CheckInTime,
+        MAX ( CASE WHEN cc.CheckType = 1 THEN cc.CreateTime END ) CheckOutTime,
+        ct.Name TaskName,
+        ct.TaskType ,
+        ct.ProjectID ,
+        ct.Creator TaskCreator,
+        CONVERT ( NVARCHAR ( 10 ), cc.CheckDate, 111 ) CheckDate
+        FROM
+        dbo.B_CheckClockRecord cc
+        LEFT JOIN dbo.B_ChannelTask ct ON cc.ChannelTaskID = ct.ID
+        GROUP BY
+        cc.Creator ,
+        ct.Name ,
+        ct.TaskType ,
+        ct.ProjectID ,
+        ct.Creator ,
+        cc.CheckDate
+        ) ccr ON cu.ID = ccr.Creator
+        LEFT JOIN dbo.B_ChannelUser cur ON cur.ID = TaskCreator
+        WHERE
+        cu.ChannelType = '兼职'
+        AND ccr.ProjectID = #{ProjectID}
+        AND ccr.CheckInTime >= #{StartTime}
+        AND ccr.CheckInTime <= #{EndTime}
+        ORDER BY
+        ccr.CheckDate
+        ]]>
+    </select>
 </mapper>

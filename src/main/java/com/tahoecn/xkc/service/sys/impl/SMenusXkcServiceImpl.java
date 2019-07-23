@@ -51,15 +51,15 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     }
 
     @Override
-    public void SystemMenu_Insert(SMenus menus) {
+    public void SystemMenu_Insert(SMenusXkc menus) {
         baseMapper.SystemMenu_Insert(menus);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean SystemMenu_Update(SMenus menu) {
+    public boolean SystemMenu_Update(SMenusXkc menu) {
         try {
-            String ID = menu.getID();
+            String ID = menu.getId();
             String MenuSysName = menu.getMenuSysName();
             String MenuName = menu.getMenuName();
             String Url = menu.getUrl();
@@ -130,9 +130,6 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
 
     @Override
     public List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID) {
-
-
-
 
         return null;
     }

@@ -190,24 +190,7 @@
         JobID = #{JobID}
         AND a.IsDel= 0 UNION ALL
         SELECT
-        CASE
-
-        WHEN
-        CHARINDEX( 'ToDoListPage_Phone', b.FuncCode ) = 1 THEN
-        '2'
-        WHEN CHARINDEX( 'CustomerListPage_PushInfo', b.FuncCode ) = 1 THEN
-        '3'
-        WHEN CHARINDEX( 'CustomerInfo_NeedEdit', b.FuncCode ) = 1 THEN
-        '4'
-        WHEN CHARINDEX( 'CustomerListPage_AddCustomer', b.FuncCode ) = 1 THEN
-        '5'
-        WHEN CHARINDEX( 'CustomerListPage_CustomerLabel', b.FuncCode ) = 1 THEN
-        '6'
-        WHEN CHARINDEX( 'CustomerListPage_CustomerFollow', b.FuncCode ) = 1 THEN
-        '7'
-        WHEN CHARINDEX( 'CustomerListPage_IsShowMobile', b.FuncCode ) = 1 THEN
-        '8'
-        END ID
+        b.ID
         FROM
         dbo.S_CommonJobsFunctionsRel a
         INNER JOIN dbo.S_Functions b ON a.FuncID= b.ID

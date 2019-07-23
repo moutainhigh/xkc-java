@@ -21,9 +21,9 @@ public interface ISMenusXkcService extends IService<SMenusXkc> {
 
     List<Map<String,Object>> SystemMenusList_Select();
 
-    void SystemMenu_Insert(SMenus menus);
+    void SystemMenu_Insert(SMenusXkc menus);
 
-    boolean SystemMenu_Update(SMenus menus);
+    boolean SystemMenu_Update(SMenusXkc menus);
 
     List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID);
 

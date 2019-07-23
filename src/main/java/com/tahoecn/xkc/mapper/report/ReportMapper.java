@@ -7,6 +7,7 @@ import com.tahoecn.xkc.model.dto.ChannelDto;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,4 +31,8 @@ public interface ReportMapper extends BaseMapper<BChannelorg> {
 
     List<Map<String,Object>> ChannelCustomerReport_Select(@Param("orglevel")String orglevel, @Param("accountID")String accountID,
                                                           @Param("startDate")String startDate, @Param("endDate")String endDate, @Param("sql")String sql);
+
+    List<Map<String, Object>> mChannelCheckReportList_Select(IPage page, @Param("StartTime")Date startTime, @Param("EndTime")Date endTime, @Param("ProjectID")String projectID);
+
+    List<Map<String, Object>> mChannelCheckReportList_Export(@Param("StartTime")Date startTime, @Param("EndTime")Date endTime, @Param("ProjectID")String projectID);
 }

@@ -217,4 +217,41 @@ public class ReportController extends TahoeBaseController {
         }
     }
 
+
+    @ApiOperation(value = "考勤报表查询", notes = "考勤报表查询")
+    @RequestMapping(value = "/mChannelCheckReportList_Select", method = {RequestMethod.GET})
+    public Result mChannelCheckReportList_Select(String ProjectID, Date StartTime,Date EndTime,int PageIndex,int PageSize) {
+        IPage page=new Page(PageIndex,PageSize);
+        List<Map<String,Object>> list=reportService.mChannelCheckReportList_Select(page,StartTime,EndTime,ProjectID);
+        return Result.ok(list);
+    }
+    @ApiOperation(value = "考勤报表导出", notes = "考勤报表导出")
+    @RequestMapping(value = "/mChannelCheckReportList_Export", method = {RequestMethod.POST})
+    public Result mChannelCheckReportList_Export(String ProjectID, Date StartTime,Date EndTime) {
+        List<Map<String,Object>> list=reportService.mChannelCheckReportList_Export(StartTime,EndTime,ProjectID);
+        SetExcel_mChannelCheckReportList(list);
+        return null;
+    }
+
+    private void SetExcel_mChannelCheckReportList(List<Map<String,Object>> result) {
+        List<ExcelExportEntity> entity = new ArrayList<>();
+        entity.add(new ExcelExportEntity("姓名", "Name"));
+        entity.add(new ExcelExportEntity("电话", "Mobile"));
+        entity.add(new ExcelExportEntity("身份证", "CertificatesNo"));
+        entity.add(new ExcelExportEntity("打卡日期", "CheckDate"));
+        entity.add(new ExcelExportEntity("签到", "CheckInTime"));
+        entity.add(new ExcelExportEntity("签退", "CheckOutTime"));
+        entity.add(new ExcelExportEntity("工时", "WorkTime"));
+        entity.add(new ExcelExportEntity("任务名称", "TaskName"));
+        entity.add(new ExcelExportEntity("所属专员", "ReportName"));
+        entity.add(new ExcelExportEntity("组别", "ChannelTypeName"));
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

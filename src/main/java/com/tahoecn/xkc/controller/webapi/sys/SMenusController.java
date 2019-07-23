@@ -93,8 +93,8 @@ public class SMenusController extends TahoeBaseController {
 
     @ApiOperation(value = "新增菜单", notes = "新增菜单")
     @RequestMapping(value = "/SystemMenu_Insert", method = {RequestMethod.POST})
-    public Result SystemMenu_Insert(@RequestBody SMenus menus) {
-        menus.setID(UUID.randomUUID().toString());
+    public Result SystemMenu_Insert(@RequestBody SMenusXkc menus) {
+        menus.setId(UUID.randomUUID().toString());
         menus.setCreator(ThreadLocalUtils.getUserName());
         menus.setCreateTime(new Date());
         menus.setIsDel(0);
@@ -116,7 +116,7 @@ public class SMenusController extends TahoeBaseController {
 
     @ApiOperation(value = "编辑菜单", notes = "编辑菜单")
     @RequestMapping(value = "/SystemMenu_Update", method = {RequestMethod.POST})
-    public Result SystemMenu_Update(@RequestBody SMenus menus) {
+    public Result SystemMenu_Update(@RequestBody SMenusXkc menus) {
 
         boolean b=isMenusService.SystemMenu_Update(menus);
         if (b){

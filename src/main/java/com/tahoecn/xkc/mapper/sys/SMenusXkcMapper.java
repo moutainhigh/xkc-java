@@ -21,7 +21,7 @@ import java.util.Map;
 public interface SMenusXkcMapper extends BaseMapper<SMenusXkc> {
     List<Map<String,Object>> SystemMenusList_Select();
 
-    void SystemMenu_Insert(SMenus menus);
+    void SystemMenu_Insert(SMenusXkc menus);
 
     String getOldPath(@Param("ID") String id);
 
