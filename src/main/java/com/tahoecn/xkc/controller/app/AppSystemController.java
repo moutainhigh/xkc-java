@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,6 +51,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/app/system")
 public class AppSystemController extends TahoeBaseController {
 
+	@Value("${ImgSiteUrl}")
+	private String imgSiteUrl;
+	@Value("${ShareUrl}")
+	private String ShareUrl;
+	@Value("${yuanshiID}")
+	private String yuanshiID;
+	@Value("${WXDetailPagePath}")
+	private String WXDetailPagePath;
     @Autowired
     private IBSystemadService iBSystemadService;
     @Autowired
@@ -193,7 +202,7 @@ public class AppSystemController extends TahoeBaseController {
     }
 	
 	@ResponseBody
-    @ApiOperation(value = "分享项目信息", notes = "分享项目信息")
+    @ApiOperation(value = "分享小程序", notes = "分享小程序")
     @RequestMapping(value = "/mShareAppDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mShareAppDetail_Select(@RequestBody JSONObject jsonParam) {
     	try{
@@ -201,10 +210,6 @@ public class AppSystemController extends TahoeBaseController {
             System.out.println(jsonParam.toJSONString());
             Map paramMap = (HashMap)jsonParam.get("_param");
             String ShareProjectID = (String)paramMap.get("ShareProjectID").toString();
-            String imgSiteUrl = (String)paramMap.get("imgSiteUrl").toString();//后台地址
-            String yuanshiID = (String)paramMap.get("yuanshiID").toString();//原始ID
-            String ShareUrl = (String)paramMap.get("ShareUrl").toString();//备用地址
-            String WXDetailPagePath = (String)paramMap.get("WXDetailPagePath").toString();//微信小程序项目详情路径
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("ShareProjectID", ShareProjectID);
             map.put("imgSiteUrl", imgSiteUrl);
@@ -217,16 +222,15 @@ public class AppSystemController extends TahoeBaseController {
             System.out.println(str1[0]);
             url = str1[0];
             map.put("Url", url);
-            List<Map<String, Object>> data = iBSalesuserService.mShareAppDetail_Select(map); 
+            Map<String, Object> data = iBSalesuserService.mShareAppDetail_Select(map); 
             if(data.size() == 0 ) {
             	return Result.errormsg(1,"该项目没有分享传播模块信息");
             }
             else {
-            	Map<String,Object> obj = new HashMap<String,Object>();
-            	obj.put("List", data);
-            	obj.put("UserName", yuanshiID);
-            	obj.put("ShareUrl", ShareUrl);
-            	return Result.ok(obj);
+            	
+            	data.put("UserName", yuanshiID);
+            	data.put("ShareUrl", ShareUrl);
+            	return Result.ok(data);
             }
     	}catch (Exception e) {
 			e.printStackTrace();

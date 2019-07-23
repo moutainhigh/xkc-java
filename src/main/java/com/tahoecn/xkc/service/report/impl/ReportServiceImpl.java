@@ -49,6 +49,11 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
     }
 
     @Override
+    public List<Map<String, Object>> ChannelCustomerReportDL_Select(String orglevel, String accountID, String startDate, String endDate) {
+        return baseMapper.ChannelCustomerReportDL_Select(orglevel, accountID, startDate, endDate);
+    }
+
+    @Override
     public List<Map<String, Object>> mChannelCheckReportList_Select(IPage page, Date startTime, Date endTime, String projectID) {
         List<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Select(page, startTime, endTime, projectID);
         List<Map<String, Object>> result=new ArrayList<>();

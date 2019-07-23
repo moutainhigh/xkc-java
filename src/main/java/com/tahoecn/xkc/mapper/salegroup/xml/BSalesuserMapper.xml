@@ -30,7 +30,7 @@
         </where>
     </select>
     
-    <!-- 分享项目信息 -->
+    <!-- 分享小程序 -->
     <select id="mShareAppDetail_Select" resultType="java.util.HashMap" parameterType="java.util.HashMap">
      SELECT
       A.ID,

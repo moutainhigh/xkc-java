@@ -26,6 +26,8 @@ public interface ReportService extends IService<BChannelorg> {
 
     List<Map<String,Object>> ChannelCustomerReport_Select(String orglevel, String accountID, String startDate, String endDate, String s);
 
+    List<Map<String,Object>> ChannelCustomerReportDL_Select(String orglevel, String accountID, String startDate, String endDate);
+
     List<Map<String, Object>> mChannelCheckReportList_Select(IPage page, Date startTime, Date endTime, String projectID);
 
     List<Map<String, Object>> mChannelCheckReportList_Export(Date startTime, Date endTime, String projectID);

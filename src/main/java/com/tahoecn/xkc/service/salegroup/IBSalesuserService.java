@@ -19,9 +19,9 @@ public interface IBSalesuserService extends IService<BSalesuser> {
     List<Map<String, Object>> UserSalesList_Select(String projectID, String teamID);
 
     /*
-     * 分享项目信息
+     * 分享小程序
      */
-	List<Map<String, Object>> mShareAppDetail_Select(Map<String, Object> map);
+	Map<String, Object> mShareAppDetail_Select(Map<String, Object> map);
 
 	String mShareAppDetail_Select1(Map<String, Object> map);
 
