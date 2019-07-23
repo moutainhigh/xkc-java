@@ -3,7 +3,10 @@ package com.tahoecn.xkc.mapper.customer;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 
 /**
@@ -98,7 +101,7 @@ public interface BCustomerpotentialMapper extends BaseMapper<BCustomerpotential>
 	 * @param pmap
 	 * @return
 	 */
-	List<Map<String,Object>> mCustomerPotentialFollowUpList_Select(Map<String,Object> pmap);
+	IPage<Map<String,Object>> mCustomerPotentialFollowUpList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
 	
 	/**
 	 * 自渠潜在客户资料完善
