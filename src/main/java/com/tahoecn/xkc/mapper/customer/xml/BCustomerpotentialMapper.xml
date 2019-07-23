@@ -223,7 +223,7 @@
 		                    '报备' AS Name ,
 		                    CreateTime AS TractTime
 		          FROM      dbo.B_Clue
-		          WHERE     ID = '{ClueID}'
+		          WHERE     ID = #{ClueID}
 		          UNION
 		          SELECT    2 AS Sort ,
 		                    '到访' AS Name ,
@@ -312,7 +312,7 @@
 	<select id="mChannelTaskGetByClueID_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
 		SELECT a.id,a.Name FROM dbo.B_ChannelTask a LEFT JOIN dbo.B_Clue b ON a.ID = b.ChannelTaskID
-		WHERE b.ID = '{ClueID}'
+		WHERE b.ID = #{ClueID}
 	    ]]>
 	</select>
 	
@@ -365,9 +365,9 @@
 		                    AND CustomerPotentialMobile = ( SELECT TOP 1
 		                                                            Mobile
 		                                                    FROM    dbo.B_Clue
-		                                                    WHERE   ID = #{ClueID}
+		                                                    WHERE   ID = #{pmap.ClueID}
 		                                                  )
-		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{ClueID})                                 
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                 
 		                    AND FollowUpContent IS NOT NULL AND FollowUpContent != ''                                          
 		          UNION ALL
 		          SELECT    OpportunityID ,
@@ -386,11 +386,10 @@
 		                    AND CustomerMobile = ( SELECT TOP 1
 		                                                    Mobile
 		                                           FROM     dbo.B_Clue
-		                                           WHERE    ID = #{ClueID}
+		                                           WHERE    ID = #{pmap.ClueID}
 		                                         )
-		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{ClueID})                                          
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                          
 		        ) T
-		ORDER BY T.CreateTime DESC
 	    ]]>
 	</select>
 	

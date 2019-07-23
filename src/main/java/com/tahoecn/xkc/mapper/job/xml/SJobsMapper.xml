@@ -130,4 +130,97 @@
         a.ID IS NOT NULL
         AND r.ID IS NULL
     </insert>
+
+    <select id="CommonJobList_Select" resultType="java.util.HashMap" parameterType="string">
+
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY CreateTime ) rowNum,
+        ID,
+        JobName,
+        JobDesc,
+        (
+        SELECT COUNT
+        ( 1 )
+        FROM
+        dbo.S_CommonJobsMenuRel a
+        INNER JOIN dbo.S_Menus_xkc b ON a.MenuID= b.ID
+        AND b.IsDel= 0
+        AND b.Creator= '99'
+        WHERE
+        a.IsDel= 0
+        AND a.JobID= s.ID
+        ) menuCount,
+        (
+        SELECT COUNT
+        ( 1 )
+        FROM
+        S_CommonJobsFunctionsRel c
+        INNER JOIN dbo.S_Functions d ON c.FuncID= d.ID
+        AND d.IsDel= 0
+        AND d.Creator= '99'
+        WHERE
+        c.IsDel= 0
+        AND c.JobID= s.ID
+        ) funCount
+        FROM
+        dbo.S_CommonJobs s
+        WHERE
+        Creator = '100'
+
+    </select>
+
+    <select id="getChildrenByPID" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE PID=#{pid} AND FullPath LIKE 'App菜单/%'
+    </select>
+
+    <select id="MenuOrFunIDList_Select_Tree" parameterType="string" resultType="com.tahoecn.xkc.model.sys.SMenusXkc">
+        SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE
+        FullPath LIKE 'App菜单'
+    </select>
+
+    <select id="MenuOrFunIDList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        b.ID
+        FROM
+        dbo.S_CommonJobsMenuRel a
+        INNER JOIN dbo.S_Menus_xkc b ON a.MenuID= b.ID
+        AND b.IsDel= 0
+        AND b.Creator= '99'
+        WHERE
+        JobID = #{JobID}
+        AND a.IsDel= 0 UNION ALL
+        SELECT
+        CASE
+
+        WHEN
+        CHARINDEX( 'ToDoListPage_Phone', b.FuncCode ) = 1 THEN
+        '2'
+        WHEN CHARINDEX( 'CustomerListPage_PushInfo', b.FuncCode ) = 1 THEN
+        '3'
+        WHEN CHARINDEX( 'CustomerInfo_NeedEdit', b.FuncCode ) = 1 THEN
+        '4'
+        WHEN CHARINDEX( 'CustomerListPage_AddCustomer', b.FuncCode ) = 1 THEN
+        '5'
+        WHEN CHARINDEX( 'CustomerListPage_CustomerLabel', b.FuncCode ) = 1 THEN
+        '6'
+        WHEN CHARINDEX( 'CustomerListPage_CustomerFollow', b.FuncCode ) = 1 THEN
+        '7'
+        WHEN CHARINDEX( 'CustomerListPage_IsShowMobile', b.FuncCode ) = 1 THEN
+        '8'
+        END ID
+        FROM
+        dbo.S_CommonJobsFunctionsRel a
+        INNER JOIN dbo.S_Functions b ON a.FuncID= b.ID
+        AND b.Creator= '99'
+        WHERE
+        JobID = #{JobID}
+        AND a.IsDel=0
+
+    </select>
+
+    <select id="getFuncChildren" resultType="java.util.HashMap" parameterType="string">
+
+        SELECT ID,  FuncName as MenuName  FROM S_Functions WHERE MenuID=#{menuID}
+
+    </select>
 </mapper>

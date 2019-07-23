@@ -5,18 +5,18 @@
 	<select id="sCustomerFJList_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VCustomerfjlistSelect">
 		<![CDATA[
 			SELECT * FROM V_CustomerFJList_Select   
-	      	WHERE IsDel = 0    AND Assignor = #{UserID}  AND ProjectID = #{ProjectID} 
-	      	${WHERE}
-	      	${ORDER}
+	      	WHERE IsDel = 0    AND Assignor = #{pa.UserID}  AND ProjectID = #{pa.ProjectID} 
+	      	${pa.WHERE}
+	      	${pa.ORDER}
 		]]>
 	</select>
 	
 	<select id="sCustomerFJAdviserList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-	    SELECT ID,RoleID,ProjectID,Name,Mobile,#{SiteUrl}+HeadImg HeadImg,GroupName,GroupID,DayTotalCount,Creator   FROM CustomerFJAdviserList_Select
-	    WHERE RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and ProjectID=#{ProjectID}
-	    ${WHERE}
-	    ${ORDER}
+	    SELECT ID,RoleID,ProjectID,Name,Mobile,#{pmap.SiteUrl}+HeadImg HeadImg,GroupName,GroupID,DayTotalCount,Creator   FROM CustomerFJAdviserList_Select
+	    WHERE RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and ProjectID=#{pmap.ProjectID}
+	    ${pmap.WHERE}
+	    ${pmap.ORDER}
 	    ]]>
 	</select>
 	

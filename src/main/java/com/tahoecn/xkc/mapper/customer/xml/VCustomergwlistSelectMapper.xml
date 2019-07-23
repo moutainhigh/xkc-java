@@ -1746,7 +1746,7 @@ VALUES  ( #{OpportunityID},
                 0 ,
                 1
         FROM    F_StrToTable(#{CustomerTag})
-        WHERE   name <> '';
+        WHERE   name <> ''
 		]]>
 	</insert>
 	
@@ -1757,7 +1757,7 @@ VALUES  ( #{OpportunityID},
 		                      ELSE Status
 		                 END,
 		        AllCustomer = #{SubscriberCustomer},
-		        CustomerName = #{LastName}{FirstName},
+		        CustomerName = #{Name},
 		        CustomerMobile = #{Mobile},
 		        SaleUserID = #{SaleUserID},
 		        SaleUserName = dbo.F_GetSaleUserName(#{SaleUserID}) ,

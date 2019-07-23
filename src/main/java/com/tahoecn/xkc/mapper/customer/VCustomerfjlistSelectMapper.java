@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.customer.VCustomerfjlistSelect;
 
 /**
@@ -21,9 +22,13 @@ public interface VCustomerfjlistSelectMapper extends BaseMapper<VCustomerfjlistS
 	/**
 	 * 案场分接客户列表
 	 */
-	List<VCustomerfjlistSelect> sCustomerFJList_Select(Map<String, Object> pa);
+	List<VCustomerfjlistSelect> sCustomerFJList_Select(@Param("pa")Map<String, Object> pa);
 	
-	List<Map<String,Object>> sCustomerFJAdviserList_Select(Map<String, Object> pmap);
+	IPage<VCustomerfjlistSelect> sCustomerFJList_Select(IPage<VCustomerfjlistSelect> page,@Param("pa")Map<String, Object> pa);
+	
+	List<Map<String,Object>> sCustomerFJAdviserList_Select(@Param("pmap")Map<String, Object> pmap);
+	
+	IPage<Map<String,Object>> sCustomerFJAdviserList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String, Object> pmap);
 	
 	Long mSystemFormSessionStatus_Select_step1(Map<String, Object> pmap);
 

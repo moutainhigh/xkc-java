@@ -141,4 +141,6 @@ public interface IBChanneluserService extends IService<BChanneluser> {
             , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID);
 
     boolean AgenStatus_UpdateN(String id, int status);
+
+    boolean AgenInfo_UpdateN(String id, String channelTypeID);
 }

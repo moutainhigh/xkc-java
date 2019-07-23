@@ -162,4 +162,183 @@
                         WHERE a.ID = #{PublicID}
 		]]>
 	</select>
+	<!-- 公共池抢客 -->
+	<select id="mCustomerGGCList_Insert" statementType="CALLABLE">
+		{call P_CustomerAllotOneSelf_Update(#{UserID},#{ProjectID},#{OrgID},#{JobID},#{PublicIDs},${str1,mode=out})}
+	</select>
+	<!-- 获取自渠所在组织 -->
+	<select id="fromBSalesGroupMember" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT b.Name as OrgName,
+				b.ID as OrgID, 
+				(CASE b.Nature 
+					WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F'
+					WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A'
+					WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A'
+					WHEN 6 THEN 'FC09F0DF-D3DF-4378-91C0-7146EC451F43'
+					WHEN 7 THEN 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'
+				END) as AdviserGroupID
+			FROM dbo.B_SalesGroupMember a LEFT JOIN dbo.B_SalesGroup b ON b.ID = a.ReceptionGroupID 
+			WHERE a.MemberID = #{UserID} AND a.ProjectID = #{ProjectID} AND a.IsDel = 0 AND a.RoleID = #{RoleID}
+		]]>
+	</select>
+	<!-- 创建线索 -->
+	<insert id="newBClue" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT INTO dbo.B_Clue
+		        ( ID ,
+		          CustomerPotentialID ,
+		          Name ,
+		          LastName ,
+		          FirstName ,
+		          Gender ,
+		          Mobile ,
+		          CognitiveChannel ,
+		          CognitiveChannelSub ,
+		          TheLatestFollowUpDate ,
+		          TheLatestFollowUpContent ,
+		          TheLatestFollowUpWay ,
+		          FollowupCount ,
+		          IntentProjectID ,
+		          IntentProjectName ,
+		          CustomerLevel ,
+		          CustomerRank ,
+		          Remark ,
+		          SourceType ,
+		          ReportUserID ,
+		          ReportUserName ,
+		          ReportUserMobile ,
+		          ReportUserOrg ,
+		          RuleID ,
+		          InvalidType ,
+		          InvalidTime ,
+		          InvalidReason ,
+		          ComeOverdueTime ,
+		          TradeOverdueTime ,
+		          UserBehaviorID ,
+		          AdviserGroupID ,
+		          IsSelect ,
+		          ConfirmTime ,
+		          Creator ,
+		          CreateTime ,
+		          Editor ,
+		          EditeTime ,
+		          IsDel ,
+		          Status ,
+		          ConfirmUserId ,
+		          NextFollowUpDate ,
+		          ChannelUserID ,
+		          ChannelTaskID ,
+		          ChannelCollaborator ,
+		          ReportMethod ,
+		          WXUserID ,
+		          IsShare ,
+		          ShareLogDetailID
+		        )
+		SELECT ${NewClueID},
+				CustomerPotentialID,
+				Name ,
+		          LastName ,
+		          FirstName ,
+		          Gender ,
+		          Mobile ,
+		          NULL ,
+		          NULL ,
+		          GETDATE() ,
+		          '公共池抢客所得' ,
+		          '69331990-DBF4-0A2F-80CD-7BC424AA8928' ,
+		          FollowupCount ,
+		          IntentProjectID ,
+		          IntentProjectName ,
+		          CustomerLevel ,
+		          CustomerRank ,
+		          Remark ,
+		          SourceType ,
+		          #{UserID},
+		          dbo.F_GetSaleUserName(#{UserID}),
+		          dbo.F_GetSaleMobile(#{UserID}),
+		          #{OrgName} ,
+		          RuleID ,
+		          NULL ,
+		          NULL ,
+		          NULL ,
+		          NULL ,
+		          NULL ,
+		          UserBehaviorID ,
+		          #{AdviserGroupID} ,
+		          IsSelect ,
+		          ConfirmTime ,
+		          #{UserID} ,
+		          GETDATE() ,
+		          null ,
+		          null ,
+		          0 ,
+		          1 ,
+		          ConfirmUserId ,
+		          NextFollowUpDate ,
+		          ChannelUserID ,
+		          ChannelTaskID ,
+		          ChannelCollaborator ,
+		          ReportMethod ,
+		          '' ,
+		          0 ,
+		          ''
+				FROM dbo.B_Clue WHERE ID = #{ClueID}
+		]]>
+	</insert>
+	<!-- 添加跟进记录 -->
+	<insert id="insBCustomerPotentialFollowUp" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT INTO dbo.B_CustomerPotentialFollowUp
+		        ( ID ,
+		          CustomerPotentialID ,
+		          CustomerPotentialName ,
+		          CustomerPotentialMobile ,
+		          ClueID ,
+		          FollwUpUserID ,
+		          FollwUpUserName ,
+		          FollwUpUserMobile ,
+		          FollwUpType ,
+		          FollwUpWay ,
+		          FollowUpContent ,
+		          NextFollowUpDate ,
+		          IntentionLevel ,
+		          OrgID ,
+		          Creator ,
+		          CreateTime ,
+		          Editor ,
+		          EditeTime ,
+		          IsDel ,
+		          Status ,
+		          FollwUpUserRole ,
+		          CustomerRank ,
+		          ProjectID
+		        )
+		SELECT 
+				NEWID(),
+				CustomerPotentialID,
+				#{CustomerPotentialName},
+				#{CustomerPotentialMobile},
+				#{NewClueID},
+				#{UserID},
+		        dbo.F_GetSaleUserName(#{UserID}),
+		        dbo.F_GetSaleMobile(#{UserID}),
+				'',
+				'',
+				'公共客户池抢客所得',
+				NULL,
+				'',
+				#{OrgID},
+				#{UserID},
+				GETDATE(),
+				NULL,
+				NULL,
+				0,
+				1,
+				'48FC928F-6EB5-4735-BF2B-29B1F591A582',
+				'',
+				#{ProjectID}
+		 FROM dbo.B_Clue WHERE ID = #{ClueID}		
+		]]>
+	</insert>
 </mapper>

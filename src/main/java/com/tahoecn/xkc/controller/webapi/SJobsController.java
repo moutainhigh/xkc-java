@@ -16,11 +16,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 
 import java.util.Date;
@@ -229,5 +226,35 @@ public class SJobsController extends TahoeBaseController {
             return Result.okm("成功");
         }
         return Result.errormsg(99,"删除人员失败");
+    }
+
+    @ApiOperation(value = "APP功能授权列表", notes = "APP功能授权列表")
+    @RequestMapping(value = "/CommonJobList_Select", method = {RequestMethod.POST})
+    public Result CommonJobList_Select(){
+        List<Map<String, Object>> list=jobsService.CommonJobList_Select();
+        return Result.ok(list);
+    }
+
+    @ApiOperation(value = "APP功能授权(树形结构)", notes = "APP功能授权(树形结构)")
+    @RequestMapping(value = "/MenuOrFunIDList_Select_Tree", method = {RequestMethod.POST})
+    public Result MenuOrFunIDList_Select_Tree(){
+        List<Map<String, Object>> list=jobsService.MenuOrFunIDList_Select_Tree();
+        return Result.ok(list);
+    }
+    @ApiOperation(value = "APP功能授权(树形结构)回显信息", notes = "APP功能授权(树形结构)回显信息")
+    @RequestMapping(value = "/MenuOrFunIDList_Select", method = {RequestMethod.POST})
+    public Result MenuOrFunIDList_Select(String JobID){
+        List<Map<String, Object>> list=jobsService.MenuOrFunIDList_Select(JobID);
+        return Result.ok(list);
+    }
+
+    @ApiOperation(value = "APP新增或修改功能授权", notes = "APP新增或修改功能授权")
+    @RequestMapping(value = "/FunctionAuthorization_Insert", method = {RequestMethod.POST})
+    public Result FunctionAuthorization_Insert(String JobID,String MainID,String SonID){
+        Boolean b=jobsService.FunctionAuthorization_Insert(JobID,MainID,SonID);
+        if (b){
+            return Result.ok("成功");
+        }
+        return Result.errormsg(99,"修改或新增失败");
     }
 }

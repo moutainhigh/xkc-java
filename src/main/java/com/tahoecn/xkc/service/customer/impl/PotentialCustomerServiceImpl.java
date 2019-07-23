@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
@@ -78,7 +80,9 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
         	re.put("List", data);
         	re.put("AllCount", recordCount);
         	re.put("PageSize", paramAry.get("PageSize"));
-        	entity.setData(re);
+        	String dataStr = new JSONObject(re).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+        	entity.setData(data_re);
 			entity.setErrcode(0);
 			entity.setErrmsg("成功");
 		} catch (Exception e) {
@@ -147,9 +151,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 			Map<String,Object> data = bCustomerpotentialMapper.mCustomerPotentialZQBaseDetail_Select(pmap);
 	        if (data!=null && data.size()>0){
 	        	Map<String,Object> job = bCustomerpotentialMapper.mCustomerPotentialZQTractDetail_Select(pmap);
-	        	data.put("TractSort", job.get("Sort"));
-	        	data.put("TractName", job.get("Name"));
-	        	data.put("TractTime", job.get("TractTime"));
+	        	if(job!=null && job.size()>0){
+	        		data.put("TractSort", job.get("Sort"));
+		        	data.put("TractName", job.get("Name"));
+		        	data.put("TractTime", job.get("TractTime"));
+	        	}
 	            
 	        	JSONObject token = new JSONObject();
 	            token.put("TokerUserID",data.get("ReportUserID"));
@@ -158,7 +164,9 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	            token.put("SourceType",data.get("SourceType"));
 	            data.put("Token", token);
 	        }
-	        re.setData(data);
+	        String dataStr = new JSONObject(data).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+	        re.setData(data_re);
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
 		} catch (Exception e) {
@@ -210,8 +218,15 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 		Result entity = new Result();
 		try {
 			Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
-			List<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select(pmap);
-			entity.setData(data);
+			IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
+	    	page.setSize(paramAry.getLongValue("PageSize"));
+	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+			IPage<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select(page,pmap);
+			JSONObject j_data = new JSONObject();
+	    	j_data.put("List", data.getRecords());
+	    	j_data.put("AllCount", data.getTotal());
+	    	j_data.put("PageSize", data.getSize());
+			entity.setData(j_data);
             entity.setErrcode(0);
             entity.setErrmsg("成功！");
 		} catch (Exception e) {
@@ -225,6 +240,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	@Override
 	public Result mCustomerPotentialZQDetail_Update(JSONObject paramAry) {
 		Result entity = new Result();
+		entity.setData("成功");
         try{
             CGWDetailModel model = JSONObject.parseObject(paramAry.toJSONString(),CGWDetailModel.class);
             if (model != null && model.getItemList() != null && model.getItemList().size() > 0){
@@ -303,6 +319,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	@Override
 	public Result mCustomerPotentialZQDetail_Insert(JSONObject paramAry) {
 		Result entity = new Result();
+		entity.setErrmsg("成功");
         try{
             if (!StringUtils.isEmpty(paramAry.getString("FormSessionID"))){
                 String formSessionID = paramAry.getString("FormSessionID");
@@ -323,7 +340,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                     	Map<String,Object> channelTaskParam = new HashMap<String, Object>();
                         channelTaskParam.put("ChannelTaskID",ChannelTaskID);
                         Result channelTaskEntiry = mChannelTaskDetail_Select(channelTaskParam);
-                        if (channelTaskEntiry.getErrcode() == 0){
+                        if (channelTaskEntiry.getErrcode() == 0 && channelTaskEntiry.getData()!=null){
                         	JSONObject channelTask = (JSONObject)channelTaskEntiry.getData();
                             if (channelTask.size() > 0){
                                 String TaskType = channelTask.getString("TaskType");
@@ -724,11 +741,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
             }
             return msg;
         }
-        if (clues.size() == 0){//该手机号为新客户（在允许报备老客户时，此段无意义，仅存在于报备新客户）
+        if (clues==null || clues.size() == 0){//该手机号为新客户（在允许报备老客户时，此段无意义，仅存在于报备新客户）
             msg.setErrcode(0);
             return msg;
         }
-        if (clues.size() == 1){//该手机号线索已存在，此条件下需要进一步证明规则类型
+        if (clues!=null && clues.size() == 1){//该手机号线索已存在，此条件下需要进一步证明规则类型
             int ruleType = (int) clues.get(0).get("RuleType");
             if (UserRule.getRuleType() == ruleType && ruleType == 1){//线索为竞争带看，并且当前渠道用户规则也为竞争带看
                 msg.setErrcode(0);
@@ -808,7 +825,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	                JSONObject channelTaskParam = new JSONObject();
 	                channelTaskParam.put("ChannelTaskID",model.getChannelTaskID());
 	                Result channelTaskEntiry = mChannelTaskDetail_Select(channelTaskParam);
-	                if (channelTaskEntiry.getErrcode() == 0){
+	                if (channelTaskEntiry.getErrcode() == 0 && channelTaskEntiry.getData()!=null){
 	                	JSONObject channelTask = (JSONObject)channelTaskEntiry.getData();
 	                    if (channelTask.size() > 0){
 	                        String TaskType = channelTask.getString("TaskType");
@@ -845,7 +862,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	                return entity;
 	            }
 	            CustomerObj = CustomerPotentialDetail_Select(model.getMobile());
-	            if (CustomerObj.size() > 0){//存在潜在客户
+	            if (CustomerObj!=null && CustomerObj.size() > 0){//存在潜在客户
 	                jsonFile = "ZQNewCustomerPotential.json";
 	                customerPotentialModeType = CustomerPotentialModeType.自渠_新线索_老潜在客户.getTypeID();
 	            }else{
@@ -997,7 +1014,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	            whereinnerSb.append(" AND t.ReportUserID = '"+model.getUserID()+"' ");
 	        }
 	        //判断是否有渠道任务ID
-	        if (!StringUtils.isEmpty(model.getChannelTaskID().trim())){
+	        if (!StringUtils.isEmpty(model.getChannelTaskID())){
 	            whereinnerSb.append(" AND t.ChannelTaskID='"+model.getChannelTaskID()+"' ");
 	        }
 	        paramAry.put("WHERE", whereSb.toString());
@@ -1011,7 +1028,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        re_map.put("List", data);
 	        re_map.put("AllCount", recordCount);
 	        re_map.put("PageSize", paramAry.get("PageSize"));
-	        re.setData(re_map);
+	        
+	        String dataStr = new JSONObject(re_map).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+            
+	        re.setData(data_re);
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
 		} catch (Exception e) {

@@ -21,8 +21,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomerfiltergroup;
+import com.tahoecn.xkc.model.opportunity.BOpportunity;
+import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.FilterItem;
+import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialfiltergroupService;
 import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
@@ -32,6 +36,7 @@ import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.customer.IVCustomerxsjlsalesuserlistSelectService;
 import com.tahoecn.xkc.service.customer.impl.CustomerHelp;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
+import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,6 +72,10 @@ public class AppCustomerController extends TahoeBaseController {
     private IVCustomerxsjlsalesuserlistSelectService iVCustomerxsjlsalesuserlistSelectService;
     @Autowired
     private ICustomerHelp iCustomerHelp;
+    @Autowired
+    private IBSalesgroupService iBSalesgroupService;
+    @Autowired
+    private IBClueService iBClueService;
 
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
@@ -990,10 +999,13 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerGGCList_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerGGCList_Insert(@RequestBody JSONObject jsonParam) {
 		try{
-			return null;/*
 			Map paramMap = (HashMap)jsonParam.get("_param");
 			String JobID = (String) paramMap.get("JobID");
 			String PublicIDs = (String) paramMap.get("PublicIDs");
+			int ErrCode = 0;
+			String ErrMsg = "";
+			Map<String,Object> data = null;
+			//判断当前用户身份 ， 置业顾问与自渠
 			if (!StringUtils.isEmpty(JobID) && "48FC928F-6EB5-4735-BF2B-29B1F591A582".equals(JobID)){//自渠
                 if (PublicIDs != null && !"".equals(PublicIDs)){
                     StringBuilder sucbuilder = new StringBuilder();
@@ -1006,113 +1018,115 @@ public class AppCustomerController extends TahoeBaseController {
                             Map<String,Object> obj = new HashMap<String,Object>();
                             obj.put("PublicID", item);
                             //获取公共池客户的机会，线索以及状态， 并且将其置为无效
-                            Map<String,Object> data = iBCustomerpublicpoolService.mGetPublicPoolDetail_Select(obj);
+                            data = iBCustomerpublicpoolService.mGetPublicPoolDetail_Select(obj);
                             if (data != null && data.size() > 0){
                                 if (data.get("IsDel") != null && "0".equals(data.get("IsDel")) ){
                                     String userId = (String) paramMap.get("UserID");
                                     String projectId = (String) paramMap.get("ProjectID");
                                     String mobile = (String) data.get("Mobile");
                                     String name = (String) data.get("Name");
-                                    String channelTypeId = new WeChat.WeChatService().GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
-                                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId, debug);
-                                    if (string.IsNullOrEmpty(channelRegisterModel.UserRule.RuleID))
-                                    {
-                                        re.ErrCode = 21;
-                                        re.ErrMsg = "未找到该渠道的报备规则";
-                                        return re;
+                                    String channelTypeId = GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
+                                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId);
+                                    if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
+                                        return Result.errormsg(21, "未找到该渠道的报备规则");
                                     }
-                                    var CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId, debug);
-                                    if (CustomerValidate.InvalidType != 0)
+                                    Map<String, Object> CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId);
+                                    if ((int)CustomerValidate.get("InvalidType") != 0)
                                     {
-                                        re.ErrCode = CustomerValidate.InvalidType;
-                                        re.ErrMsg = channelRegisterModel.GetMessageForReturn(CustomerValidate.InvalidType, channelRegisterModel.UserRule);
+                                        ErrCode = (int) CustomerValidate.get("InvalidType");
+                                        ErrMsg = channelRegisterModel.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
                                         //抢客失败，将线索机会返还之前的状态
-                                        JObject jParameter = new JObject();
-                                        jParameter.Add("OpportunityID", ConvertHelper.ToString(data["OpportunityID"]));
-                                        jParameter.Add("ClueID", ConvertHelper.ToString(data["ClueID"]));
-                                        jParameter.Add("OpportunityStatus", ConvertHelper.ToString(data["OpportunityStatus"]));
-                                        jParameter.Add("ClueStatus", ConvertHelper.ToString(data["ClueStatus"]));
-                                        JObject bean = (JObject)JsonDataHelper.GetNormalData("mSetCustomerDetail_Update", jParameter, out errmsg, debug);
-                                        if (errbuilder.Length > 0)
-                                        {
-                                            errbuilder.Append("," + name);
+                                        Map<String,Object> jParameter = new HashMap<String,Object>();
+                                        jParameter.put("OpportunityID", data.get("OpportunityID"));
+                                        jParameter.put("ClueID", data.get("ClueID"));
+                                        jParameter.put("OpportunityStatus", data.get("OpportunityStatus"));
+                                        jParameter.put("ClueStatus", data.get("ClueStatus"));
+                                        mSetCustomerDetail_Update(jParameter);
+                                        if (errbuilder.length() > 0){
+                                            errbuilder.append("," + name);
                                             continue;
-                                        }
-                                        else
-                                        {
-                                            errbuilder.Append(name);
+                                        }else{
+                                            errbuilder.append(name);
                                             continue;
                                         }
                                     }
-                                    JObject param = new JObject();
-                                    param.Add("ClueID",data["ClueID"]);
-                                    param.Add("ProjectID", paramAry["ProjectID"]);
-                                    param.Add("UserID", paramAry["UserID"]);
-                                    param.Add("RoleID", paramAry["JobID"]);
-                                    param.Add("PublicID", item);
-                                    JObject jobject = (JObject)JsonDataHelper.GetNormalData("mGGCCustomerByZQDetail_Update", param, out errmsg, debug);
+                                    Map<String,Object> param = new HashMap<String,Object>();
+                                    param.put("ClueID",data.get("ClueID"));
+                                    param.put("ProjectID", paramMap.get("ProjectID"));
+                                    param.put("UserID", paramMap.get("UserID"));
+                                    param.put("RoleID", paramMap.get("JobID"));
+                                    param.put("PublicID", item);
+                                    iBCustomerpublicpoolService.mGGCCustomerByZQDetail_Update(param);
                                     //符合报备规则
-                                    if (sucbuilder.Length > 0)
-                                    {
-                                        sucbuilder.Append("," + data["Name"]);
+                                    if (sucbuilder.length() > 0){
+                                        sucbuilder.append("," + data.get("Name"));
+                                    }else{
+                                        sucbuilder.append(data.get("Name"));
                                     }
-                                    else
-                                    {
-                                        sucbuilder.Append(data["Name"]);
-                                    }
-
-
-                                }
-                                else
-                                {
-                                    if (errbuilder.Length > 0)
-                                    {
-                                        errbuilder.Append("," + data["Name"]);
-                                    }
-                                    else
-                                    {
-                                        errbuilder.Append(data["Name"]);
+                                }else{
+                                    if (errbuilder.length() > 0){
+                                        errbuilder.append("," + data.get("Name"));
+                                    }else{
+                                        errbuilder.append(data.get("Name"));
                                     }
                                 }
-                            }
-                            else
-                            {
+                            }else{
                                 continue;
                             }
                         }
                     }
-                    if (sucbuilder.Length > 0)
-                    {
-                        re.ErrMsg += sucbuilder + "抢客成功;";
+                    if (sucbuilder.length() > 0){
+                        ErrMsg += sucbuilder + "抢客成功;";
                     }
-                    if (errbuilder.Length > 0)
-                    {
-                        re.ErrMsg += errbuilder + "抢客失败;";
+                    if (errbuilder.length() > 0){
+                        ErrMsg += errbuilder + "抢客失败;";
                     }
                 }
-
-            }
-            else if(paramAry["JobID"] != null && paramAry["JobID"].ToString() == "0269F35E-B32D-4D12-8496-4E6E4CE597B7")//置业顾问
-            {
-                data = (JObject)JsonDataHelper.GetNormalData("mCustomerGGCList_Insert", paramAry, out errmsg, debug);
-                if (data["Msg"].ToString() == "0")
-                {
-                    re.ErrMsg = "抢客成功";
+            }else if(paramMap.get("JobID") != null && "0269F35E-B32D-4D12-8496-4E6E4CE597B7".equals(paramMap.get("JobID"))){//置业顾问
+                String Msg = iBCustomerpublicpoolService.mCustomerGGCList_Insert(paramMap);
+                if ("0".equals(Msg)){
+                    ErrMsg = "抢客成功";
+                }else{
+                    ErrMsg = Msg;
                 }
-                else
-                {
-                    re.ErrMsg = data["Msg"].ToString();
-                }
+            }else{
+                ErrMsg = "当前身份不符，没有抢客权限";
             }
-            else
-            {
-                re.ErrMsg = "当前身份不符，没有抢客权限";
-            }
-			return Result.ok("");
-		*/}catch (Exception e) {
+			return Result.ok(ErrMsg);
+		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
+	}
+	/**
+	 * 抢客失败，将线索机会返还之前的状态
+	 */
+	private void mSetCustomerDetail_Update(Map<String, Object> jParameter) {
+		//UPDATE dbo.B_Opportunity SET Status ={OpportunityStatus} WHERE ID = '{OpportunityID}'
+		//		  UPDATE dbo.B_Clue SET Status ={ClueStatus} WHERE ID = '{ClueID}'
+		BOpportunity unity = new BOpportunity();
+		unity.setStatus((int)jParameter.get("OpportunityStatus"));
+		unity.setId(jParameter.get("OpportunityID").toString());
+		iBOpportunityService.updateById(unity);
+		BClue clue = new BClue();
+		clue.setStatus((int)jParameter.get("ClueStatus"));
+		clue.setId(jParameter.get("ClueID").toString());
+		iBClueService.updateById(clue);
+	}
+	/**
+	 * 获取用户身份
+	 */
+	private String GetChannelTypeId(String userId, String projectId, String roleId) {
+		Map<String,Object> channelTypeObj = new HashMap<String,Object>();
+        channelTypeObj.put("MemberID", userId);
+        channelTypeObj.put("ProjectID", projectId);
+        channelTypeObj.put("RoleID", roleId);
+        Map<String,Object> channelInfo = iBSalesgroupService.mShareChannelTypeID_Select(channelTypeObj);
+        String channelTypeId = "";
+        if (channelInfo != null && channelInfo.size() > 0){
+            channelTypeId = (String) channelInfo.get("adviserGroupID");
+        }
+        return channelTypeId;
 	}
 	@ResponseBody
 	@ApiOperation(value = "传播池抢客", notes = "传播池抢客")

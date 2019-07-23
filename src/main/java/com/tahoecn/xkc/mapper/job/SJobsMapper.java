@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.sys.SAccount;
+import com.tahoecn.xkc.model.sys.SMenus;
+import com.tahoecn.xkc.model.sys.SMenusXkc;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,4 +31,14 @@ public interface SJobsMapper extends BaseMapper<SJobs> {
     IPage<SAccount> SystemOrgUserList_Select(IPage page, @Param("UserName")String userName, @Param("EmployeeName")String employeeName, @Param("JobID")String jobID);
 
     void SystemJobUserRel_Insert(@Param("UserIDS") String userIDS, @Param("JobID")String jobID);
+
+    List<Map<String, Object>> CommonJobList_Select();
+
+    List<Map<String,Object>> getChildrenByPID(@Param("pid")String pid);
+
+    SMenusXkc MenuOrFunIDList_Select_Tree();
+
+    List<Map<String, Object>> MenuOrFunIDList_Select(@Param("JobID")String JobID);
+
+    List<Map<String, Object>> getFuncChildren(@Param("menuID")String menuID);
 }

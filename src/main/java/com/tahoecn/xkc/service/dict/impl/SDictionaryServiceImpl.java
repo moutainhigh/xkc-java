@@ -87,6 +87,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             dictionary.setFullPath(NewPath);
             dictionary.setEditor(ThreadLocalUtils.getUserName());
             dictionary.setEditTime(new Date());
+            baseMapper.updateById(dictionary);
             if (StringUtils.isNotBlank(OldPath)){
                 QueryWrapper<SDictionary> wrapper=new QueryWrapper<>();
                 wrapper.eq("ProductID",ProductID);

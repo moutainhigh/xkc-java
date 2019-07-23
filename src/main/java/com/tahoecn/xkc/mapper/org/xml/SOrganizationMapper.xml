@@ -64,7 +64,68 @@
         f.pid,
         f.[Status]
         From S_Organization f
-        WHERE f.PID=#{pid}
+        WHERE
+        <if test="pid == '-1'">
+            f.OrgName='泰禾集团'
+        </if>
+        <if test="pid != '-1'">
+            f.PID=#{pid}
+        </if>
+       <!-- union all
+        select
+        f.Name as OrgName,
+        f.id as ID,
+        '1' as ptype,
+        '' as [OrgCode] ,
+        '' as [OrgShortName] ,
+        '' as [OrgCategory] ,
+        '' as [ListIndex] ,
+        '' as [FullPath] ,
+        10 as [Levels] ,
+        f.BUGUID as pid,
+        ''as  [Status]
+        From B_Project f
+        where   f.Level=1
+        AND f.BUGUID=#{pid}-->
+        ORDER BY Levels ASC,ListIndex ASC
+    </select>
+
+    <select id="SystemProject_Select" resultType="java.util.HashMap" parameterType="string">
+        WITH CTE AS
+        (
+        <!--父项-->
+        SELECT s.ID,s.PID
+        FROM B_Project c left join S_Organization s on c.BUGUID = s.id
+        UNION ALL
+        <!--递归结果集中的下级-->
+        SELECT a.ID,a.PID
+        FROM S_Organization a
+        INNER JOIN CTE b ON a.ID=b.PID
+        )
+
+        SELECT DISTINCT
+        a.OrgName,
+        a.ID,
+        '0' ptype,
+        a.[OrgCode] ,
+        a.[OrgShortName] ,
+        a.[OrgCategory] ,
+        a.[ListIndex] ,
+        a.[FullPath] ,
+        isnull(a.[Levels],0) as [Levels] ,
+        a.pid,
+        a.[Status]
+        FROM S_Organization a
+        INNER JOIN CTE t ON a.ID=t.ID
+        <where>
+        <if test="pid == '-1'">
+            a.OrgName='泰禾集团'
+        </if>
+        <if test="pid != '-1'">
+            a.PID=#{pid}
+        </if>
+        </where>
+            <if test="pid != '-1'">
         union all
         select
         f.Name as OrgName,
@@ -80,7 +141,8 @@
         ''as  [Status]
         From B_Project f
         where   f.Level=1
-        AND f.BUGUID=#{pid}
-        ORDER BY Levels ASC,ListIndex ASC
+        AND
+        f.BUGUID=#{pid}
+        </if>
     </select>
 </mapper>

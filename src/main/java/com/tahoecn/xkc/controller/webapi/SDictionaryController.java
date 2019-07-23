@@ -41,10 +41,11 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "获取所有参数", notes = "获取所有参数")
     @RequestMapping(value = "/SystemAllParams_Select", method = {RequestMethod.POST})
-    public Result SystemAllParams_Select(String AuthCompanyID,String ProductID,int Pageindex,int Pagesize){
+    public Result SystemAllParams_Select(String PID,String AuthCompanyID,String ProductID,int Pageindex,int Pagesize){
         IPage page=new Page(Pageindex,Pagesize);
         QueryWrapper<SDictionary> wrapper=new QueryWrapper<>();
         wrapper.eq("IsDel",0).eq("AuthCompanyID",AuthCompanyID).eq("ProductID",ProductID);
+        wrapper.eq("PID",PID);
         wrapper.lt("Levels",3);
         wrapper.orderByAsc("Levels","ListIndex");
         IPage page1 = dictionaryService.page(page, wrapper);
@@ -74,7 +75,7 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "新增参数", notes = "新增参数")
     @RequestMapping(value = "/SystemParam_Insert", method = {RequestMethod.POST})
-    public Result SystemParam_Insert(SDictionary dictionary){
+    public Result SystemParam_Insert(@RequestBody SDictionary dictionary){
         String pid = dictionary.getPid();
         SDictionary byId = dictionaryService.getById(pid);
         String fullPath = byId.getFullPath();
@@ -85,6 +86,10 @@ public class SDictionaryController extends TahoeBaseController {
             newFullPath=fullPath+"/"+dictionary.getDictName();
         }
         dictionary.setFullPath(newFullPath);
+        dictionary.setCreator(ThreadLocalUtils.getUserName());
+        dictionary.setCreateTime(new Date());
+        dictionary.setIsDel(0);
+        dictionary.setStatus(1);
         boolean save = dictionaryService.save(dictionary);
         if (save){
             return Result.okm("成功");
@@ -94,7 +99,7 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "编辑修改参数", notes = "编辑修改参数")
     @RequestMapping(value = "/SystemParam_Update", method = {RequestMethod.POST})
-    public Result SystemParam_Update(SDictionary dictionary){
+    public Result SystemParam_Update(@RequestBody SDictionary dictionary){
         boolean b=dictionaryService.SystemParam_Update(dictionary);
         if (b){
             return Result.okm("成功");
