@@ -93,4 +93,27 @@ public class IPadSystemController extends TahoeBaseController{
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
+	
+	@ResponseBody
+    @ApiOperation(value = "退出登录", notes = "退出登录")
+    @RequestMapping(value = "/mLFLogout_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mLFLogout_Select(@RequestBody JSONObject paramAry) {
+		try{
+			
+			// 直接将json信息打印出来
+            System.out.println(paramAry.toJSONString());
+            Map paramMap = (HashMap)paramAry.get("_param");
+    		//2.登出日志记录
+    		Map<String,Object> logMap = new HashMap<String,Object>();
+            logMap.put("BizType", "LogoutLFSuccess");
+            logMap.put("BizDesc", "来访登出成功,账号:" + (String)paramMap.get("UserName"));
+            logMap.put("Ext3", (String)paramMap.get("UserName"));
+            logMap.put("Data", paramAry.toJSONString());
+            iSLogsService.SystemLogsDetail_Insert(logMap, request);
+    		return Result.ok("来访登出成功,账号:" + (String)paramMap.get("UserName"));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+    }
 }
