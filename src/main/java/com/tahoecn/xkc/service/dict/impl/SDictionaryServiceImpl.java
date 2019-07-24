@@ -404,8 +404,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID",arr.get(j).get("ID"));
                     dat.put("DictName",arr.get(j).get("DictName"));
                     dat.put("Type","group");
-                    dat.put("Filter",arr.get(i).get("Filter"));
-                    List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter",arr.get(j).get("Filter"));
+                    List<Map<String,Object>> dct= (List) arr.get(j).get("FilterDesc");
                     List FilterDesc=new ArrayList();
                     for (Map<String, Object> map : dct) {
                         for (String key : map.keySet()) {
@@ -639,8 +639,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID",arr.get(j).get("ID"));
                     dat.put("DictName",arr.get(j).get("DictName"));
                     dat.put("Type","group");
-                    dat.put("Filter",arr.get(i).get("Filter"));
-                    List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter",arr.get(j).get("Filter"));
+                    List<Map<String,Object>> dct= (List) arr.get(j).get("FilterDesc");
                     List FilterDesc=new ArrayList();
                     for (Map<String, Object> map : dct) {
                         for (String key : map.keySet()) {
@@ -681,8 +681,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID", arr.get(j).get("ID"));
                     dat.put("DictName", arr.get(j).get("DictName"));
                     dat.put("Type", "group");
-                    dat.put("Filter", arr.get(i).get("Filter"));
-                    List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter", arr.get(j).get("Filter"));
+                    List<Map<String, Object>> dct = (List) arr.get(j).get("FilterDesc");
                     List FilterDesc = new ArrayList();
                     for (Map<String, Object> map : dct) {
                         for (String key : map.keySet()) {
@@ -713,8 +713,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID", arr.get(j).get("ID"));
                     dat.put("DictName", arr.get(j).get("DictName"));
                     dat.put("Type", "group");
-                    dat.put("Filter", arr.get(i).get("Filter"));
-                    List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter", arr.get(j).get("Filter"));
+                    List<Map<String, Object>> dct = (List) arr.get(j).get("FilterDesc");
                     List FilterDesc = new ArrayList();
                     for (Map<String, Object> map : dct) {
                         for (String key : map.keySet()) {

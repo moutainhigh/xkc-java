@@ -139,7 +139,7 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerPotentialFilterGroupDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerPotentialFilterGroupDetail_Insert(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
+			JSONObject paramMap = (JSONObject)jsonParam.getJSONObject("_param");
 			iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupDetail_Insert(paramMap);
 			return Result.ok("潜在客户分组添加成功");
 		}catch (Exception e) {
@@ -177,7 +177,7 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerFilterGroupDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerFilterGroupDetail_Insert(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
+			JSONObject paramMap = (JSONObject)jsonParam.getJSONObject("_param");
 			iBCustomerfiltergroupService.mCustomerFilterGroupDetail_Insert(paramMap);
 			return Result.ok("分组添加成功");
 		}catch (Exception e) {
