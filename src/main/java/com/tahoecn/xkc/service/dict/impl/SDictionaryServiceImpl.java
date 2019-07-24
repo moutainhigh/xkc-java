@@ -735,8 +735,12 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 res.put("KHGGCSXGZZQ",khsxgzgw);
             }
             List data=new ArrayList();
-            if (res.size() >= 1)
-            {
+            if (res.size() == 1){
+            	for (String key : res.keySet()) {
+                    data = (List) res.get(key);
+                }
+            }
+            if (res.size() > 1){
                 for (String key : res.keySet()) {
                     data.add(res.get(key));
                 }
