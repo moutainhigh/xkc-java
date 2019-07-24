@@ -1,22 +1,32 @@
 package com.tahoecn.xkc.service.channel.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.enums.ActionType;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.model.customer.BClue;
+import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
+import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.ImmissionRule;
 import com.tahoecn.xkc.model.vo.ProtectRule;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.IBClueService;
+import com.tahoecn.xkc.service.customer.impl.VCustomergwlistSelectServiceImpl;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +35,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,6 +49,8 @@ import org.springframework.util.StringUtils;
  */
 @Service
 public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implements IBChannelService {
+	@Value("${SiteUrl}")
+    private String SiteUrl;
 	@Resource
 	private BChanneluserMapper bChanneluserMapper;
 	@Autowired
@@ -50,6 +63,255 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	private BCustomerMapper bCustomerMapper;
 	@Autowired
     private IBClueService iBClueService;
+	@Autowired
+    private IBClueruleService iBClueruleService;
+	@Autowired
+    private IBClueService clueService;
+    @Autowired
+    private VCustomergwlistSelectServiceImpl iVCustomergwlistSelectService;
+	
+	
+	/**
+	 * 扫码确认
+	 */
+	@Override
+	public Result mCaseFieCustomerDetail_Select(JSONObject jsonParam) {
+		Result re = new Result();
+		@SuppressWarnings("rawtypes")
+		Map paramMap = (HashMap)jsonParam.get("_param");
+        //参数验证
+        if (StringUtils.isEmpty(paramMap.get("TypeID"))){
+            re.setErrcode(1);
+            re.setErrmsg("参数 TypeID 缺失");
+        }
+        if (!StringUtils.isEmpty(paramMap.get("TypeID")) && paramMap.get("TypeID").equals("1")){
+        	if(StringUtils.isEmpty(paramMap.get("TypeID"))
+        			|| StringUtils.isEmpty(paramMap.get("TokerUserID"))
+        			|| StringUtils.isEmpty(paramMap.get("SourceType"))
+        			|| StringUtils.isEmpty(paramMap.get("ProjectID"))
+        			|| StringUtils.isEmpty(paramMap.get("ClueID"))){
+        		re.setErrcode(1);
+                re.setErrmsg("参数缺失");
+        	}
+        }
+        //判断当前项目和意向项目是否一致 不一致则返回错误
+        paramMap.put("SiteUrl", SiteUrl);
+        List<Map<String,Object>> ob = iBClueService.CaseFieCustomerDetail_Select(paramMap);
+        if (!ob.get(0).get("IntentProjectID").toString().toLowerCase().equals(paramMap.get("ProjectID").toString().toLowerCase())){
+            return Result.errormsg(9,"报备项目和案场项目不一致,请确认带客项目");
+        }
+        //验证规则 TypeID 表示是否验证规则 1 表示验证 其他表示不验证
+        //TypeID 表示是否验证规则 1 表示验证 其他表示不验证
+        if (paramMap.get("TypeID").equals("1")){
+            re =  clueConfirm(paramMap);
+        }
+        //查询
+        //获取客户信息
+        ob = iBClueService.CaseFieCustomerDetail_Select(paramMap);
+        //获取线索信息
+        int invalidType = (int) ob.get(0).get("InvalidType");//无效类型
+        String InvalidReason = (String) ob.get(0).get("InvalidReason");//无效说明
+        //获取无效信息
+        Map<String,Object> RuleP = new HashMap<String,Object>();
+        RuleP.put("Mobile", ob.get(0).get("Mobile"));
+        List<Map<String,Object>> inval = iBClueService.CaseFieInvalDetail_Select(RuleP);
+        //获取规则信息
+        RuleP = new HashMap<String,Object>();
+        RuleP.put("ID", ob.get(0).get("RuleID"));
+        BCluerule rule = iBClueruleService.CaseFieRuleDetail_Select(RuleP);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        //组建规则说明 根据规则id获取规则
+        List<String> ruleList = new ArrayList<String>();
+        if (rule.getIsOnlyAllowNew().equals("1")){
+            ruleList.add(rule.getRuleName() + "，仅允许报备项目新客户");
+        }
+        if (rule.getIsOnlyAllowNew() == 0){
+            if (rule.getOldOwnerLimit() == 0){
+                ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且不允许报备集团老业主");
+            }
+            if (rule.getOldOwnerLimit() == 1){
+                ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且仅允许报备其他项目的老业主");
+            }
+        }
+        if (rule.getFollowUpOverdueDays() > 0){
+            ruleList.add("保护期：距离上一次跟进时间超过" + rule.getFollowUpOverdueDays() + "天未跟进自动失效");
+        }
+        if (rule.getIsProtect() == 1){
+            String leixing = "";
+            if (rule.getUserBehaviorID().equals("1")){
+                leixing = ("签约");
+            }
+            if (rule.getUserBehaviorID().equals("2")){
+                leixing = ("认购");
+            }
+            if (rule.getUserBehaviorID().equals("3")){
+                leixing = ("认筹");
+            }
+            if (rule.getIsSelect() == 1){
+                ruleList.add("保护期模式：两段式 报备-到访-" + leixing);
+                ruleList.add("到访保护期" + rule.getProtectVisitTime() + "天，提前" + rule.getProtectVisitRemindTime() + "天提醒");
+            }else{
+                ruleList.add("启用保护期模式：一段式 报备-" + leixing);
+            }
+            ruleList.add(leixing + "保护期" + rule.getProtectTime() + "天，提前" + rule.getProtectRemindTime() + "天提醒");
+
+        }
+        if (rule.getIsPreIntercept() == 1){
+            ruleList.add("启用防截客时间" + rule.getPreInterceptTime() + "分钟");
+        }
+        ruleList.add("规则在:" + sdf.format(rule.getTakeEffectTime()) + "生效");
+        //无效信息 根据手机号获取有效的线索
+        List<Map<String,Object>> invalidList = new ArrayList<Map<String,Object>>();
+        Map<String,Object> jos = null;
+        //老客户
+        if (invalidType == 2){
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "无效说明");
+            jos.put("Value", InvalidReason);
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "职业顾问名称");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClSaleUserName"));
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备时间");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
+            invalidList.add(jos);
+        }else if(invalidType == 4){
+            //被其他渠道报备
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "无效说明");
+            jos.put("Value", InvalidReason);
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备人");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreator"));
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备时间");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
+            invalidList.add(jos);
+        }else if (invalidType == 5){
+            //被其他渠道带看
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "无效说明");
+            jos.put("Value", InvalidReason);
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备人");
+            jos.put("Value",(inval.size()==0)?"": inval.get(0).get("ClCreator"));
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备时间");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
+            invalidList.add(jos);
+        }else if (invalidType == 1){
+            //报备的客户为集团老业主
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "无效说明");
+            jos.put("Value", InvalidReason);
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "职业顾问名称");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClSaleUserName"));
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备时间");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
+            invalidList.add(jos);
+        }else if (invalidType == 3 || invalidType == 7 || invalidType == 8){
+            //防截客时间内到访
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "无效说明");
+            jos.put("Value", InvalidReason);
+            invalidList.add(jos);
+        }else if (invalidType == 0){
+            //默认
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "无效说明");
+            jos.put("Value", InvalidReason);
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备人");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreator"));
+            invalidList.add(jos);
+            jos = new HashMap<String,Object>();
+            jos.put("Name", "报备时间");
+            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
+            invalidList.add(jos);
+		}else{
+		    jos = new HashMap<String,Object>();
+		    jos.put("Name", "无效说明");
+		    jos.put("Value", InvalidReason);
+		    invalidList.add(jos);
+		    jos = new HashMap<String,Object>();
+		    jos.put("Name", "报备人");
+		    jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreator"));
+		    invalidList.add(jos);
+		    jos = new HashMap<String,Object>();
+		    jos.put("Name", "报备时间");
+		    jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
+		    invalidList.add(jos);
+		}
+        //组建json
+        Map<String,Object> jo = new HashMap<String,Object>();
+        jo.put("ClueList", JSON.parseObject(JSON.toJSONString(ob.get(0))));
+        jo.put("CluruleListeList", ruleList);
+        jo.put("InvalidList", invalidList);
+        return Result.ok(jo);
+	}
+	
+	private Result clueConfirm(Map<String,Object> Parameter) {
+		Result re = new Result();
+        String channelTypeID = getChannelTypeID(Parameter.get("ClueID").toString());
+        if (StringUtils.isEmpty(channelTypeID)){
+        	return Result.errormsg(1,"未找到渠道身份");
+        }
+        Parameter.put("AdviserGroupID",channelTypeID);
+        ChannelRegisterModel channel = this.newChannelRegisterModel(Parameter.get("TokerUserID").toString(), channelTypeID, Parameter.get("ProjectID").toString());
+        Map<String,Object> ruleValidate = this.ValidateForConfirmation(Parameter.get("ClueID").toString(),channel);
+        String invalidReason = clueService.getMessage((int)ruleValidate.get("InvalidType"),JSONUtil.parseObj(channel.getUserRule()));
+        DateTime visitTime = DateTime.now();
+        Parameter.put("VisitTime", visitTime);
+        Parameter.put("ConfirmUserId", Parameter.get("UserID"));
+
+        //通过有效验证
+        if ((boolean) ruleValidate.get("Tag")){
+            String tradeOverTime = "";
+            Parameter.put("TradeOverdueTime", tradeOverTime);
+            re.setErrcode(0);
+            re.setErrmsg("带看确认成功！");
+            re.setData(iBClueService.ClueConfirm_Update(Parameter));
+        }else{//验证不通过
+            if ((int)ruleValidate.get("InvalidType") == -1){
+                return Result.errormsg(1, ruleValidate.get("Message").toString());
+            }
+            re.setErrcode(1);
+            re.setErrmsg(clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),JSONUtil.parseObj(channel.getUserRule())));
+            Parameter.put("InvalidType", ruleValidate.get("InvalidType"));
+            Parameter.put("InvalidReason", invalidReason);
+            //更新当前验证的线索的状态为3（无效）、确认时间、确认人、无效类型和无效原因
+            iBClueService.ClueConfirmInvalid_Update(Parameter);
+        }
+        String follwUpType = (boolean)ruleValidate.get("Tag") == true ? ActionType.确客有效.toString() : ActionType.报备无效.toString();
+        CustomerActionVo customerActionVo = new CustomerActionVo();
+		customerActionVo.setFollwUpType(follwUpType);
+		customerActionVo.setFollwUpTypeID(ActionType.valueOf(follwUpType).getValue());
+		customerActionVo.setSalesType(4);
+		customerActionVo.setNewSaleUserName("");
+		customerActionVo.setOldSaleUserName("");
+		customerActionVo.setFollwUpUserID(Parameter.get("UserID").toString());
+		customerActionVo.setFollwUpWay("");
+		customerActionVo.setFollowUpContent("");
+		customerActionVo.setIntentionLevel("");
+		customerActionVo.setOrgID(Parameter.get("OrgID").toString());
+		customerActionVo.setFollwUpUserRole(Parameter.get("JobID").toString());
+		customerActionVo.setOpportunityID("");
+		customerActionVo.setClueID(Parameter.get("ClueID").toString());
+		customerActionVo.setNextFollowUpDate("");
+        iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+        return Result.ok(re);
+	}
 	
 	@Override
 	public ChannelRegisterModel newChannelRegisterModel(String userId, String adviserGroupID, String projecId){
@@ -65,6 +327,15 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         model.setChannelOrgId(channelOrgId);
         model.setUserRule(UserRule);
         return model;
+    }
+	/**
+     * 获取渠道人员所属组织ID
+     */
+    private String GetChannelOrgID(String userId){
+        Map<String,Object> obj = new HashMap<String,Object>();
+        obj.put("UserID", userId);
+        List<Map<String,Object>> data = bChanneluserMapper.GetChannelOrgID_Select(obj);
+        return (data != null && data.size() > 0) ? data.get(0).get("ChannelOrgID").toString() : "";
     }
 	private RegisterRuleBaseModel loadModel(Map<String, Object> obj) {
 		ImmissionRule imm = new ImmissionRule();
@@ -94,15 +365,54 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         UserRule.setProtectRule(pro);
 		return UserRule;
 	}
+	
 	/**
-     * 获取渠道人员所属组织ID
-     */
-    private String GetChannelOrgID(String userId){
-        Map<String,Object> obj = new HashMap<String,Object>();
-        obj.put("UserID", userId);
-        List<Map<String,Object>> data = bChanneluserMapper.GetChannelOrgID_Select(obj);
-        return (data != null && data.size() > 0) ? data.get(0).get("ChannelOrgID").toString() : "";
-    }
+	 * 现场确认验证
+	 */
+	private Map<String,Object> ValidateForConfirmation(String ClueID,ChannelRegisterModel channel) {
+		Map<String,Object> msg = new HashMap<String,Object>();
+		QueryWrapper<BClue> wrapper = new QueryWrapper<BClue>();
+        wrapper.eq("ID", ClueID);
+        wrapper.eq("IsDel", 0);
+        BClue obj = iBClueService.getOne(wrapper);
+        String phone = obj.getMobile();
+        String projectId = obj.getIntentProjectID();
+        //该线索已经被确认过
+        if (obj.getStatus() == 2){
+            msg.put("Tag", false);
+            msg.put("InvalidType", -1);
+            msg.put("Message", "该线索已被案场确认过！");
+            return msg;
+        }
+        //判断待验证线索是否已经失效
+        if (obj.getStatus() == 3){
+        	msg.put("Tag", false);
+            msg.put("InvalidType", obj.getInvalidType());
+            msg.put("Message", obj.getInvalidReason());
+            return msg;
+        }
+        //到访超过保护期
+        if (IsOverdueCome(obj)){
+        	msg.put("Tag", false);
+            msg.put("InvalidType", 7);
+            return msg;
+        }
+        //是否在防截客时间到访
+        if (IsPreIntercept(obj.getCreateTime(),channel)){
+        	msg.put("Tag", false);
+            msg.put("InvalidType", 3);
+            return msg;
+        }
+        msg = InstantConfirmation(phone, projectId,channel);
+        return msg;
+	}
+	private String getChannelTypeID(String ClueID) {
+        QueryWrapper<BClue> wrapper = new QueryWrapper<BClue>();
+        wrapper.eq("id", ClueID);
+        BClue result = iBClueService.getOne(wrapper);
+        return result != null ?result.getAdviserGroupID():"";
+	}
+	
     /**
      * 验证报备客户是否有效
      */
@@ -305,47 +615,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         }
         return msg;
 	}
-	/**
-	 * 现场确认验证
-	 */
-	@Override
-	public Map<String,Object> ValidateForConfirmation(String ClueID,ChannelRegisterModel channel) {
-		Map<String,Object> msg = new HashMap<String,Object>();
-		QueryWrapper<BClue> wrapper = new QueryWrapper<BClue>();
-        wrapper.eq("ID", ClueID);
-        wrapper.eq("IsDel", 0);
-        BClue obj = iBClueService.getOne(wrapper);
-        String phone = obj.getMobile();
-        String projectId = obj.getIntentProjectID();
-        //该线索已经被确认过
-        if (obj.getStatus() == 2){
-            msg.put("Tag", false);
-            msg.put("InvalidType", -1);
-            msg.put("Message", "该线索已被案场确认过！");
-            return msg;
-        }
-        //判断待验证线索是否已经失效
-        if (obj.getStatus() == 3){
-        	msg.put("Tag", false);
-            msg.put("InvalidType", obj.getInvalidType());
-            msg.put("Message", obj.getInvalidReason());
-            return msg;
-        }
-        //到访超过保护期
-        if (IsOverdueCome(obj)){
-        	msg.put("Tag", false);
-            msg.put("InvalidType", 7);
-            return msg;
-        }
-        //是否在防截客时间到访
-        if (IsPreIntercept(obj.getCreateTime(),channel)){
-        	msg.put("Tag", false);
-            msg.put("InvalidType", 3);
-            return msg;
-        }
-        msg = InstantConfirmation(phone, projectId,channel);
-        return msg;
-	}
+	
 	private boolean IsPreIntercept(Date createTime,ChannelRegisterModel channel) {
 		if (channel.getUserRule().getProtectRule().getIsPreIntercept() == 1){
             //报备时间+防截客周期小于等于当前时间
@@ -364,4 +634,5 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         Map<String,Object> data = iBClueService.IsOverdueCome_Select(obj);
         return Integer.parseInt(data.get("IsOverdueCome").toString()) == 0 ? false : true;
 	}
+	
 }

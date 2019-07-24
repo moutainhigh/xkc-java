@@ -2,7 +2,9 @@ package com.tahoecn.xkc.service.channel;
 
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
@@ -25,5 +27,10 @@ public interface IBChannelService extends IService<BClue> {
 	/**
 	 * 现场确认验证
 	 */
-	Map<String,Object> ValidateForConfirmation(String ClueID,ChannelRegisterModel channel);
+//	Map<String,Object> ValidateForConfirmation(String ClueID,ChannelRegisterModel channel);
+
+	/**
+	 * 扫码确认
+	 */
+	Result mCaseFieCustomerDetail_Select(JSONObject jsonParam);
 }

@@ -21,6 +21,7 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.BAppupgrade;
 import com.tahoecn.xkc.model.sys.SFormsession;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
@@ -36,6 +37,8 @@ public class IPadSystemController extends TahoeBaseController{
     private IBAppupgradeService iBAppupgradeService;
 	@Autowired 
     private ISFormsessionService iSFormsessionService;
+	@Autowired
+    private IBChannelService iBChannelService;
 	
 	@ResponseBody
     @ApiOperation(value = "检查更新", notes = "版本信息")
@@ -116,4 +119,15 @@ public class IPadSystemController extends TahoeBaseController{
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
     }
+	@ResponseBody
+	@ApiOperation(value = "扫码确认", notes = "扫码确认")
+	@RequestMapping(value = "/mCaseFieCustomerDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mCaseFieCustomerDetail_Select(@RequestBody JSONObject paramAry) {
+		try{
+			return iBChannelService.mCaseFieCustomerDetail_Select(paramAry);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }
