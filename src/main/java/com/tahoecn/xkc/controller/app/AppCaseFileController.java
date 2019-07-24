@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.controller.app;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -14,6 +16,7 @@ import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
 import com.tahoecn.xkc.service.customer.IVCustomerfjlistSelectService;
@@ -22,9 +25,11 @@ import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +73,8 @@ public class AppCaseFileController extends TahoeBaseController {
     private VCustomergwlistSelectServiceImpl iVCustomergwlistSelectService;
     @Autowired
     private IBCustomerService iBCustomerService;
+    @Autowired
+    private IBChannelService iBChannelService;
     
 	@ResponseBody
     @ApiOperation(value = "助手首页统计", notes = "助手首页统计")
@@ -100,12 +107,13 @@ public class AppCaseFileController extends TahoeBaseController {
 	@RequestMapping(value = "/mCaseFieCustomerDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCaseFieCustomerDetail_Select(@RequestBody JSONObject jsonParam) {
 		try{
+			Result re = new Result();
 			@SuppressWarnings("rawtypes")
 			Map paramMap = (HashMap)jsonParam.get("_param");
             //参数验证
-//            ParameterEntity pe = Parameter.ToObject<ParameterEntity>();
             if (StringUtils.isEmpty(paramMap.get("TypeID"))){
-                return Result.errormsg(1, "参数 TypeID 缺失");
+                re.setErrcode(1);
+                re.setErrmsg("参数 TypeID 缺失");
             }
             if (!StringUtils.isEmpty(paramMap.get("TypeID")) && paramMap.get("TypeID").equals("1")){
             	if(StringUtils.isEmpty(paramMap.get("TypeID"))
@@ -113,19 +121,20 @@ public class AppCaseFileController extends TahoeBaseController {
             			|| StringUtils.isEmpty(paramMap.get("SourceType"))
             			|| StringUtils.isEmpty(paramMap.get("ProjectID"))
             			|| StringUtils.isEmpty(paramMap.get("ClueID"))){
-            		return Result.errormsg(1, "参数缺失");
+            		re.setErrcode(1);
+                    re.setErrmsg("参数缺失");
             	}
             }
             //判断当前项目和意向项目是否一致 不一致则返回错误
             paramMap.put("SiteUrl", SiteUrl);
             List<Map<String,Object>> ob = iBClueService.CaseFieCustomerDetail_Select(paramMap);
-            if (ob.get(0).get("IntentProjectID").toString().toLowerCase() != paramMap.get("ProjectID").toString().toLowerCase()){
+            if (!ob.get(0).get("IntentProjectID").toString().toLowerCase().equals(paramMap.get("ProjectID").toString().toLowerCase())){
                 return Result.errormsg(9,"报备项目和案场项目不一致,请确认带客项目");
             }
             //验证规则 TypeID 表示是否验证规则 1 表示验证 其他表示不验证
             //TypeID 表示是否验证规则 1 表示验证 其他表示不验证
             if (paramMap.get("TypeID").equals("1")){
-                return clueConfirm(paramMap);
+                re =  clueConfirm(paramMap);
             }
             //查询
             //获取客户信息
@@ -141,23 +150,24 @@ public class AppCaseFileController extends TahoeBaseController {
             RuleP = new HashMap<String,Object>();
             RuleP.put("ID", ob.get(0).get("RuleID"));
             BCluerule rule = iBClueruleService.CaseFieRuleDetail_Select(RuleP);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
             //组建规则说明 根据规则id获取规则
             List<String> ruleList = new ArrayList<String>();
             if (rule.getIsOnlyAllowNew().equals("1")){
                 ruleList.add(rule.getRuleName() + "，仅允许报备项目新客户");
             }
-            if (rule.getIsOnlyAllowNew().equals("0")){
-                if (rule.getOldOwnerLimit().equals("0")){
+            if (rule.getIsOnlyAllowNew() == 0){
+                if (rule.getOldOwnerLimit() == 0){
                     ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且不允许报备集团老业主");
                 }
-                if (rule.getOldOwnerLimit().equals("1")){
+                if (rule.getOldOwnerLimit() == 1){
                     ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且仅允许报备其他项目的老业主");
                 }
             }
             if (rule.getFollowUpOverdueDays() > 0){
                 ruleList.add("保护期：距离上一次跟进时间超过" + rule.getFollowUpOverdueDays() + "天未跟进自动失效");
             }
-            if (rule.getIsProtect().equals("1")){
+            if (rule.getIsProtect() == 1){
                 String leixing = "";
                 if (rule.getUserBehaviorID().equals("1")){
                     leixing = ("签约");
@@ -168,7 +178,7 @@ public class AppCaseFileController extends TahoeBaseController {
                 if (rule.getUserBehaviorID().equals("3")){
                     leixing = ("认筹");
                 }
-                if (rule.getIsSelect().equals("1")){
+                if (rule.getIsSelect() == 1){
                     ruleList.add("保护期模式：两段式 报备-到访-" + leixing);
                     ruleList.add("到访保护期" + rule.getProtectVisitTime() + "天，提前" + rule.getProtectVisitRemindTime() + "天提醒");
                 }else{
@@ -177,10 +187,10 @@ public class AppCaseFileController extends TahoeBaseController {
                 ruleList.add(leixing + "保护期" + rule.getProtectTime() + "天，提前" + rule.getProtectRemindTime() + "天提醒");
 
             }
-            if (rule.getIsPreIntercept().equals("1")){
+            if (rule.getIsPreIntercept() == 1){
                 ruleList.add("启用防截客时间" + rule.getPreInterceptTime() + "分钟");
             }
-            ruleList.add("规则在:" + rule.getTakeEffectTime() + "生效");
+            ruleList.add("规则在:" + sdf.format(rule.getTakeEffectTime()) + "生效");
             //无效信息 根据手机号获取有效的线索
             List<Map<String,Object>> invalidList = new ArrayList<Map<String,Object>>();
             Map<String,Object> jos = null;
@@ -192,11 +202,11 @@ public class AppCaseFileController extends TahoeBaseController {
                 invalidList.add(jos);
                 jos = new HashMap<String,Object>();
                 jos.put("Name", "职业顾问名称");
-                jos.put("Value", inval.get(0).get("ClSaleUserName"));
+                jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClSaleUserName"));
                 invalidList.add(jos);
                 jos = new HashMap<String,Object>();
                 jos.put("Name", "报备时间");
-                jos.put("Value", inval.get(0).get("ClCreateTime"));
+                jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
                 invalidList.add(jos);
             }else if(invalidType == 4){
 	            //被其他渠道报备
@@ -206,11 +216,11 @@ public class AppCaseFileController extends TahoeBaseController {
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备人");
-	            jos.put("Value", inval.get(0).get("ClCreator"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreator"));
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备时间");
-	            jos.put("Value", inval.get(0).get("ClCreateTime"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
 	            invalidList.add(jos);
             }else if (invalidType == 5){
 	            //被其他渠道带看
@@ -220,11 +230,11 @@ public class AppCaseFileController extends TahoeBaseController {
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备人");
-	            jos.put("Value", inval.get(0).get("ClCreator"));
+	            jos.put("Value",(inval.size()==0)?"": inval.get(0).get("ClCreator"));
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备时间");
-	            jos.put("Value", inval.get(0).get("ClCreateTime"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
 	            invalidList.add(jos);
             }else if (invalidType == 1){
 	            //报备的客户为集团老业主
@@ -234,11 +244,11 @@ public class AppCaseFileController extends TahoeBaseController {
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "职业顾问名称");
-	            jos.put("Value", inval.get(0).get("ClSaleUserName"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClSaleUserName"));
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备时间");
-	            jos.put("Value", inval.get(0).get("ClCreateTime"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
 	            invalidList.add(jos);
             }else if (invalidType == 3 || invalidType == 7 || invalidType == 8){
 	            //防截客时间内到访
@@ -254,11 +264,11 @@ public class AppCaseFileController extends TahoeBaseController {
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备人");
-	            jos.put("Value", inval.get(0).get("ClCreator"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreator"));
 	            invalidList.add(jos);
 	            jos = new HashMap<String,Object>();
 	            jos.put("Name", "报备时间");
-	            jos.put("Value", inval.get(0).get("ClCreateTime"));
+	            jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
 	            invalidList.add(jos);
 			}else{
 			    jos = new HashMap<String,Object>();
@@ -267,17 +277,18 @@ public class AppCaseFileController extends TahoeBaseController {
 			    invalidList.add(jos);
 			    jos = new HashMap<String,Object>();
 			    jos.put("Name", "报备人");
-			    jos.put("Value", inval.get(0).get("ClCreator"));
+			    jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreator"));
 			    invalidList.add(jos);
 			    jos = new HashMap<String,Object>();
 			    jos.put("Name", "报备时间");
-			    jos.put("Value", inval.get(0).get("ClCreateTime"));
+			    jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
 			    invalidList.add(jos);
 			}
             //组建json
             Map<String,Object> jo = new HashMap<String,Object>();
-            jo.put("ClueList", ob);
+            jo.put("ClueList", JSON.parseObject(JSON.toJSONString(ob.get(0))));
             jo.put("CluruleListeList", ruleList);
+            jo.put("InvalidList", invalidList);
             return Result.ok(jo);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -285,15 +296,17 @@ public class AppCaseFileController extends TahoeBaseController {
 		}
 	}
 	private Result clueConfirm(Map Parameter) {
+		Result re = new Result();
         String errmsg = "";
         String Data = "";
         String channelTypeID = getChannelTypeID(Parameter.get("ClueID").toString());
         if (StringUtils.isEmpty(channelTypeID)){
         	return Result.errormsg(1,"未找到渠道身份");
         }
-        ChannelRegisterModel channel = new ChannelRegisterModel(Parameter.get("TokerUserID").toString(), channelTypeID, Parameter.get("ProjectID").toString());
-        Map<String,Object> ruleValidate = ValidateForConfirmation(Parameter.get("ClueID").toString(),channel);
-        String invalidReason = clueService.getMessage((int)ruleValidate.get("InvalidType"),(Map)channel.getUserRule());
+        Parameter.put("AdviserGroupID",channelTypeID);
+        ChannelRegisterModel channel = iBChannelService.newChannelRegisterModel(Parameter.get("TokerUserID").toString(), channelTypeID, Parameter.get("ProjectID").toString());
+        Map<String,Object> ruleValidate = iBChannelService.ValidateForConfirmation(Parameter.get("ClueID").toString(),channel);
+        String invalidReason = clueService.getMessage((int)ruleValidate.get("InvalidType"),JSONUtil.parseObj(channel.getUserRule()));
         DateTime visitTime = DateTime.now();
         Parameter.put("VisitTime", visitTime);
         Parameter.put("ConfirmUserId", Parameter.get("UserID"));
@@ -302,12 +315,15 @@ public class AppCaseFileController extends TahoeBaseController {
         if ((boolean) ruleValidate.get("Tag")){
             String tradeOverTime = "";
             Parameter.put("TradeOverdueTime", tradeOverTime);
-            return new Result(iBClueService.ClueConfirm_Update(Parameter),"带看确认成功！",0);
+            re.setErrcode(0);
+            re.setErrmsg("带看确认成功！");
+            re.setData(iBClueService.ClueConfirm_Update(Parameter));
         }else{//验证不通过
             if ((int)ruleValidate.get("InvalidType") == -1){
                 return Result.errormsg(1, ruleValidate.get("Message").toString());
             }
-            errmsg = clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),(Map)channel.getUserRule());
+            re.setErrcode(1);
+            re.setErrmsg(clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),JSONUtil.parseObj(channel.getUserRule())));
             Parameter.put("InvalidType", ruleValidate.get("InvalidType"));
             Parameter.put("InvalidReason", invalidReason);
             //更新当前验证的线索的状态为3（无效）、确认时间、确认人、无效类型和无效原因
@@ -330,45 +346,9 @@ public class AppCaseFileController extends TahoeBaseController {
 		customerActionVo.setClueID(Parameter.get("ClueID").toString());
 		customerActionVo.setNextFollowUpDate("");
         iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
-        return Result.ok(errmsg);
+        return Result.ok(re);
 	}
-	private Map<String,Object> ValidateForConfirmation(String ClueID,ChannelRegisterModel channel) {
-		Map<String,Object> msg = new HashMap<String,Object>();
-		QueryWrapper<BClue> wrapper = new QueryWrapper<BClue>();
-        wrapper.eq("id", ClueID);
-        wrapper.eq("IsDel", 0);
-        BClue obj = iBClueService.getOne(wrapper);
-        String phone = obj.getMobile();
-        String projectId = obj.getIntentProjectID();
-        //该线索已经被确认过
-        if (obj.getStatus() == 2){
-            msg.put("Tag", false);
-            msg.put("InvalidType", -1);
-            msg.put("Message", "该线索已被案场确认过！");
-            return msg;
-        }
-        //判断待验证线索是否已经失效
-        if (obj.getStatus() == 3){
-        	msg.put("Tag", false);
-            msg.put("InvalidType", obj.getInvalidType());
-            msg.put("Message", obj.getInvalidReason());
-            return msg;
-        }
-        //到访超过保护期
-        if (IsOverdueCome(obj)){
-        	msg.put("Tag", false);
-            msg.put("InvalidType", 7);
-            return msg;
-        }
-        //是否在防截客时间到访
-        if (IsPreIntercept(obj.getCreateTime(),channel)){
-        	msg.put("Tag", false);
-            msg.put("InvalidType", 3);
-            return msg;
-        }
-        msg = InstantConfirmation(phone, projectId,channel);
-        return msg;
-	}
+	
 	private Map<String, Object> InstantConfirmation(String phone, String projectId,ChannelRegisterModel channel) {
 		Map<String,Object> msg = new HashMap<String,Object>();
         if (channel.getUserRule().getImmissionRule().getIsOnlyAllowNew() == 1){//仅允许报备新客户
@@ -502,24 +482,7 @@ public class AppCaseFileController extends TahoeBaseController {
         BOpportunity result = iBOpportunityService.getOne(wrapper);
         return result == null ? false : true;
 	}
-	private boolean IsPreIntercept(Date createTime,ChannelRegisterModel channel) {
-		if (channel.getUserRule().getProtectRule().getIsPreIntercept() == 1){
-            //报备时间+防截客周期小于等于当前时间
-            if ((createTime.getMinutes()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getMinutes()){
-                return false;
-            }else{
-                return true;
-            }
-        }
-        else//没有防截客机制
-            return false;
-	}
-	private boolean IsOverdueCome(BClue clue) {
-        Map<String,Object> obj = new HashMap<String,Object>();
-        obj.put("ClueID", clue.getId());
-        Map<String,Object> data = iBClueService.IsOverdueCome_Select(obj);
-        return Integer.parseInt(data.get("IsOverdueCome").toString()) == 0 ? false : true;
-	}
+	
 	private String getChannelTypeID(String ClueID) {
         QueryWrapper<BClue> wrapper = new QueryWrapper<BClue>();
         wrapper.eq("id", ClueID);

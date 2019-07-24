@@ -33,6 +33,7 @@ import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.IASharepoolService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
@@ -94,7 +95,9 @@ public class AppCustomerController extends TahoeBaseController {
 	private ISystemMessageService iSystemMessageService;
     @Autowired
 	private BCustomerpotentialMapper bCustomerpotentialMapper;
-
+    @Autowired
+    private IBChannelService iBChannelService;
+    
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
     @RequestMapping(value = "/mCustomerYXJLLoseDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -1044,15 +1047,15 @@ public class AppCustomerController extends TahoeBaseController {
                                     String mobile = (String) data.get("Mobile");
                                     String name = (String) data.get("Name");
                                     String channelTypeId = GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
-                                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId);
+                                    ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userId, channelTypeId, projectId);
                                     if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
                                         return Result.errormsg(21, "未找到该渠道的报备规则");
                                     }
-                                    Map<String, Object> CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId);
+                                    Map<String, Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
                                     if ((int)CustomerValidate.get("InvalidType") != 0)
                                     {
                                         ErrCode = (int) CustomerValidate.get("InvalidType");
-                                        ErrMsg = channelRegisterModel.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
+                                        ErrMsg = iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
                                         //抢客失败，将线索机会返还之前的状态
                                         Map<String,Object> jParameter = new HashMap<String,Object>();
                                         jParameter.put("OpportunityID", data.get("OpportunityID"));
@@ -1353,17 +1356,17 @@ public class AppCustomerController extends TahoeBaseController {
                         }
                     }else if (adviserGroupID.equalsIgnoreCase("48FC928F-6EB5-4735-BF2B-29B1F591A582")){   //自渠
                         String channelTypeId = GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
-                        ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId);
+                        ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userId, channelTypeId, projectId);
                         if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
                             entity.setErrcode(21);
                             entity.setErrmsg("未找到该渠道的报备规则");
                             return entity;
                         }
-                        Map<String,Object> CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId);
+                        Map<String,Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
                         if ((int)CustomerValidate.get("InvalidType") != 0){
                             //修改分享传播池内信息，并返回APP抢客失败信息
                             entity.setErrcode((int)CustomerValidate.get("InvalidType"));
-                            entity.setErrmsg(channelRegisterModel.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule()));
+                            entity.setErrmsg(iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule()));
                             //修改分享传播池信息  置为无效
                             Map<String,Object> para1 = new HashMap<String,Object>();
                             para1.put("FXCBID", item.get("FXCBID"));

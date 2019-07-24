@@ -252,58 +252,59 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
     <select id="CaseFieCustomerDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
 	    <![CDATA[
 			SELECT  c.[ID] ,
-			        c.[CustomerPotentialID] ,
-			        c.[Name] ,
-			        c.[LastName] ,
-			        c.[FirstName] ,
-			        ISNULL(c.[Gender],'50827B18-5BCC-454C-B658-09AF4328D2A0') Gender ,
-			        c.[Mobile] ,
-			        c.[IntentProjectID] ,
-			        c.[IntentProjectName] ,
-			        c.[Remark] ,
-			        c.[SourceType] ,
-			        c.[ReportUserID] ,
-			        c.[ReportUserName] ,
-			        c.[ReportUserMobile] ,
-			        c.[ReportUserOrg] ,
-			        c.[RuleID] ,
-			        c.[InvalidType] ,
-			        c.[InvalidTime] ,
-			        c.[InvalidReason] ,
-			        c.[ComeOverdueTime] ,
-			        c.[TradeOverdueTime] ,
-			        c.[UserBehaviorID] ,
-			        c.[AdviserGroupID] ,
-			        c.[IsSelect] ,
-			        c.[ConfirmTime] ,
-			        c.[Creator] ,
-			        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
-			        c.[Editor] ,
-			        c.[EditeTime] ,
-			        c.[IsDel] ,
-			        c.[Status] ,
-			        c.[ConfirmUserId] ,
-			        u.name AS TokerUserName ,
-			        ISNULL(d.DictName,'自然访客') AS SourceName ,
-			        o.SaleUserID ,
-			        CASE WHEN o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
-			             THEN NULL
-			             ELSE o.SaleUserName
-			        END SaleUserName ,
-			        '{SiteUrl}' + su.HeadImg SaleHeadImg ,
-			        dbo.F_GetSaleGroupName(o.SaleUserID, o.ProjectID) GroupName ,
-			        dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) CustomerTag ,  
-			        co.OrgName AS SourceTypeName ,
-			        TheFirstVisitDate FirstComeTime ,
-			        o.FirstVisitAddress VisitAddress
+		        c.[CustomerPotentialID] ,
+		        c.[Name] ,
+		        c.[LastName] ,
+		        c.[FirstName] ,
+		        ISNULL(c.[Gender],'50827B18-5BCC-454C-B658-09AF4328D2A0') Gender ,
+		        c.[Mobile] ,
+		        c.[IntentProjectID] ,
+		        c.[IntentProjectName] ,
+		        c.[Remark] ,
+		        c.[SourceType] ,
+		        c.[ReportUserID] ,
+		        c.[ReportUserName] ,
+		        c.[ReportUserMobile] ,
+		        c.[ReportUserOrg] ,
+		        c.[RuleID] ,
+		        c.[InvalidType] ,
+		        c.[InvalidTime] ,
+		        c.[InvalidReason] ,
+		        c.[ComeOverdueTime] ,
+		        c.[TradeOverdueTime] ,
+		        c.[UserBehaviorID] ,
+		        c.[AdviserGroupID] ,
+		        c.[IsSelect] ,
+		        c.[ConfirmTime] ,
+		        c.[Creator] ,
+		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+		        c.[Editor] ,
+		        c.[EditeTime] ,
+		        c.[IsDel] ,
+		        c.[Status] ,
+		        c.[ConfirmUserId] ,
+		        u.name AS TokerUserName ,
+		        ISNULL(d.DictName,'自然访客') AS SourceName ,
+		        o.SaleUserID ,
+		        CASE WHEN o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		             THEN NULL
+		             ELSE o.SaleUserName
+		        END SaleUserName ,
+		        #{SiteUrl} + su.HeadImg SaleHeadImg ,
+		        dbo.F_GetSaleGroupName(o.SaleUserID, o.ProjectID) GroupName ,
+		        dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) CustomerTag ,
+		        
+		        co.OrgName AS SourceTypeName ,
+		        TheFirstVisitDate FirstComeTime ,
+		        o.FirstVisitAddress VisitAddress
 			FROM    [B_Clue] AS c
-			        LEFT JOIN B_ChannelUser u ON c.reportuserid = u.id
-			        LEFT JOIN B_Opportunity o ON o.clueid = c.id
-			        LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
-			        LEFT JOIN B_ChannelOrg co ON co.id = u.ChannelOrgID
-			        LEFT JOIN B_ChannelOrg co1 ON co1.id = co.PID
-			        LEFT JOIN S_Dictionary d ON c.SourceType = d.id
-			WHERE   c.id = #{ClueID}
+		        LEFT JOIN B_ChannelUser u ON c.reportuserid = u.id
+		        LEFT JOIN B_Opportunity o ON o.clueid = c.id
+		        LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		        LEFT JOIN B_ChannelOrg co ON co.id = u.ChannelOrgID
+		        LEFT JOIN B_ChannelOrg co1 ON co1.id = co.PID
+		        LEFT JOIN S_Dictionary d ON c.SourceType = d.id
+		WHERE   c.id = #{ClueID}
 	     ]]>
     </select>
     <!-- 客户无效信息 -->
