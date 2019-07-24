@@ -930,12 +930,12 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        StringBuilder orderSb = new StringBuilder();
 	        //项目
 	        if (!"JZ".equals(model.getJobCode())){
-	            if (!StringUtils.isEmpty(model.getProjectID().trim())){
+	            if (!StringUtils.isEmpty(model.getProjectID())){
 	                whereinnerSb.append(" AND t.IntentProjectID = '"+model.getProjectID()+"' ");
 	            }
 	        }
 	        //手机或姓名
-	        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+	        if (!StringUtils.isEmpty(model.getKeyWord())){
 	            whereinnerSb.append(" and (t.Name Like'%"+model.getKeyWord()+"%' or t.Mobile Like'%"+model.getKeyWord()+"%') ");
 	        }
 	        if (model.getFilter() != null && model.getFilter().size() > 0){
@@ -988,7 +988,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	            }
 
 	        }
-	        if (!StringUtils.isEmpty(model.getSort().trim())){
+	        if (!StringUtils.isEmpty(model.getSort())){
 	            if ("559312B1-E6E5-41EC-80F8-98425F8768EB".equals(model.getSort())){//最新跟进
 	                orderSb.append(" ORDER BY  TheLatestFollowUpDate desc ");
 	            }
