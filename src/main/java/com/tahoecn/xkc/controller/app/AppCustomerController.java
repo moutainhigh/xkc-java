@@ -450,9 +450,9 @@ public class AppCustomerController extends TahoeBaseController {
 				}
 			}
 			Map<String,Object> result = null;
-			if (StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWQY".equals(paramMap.get("Code"))){
+			if (!StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWQY".equals(paramMap.get("Code"))){
 				result = iBOpportunityService.R_ACYQWQYList_Select(paramMap);
-			}else if(StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWJK".equals(paramMap.get("Code"))){
+			}else if(!StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWJK".equals(paramMap.get("Code"))){
 				result = iBOpportunityService.R_ACYQWJKList_Select(paramMap);
 			}else{
 				result = iBOpportunityService.mCustomerAdviserList_Select(paramMap);
