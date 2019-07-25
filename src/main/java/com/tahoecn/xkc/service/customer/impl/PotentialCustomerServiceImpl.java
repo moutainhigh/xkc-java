@@ -1007,15 +1007,19 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        }
 	        //判断是否为兼职
 	        if ("JZ".equals(model.getJobCode())){
-	            whereinnerSb.append(" AND t.ChannelUserID = '"+model.getUserID()+"' ");
+	        	String UserID = model.getUserID()!=null?model.getUserID():"";
+	            whereinnerSb.append(" AND t.ChannelUserID = '"+UserID+"' ");
 	        }else if ("ZQFZR".equals(model.getJobCode())){
-	            whereinnerSb.append(" AND t.ReportUserID = '"+model.getReportUserID()+"' ");
+	        	String ReportUserID = model.getReportUserID()!=null?model.getReportUserID():"";
+	            whereinnerSb.append(" AND t.ReportUserID = '"+ReportUserID+"' ");
 	        }else{
-	            whereinnerSb.append(" AND t.ReportUserID = '"+model.getUserID()+"' ");
+	        	String UserID = model.getUserID()!=null?model.getUserID():"";
+	            whereinnerSb.append(" AND t.ReportUserID = '"+UserID+"' ");
 	        }
 	        //判断是否有渠道任务ID
 	        if (!StringUtils.isEmpty(model.getChannelTaskID())){
-	            whereinnerSb.append(" AND t.ChannelTaskID='"+model.getChannelTaskID()+"' ");
+	        	String ChannelTaskID=model.getChannelTaskID()!=null?model.getChannelTaskID():"";
+	            whereinnerSb.append(" AND t.ChannelTaskID='"+ChannelTaskID+"' ");
 	        }
 	        paramAry.put("WHERE", whereSb.toString());
 	        paramAry.put("WHEREINNER", whereinnerSb.toString());
