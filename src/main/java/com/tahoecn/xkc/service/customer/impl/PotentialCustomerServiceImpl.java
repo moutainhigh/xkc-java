@@ -31,6 +31,7 @@ import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.GWCustomerPageModel;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
 import com.tahoecn.xkc.service.customer.IPotentialCustomerService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
@@ -51,6 +52,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
 	@Resource
 	private ISystemMessageService iSystemMessageService;
+	@Resource
+	private IBChannelService iBChannelService;
 
 	@Override
 	public Result mCustomerPotentialTagDetail_Insert(JSONObject paramAry) {
@@ -849,7 +852,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	                entity.setErrmsg("您当前角色不是渠道身份，不能报备");
 	                return entity;
 	            }
-	            ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
+	            ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
 	            if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
 	                entity.setErrcode(21);
 	                entity.setErrmsg("未找到该渠道的报备规则");
