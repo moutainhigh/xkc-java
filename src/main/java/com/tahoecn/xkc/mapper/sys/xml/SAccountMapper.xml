@@ -501,37 +501,108 @@
 
 
     <select id="SystemUserListByOrgID_SelectN" resultType="java.util.HashMap" parameterType="string">
-        SELECT t.*,o.FullPath AS OrgName FROM
-        S_Organization o INNER JOIN
-        (
+        <!--SELECT t.*,o.FullPath AS OrgName FROM-->
+        <!--S_Organization o INNER JOIN-->
+        <!--(-->
+        <!--SELECT-->
+        <!--a.[ID] ,-->
+        <!--a.[UserName] ,-->
+        <!--a.[EmployeeName] ,-->
+        <!--a.[Gender] ,-->
+        <!--a.[OfficeTel] ,-->
+        <!--a.[EmployeeCode] ,-->
+        <!--a.[OfficeMail] ,-->
+        <!--a.[Mobile] ,-->
+        <!--a.UserOrgID ,-->
+        <!--a.Address ,-->
+        <!--a.[Status] ,-->
+        <!--a.AccountType,-->
+        <!--a.CreateTime-->
+        <!--FROM    [S_Account] a-->
+        <!--WHERE   a.UserOrgID IN (SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%')-->
+        <!--AND ( #{Key} = ''-->
+        <!--OR a.UserName LIKE concat('%',#{Key},'%')-->
+        <!--OR a.EmployeeName LIKE concat('%',#{Key},'%')-->
+        <!--)-->
+        <!--AND a.AuthCompanyID = #{AuthCompanyID}-->
+        <!--<if test="Type != 0">-->
+            <!--and AccountType = #{Type}-->
+        <!--</if>-->
+        <!--AND a.IsDel=0-->
+        <!--) t-->
+        <!--ON t.UserOrgID=o.ID AND o.IsDel=0-->
+        <!--ORDER BY t.CreateTime DESC-->
+
+        SELECT * FROM (
         SELECT
-        a.[ID] ,
-        a.[UserName] ,
-        a.[EmployeeName] ,
-        a.[Gender] ,
-        a.[OfficeTel] ,
-        a.[EmployeeCode] ,
-        a.[OfficeMail] ,
-        a.[Mobile] ,
+        t.*,
+        o.FullPath AS OrgName
+        FROM
+        S_Organization o
+        INNER JOIN (
+        SELECT
+        a.[ID],
+        a.[UserName],
+        a.[EmployeeName],
+        a.[Gender],
+        a.[OfficeTel],
+        a.[EmployeeCode],
+        a.[OfficeMail],
+        a.[Mobile],
         a.UserOrgID ,
         a.Address ,
-        a.[Status] ,
+        a.[Status],
         a.AccountType,
         a.CreateTime
-        FROM    [S_Account] a
-        WHERE   a.UserOrgID IN (SELECT ID FROM S_Organization WHERE FullPath LIKE '${OrgID}%')
+        FROM
+        [S_Account] a
+        WHERE
+        a.UserOrgID IN ( SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%' )
         AND ( #{Key} = ''
         OR a.UserName LIKE concat('%',#{Key},'%')
         OR a.EmployeeName LIKE concat('%',#{Key},'%')
         )
+
         AND a.AuthCompanyID = #{AuthCompanyID}
         <if test="Type != 0">
-            and AccountType = #{Type}
+            and a.AccountType = #{Type}
         </if>
-        AND a.IsDel=0
-        ) t
-        ON t.UserOrgID=o.ID AND o.IsDel=0
-        ORDER BY t.CreateTime DESC
+        AND a.IsDel= 0
+        ) t ON t.UserOrgID= o.ID
+        AND o.IsDel= 0 AND o.Status=1
+        <if test="FullPath == '第三方组织/泰禾/泰禾移动营销管理平台/泰禾集团'">
+        UNION
+        SELECT
+        b.[ID],
+        b.[UserName],
+        b.[EmployeeName],
+        b.[Gender],
+        b.[OfficeTel],
+        b.[EmployeeCode],
+        b.[OfficeMail],
+        b.[Mobile],
+        b.UserOrgID,
+        b.Address,
+        b.[Status],
+        b.AccountType,
+        b.CreateTime,
+        '' AS OrgName
+        FROM
+        S_Account b
+        WHERE
+        b.AuthCompanyID = #{AuthCompanyID}
+        AND b.IsDel = 0
+        AND ( #{Key} = ''
+        OR b.UserName LIKE concat('%',#{Key},'%')
+        OR b.EmployeeName LIKE concat('%',#{Key},'%')
+        )
+        <if test="Type != 0">
+            and b.AccountType = #{Type}
+        </if>
+        AND b.UserOrgID IS NULL
+        ) q
+        </if>
+        ORDER BY CreateTime DESC
     </select>
 
     <select id="insertJob" resultType="java.util.HashMap" parameterType="string">

@@ -1,25 +1,19 @@
 package com.tahoecn.xkc.controller.webapi.sys;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.model.sys.SAccount;
-import com.tahoecn.xkc.service.org.ISOrganizationService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import com.tahoecn.xkc.controller.TahoeBaseController;
-
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +33,7 @@ public class SAccountController extends TahoeBaseController {
     @Autowired
     private IBSalesuserService salesuserService;
 
-    //已测
+
 //    @ApiOperation(value = "获取组织下的人员(用户管理)", notes = "获取组织下的人员(用户管理)")
 //    @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.GET})
 //    public Result SystemUserListByOrgID_Select(String AuthCompanyID,String OrgID, @RequestParam(required = false) String Name, @RequestParam(defaultValue = "0",required = false)int Type,
@@ -83,6 +77,7 @@ public class SAccountController extends TahoeBaseController {
         salesuser.setUserName(account.getUserName());
         salesuser.setTelPhone(account.getMobile());
         salesuser.setEditTime(new Date());
+        salesuser.setEditor(ThreadLocalUtils.getUserName());
         salesuserService.updateById(salesuser);
         return Result.okm("成功");
     }

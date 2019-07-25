@@ -31,8 +31,7 @@ import java.util.Map;
 @Service
 public class SOrganizationServiceImpl extends ServiceImpl<SOrganizationMapper, SOrganization> implements ISOrganizationService {
 
-    @Autowired
-    private IBProjectService projectService;
+
     @Override
     public IPage<Map<String,Object>> SystemOrganization_Select(IPage page,String authCompanyID, String orgID, String productID, String pid, String status) {
         return baseMapper.SystemOrganization_Select(page,authCompanyID, orgID, productID, pid, status);
