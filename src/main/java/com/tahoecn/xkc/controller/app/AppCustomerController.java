@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -369,8 +370,25 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerYQWJKList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerYQWJKList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			Map<String,Object> map = iBOpportunityService.mCustomerYQWJKList_Select(paramMap);
+			Map<String,Object> paramAry = jsonParam.getJSONObject("_param");
+			paramAry.put("OverduePaymentStartDay", "0");
+			paramAry.put("OverduePaymentEndDay", "3650");
+            if (!StringUtils.isEmpty(paramAry.get("Filter"))){
+            	List<Map<String,Object>> Filter = (List) paramAry.get("Filter");
+            	for (Map<String,Object> item : Filter){
+                	String TagID = (String) item.get("TagID");
+                	switch (TagID){
+                    	case "883F5965-7D43-4EC9-918C-CF09BD625460":{//未交款周期
+	                    	String start = (String) ((List) item.get("Child")).get(0);
+	                     	String end = (String) ((List) item.get("Child")).get(1);
+	                    	paramAry.put("OverduePaymentStartDay", (start == "-" ? "0" : start));
+	                    	paramAry.put("OverduePaymentEndDay", (end == "-" ? "3650" : end));
+                    	}
+                        break;
+                    }
+            	}
+            }
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWJKList_Select(paramAry);
 			return Result.ok(map);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -382,8 +400,25 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerYQWQYList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerYQWQYList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			Map<String,Object> map = iBOpportunityService.mCustomerYQWQYList_Select(paramMap);
+			Map<String,Object> paramAry = jsonParam.getJSONObject("_param");
+			paramAry.put("OverdueContractStartDay", "0");
+			paramAry.put("OverdueContractEndDay", "3650");
+			if (!StringUtils.isEmpty(paramAry.get("Filter"))){
+            	List<Map<String,Object>> Filter = (List) paramAry.get("Filter");
+            	for (Map<String,Object> item : Filter){
+                	String TagID = (String) item.get("TagID");
+                	switch (TagID){
+                    	case "2D0B4FD7-22C0-4225-A300-6AF34683DCAE":{//未签约周期
+	                    	String start = (String) ((List) item.get("Child")).get(0);
+	                     	String end = (String) ((List) item.get("Child")).get(1);
+	                    	paramAry.put("OverdueContractStartDay", (start == "-" ? "0" : start));
+	                    	paramAry.put("OverdueContractEndDay", (end == "-" ? "3650" : end));
+                    	}
+                        break;
+                    }
+            	}
+            }
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWQYList_Select(paramAry);
 			return Result.ok(map);
 		}catch (Exception e) {
 			e.printStackTrace();
