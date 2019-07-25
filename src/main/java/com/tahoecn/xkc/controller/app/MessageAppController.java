@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.MessageCate;
 import com.tahoecn.xkc.common.enums.MessageType;
@@ -600,7 +601,7 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyUnHandleIconType", 0);
 	    		map.put("sqlWhere", "AND A.MessageType = #{MessageType} AND A.IsRead =  #{IsRead}");
 	    		//列表
-	    		result.put("List", iSystemMessageService.ListByMessageTypeChannelTask_Select(map));
+	    		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.ListByMessageTypeChannelTask_Select(map))));
 	    		//总数
 	    		result.put("AllCount", iSystemMessageService.ListByMessageTypeChannelTask_SelectCount(map));
 	    		//更新操作
@@ -625,7 +626,7 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyUnHandleIconType", 2);
 	    		map.put("sqlWhere", "AND A.MessageType = #{MessageType} AND A.IsRead =  #{IsRead}");
 	    		//列表
-	    		result.put("List", iSystemMessageService.ListByMessageTypeKHDS_Select(map));
+	    		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.ListByMessageTypeKHDS_Select(map))));
 	    		//总数
 	    		result.put("AllCount", iSystemMessageService.ListByMessageTypeKHDS_SelectCount(map));
 	    		//更新操作
@@ -823,7 +824,7 @@ public class MessageAppController extends TahoeBaseController {
     	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
     	map.put("sqlWhere", sqlWhere);
     	//列表
-    	result.put("List", iSystemMessageService.SystemMessageListByMessageType_Select(map));
+    	result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageType_Select(map))));
     	//总数
     	result.put("AllCount", iSystemMessageService.SystemMessageListByMessageType_SelectCount(map));
 		//更新操作
@@ -856,7 +857,7 @@ public class MessageAppController extends TahoeBaseController {
 		}
 		map.put("sqlWhere", sqlWhere);
 		//列表
-		result.put("List", iSystemMessageService.SystemMessageListByMessageTypeClue_Select(map));
+		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageTypeClue_Select(map))));
 		//总数
 		result.put("AllCount", iSystemMessageService.SystemMessageListByMessageTypeClue_SelectCount(map));
 		//更新操作
@@ -883,7 +884,7 @@ public class MessageAppController extends TahoeBaseController {
 		
 		map.put("sqlWhere", sqlWhere);
 		//列表
-		result.put("List", iSystemMessageService.SystemMessageListByMessageTypeOpportunity_Select(map));
+		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageTypeOpportunity_Select(map))));
 		//总数
 		result.put("AllCount", iSystemMessageService.SystemMessageListByMessageTypeOpportunity_SelectCount(map));
 		//更新操作
@@ -919,7 +920,7 @@ public class MessageAppController extends TahoeBaseController {
 		
 		map.put("sqlWhere", sqlWhere);
 		//列表
-		result.put("List", iSystemMessageService.SystemMessageListByMessageTypeOpportunityZQ_Select(map));
+		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageTypeOpportunityZQ_Select(map))));
 		//总数
 		result.put("AllCount", iSystemMessageService.SystemMessageListByMessageTypeOpportunityZQ_SelectCount(map));
 		//更新操作
