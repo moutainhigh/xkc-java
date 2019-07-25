@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.dict.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
@@ -404,10 +405,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID",arr.get(j).get("ID"));
                     dat.put("DictName",arr.get(j).get("DictName"));
                     dat.put("Type","group");
-                    dat.put("Filter",arr.get(i).get("Filter"));
-                    List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter",arr.get(j).get("Filter"));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
                     List FilterDesc=new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj=new HashMap<>();
                             filterobj.put("DictName",key);
@@ -639,10 +641,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID",arr.get(j).get("ID"));
                     dat.put("DictName",arr.get(j).get("DictName"));
                     dat.put("Type","group");
-                    dat.put("Filter",arr.get(i).get("Filter"));
-                    List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter",arr.get(j).get("Filter"));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
                     List FilterDesc=new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj=new HashMap<>();
                             filterobj.put("DictName",key);
@@ -681,10 +684,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID", arr.get(j).get("ID"));
                     dat.put("DictName", arr.get(j).get("DictName"));
                     dat.put("Type", "group");
-                    dat.put("Filter", arr.get(i).get("Filter"));
-                    List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
-                    List FilterDesc = new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    dat.put("Filter", arr.get(j).get("Filter"));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
+                    List FilterDesc=new ArrayList();
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj = new HashMap<>();
                             filterobj.put("DictName", key);
@@ -713,10 +717,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID", arr.get(j).get("ID"));
                     dat.put("DictName", arr.get(j).get("DictName"));
                     dat.put("Type", "group");
-                    dat.put("Filter", arr.get(i).get("Filter"));
-                    List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
-                    List FilterDesc = new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    dat.put("Filter", arr.get(j).get("Filter"));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
+                    List FilterDesc=new ArrayList();
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj = new HashMap<>();
                             filterobj.put("DictName", key);
@@ -735,8 +740,12 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 res.put("KHGGCSXGZZQ",khsxgzgw);
             }
             List data=new ArrayList();
-            if (res.size() >= 1)
-            {
+            if (res.size() == 1){
+            	for (String key : res.keySet()) {
+                    data = (List) res.get(key);
+                }
+            }
+            if (res.size() > 1){
                 for (String key : res.keySet()) {
                     data.add(res.get(key));
                 }

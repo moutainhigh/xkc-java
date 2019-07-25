@@ -45,6 +45,10 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	private ICustomerHelp customerTemplate;
 	@Value("${SiteUrl}")
     private String SiteUrl;
+	@Value("${WXDetailPagePath}")
+	private String WXDetailPagePath;
+	@Value("${ImgSiteUrl}")
+	private String ImgSiteUrl;
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
 	@Resource
@@ -739,6 +743,170 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 			e.printStackTrace();
         }
         return entity;
+	}
+
+	@Override
+	public Result mUserAuthorDetail_Select(JSONObject Parameter) {
+		Result re = new Result();
+        try{
+        	Map<String,Object> pmap =JSONObject.parseObject(Parameter.toJSONString(), Map.class);
+        	
+        	String UnionID="";
+        	String UserID="";
+        	String AdviserGroupID ="";
+        	String ShareProjectID="";
+        	String NewID = "";
+        	String ID = "";
+        	Long Count = 0l;
+        	
+        	Map<String,Object> get1 = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get1(pmap);
+        	Map<String,Object> get2 = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get2(pmap);
+        	if(get1!=null && get1.size()>0){
+        		ShareProjectID = get1.get("ShareProjectID").toString();
+        	}
+        	if(get2!=null && get2.size()>0){
+        		if(get1.get("UserID")!=null){
+        			UserID = get1.get("UserID").toString();
+        		}
+        		if(get1.get("ID")!=null){
+        			ID = get1.get("ID").toString();
+        		}
+        	}
+        	AdviserGroupID = Parameter.getString("JobID");
+        	Map<String,Object> data = null;
+        	if("".equals(ID)){
+        		Count = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_getCount(pmap);
+        		if(Count.intValue()>0){
+        			data = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get3(pmap);
+        		}else{
+        			pmap.put("ShareProjectID", ShareProjectID);
+        			pmap.put("AdviserGroupID", AdviserGroupID);
+        			NewID = UUID.randomUUID().toString();
+        			pmap.put("NewID", NewID);
+        			vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_Insert(pmap);
+        			data = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get4(pmap);
+        			
+        		}
+        	}else{
+        		if(!"".equals(UserID)){
+        			if(UserID.equals(Parameter.getString("UserID"))){
+        				pmap.put("TID", ID);
+        				data = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get5(pmap);
+        			}else{
+        				data = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get6(pmap);
+        			}
+        		}else{
+        			Count = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_getCount(pmap);
+        			if(Count.intValue()>0){
+        				data = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get3(pmap);
+        			}else{
+        				pmap.put("AdviserGroupID", AdviserGroupID);
+        				pmap.put("TID", ID);
+        				vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_update(pmap);
+        				data = vCustomerfjlistSelectMapper.mUserAuthorDetail_Select_get5(pmap);
+        			}
+        		}
+        	}
+        	
+           /* String WXDetailPagePath = WXDetailPagePath;//项目详情路径
+            String imgSiteUrl = ImgSiteUrl;//图片路径
+*/            if(data==null || data.size()==0){
+            	re.setErrcode(1);
+            	re.setErrmsg("失败");
+            	return re;
+            }
+         /*   if ("0".equals(data.get("Msg").ToString())){
+                re.setErrmsg("绑定成功");
+                JSONObject dat = new JSONObject();
+                dat.put("WXUserID", data.get("WXUserID"));
+                Parameter.put("WXUserID", data.get("WXUserID"));
+                //生成小程序二维码
+                string codeId = Utils.CreateGUID();
+                string QRCodeUrl = string.Empty;
+                JObject jObj = new JObject();
+                jObj.Add("ID", codeId);
+                jObj.Add("ProjectID", Parameter["ProjectID"].ToString());
+                jObj.Add("IdentityID", Parameter["JobID"].ToString());
+                jObj.Add("CodeParameter", Parameter["UserID"].ToString());
+                jObj.Add("Category", Parameter["JobCode"].ToString() == "GW" ? 2 : 3);
+                jObj.Add("Creator", Parameter["UserID"].ToString());
+                JObject flg = (JObject)JsonDataHelper.GetNormalData("mShareSaleUserQRCode_Insert", jObj, out errmsg);
+                string HeadImg = string.Empty;
+                string VisitingCardPic = string.Empty;
+                StringBuilder Upd = new StringBuilder();
+                if (flg["Msg"] != null && flg["Msg"].ToString() == "0")
+                {
+                    if (flg["ShareProjectID"] != null && flg["ShareProjectID"].ToString() != "")
+                    {
+                        QRCodeUrl = Utils.CreateWXQRCode(codeId, WXDetailPagePath);
+                    }
+                    else
+                    {
+                        QRCodeUrl = Utils.CreateWXQRCode(codeId);
+                    }
+                    if (flg["HeadImg"] != null && flg["HeadImg"].ToString() != "")
+                    {
+                        HeadImg = flg["HeadImg"].ToString();
+                    }
+                    if (!string.IsNullOrEmpty(QRCodeUrl))
+                    {
+                        JObject channerPara = new JObject();
+                        //如果有用户头像 则把小程序二维码和用户头像合成一张图片 如果没有用户头像 则用小程序二维码就可以
+                        if (!string.IsNullOrEmpty(HeadImg))
+                        {
+                            //检测当前头像是否可用 ，不可用则用小程序二维码
+                            string url = context.Server.MapPath(HeadImg);
+                            //检测当前头像是否可用 ，不可用则用小程序二维码
+                            if (System.IO.File.Exists(url))
+                            {
+                                VisitingCardPic = Utils.CreateWXCardImg(QRCodeUrl, HeadImg);
+                            }
+                            else
+                            {
+                                VisitingCardPic = QRCodeUrl;
+                            }
+                        }
+                        else
+                        {
+                            VisitingCardPic = QRCodeUrl;
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(VisitingCardPic))
+                {
+                    Upd.AppendFormat(" QRCodeUrl='{0}',", VisitingCardPic);
+                }
+                Parameter.Add("Upd", Upd.ToString());
+                JObject bean = (JObject)JsonDataHelper.GetNormalData("mUserH5QRCodeUrlDetail_Select", Parameter, out errmsg);
+                Task.Run(() => {
+                    TaskBindUser(Parameter);
+                });
+                
+                re.Data = dat;
+                re.ErrCode = 0;
+            }
+            else if (data["Msg"].ToString() == "1")
+            {
+                re.ErrMsg = "该用户已绑定过微信";
+                re.ErrCode = 1;
+            }
+            else if (data["Msg"].ToString() == "2")
+            {
+                re.ErrMsg = "该微信已绑定用户";
+                re.ErrCode = 2;
+            }
+        }
+        catch (Exception ex)
+        {
+            re.ErrMsg = ex.Message;
+            re.ErrCode = 99;
+        }*/
+        }
+        catch (Exception e)
+        {
+           e.printStackTrace();
+        }
+        return re;
 	}
 
 }

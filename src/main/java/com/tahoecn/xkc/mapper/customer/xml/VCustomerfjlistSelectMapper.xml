@@ -468,5 +468,110 @@ VALUES  ( NEWID() ,
 		WHERE   ID = #{userID}
 	    ]]>
 	</select>
+	
+	<select id="mUserAuthorDetail_Select_get1" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT ID ShareProjectID FROM dbo.A_ShareProject WHERE ProjectID = #{ProjectID} AND IsDel = 0 
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get2" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT BindChannelUserID UserID,ID FROM dbo.C_WXUser WHERE UnionID = #{UnionID} AND IsDel = 0
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_getCount" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		SELECT count(1) FROM dbo.C_WXUser WHERE BindChannelUserID = #{UserID} AND IsDel = 0
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get3" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 1 Msg,'' WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID= #{UserID}
+		]]>
+	</select>
+	
+	<insert id="mUserAuthorDetail_Select_Insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT INTO dbo.C_WXUser
+			        ( ID ,
+			          OpenID ,
+			          UnionID ,
+			          ShareProjectID ,
+			          Name ,
+			          NickName ,
+			          Gender ,
+			          AvatarUrl ,
+			          Province ,
+			          City ,
+			          Mobile ,
+			          ChannelUserID ,
+			          AdviserGroupID ,
+			          SessionKey ,
+			          BindChannelUserID ,
+			          BindAdviserGroupID ,
+			          IsFirstAuthorize ,
+			          Creator ,
+			          CreateTime ,
+			          Editor ,
+			          EditeTime ,
+			          IsDel ,
+			          Status
+			        )
+			VALUES  ( #{NewID},
+			          '',
+			          #{UnionID}, 
+			          #{ShareProjectID}, 
+			          '',
+			          '', 
+			          0 , 
+			          '',
+			          '',
+			          '',
+			          '', 
+			          '',
+			          '', 
+			          '',
+			          #{UserID},
+			          #{AdviserGroupID},
+			          0 , 
+			          #{UserID}, 
+			          GETDATE(), 
+			          '' ,
+			          NULL , 
+			          0 , 
+			          1 
+			        )
+		]]>
+	</insert>
+	
+	<select id="mUserAuthorDetail_Select_get4" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 0 Msg,#{NewID} WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID=#{UserID}
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get5" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 0 Msg,#{TID} WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID= #{UserID}
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get6" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 2 Msg,'' WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID= #{UserID}
+		]]>
+	</select>
+	
+	<update id="mUserAuthorDetail_Select_update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE dbo.C_WXUser
+				SET BindChannelUserID = #{UserID},
+				BindAdviserGroupID = #{AdviserGroupID}
+				WHERE UnionID = #{UnionID}
+		]]>
+	</update>
   
 </mapper>

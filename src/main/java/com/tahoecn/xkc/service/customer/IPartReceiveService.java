@@ -12,4 +12,6 @@ public interface IPartReceiveService {
 	public Result mCustomerFJDetail_Insert(JSONObject paramAry);
 	
 	public Result CounselorList(JSONObject paramAry);
+	
+	public Result mUserAuthorDetail_Select(JSONObject Parameter);
 }
