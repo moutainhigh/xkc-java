@@ -1733,7 +1733,9 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	re.put("List", result);
         	re.put("AllCount", recordCount);
         	re.put("PageSize", paramAry.get("PageSize"));
-        	entity.setData(re);
+        	String dataStr = new JSONObject(re).toJSONString();
+            JSONObject data = JSONObject.parseObject(dataStr);
+        	entity.setData(data);
 			entity.setErrcode(0);
             entity.setErrmsg("成功");
 		} catch (Exception e) {

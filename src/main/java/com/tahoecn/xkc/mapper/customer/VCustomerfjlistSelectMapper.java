@@ -65,4 +65,19 @@ public interface VCustomerfjlistSelectMapper extends BaseMapper<VCustomerfjlistS
 	void mOldCustomerFJDetail_Insert_step4(Map<String, Object> pmap);
 	
 	Map<String,Object> SystemAccountDetail_Select(@Param("userID")String userID);
+	
+	/**
+	 * 用户授权
+	 * @param pmap
+	 * @return
+	 */
+	Map<String,Object> mUserAuthorDetail_Select_get1(Map<String, Object> pmap);
+	Map<String,Object> mUserAuthorDetail_Select_get2(Map<String, Object> pmap);
+	Long mUserAuthorDetail_Select_getCount(Map<String, Object> pmap);
+	Map<String,Object> mUserAuthorDetail_Select_get3(Map<String, Object> pmap);
+	void mUserAuthorDetail_Select_Insert(Map<String, Object> pmap);
+	Map<String,Object> mUserAuthorDetail_Select_get4(Map<String, Object> pmap);
+	Map<String,Object> mUserAuthorDetail_Select_get5(Map<String, Object> pmap);
+	Map<String,Object> mUserAuthorDetail_Select_get6(Map<String, Object> pmap);
+	void mUserAuthorDetail_Select_update(Map<String, Object> pmap);
 }
