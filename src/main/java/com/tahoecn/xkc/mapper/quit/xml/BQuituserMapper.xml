@@ -7,7 +7,7 @@
             (CASE WHEN SMobile IS NULL OR SMobile='' THEN TelPhone ELSE SMobile END) Mobile,
             (SELECT COUNT(1) FROM Clue_List_Select WHERE ReportUserID=T.UserID AND IntentProjectID=T.ProjectID) CustomerCount
             FROM (
-            SELECT ROW_NUMBER() OVER (ORDER BY QU.CreateTime DESC ) ID1516,
+            SELECT
             QU.ID,QU.UserID,QU.ProjectID,QU.TeamID,SG.Name AS TeamName,A.EmployeeName AS Name,SU.TelPhone,A.Mobile AS SMobile,A.UserName,A.Status,
             (CASE WHEN QU.IsDispose=1 THEN '是' ELSE '否' END) IsDispose,
             (CASE A.Status WHEN 0 THEN '禁用' WHEN 1 THEN '启用' ELSE '未知' END) StatusName,
@@ -17,7 +17,7 @@
             LEFT JOIN dbo.B_SalesUser SU ON QU.UserID=SU.ID
             LEFT JOIN dbo.B_SalesGroup SG ON QU.TeamID=SG.ID
             WHERE QU.UserType=1 AND QU.Status=1 AND QU.IsDel=0
-            {sqlWhere}
+            ${paramMap.sqlWhere}
             ) T WHERE 1=1
             ]]>
         </select>
@@ -30,7 +30,7 @@
             LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
             WHERE O.ProjectID=T.ProjectID AND O.SaleUserID=T.UserID) CustomerCount
             FROM (
-            SELECT ROW_NUMBER() OVER (ORDER BY QU.CreateTime DESC ) ID1516,
+            SELECT
             QU.ID,QU.UserID,QU.ProjectID,QU.TeamID,SG.Name AS TeamName,A.EmployeeName AS Name,SU.TelPhone,A.Mobile AS SMobile,A.UserName,A.Status,
             (CASE WHEN QU.IsDispose=1 THEN '是' ELSE '否' END) IsDispose,
             (CASE A.Status WHEN 0 THEN '禁用' WHEN 1 THEN '启用' ELSE '未知' END) StatusName,
@@ -40,7 +40,7 @@
             LEFT JOIN dbo.B_SalesUser SU ON QU.UserID=SU.ID
             LEFT JOIN dbo.B_SalesGroup SG ON QU.TeamID=SG.ID
             WHERE QU.UserType=2 AND QU.Status=1 AND QU.IsDel=0
-            {sqlWhere}
+            ${paramMap.sqlWhere}
             ) T WHERE 1=1
         ]]>
     </select>
@@ -50,7 +50,7 @@
             SELECT T.*,
             (SELECT COUNT(1) FROM Clue_List_Select WHERE ReportUserID=UserID) CustomerCount
             FROM (
-            SELECT ROW_NUMBER() OVER (ORDER BY QU.CreateTime DESC ) ID1516,
+            SELECT
             QU.ID,QU.UserID,CU.Name,CU.Mobile,CU.UserName,CU.ChannelOrgID,CO.OrgName,CU.Status,
             (CASE WHEN QU.IsDispose=1 THEN '是' ELSE '否' END) IsDispose,
             (CASE CU.Status WHEN 0 THEN '禁用' WHEN 1 THEN '启用' ELSE '未知' END) StatusName,
@@ -59,7 +59,7 @@
             INNER JOIN dbo.B_ChannelUser CU ON QU.UserID=CU.ID AND CU.ChannelTypeID='32C92DA0-DA13-4C21-A55E-A1D16955882C'
             INNER JOIN dbo.B_ChannelOrg CO ON CU.ChannelOrgID=CO.ID
             WHERE QU.UserType=3 AND QU.IsDel=0 AND QU.Status=1
-            {sqlWhere}
+            ${paramMap.sqlWhere}
             ) T WHERE 1=1
         ]]>
     </select>

@@ -218,6 +218,22 @@ public class BProject implements Serializable {
     @TableField("Code")
     private String Code;
 
+    @ApiModelProperty(value = "置业顾问轮排 0:都不选,1:签到顺序轮排,2:自定义顺序轮排")
+    @TableField("DynatownCarousel")
+    private Integer DynatownCarousel;
+
+    @ApiModelProperty(value = "隐藏房源列表价格 0:隐藏，1:显示")
+    @TableField("HouseList")
+    private Integer HouseList;
+
+    @ApiModelProperty(value = "隐藏房源详情价格 0:隐藏")
+    @TableField("HouseDetail")
+    private Integer HouseDetail;
+
+    @ApiModelProperty(value = "打印带看确认单 0.不允许 1.允许")
+    @TableField("IsPrintGuide")
+    private Integer IsPrintGuide;
+
     public String getShortName() {
         return ShortName;
     }
@@ -609,6 +625,38 @@ public class BProject implements Serializable {
 
     public void setCode(String Code) {
         this.Code = Code;
+    }
+
+    public Integer getDynatownCarousel() {
+        return DynatownCarousel;
+    }
+
+    public void setDynatownCarousel(Integer dynatownCarousel) {
+        DynatownCarousel = dynatownCarousel;
+    }
+
+    public Integer getHouseList() {
+        return HouseList;
+    }
+
+    public void setHouseList(Integer houseList) {
+        HouseList = houseList;
+    }
+
+    public Integer getHouseDetail() {
+        return HouseDetail;
+    }
+
+    public void setHouseDetail(Integer houseDetail) {
+        HouseDetail = houseDetail;
+    }
+
+    public Integer getIsPrintGuide() {
+        return IsPrintGuide;
+    }
+
+    public void setIsPrintGuide(Integer isPrintGuide) {
+        IsPrintGuide = isPrintGuide;
     }
 
     @Override
