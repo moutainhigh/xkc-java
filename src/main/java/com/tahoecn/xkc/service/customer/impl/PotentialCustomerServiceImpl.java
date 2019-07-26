@@ -361,7 +361,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                         entity.setErrmsg("您当前角色不是渠道身份，不能报备");
                         return entity;
                     }
-                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
+                    ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
                     if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
                         entity.setErrcode(21);
                         entity.setErrmsg("未找到该渠道的报备规则");
@@ -385,7 +385,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                     Parameter.put("IsSelect",channelRegisterModel.getUserRule().getProtectRule().getIsSelect());
                     Parameter.put("ConfirmUserId","99");
                     Map<String,Object> td = (Map<String, Object>) CustomerValidate.getData();
-                    Parameter.put("OppID",td.get("OppID"));
+                    if(td!=null && td.size()>0){
+                    	 Parameter.put("OppID",td.get("OppID"));
+                    }else{
+                    	 Parameter.put("OppID","");
+                    }
                     
                     Map<String,Object> pmap = JSONObject.parseObject(Parameter.toJSONString(), Map.class);
                     pmap.put("Name", Parameter.getString("LastName")+Parameter.getString("FirstName"));
@@ -460,6 +464,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
         }catch (Exception e){
             entity.setErrcode(1);
             entity.setErrmsg("服务器异常！");
+            throw e;
         }
         return entity;
 	}
