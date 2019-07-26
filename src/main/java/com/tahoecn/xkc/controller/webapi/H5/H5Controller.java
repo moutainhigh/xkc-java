@@ -533,14 +533,10 @@ public class H5Controller extends TahoeBaseController {
     public Result mVerificationCode_Select(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String Mobile=(String) paramMap.get("Mobile");
-        //生成验证码
-        StringBuilder verificationCode = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 6; i++) {
-            verificationCode.append(random.nextInt(10));
-        }
+
         //存入数据库记录,并发送短信
-        verificationcodeService.getCodeAndSendsmg(Mobile,verificationCode.toString());
+        String msg="【泰禾集团】验证码：";
+        verificationcodeService.getCodeAndSendsmg(Mobile,msg);
         Result result = new Result();
         result.setErrcode(0);
         result.setErrmsg("成功");
