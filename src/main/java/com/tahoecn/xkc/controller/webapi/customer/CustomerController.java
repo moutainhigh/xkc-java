@@ -71,19 +71,19 @@ public class CustomerController extends TahoeBaseController {
         }
         //客户手机号
         if (StringUtils.isNotEmpty(CustomerMobile)) {
-            sqlWhere.append(" AND t.CustomerMobile like '%").append(CustomerName).append("%'");
+            sqlWhere.append(" AND t.CustomerMobile like '%").append(CustomerMobile).append("%'");
         }
         //报备人姓名
         if (StringUtils.isNotEmpty(ReportUserName)) {
-            sqlWhere.append(" AND t.ReportUserName like '%").append(CustomerName).append("%'");
+            sqlWhere.append(" AND t.ReportUserName like '%").append(ReportUserName).append("%'");
         }
         //报备人手机号
         if (StringUtils.isNotEmpty(ReportUserMobile)) {
-            sqlWhere.append(" AND t.ReportUserMobile like '%").append(CustomerName).append("%'");
+            sqlWhere.append(" AND t.ReportUserMobile like '%").append(ReportUserMobile).append("%'");
         }
         //客储等级
         if (StringUtils.isNotEmpty(CustomerRank)) {
-            sqlWhere.append(" AND t.CustomerRank='").append(CustomerName).append("'");
+            sqlWhere.append(" AND t.CustomerRank='").append(CustomerRank).append("'");
         }
         //客户状态
         if (Status != null) {
