@@ -391,7 +391,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 {
                     HashMap<String,Object> dat = new HashMap<>();
                     dat.put("ID",arr.get(j).get("ID"));
-                    dat.put("DictName",arr.get(j).get("DictName"));
+                    dat.put("DictName",arr.get(j).get("Name"));
                     dat.put("Type","group");
                     dat.put("Filter",JSON.parseArray((String) arr.get(j).get("Filter")));
                     List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
@@ -580,7 +580,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 {
                     HashMap<String,Object> dat = new HashMap<>();
                     dat.put("ID",arr.get(j).get("ID"));
-                    dat.put("DictName",arr.get(j).get("DictName"));
+                    dat.put("DictName",arr.get(j).get("Name"));
                     dat.put("Type","group");
                     dat.put("Filter",JSON.parseArray((String) arr.get(j).get("Filter")));
                     List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
@@ -613,7 +613,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 for (int j = 0; j < arr.size(); j++) {
                     HashMap<String, Object> dat = new HashMap<>();
                     dat.put("ID", arr.get(j).get("ID"));
-                    dat.put("DictName", arr.get(j).get("DictName"));
+                    dat.put("DictName", arr.get(j).get("Name"));
                     dat.put("Type", "group");
                     dat.put("Filter", JSON.parseArray((String) arr.get(j).get("Filter")));
                     List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
@@ -641,7 +641,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 for (int j = 0; j < arr.size(); j++) {
                     HashMap<String, Object> dat = new HashMap<>();
                     dat.put("ID", arr.get(j).get("ID"));
-                    dat.put("DictName", arr.get(j).get("DictName"));
+                    dat.put("DictName", arr.get(j).get("Name"));
                     dat.put("Type", "group");
                     dat.put("Filter", JSON.parseArray((String) arr.get(j).get("Filter")));
                     List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
