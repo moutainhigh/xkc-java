@@ -370,24 +370,24 @@
 	<resultMap type ="java.util.Map" id= "ACYQWQYMap">
 	     <result column ="ID" property="ID" />
 	     <result column ="Name" property="Name"  />
-	     <result column ="Amount " property="Value"  />
-	     <result column ="OrgName" property="OrgName"  />
+	     <result column ="Value " property="Value"  />
+	     <result column ="Amount" property="Amount"  />
 	</resultMap >
 	<!-- 逾期未签约列表 -->
 	<select id="R_ACYQWQYList_Select" statementType="CALLABLE" resultMap="ACYQWQYMap,recordCount">
-		{call R_ACYQWQYList_Select(#{OrgID},#{OverdueContractStartDay},#{OverdueContractEndDay},#{UserID},
-		#{RequestType},#{PageIndex},#{PageSize})}
+		{call R_ACYQWQYList_Select(#{OrgID},#{UserID},#{RequestType},#{OverdueContractStartDay},#{OverdueContractEndDay},
+		#{PageIndex},#{PageSize})}
 	</select>
 	<resultMap type ="java.util.Map" id= "ACYQWJKMap">
 	     <result column ="ID" property="ID" />
 	     <result column ="Name" property="Name"  />
-	     <result column ="Amount" property="Value"  />
-	     <result column ="OrgName" property="OrgName"  />
+	     <result column ="Value" property="Value"  />
+	     <result column ="Amount" property="Amount"  />
 	</resultMap >
 	<!-- 逾期未交款列表 -->
 	<select id="R_ACYQWJKList_Select" statementType="CALLABLE" resultMap="ACYQWJKMap,recordCount">
-		{call R_ACYQWJKList_Select(#{OrgID},#{OverdueContractStartDay},#{OverdueContractEndDay},#{UserID},
-		#{RequestType},#{PageIndex},#{PageSize})}
+		{call R_ACYQWJKList_Select(#{OrgID},#{UserID},#{RequestType},#{OverdueContractStartDay},#{OverdueContractEndDay},
+		#{PageIndex},#{PageSize})}
 	</select>
 	<!-- 逾期客户头部统计 -->
 	<select id="mCustomerYQCateList_Select" statementType="CALLABLE" resultType="java.util.Map">

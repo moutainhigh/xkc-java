@@ -35,7 +35,7 @@ public class SOrganizationController extends TahoeBaseController {
     @Autowired
     private ISOrganizationService organizationService;
 
-    @ApiOperation(value = "获取组织列表", notes = "获取组织列表")
+    @ApiOperation(value = "获取组织列表--弃用", notes = "获取组织列表--弃用")
     @RequestMapping(value = "/SystemOrganization_Select", method = {RequestMethod.POST})
     public Result SystemOrganization_Select(String OrgID,String AuthCompanyID,String ProductID,String Status,String PID, int Pageindex, int Pagesize) {
         IPage page=new Page(Pageindex,Pagesize);
@@ -112,7 +112,7 @@ public class SOrganizationController extends TahoeBaseController {
         SOrganization organization=new SOrganization();
         organization.setId(ID);
         organization.setStatus(Status);
-//        organization.setEditor(ThreadLocalUtils.getUserName());
+        organization.setEditor(ThreadLocalUtils.getUserName());
         organization.setEditTime(new Date());
         boolean b = organizationService.updateById(organization);
         if (b){

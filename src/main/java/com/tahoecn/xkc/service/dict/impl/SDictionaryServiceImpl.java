@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.service.dict.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
 import com.tahoecn.xkc.model.dict.BTag;
 import com.tahoecn.xkc.model.dict.SDictionary;
@@ -55,6 +57,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
 
     @Autowired
     private IBSalesuserService salesuserService;
+    @Autowired
+    private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
 
     @Autowired
     private IVProjectroomService projectroomService;
@@ -163,7 +167,6 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             String ChildAlias = "Child";
             String DictNameAlias = "DictName";
             String TypeAlias = "Type";
-            //此处的 Alias不懂
 	        Map<String,String> Alias = (Map<String, String>) param.get("Alias");
 	        if (Alias!=null){
 	            IDAlias=Alias.get("IDAlias");
@@ -244,7 +247,6 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         if (res.get("Code")== null)
                         {
                             DictCodes = DictCodes + " OR B.DictCode = '"+Code+"'";
-//                        res.Add(new JProperty(Code, new JArray())); 这句不知道啥
                             res.put(Code,new ArrayList<>());
                         }
                         break;
@@ -263,33 +265,33 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     if (Levels==2){
                         String ID=sCity.getId();
                         Map<String,Object> dict = new HashMap<>();
-                        dict.put("IDAlias",ID);
-                        dict.put("DictNameAlias",sCity.getDispName());
-                        dict.put("ChildAlias",new ArrayList<>());
+                        dict.put(IDAlias,ID);
+                        dict.put(DictNameAlias,sCity.getDispName());
+                        dict.put(ChildAlias,new ArrayList<>());
                         province.put(ID,dict);
                     }
                     if (Levels==3){
-                        if (province.get("PID") != null)
+                        if (province.get(PID) != null)
                         {
                             String ID=sCity.getId();
                             Map<String,Object> dict = new HashMap<>();
-                            dict.put("IDAlias",ID);
-                            dict.put("DictNameAlias",sCity.getDispName());
-                            dict.put("ChildAlias","");
+                            dict.put(IDAlias,ID);
+                            dict.put(DictNameAlias,sCity.getDispName());
+                            dict.put(ChildAlias,new ArrayList<>());
                             dict.put("PID",PID);
                             city.put(ID,dict);
                         }
                     }
                     if (Levels == 4)
                     {
-                        if (city.get("PID")!= null)
+                        if (city.get(PID)!= null)
                         {
                             String ID=sCity.getId();
                             Map<String,Object> dict = new HashMap<>();
-                            dict.put("IDAlias",ID);
-                            dict.put("DictNameAlias",sCity.getDispName());
-                            Map<String,Object> pid = city.get("PID");
-                            ArrayList  childAlias = (ArrayList) pid.get("ChildAlias");
+                            dict.put(IDAlias,ID);
+                            dict.put(DictNameAlias,sCity.getDispName());
+                            Map<String,Object> pid = city.get(PID);
+                            ArrayList  childAlias = (ArrayList) pid.get(ChildAlias);
                             childAlias.add(dict);
                         }
                     }
@@ -300,7 +302,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         String PID= (String) city.get(key).get("PID");
                         if (province.get(PID)!=null){
                             city.get(key).remove("PID");
-                            ArrayList  arrayList= (ArrayList) province.get("PID").get("ChildAlias");
+                            ArrayList  arrayList= (ArrayList) province.get(PID).get(ChildAlias);
                             arrayList.add(city.get(key));
                         }
                     }
@@ -381,21 +383,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             if (isKHSXGZGW)
             {
                 String userID = (String) param.get("UserID");
-                QueryWrapper<BTag> wrapper=new QueryWrapper<>();
-                wrapper.eq("IsDel",0).eq("Status",1).eq("Creator",userID);
-                wrapper.orderByAsc("Name");
-                List<BTag> list;
-                try {
-                    list = tagService.list(wrapper);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return Result.errormsg(101,"数据库查询异常");
-                }
-                ArrayList arrayList = (ArrayList) res.get("KHSXGZGW");
-                HashMap<String,Object> hashMap = (HashMap<String, Object>) arrayList.get(3);
-                hashMap.put("Child",list);
-                arrayList.add(3,hashMap);
-                res.put("KHSXGZGW",arrayList);
+                List<Map<String, Object>> list = vCustomergwlistSelectMapper.TagList_Select(userID);
+                ((Map) ((List) res.get("KHSXGZGW")).get(3)).put("Child",list);
                 List<Map<String,Object>> arr=customerfiltergroupService.groupList((String) param.get("JobCode"),(String)param.get("ProjectID"),(String)param.get("UserID"));
                 List groupArr=new ArrayList();
                 for (int j = 0; j < arr.size(); j++)
@@ -404,10 +393,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID",arr.get(j).get("ID"));
                     dat.put("DictName",arr.get(j).get("DictName"));
                     dat.put("Type","group");
-                    dat.put("Filter",arr.get(i).get("Filter"));
-                    List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter",JSON.parseArray((String) arr.get(j).get("Filter")));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
                     List FilterDesc=new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj=new HashMap<>();
                             filterobj.put("DictName",key);
@@ -419,11 +409,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("FilterDesc",FilterDesc);
                     groupArr.add(dat);
                 }
-                List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZGW");
-                Map<String, Object> map = khsxgzgw.get(4);
-                map.put("Child",groupArr);
-                khsxgzgw.add(4,map);
-                res.put("KHSXGZGW",khsxgzgw);
+                ((Map) ((List) res.get("KHSXGZGW")).get(4)).put("Child",groupArr);
             }
 //        处理分配顾问筛选规则(分接)数据
             if (isFPGWSXGZFJ){
@@ -445,8 +431,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
             }
 //        处理分配顾问筛选规则(营销经理)数据
-            if (isFPGWSXGZYXJL)
-            {
+            if (isFPGWSXGZYXJL){
                 Map<String,Object> dictTop=new HashMap<>();
                 dictTop.put(IDAlias,"");
                 dictTop.put(DictNameAlias,"全部");
@@ -478,13 +463,10 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                             res.put("FPGWSXGZYXJL",dict);
                         }
                     }
-
                 }
-
             }
 //            处理公共池客户筛选规则(营销经理)数据
-            if (isGGCKHSXGZYXJL)
-            {
+            if (isGGCKHSXGZYXJL){
                 Map<String,Object> dictTop=new HashMap<>();
                 dictTop.put(IDAlias,"");
                 dictTop.put(DictNameAlias,"全部");
@@ -519,8 +501,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
             }
 //        处理顾问跟进客户筛选规则(销售经理)数据
-            if (isGWGJKHSXGZXSJL)
-            {
+            if (isGWGJKHSXGZXSJL){
                 String TeamID=null;
                 if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
                     TeamID= (String) param.get("OrgID");
@@ -532,17 +513,12 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         Map<String,Object> dict = new HashMap<>();
                         dict.put(IDAlias,map.get("ID"));
                         dict.put(DictNameAlias,map.get("Name"));
-                        List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWGJKHSXGZXSJL");
-                        Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(2);
-                        objectMap.put("Child",dict);
-                        gwgjkhsxgzxsjl.add(2,objectMap);
+                        ((List) ((Map) ((List) res.get("GWGJKHSXGZXSJL")).get(2)).get("Child")).add(dict);
                     }
                 }
-
             }
 //        处理顾问公共客户筛选规则(销售经理)数据
-            if (isGWGGKHSXGZXSJL)
-            {
+            if (isGWGGKHSXGZXSJL){
                 String TeamID=null;
                 if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
                     TeamID= (String) param.get("OrgID");
@@ -551,34 +527,12 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         Map<String,Object> dict = new HashMap<>();
                         dict.put(IDAlias,map.get("ID"));
                         dict.put(DictNameAlias,map.get("Name"));
-                        List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWGJKHSXGZXSJL");
-                        Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(2);
-                        objectMap.put("Child",dict);
-                        gwgjkhsxgzxsjl.add(2,objectMap);
-                    }
-                }
-            }
-//        处理顾问公共客户筛选规则(销售经理)数据
-            if (isGWGGKHSXGZXSJL)
-            {
-                String TeamID=null;
-                if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
-                    TeamID= (String) param.get("OrgID");
-                    List<Map<String,Object>> saleArray=salesuserService.UserSalesList_Select(null,TeamID);
-                    for (Map<String, Object> map : saleArray) {
-                        Map<String,Object> dict = new HashMap<>();
-                        dict.put(IDAlias,map.get("ID"));
-                        dict.put(DictNameAlias,map.get("Name"));
-                        List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWGGKHSXGZXSJL");
-                        Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(0);
-                        objectMap.put("Child",dict);
-                        gwgjkhsxgzxsjl.add(0,objectMap);
+                        ((List) ((Map) ((List) res.get("GWGGKHSXGZXSJL")).get(0)).get("Child")).add(dict);
                     }
                 }
             }
 //        处理顾问丢失客户筛选规则(销售经理)数据
-            if (isGWDSKHSXGZXSJL)
-            {
+            if (isGWDSKHSXGZXSJL){
                 String TeamID=null;
                 if (!StringUtils.equals((String)param.get("OrgID"),(String)param.get("ProjectID"))){
                     TeamID= (String) param.get("OrgID");
@@ -587,16 +541,12 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         Map<String,Object> dict = new HashMap<>();
                         dict.put(IDAlias,map.get("ID"));
                         dict.put(DictNameAlias,map.get("Name"));
-                        List<Map<String,Object>> gwgjkhsxgzxsjl = (List<Map<String, Object>>) res.get("GWDSKHSXGZXSJL");
-                        Map<String, Object> objectMap = gwgjkhsxgzxsjl.get(0);
-                        objectMap.put("Child",dict);
-                        gwgjkhsxgzxsjl.add(0,objectMap);
+                        ((List) ((Map) ((List) res.get("GWDSKHSXGZXSJL")).get(0)).get("Child")).add(dict);
                     }
                 }
             }
 //        处理盘客筛选规则(销售经理) 数据
-            if (isPKSXGZXSJL)
-            {
+            if (isPKSXGZXSJL){
                 Map<String,Object> dictTop=new HashMap<>();
                 dictTop.put(IDAlias,"");
                 dictTop.put(DictNameAlias,"全部");
@@ -605,8 +555,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 res.put("PKSXGZXSJL",dictTop);
             }
 //        处理房间户型数据
-            if (isFJHX)
-            {
+            if (isFJHX){
                 List<Map<String,Object>> list=projectroomService.RoomTypeList_Select((String)param.get("BuildingID"));
                 for (Map<String, Object> map : list) {
                     Map<String,Object> dict = new HashMap<>();
@@ -617,20 +566,14 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
             }
 //        处理客户筛选规则(自渠)数据
-            if (isKHSXGZZQ)
-            {
+            if (isKHSXGZZQ){
                 String userID = (String) param.get("UserID");
                 List<Map<String,Object>> list= tagService.BTaglist(userID);
 
                 if (!"JZ".equals(param.get("JobCode"))){
-                    List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
-                    Map<String, Object> map = khsxgzgw.get(3);
-                    map.put("Child",list);
-                    khsxgzgw.remove(3);
-                    khsxgzgw.add(3,map);
-                    res.put("KHSXGZZQ",khsxgzgw);
+                	((Map) ((List) res.get("KHSXGZZQ")).get(3)).put("Child",list);
                 }
-//            客户分组集合查询
+                //客户分组集合查询
                 List<Map<String,Object>> arr=customerfiltergroupService.groupList((String) param.get("JobCode"),(String)param.get("ProjectID"),(String)param.get("UserID"));
                 List groupArr=new ArrayList();
                 for (int j = 0; j < arr.size(); j++)
@@ -639,10 +582,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID",arr.get(j).get("ID"));
                     dat.put("DictName",arr.get(j).get("DictName"));
                     dat.put("Type","group");
-                    dat.put("Filter",arr.get(i).get("Filter"));
-                    List<Map<String,Object>> dct= (List) arr.get(i).get("FilterDesc");
+                    dat.put("Filter",JSON.parseArray((String) arr.get(j).get("Filter")));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
                     List FilterDesc=new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj=new HashMap<>();
                             filterobj.put("DictName",key);
@@ -656,19 +600,9 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
                 if (!"JZ".equals(param.get("JobCode")))
                 {
-                    List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
-                    Map<String, Object> map = khsxgzgw.get(4);
-                    map.put("Child",groupArr);
-                    khsxgzgw.remove(4);
-                    khsxgzgw.add(4,map);
-                    res.put("KHSXGZZQ",khsxgzgw);
+                	((Map) ((List) res.get("KHSXGZZQ")).get(4)).put("Child",groupArr);
                 }else {
-                    List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHSXGZZQ");
-                    Map<String, Object> map = khsxgzgw.get(2);
-                    map.put("Child",groupArr);
-                    khsxgzgw.remove(2);
-                    khsxgzgw.add(2,map);
-                    res.put("KHSXGZZQ",khsxgzgw);
+                	((Map) ((List) res.get("KHSXGZZQ")).get(2)).put("Child",groupArr);
                 }
             }
 //        处理客户公共池筛选规则(顾问)
@@ -681,10 +615,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID", arr.get(j).get("ID"));
                     dat.put("DictName", arr.get(j).get("DictName"));
                     dat.put("Type", "group");
-                    dat.put("Filter", arr.get(i).get("Filter"));
-                    List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
-                    List FilterDesc = new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    dat.put("Filter", JSON.parseArray((String) arr.get(j).get("Filter")));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
+                    List FilterDesc=new ArrayList();
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj = new HashMap<>();
                             filterobj.put("DictName", key);
@@ -696,15 +631,10 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("FilterDesc", FilterDesc);
                     groupArr.add(dat);
                 }
-                List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHGGCSXGZGW");
-                Map<String, Object> map = khsxgzgw.get(2);
-                map.put("Child",groupArr);
-                khsxgzgw.add(2,map);
-                res.put("KHSXGZZQ",khsxgzgw);
+                ((Map) ((List) res.get("KHSXGZZQ")).get(2)).put("Child",groupArr);
             }
 //        处理客户公共池筛选规则(自渠)
-            if (isKHGGCSXGZZQ)
-            {
+            if (isKHGGCSXGZZQ){
 //            客户分组集合查询
                 List<Map<String, Object>> arr = customerfiltergroupService.groupList((String) param.get("JobCode"), (String) param.get("ProjectID"), (String) param.get("UserID"));
                 List groupArr = new ArrayList();
@@ -713,10 +643,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("ID", arr.get(j).get("ID"));
                     dat.put("DictName", arr.get(j).get("DictName"));
                     dat.put("Type", "group");
-                    dat.put("Filter", arr.get(i).get("Filter"));
-                    List<Map<String, Object>> dct = (List) arr.get(i).get("FilterDesc");
-                    List FilterDesc = new ArrayList();
-                    for (Map<String, Object> map : dct) {
+                    dat.put("Filter", JSON.parseArray((String) arr.get(j).get("Filter")));
+                    List<Object> dct= JSON.parseArray((String) arr.get(j).get("FilterDesc"));
+                    List FilterDesc=new ArrayList();
+                    for (Object temap : dct) {
+                    	Map<String, Object> map = (Map<String, Object>)temap;
                         for (String key : map.keySet()) {
                             Map<String, Object> filterobj = new HashMap<>();
                             filterobj.put("DictName", key);
@@ -728,15 +659,15 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("FilterDesc", FilterDesc);
                     groupArr.add(dat);
                 }
-                List<Map<String,Object>> khsxgzgw = (List<Map<String, Object>>) res.get("KHGGCSXGZZQ");
-                Map<String, Object> map = khsxgzgw.get(2);
-                map.put("Child",groupArr);
-                khsxgzgw.add(2,map);
-                res.put("KHGGCSXGZZQ",khsxgzgw);
+                ((Map) ((List) res.get("KHGGCSXGZZQ")).get(2)).put("Child",groupArr);
             }
             List data=new ArrayList();
-            if (res.size() >= 1)
-            {
+            if (res.size() == 1){
+            	for (String key : res.keySet()) {
+                    data = (List) res.get(key);
+                }
+            }
+            if (res.size() > 1){
                 for (String key : res.keySet()) {
                     data.add(res.get(key));
                 }

@@ -104,18 +104,24 @@ public class ParameterDetailController extends TahoeBaseController {
         updateCenterRule.setEditTime(new Date());
         saleCenterRuleUpdateWrapper.eq("ProjectID",bSalescenterrule.getProjectID());
         iBSalescenterruleService.update(updateCenterRule,saleCenterRuleUpdateWrapper);
+
         //案场保护期规则新增
         bSalescenterrule.setIsDel(0);
         bSalescenterrule.setStatus(1);
         bSalescenterrule.setEditTime(new Date());
         bSalescenterrule.setEditor(UserId);
-        iBSalescenterruleService.save(updateCenterRule);
+        bSalescenterrule.setCreator(UserId);
+        bSalescenterrule.setCreateTime(new Date());
+        iBSalescenterruleService.save(bSalescenterrule);
 
         //案场消息提醒
         UpdateWrapper<BRemindrule> remindruleUpdateWrapper = new UpdateWrapper<>();
         remindruleUpdateWrapper.eq("ProjectID",bRemindrule.getProjectID());
         remindruleUpdateWrapper.isNull("VersionEndTime");
         iBRemindruleService.update(bRemindrule,remindruleUpdateWrapper);
+        bRemindrule.setRuleStartTime(new Date());
+        bRemindrule.setCreator(UserId);
+        bRemindrule.setVersionStartTime(new Date());
         iBRemindruleService.save(bRemindrule);
         return Result.ok("更新成功");
     }

@@ -56,7 +56,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         String TheLatestFollowUpDate_End = (String)map.get("TheLatestFollowUpDate_End");
         String IsExcel = (String)map.get("IsExcel");
 
-        if (StringUtil.isNull(ProjectID))
+        if (StringUtil.isNotNull(ProjectID))
         {
 
         }
@@ -209,10 +209,6 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
             sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+"' ");
         }
 
-        if (sqlWhere.length() == 0)
-        {
-            sqlWhere.append("AND 1=1");
-        }
         map.put("Where",Where.toString());
         map.put("sqlWhere",sqlWhere.toString());
         map.put("ClueWhere",ClueWhere.toString());

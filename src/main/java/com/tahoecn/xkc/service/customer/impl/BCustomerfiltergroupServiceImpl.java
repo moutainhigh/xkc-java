@@ -46,13 +46,11 @@ public class BCustomerfiltergroupServiceImpl extends ServiceImpl<BCustomerfilter
 		group.setName(map.get("Name").toString());
 		group.setFilter(map.get("Filter").toString());
 		group.setFilterDesc(map.get("FilterDesc").toString());
-//		group.setCreator(Creator);
+		group.setCreator(map.get("UserID").toString());
 		group.setCreateTime(new Date());
 		group.setIsDel(0);
 		group.setStatus(1);
 		baseMapper.insert(group);
-		group.setCreator(group.getId());
-		baseMapper.updateById(group);
 	}
 	/**
 	 * 潜在客户筛选分组列表

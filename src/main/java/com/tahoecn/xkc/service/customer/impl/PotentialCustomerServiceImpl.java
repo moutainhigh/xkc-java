@@ -31,6 +31,7 @@ import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.GWCustomerPageModel;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
 import com.tahoecn.xkc.service.customer.IPotentialCustomerService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
@@ -51,6 +52,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
 	@Resource
 	private ISystemMessageService iSystemMessageService;
+	@Resource
+	private IBChannelService iBChannelService;
 
 	@Override
 	public Result mCustomerPotentialTagDetail_Insert(JSONObject paramAry) {
@@ -358,7 +361,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                         entity.setErrmsg("您当前角色不是渠道身份，不能报备");
                         return entity;
                     }
-                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
+                    ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
                     if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
                         entity.setErrcode(21);
                         entity.setErrmsg("未找到该渠道的报备规则");
@@ -382,7 +385,11 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                     Parameter.put("IsSelect",channelRegisterModel.getUserRule().getProtectRule().getIsSelect());
                     Parameter.put("ConfirmUserId","99");
                     Map<String,Object> td = (Map<String, Object>) CustomerValidate.getData();
-                    Parameter.put("OppID",td.get("OppID"));
+                    if(td!=null && td.size()>0){
+                    	 Parameter.put("OppID",td.get("OppID"));
+                    }else{
+                    	 Parameter.put("OppID","");
+                    }
                     
                     Map<String,Object> pmap = JSONObject.parseObject(Parameter.toJSONString(), Map.class);
                     pmap.put("Name", Parameter.getString("LastName")+Parameter.getString("FirstName"));
@@ -457,6 +464,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
         }catch (Exception e){
             entity.setErrcode(1);
             entity.setErrmsg("服务器异常！");
+            throw e;
         }
         return entity;
 	}
@@ -849,7 +857,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	                entity.setErrmsg("您当前角色不是渠道身份，不能报备");
 	                return entity;
 	            }
-	            ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
+	            ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(model.getUserID(), model.getChannelTypeID(), model.getProjectID());
 	            if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
 	                entity.setErrcode(21);
 	                entity.setErrmsg("未找到该渠道的报备规则");
@@ -930,12 +938,12 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        StringBuilder orderSb = new StringBuilder();
 	        //项目
 	        if (!"JZ".equals(model.getJobCode())){
-	            if (!StringUtils.isEmpty(model.getProjectID().trim())){
+	            if (!StringUtils.isEmpty(model.getProjectID())){
 	                whereinnerSb.append(" AND t.IntentProjectID = '"+model.getProjectID()+"' ");
 	            }
 	        }
 	        //手机或姓名
-	        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+	        if (!StringUtils.isEmpty(model.getKeyWord())){
 	            whereinnerSb.append(" and (t.Name Like'%"+model.getKeyWord()+"%' or t.Mobile Like'%"+model.getKeyWord()+"%') ");
 	        }
 	        if (model.getFilter() != null && model.getFilter().size() > 0){
@@ -988,7 +996,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	            }
 
 	        }
-	        if (!StringUtils.isEmpty(model.getSort().trim())){
+	        if (!StringUtils.isEmpty(model.getSort())){
 	            if ("559312B1-E6E5-41EC-80F8-98425F8768EB".equals(model.getSort())){//最新跟进
 	                orderSb.append(" ORDER BY  TheLatestFollowUpDate desc ");
 	            }
@@ -1007,15 +1015,19 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        }
 	        //判断是否为兼职
 	        if ("JZ".equals(model.getJobCode())){
-	            whereinnerSb.append(" AND t.ChannelUserID = '"+model.getUserID()+"' ");
+	        	String UserID = model.getUserID()!=null?model.getUserID():"";
+	            whereinnerSb.append(" AND t.ChannelUserID = '"+UserID+"' ");
 	        }else if ("ZQFZR".equals(model.getJobCode())){
-	            whereinnerSb.append(" AND t.ReportUserID = '"+model.getReportUserID()+"' ");
+	        	String ReportUserID = model.getReportUserID()!=null?model.getReportUserID():"";
+	            whereinnerSb.append(" AND t.ReportUserID = '"+ReportUserID+"' ");
 	        }else{
-	            whereinnerSb.append(" AND t.ReportUserID = '"+model.getUserID()+"' ");
+	        	String UserID = model.getUserID()!=null?model.getUserID():"";
+	            whereinnerSb.append(" AND t.ReportUserID = '"+UserID+"' ");
 	        }
 	        //判断是否有渠道任务ID
 	        if (!StringUtils.isEmpty(model.getChannelTaskID())){
-	            whereinnerSb.append(" AND t.ChannelTaskID='"+model.getChannelTaskID()+"' ");
+	        	String ChannelTaskID=model.getChannelTaskID()!=null?model.getChannelTaskID():"";
+	            whereinnerSb.append(" AND t.ChannelTaskID='"+ChannelTaskID+"' ");
 	        }
 	        paramAry.put("WHERE", whereSb.toString());
 	        paramAry.put("WHEREINNER", whereinnerSb.toString());

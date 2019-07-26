@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "客户")
 @RestController
-@RequestMapping("/webapi/customermanager")
+@RequestMapping("/customermanager")
 public class CustomerManagerController extends TahoeBaseController {
     private static final Log log = LogFactory.get();
 
@@ -149,8 +149,8 @@ public class CustomerManagerController extends TahoeBaseController {
     @RequestMapping(value = "/CustomerNEWDetailAll_Select", method = {RequestMethod.GET})
     public Result CustomerNEWDetailAll_Select(String ProjectID,
                                                 String CustomerID,
-                                                Long ReportUserID,
-                                                Long OpportunityID) {
+                                                String ReportUserID,
+                                                String OpportunityID) {
 
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -188,4 +188,14 @@ public class CustomerManagerController extends TahoeBaseController {
         return Result.ok(result);
     }
 
+
+    @ApiOperation(value = "回款明细")
+    @RequestMapping(value = "/CustomerPayMentsList_Select", method = {RequestMethod.GET})
+    public Result CustomerPayMentsList_Select(String TradeGUID) {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        List paymentList = bCustomerManagerMapper.CustomerPayMentsList_Select(TradeGUID);
+        result.put("paymentList",paymentList);
+        return Result.ok(result);
+    }
 }

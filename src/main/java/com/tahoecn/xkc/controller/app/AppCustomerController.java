@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -33,6 +34,7 @@ import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.IASharepoolService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerfiltergroupService;
@@ -94,7 +96,9 @@ public class AppCustomerController extends TahoeBaseController {
 	private ISystemMessageService iSystemMessageService;
     @Autowired
 	private BCustomerpotentialMapper bCustomerpotentialMapper;
-
+    @Autowired
+    private IBChannelService iBChannelService;
+    
 	@ResponseBody
     @ApiOperation(value = "案场销售经理客户丢失审批详细", notes = "案场销售经理客户丢失审批详细")
     @RequestMapping(value = "/mCustomerYXJLLoseDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -136,7 +140,7 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerPotentialFilterGroupDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerPotentialFilterGroupDetail_Insert(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
+			JSONObject paramMap = (JSONObject)jsonParam.getJSONObject("_param");
 			iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupDetail_Insert(paramMap);
 			return Result.ok("潜在客户分组添加成功");
 		}catch (Exception e) {
@@ -174,7 +178,7 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerFilterGroupDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerFilterGroupDetail_Insert(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
+			JSONObject paramMap = (JSONObject)jsonParam.getJSONObject("_param");
 			iBCustomerfiltergroupService.mCustomerFilterGroupDetail_Insert(paramMap);
 			return Result.ok("分组添加成功");
 		}catch (Exception e) {
@@ -366,8 +370,25 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerYQWJKList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerYQWJKList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			Map<String,Object> map = iBOpportunityService.mCustomerYQWJKList_Select(paramMap);
+			Map<String,Object> paramAry = jsonParam.getJSONObject("_param");
+			paramAry.put("OverduePaymentStartDay", "0");
+			paramAry.put("OverduePaymentEndDay", "3650");
+            if (!StringUtils.isEmpty(paramAry.get("Filter"))){
+            	List<Map<String,Object>> Filter = (List) paramAry.get("Filter");
+            	for (Map<String,Object> item : Filter){
+                	String TagID = (String) item.get("TagID");
+                	switch (TagID){
+                    	case "883F5965-7D43-4EC9-918C-CF09BD625460":{//未交款周期
+	                    	String start = (String) ((List) item.get("Child")).get(0);
+	                     	String end = (String) ((List) item.get("Child")).get(1);
+	                    	paramAry.put("OverduePaymentStartDay", (start == "-" ? "0" : start));
+	                    	paramAry.put("OverduePaymentEndDay", (end == "-" ? "3650" : end));
+                    	}
+                        break;
+                    }
+            	}
+            }
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWJKList_Select(paramAry);
 			return Result.ok(map);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -379,8 +400,25 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerYQWQYList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerYQWQYList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			Map<String,Object> map = iBOpportunityService.mCustomerYQWQYList_Select(paramMap);
+			Map<String,Object> paramAry = jsonParam.getJSONObject("_param");
+			paramAry.put("OverdueContractStartDay", "0");
+			paramAry.put("OverdueContractEndDay", "3650");
+			if (!StringUtils.isEmpty(paramAry.get("Filter"))){
+            	List<Map<String,Object>> Filter = (List) paramAry.get("Filter");
+            	for (Map<String,Object> item : Filter){
+                	String TagID = (String) item.get("TagID");
+                	switch (TagID){
+                    	case "2D0B4FD7-22C0-4225-A300-6AF34683DCAE":{//未签约周期
+	                    	String start = (String) ((List) item.get("Child")).get(0);
+	                     	String end = (String) ((List) item.get("Child")).get(1);
+	                    	paramAry.put("OverdueContractStartDay", (start == "-" ? "0" : start));
+	                    	paramAry.put("OverdueContractEndDay", (end == "-" ? "3650" : end));
+                    	}
+                        break;
+                    }
+            	}
+            }
+			Map<String,Object> map = iBOpportunityService.mCustomerYQWQYList_Select(paramAry);
 			return Result.ok(map);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -447,9 +485,9 @@ public class AppCustomerController extends TahoeBaseController {
 				}
 			}
 			Map<String,Object> result = null;
-			if (StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWQY".equals(paramMap.get("Code"))){
+			if (!StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWQY".equals(paramMap.get("Code"))){
 				result = iBOpportunityService.R_ACYQWQYList_Select(paramMap);
-			}else if(StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWJK".equals(paramMap.get("Code"))){
+			}else if(!StringUtils.isEmpty(paramMap.get("RequestType")) && "YQWJK".equals(paramMap.get("Code"))){
 				result = iBOpportunityService.R_ACYQWJKList_Select(paramMap);
 			}else{
 				result = iBOpportunityService.mCustomerAdviserList_Select(paramMap);
@@ -1044,15 +1082,15 @@ public class AppCustomerController extends TahoeBaseController {
                                     String mobile = (String) data.get("Mobile");
                                     String name = (String) data.get("Name");
                                     String channelTypeId = GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
-                                    ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId);
+                                    ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userId, channelTypeId, projectId);
                                     if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
                                         return Result.errormsg(21, "未找到该渠道的报备规则");
                                     }
-                                    Map<String, Object> CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId);
+                                    Map<String, Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
                                     if ((int)CustomerValidate.get("InvalidType") != 0)
                                     {
                                         ErrCode = (int) CustomerValidate.get("InvalidType");
-                                        ErrMsg = channelRegisterModel.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
+                                        ErrMsg = iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
                                         //抢客失败，将线索机会返还之前的状态
                                         Map<String,Object> jParameter = new HashMap<String,Object>();
                                         jParameter.put("OpportunityID", data.get("OpportunityID"));
@@ -1353,17 +1391,17 @@ public class AppCustomerController extends TahoeBaseController {
                         }
                     }else if (adviserGroupID.equalsIgnoreCase("48FC928F-6EB5-4735-BF2B-29B1F591A582")){   //自渠
                         String channelTypeId = GetChannelTypeId(userId, projectId, "48FC928F-6EB5-4735-BF2B-29B1F591A582");
-                        ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel(userId, channelTypeId, projectId);
+                        ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userId, channelTypeId, projectId);
                         if (StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
                             entity.setErrcode(21);
                             entity.setErrmsg("未找到该渠道的报备规则");
                             return entity;
                         }
-                        Map<String,Object> CustomerValidate = channelRegisterModel.ValidateForReport(mobile, projectId);
+                        Map<String,Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
                         if ((int)CustomerValidate.get("InvalidType") != 0){
                             //修改分享传播池内信息，并返回APP抢客失败信息
                             entity.setErrcode((int)CustomerValidate.get("InvalidType"));
-                            entity.setErrmsg(channelRegisterModel.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule()));
+                            entity.setErrmsg(iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule()));
                             //修改分享传播池信息  置为无效
                             Map<String,Object> para1 = new HashMap<String,Object>();
                             para1.put("FXCBID", item.get("FXCBID"));
