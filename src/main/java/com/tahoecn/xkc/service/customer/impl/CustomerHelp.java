@@ -268,7 +268,11 @@ public class CustomerHelp implements ICustomerHelp {
 								}
 								if (childItem.getID().equals("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602")) {// 渠道客户初始化
 									String where = " and ClueID='"+ customerModel.getClueID() + "'";
-									Map<String, Object> ClueObj = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+									List<Map<String, Object>>  ClueObjList = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+									Map<String, Object> ClueObj = null;
+									if(ClueObjList!=null && ClueObjList.size()>0){
+										ClueObj = ClueObjList.get(0);
+									}
 									if (ClueObj!=null && ClueObj.size() > 0) {
 										childItem.setValue(String.valueOf(ClueObj.get("Name")));
 										childItem.setValueID(String.valueOf(ClueObj.get("ID")));
@@ -596,8 +600,11 @@ public class CustomerHelp implements ICustomerHelp {
 					+ model.getProjectID()
 					+ "' order by Status ASC,CreateTime DESC";
 		}
-		Map<String, Object> optionList = vCustomergwlistSelectMapper
-				.sCustomerPotentialClue(where);
+		List<Map<String, Object>> optionList_data = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+		Map<String, Object> optionList = null;
+		if(optionList_data!=null && optionList_data.size()>0){
+			optionList = optionList_data.get(0);
+		}
 		if (optionList!=null && optionList.size() > 0) {// 存在线索
 			List<OptionItem> ClueList = new ArrayList<OptionItem>();
 			int RuleType = (int) optionList.get("RuleType");
@@ -801,7 +808,11 @@ public class CustomerHelp implements ICustomerHelp {
             opportunitySourceID = OpportunitySource;
         }else{
             String where = " and  Status in (1,2) and Isdel = 0 and ClueID ='" + OpportunitySource + "'";
-            Map<String, Object> clueInfo = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+            List<Map<String, Object>> clueInfoList = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+    		Map<String, Object> clueInfo = null;
+    		if(clueInfoList!=null && clueInfoList.size()>0){
+    			clueInfo = clueInfoList.get(0);
+    		}
             if (clueInfo!=null && clueInfo.size() == 0){//未找到线索则渠道仍然是自然来访
                 opportunitySourceID = "0390CD8C-D6D4-4C92-995B-08C7E18E6EC2";
             }else{//找到线索则判断线索的渠道
@@ -997,7 +1008,11 @@ public class CustomerHelp implements ICustomerHelp {
 	@Override
 	public int ClueExist(String ProjectID, String Mobile) {
         String where = " and( Status = 1 or (Status=2 and '1' not in  (select top 1 '1' as c   from  B_Opportunity where CustomerMobile='" + Mobile + "' and ProjectID='" + ProjectID + "' and Status<>6)) )   and Isdel = 0 and CustomerMobile ='" + Mobile + "' and IntentProjectID='" + ProjectID + "' order by Status ASC,CreateTime DESC";
-        Map<String, Object> optionList = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+        List<Map<String, Object>> optionList_data = vCustomergwlistSelectMapper.sCustomerPotentialClue(where);
+		Map<String, Object> optionList = null;
+		if(optionList_data!=null && optionList_data.size()>0){
+			optionList = optionList_data.get(0);
+		}
         if (optionList!=null && optionList.size() > 0){
             int RuleType = (int)optionList.get("RuleType");
             if (RuleType == 1){//竞争带看规则线索
