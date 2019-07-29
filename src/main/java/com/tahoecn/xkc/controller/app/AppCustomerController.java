@@ -768,8 +768,8 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerXSJLList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerXSJLList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			List<FilterItem> Filter = (List) paramMap.get("Filter");
+			JSONObject paramMap = jsonParam.getJSONObject("_param");
+			List<FilterItem> Filter = JSON.parseArray(paramMap.getString("Filter"),FilterItem.class);
 			String KeyWord = (String) paramMap.get("KeyWord");
 			String ProjectID = (String) paramMap.get("ProjectID");
 			String OrgID = (String) paramMap.get("OrgID");
@@ -949,9 +949,9 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerGGCList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerGGCList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
+			JSONObject paramMap = jsonParam.getJSONObject("_param");
 			String KeyWord = (String) paramMap.get("KeyWord");
-			List<FilterItem> Filter = (List) paramMap.get("Filter");
+			List<FilterItem> Filter = JSON.parseArray(paramMap.getString("Filter"),FilterItem.class);
 			String GroupID = (String) paramMap.get("GroupID");
 			String Sort = (String) paramMap.get("Sort");
 			
