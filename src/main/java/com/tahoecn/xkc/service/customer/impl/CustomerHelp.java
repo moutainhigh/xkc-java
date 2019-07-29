@@ -684,6 +684,9 @@ public class CustomerHelp implements ICustomerHelp {
 				}
 			}
 			dicInfo.setValue(item != null ? item.getValue() : "");
+			if(dicInfo.getValue()==null){
+            	dicInfo.setValue("");
+            }
 			json.put(dicInfo.getFieldName(),dicInfo.getValue().replaceAll("'", ""));
 		}
 		json.put("OpportunityID", model.getOpportunityID());

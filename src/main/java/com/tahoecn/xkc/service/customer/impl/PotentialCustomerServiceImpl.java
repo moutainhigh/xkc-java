@@ -23,12 +23,12 @@ import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
-import com.tahoecn.xkc.model.dto.GWCustomerPageDto.FilterItem;
 import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
+import com.tahoecn.xkc.model.vo.FilterItem;
 import com.tahoecn.xkc.model.vo.GWCustomerPageModel;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.channel.IBChannelService;
@@ -948,7 +948,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        }
 	        if (model.getFilter() != null && model.getFilter().size() > 0){
 	            for (FilterItem filterItem : model.getFilter()){
-	                if (filterItem != null && filterItem.TagID != null){
+	                if (filterItem != null && filterItem.getTagID() != null){
 	                    //我的关注
 	                    if ("9526CC1F-47CE-4479-8EB8-AFE73ADAF1F4".equals(filterItem.getTagID())){
 	                        if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
