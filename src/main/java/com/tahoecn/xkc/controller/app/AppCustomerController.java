@@ -53,7 +53,6 @@ import com.tahoecn.xkc.service.user.ICWxuserService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.minidev.json.JSONArray;
 
 /**
  * <p>
@@ -775,6 +774,7 @@ public class AppCustomerController extends TahoeBaseController {
 			String OrgID = (String) paramMap.get("OrgID");
 			String Type = (String) paramMap.get("Type");
 			String Sort = (String) paramMap.get("Sort");
+			
 			StringBuilder whereSb = new StringBuilder();
             StringBuilder OrderSb = new StringBuilder();
             if (!StringUtils.isEmpty(KeyWord)){
