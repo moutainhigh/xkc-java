@@ -526,7 +526,7 @@ public class CustomerController extends TahoeBaseController {
             customerService.CustomerGuidePrintDetail_Insert(result);
             customerService.CustomerGuidePrintDetail_Update(result);
         }
-        return Result.ok(OpenHtml.toString() + html.toString() + html.toString() + "</div>");
+        return Result.ok(result);
     }
 
     @ApiOperation(value = "锁房列表")
