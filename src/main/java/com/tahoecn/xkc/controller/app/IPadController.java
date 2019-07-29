@@ -1,4 +1,4 @@
-package com.tahoecn.xkc.controller.ipad;
+package com.tahoecn.xkc.controller.app;
 
 import javax.annotation.Resource;
 
