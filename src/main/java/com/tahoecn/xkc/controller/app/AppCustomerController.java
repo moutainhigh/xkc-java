@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -52,6 +53,7 @@ import com.tahoecn.xkc.service.user.ICWxuserService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.minidev.json.JSONArray;
 
 /**
  * <p>
@@ -154,7 +156,12 @@ public class AppCustomerController extends TahoeBaseController {
 	public Result mCustomerPotentialFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			return Result.ok(iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupList_Select(paramMap));
+			List<Map<String, Object>> list = iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupList_Select(paramMap);
+			for(Map<String, Object> l : list){
+				l.put("Filter", JSON.parseArray(l.get("Filter").toString()));
+				l.put("FilterDesc", JSON.parseArray(l.get("FilterDesc").toString()));
+			}
+			return Result.ok(list);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
@@ -192,7 +199,12 @@ public class AppCustomerController extends TahoeBaseController {
 	public Result mCustomerFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			return Result.ok(iBCustomerfiltergroupService.mCustomerFilterGroupList_Select(paramMap));
+			List<Map<String, Object>> list = iBCustomerfiltergroupService.mCustomerFilterGroupList_Select(paramMap);
+			for(Map<String, Object> l : list){
+				l.put("Filter", JSON.parseArray(l.get("Filter").toString()));
+				l.put("FilterDesc", JSON.parseArray(l.get("FilterDesc").toString()));
+			}
+			return Result.ok(list);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
