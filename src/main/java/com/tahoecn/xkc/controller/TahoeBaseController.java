@@ -30,10 +30,9 @@ public class TahoeBaseController {
     protected HttpServletResponse response;
     protected HttpSession session;
 
-    public JSONResult uploadFiles(List<MultipartFile> files) {
+    public String uploadFiles(MultipartFile[] files) {
         File dir;
-        JSONResult json = new JSONResult();
-
+        StringBuffer paths = new StringBuffer();
         for (MultipartFile file : files) {
             String extensionName = "";
             String originalFilename =  file.getOriginalFilename();
@@ -74,14 +73,12 @@ public class TahoeBaseController {
             }
 
             //将文件的服务器地址存到数据库
-            String path = "/" + year+ "/" + month + "/" + filename;
+            String path = "/" + year+ "/" + month + "/" + filename + ",";
+            paths = paths.append(path);
 
-            json.setCode(0);
-            json.setMsg("upload files success!");
-            json.setData(path);
         }
 
-        return json;
+        return paths.deleteCharAt(paths.length()-1).toString();
     }
 
     /**
