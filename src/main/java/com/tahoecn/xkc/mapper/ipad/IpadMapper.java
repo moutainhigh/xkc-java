@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * <p>
@@ -45,7 +46,7 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @param pmap
 	 * @return
 	 */
-	Map<String,Object> mLFCustomerDetailByMobile_Select(Map<String,Object> pmap);
+	List<Map<String,Object>> mLFCustomerDetailByMobile_Select(Map<String,Object> pmap);
 	
 	/**
 	 * 获取顾问客户基本信息
@@ -80,19 +81,23 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @param pmap
 	 * @return
 	 */
-	List<Map<String,Object>> mLFCustomerNeedFPList_Select(Map<String,Object> pmap);
+	List<Map<String,Object>> mLFCustomerNeedFPList_Select(@Param("pmap")Map<String,Object> pmap);
+	IPage<Map<String,Object>> mLFCustomerNeedFPList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
 	
 	/**
 	 * 接待记录列表
 	 * @param pmap
 	 * @return
 	 */
-	List<Map<String,Object>> mLFReceptRecordList_Select(Map<String,Object> pmap);
+	List<Map<String,Object>> mLFReceptRecordList_Select(@Param("pmap")Map<String,Object> pmap);
+	IPage<Map<String,Object>> mLFReceptRecordList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
+	
 	
 	/**
 	 * 根据顾问筛选的接待记录客户列表
 	 * @param pmap
 	 * @return
 	 */
-	List<Map<String,Object>> mLFReceptRecordCustomerList_Select(Map<String,Object> pmap);
+	List<Map<String,Object>> mLFReceptRecordCustomerList_Select(@Param("pmap")Map<String,Object> pmap);
+	IPage<Map<String,Object>> mLFReceptRecordCustomerList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
 }

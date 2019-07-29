@@ -15,7 +15,7 @@ import com.tahoecn.xkc.model.sys.BVerificationcode;
  */
 public interface IBVerificationcodeService extends IService<BVerificationcode> {
 
-    void getCodeAndSendsmg(String mobile, String verificationCode);
+    void getCodeAndSendsmg(String mobile,String msg);
 
     BVerificationcode checkAuthCode(String mobile);
 

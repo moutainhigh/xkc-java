@@ -1,4 +1,4 @@
-package com.tahoecn.xkc.controller.webapi;
+package com.tahoecn.xkc.controller.webapi.sys;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
  * @since 2019-07-01
  */
 @RestController
-@RequestMapping("/sLogs")
+@RequestMapping("/webapi/sys/sLogs")
 public class SLogsController extends TahoeBaseController {
 
 }

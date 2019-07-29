@@ -7,12 +7,15 @@ import com.tahoecn.xkc.mapper.sys.BVerificationcodeMapper;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 
+import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * <p>
@@ -25,12 +28,20 @@ import java.util.Map;
 @Service
 public class BVerificationcodeServiceImpl extends ServiceImpl<BVerificationcodeMapper, BVerificationcode> implements IBVerificationcodeService {
 
+    @Autowired
+    private CsSendSmsLogService csSendSmsLogService;
     @Override
-    public void getCodeAndSendsmg(String mobile, String verificationCode) {
-        //先删除号码之前的验证码信息
-        QueryWrapper<BVerificationcode> wrapper=new QueryWrapper<>();
-        wrapper.eq("Mobile",mobile);
-        baseMapper.delete(wrapper);
+    public void getCodeAndSendsmg(String mobile,String msg) {
+        //生成验证码
+        StringBuilder verificationCode = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            verificationCode.append(random.nextInt(10));
+        }
+        //先删除号码之前的验证码信息------验证时取创建时间最近的一条
+//        QueryWrapper<BVerificationcode> wrapper=new QueryWrapper<>();
+//        wrapper.eq("Mobile",mobile);
+//        baseMapper.delete(wrapper);
         //在添加当前时间的验证码信息
         Date time=new Date();
         Date overdueTime=new Date(time.getTime()+10*60*1000);
@@ -39,10 +50,11 @@ public class BVerificationcodeServiceImpl extends ServiceImpl<BVerificationcodeM
         vc.setCreateTime(time);
         vc.setIsDel(0);
         vc.setStatus(1);
-        vc.setVerificationCode(verificationCode);
+        vc.setVerificationCode(verificationCode.toString());
         vc.setOverdueTime(overdueTime);
         baseMapper.insert(vc);
-        //todo 发送短信未完成
+
+        csSendSmsLogService.sendSms(mobile,msg+verificationCode.toString()+"，5分钟内有效","");
 
     }
 

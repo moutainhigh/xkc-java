@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -154,7 +155,12 @@ public class AppCustomerController extends TahoeBaseController {
 	public Result mCustomerPotentialFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			return Result.ok(iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupList_Select(paramMap));
+			List<Map<String, Object>> list = iBCustomerpotentialfiltergroupService.mCustomerPotentialFilterGroupList_Select(paramMap);
+			for(Map<String, Object> l : list){
+				l.put("Filter", JSON.parseArray(l.get("Filter").toString()));
+				l.put("FilterDesc", JSON.parseArray(l.get("FilterDesc").toString()));
+			}
+			return Result.ok(list);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
@@ -192,7 +198,12 @@ public class AppCustomerController extends TahoeBaseController {
 	public Result mCustomerFilterGroupList_Select(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			return Result.ok(iBCustomerfiltergroupService.mCustomerFilterGroupList_Select(paramMap));
+			List<Map<String, Object>> list = iBCustomerfiltergroupService.mCustomerFilterGroupList_Select(paramMap);
+			for(Map<String, Object> l : list){
+				l.put("Filter", JSON.parseArray(l.get("Filter").toString()));
+				l.put("FilterDesc", JSON.parseArray(l.get("FilterDesc").toString()));
+			}
+			return Result.ok(list);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
@@ -756,13 +767,14 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerXSJLList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerXSJLList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
-			List<FilterItem> Filter = (List) paramMap.get("Filter");
+			JSONObject paramMap = jsonParam.getJSONObject("_param");
+			List<FilterItem> Filter = JSON.parseArray(paramMap.getString("Filter"),FilterItem.class);
 			String KeyWord = (String) paramMap.get("KeyWord");
 			String ProjectID = (String) paramMap.get("ProjectID");
 			String OrgID = (String) paramMap.get("OrgID");
 			String Type = (String) paramMap.get("Type");
 			String Sort = (String) paramMap.get("Sort");
+			
 			StringBuilder whereSb = new StringBuilder();
             StringBuilder OrderSb = new StringBuilder();
             if (!StringUtils.isEmpty(KeyWord)){
@@ -937,9 +949,9 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerGGCList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerGGCList_Select(@RequestBody JSONObject jsonParam) {
 		try{
-			Map paramMap = (HashMap)jsonParam.get("_param");
+			JSONObject paramMap = jsonParam.getJSONObject("_param");
 			String KeyWord = (String) paramMap.get("KeyWord");
-			List<FilterItem> Filter = (List) paramMap.get("Filter");
+			List<FilterItem> Filter = JSON.parseArray(paramMap.getString("Filter"),FilterItem.class);
 			String GroupID = (String) paramMap.get("GroupID");
 			String Sort = (String) paramMap.get("Sort");
 			

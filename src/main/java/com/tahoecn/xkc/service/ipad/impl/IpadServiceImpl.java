@@ -18,6 +18,8 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.MessageType;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
@@ -312,13 +314,23 @@ public class IpadServiceImpl implements IIpadService {
 	            }
 	            paramAry.put("SiteUrl", SiteUrl);
 	            Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
-	            Map<String, Object>  lfCustomerDetailObj = ipadMapper.mLFCustomerDetailByMobile_Select(pmap);
 	            
-	            customerID = lfCustomerDetailObj.get("CustomerID")!=null?lfCustomerDetailObj.get("CustomerID").toString():"";  //客户ID
-	            customerName = lfCustomerDetailObj.get("CustomerName")!=null?lfCustomerDetailObj.get("CustomerName").toString():"";  //客户名称
-	            customerGender =lfCustomerDetailObj.get("CustomerGender")!=null?lfCustomerDetailObj.get("CustomerGender").toString():""; //客户性别
-	            customerMobile =lfCustomerDetailObj.get("CustomerMobile")!=null?lfCustomerDetailObj.get("CustomerMobile").toString():"";//客户性别
-	            opportunitySourceName =lfCustomerDetailObj.get("OpportunitySourceName")!=null?lfCustomerDetailObj.get("OpportunitySourceName").toString():""; //来源
+	            List<Map<String, Object>>  lfCustomerDetailObj_list = ipadMapper.mLFCustomerDetailByMobile_Select(pmap);
+	            if(lfCustomerDetailObj_list!=null && lfCustomerDetailObj_list.size()>0){
+	            	Map<String, Object> lfCustomerDetailObj = lfCustomerDetailObj_list.get(0);
+		            customerID = lfCustomerDetailObj.get("CustomerID")!=null?lfCustomerDetailObj.get("CustomerID").toString():"";  //客户ID
+		            customerName = lfCustomerDetailObj.get("CustomerName")!=null?lfCustomerDetailObj.get("CustomerName").toString():"";  //客户名称
+		            customerGender =lfCustomerDetailObj.get("CustomerGender")!=null?lfCustomerDetailObj.get("CustomerGender").toString():""; //客户性别
+		            customerMobile =lfCustomerDetailObj.get("CustomerMobile")!=null?lfCustomerDetailObj.get("CustomerMobile").toString():"";//客户性别
+		            opportunitySourceName =lfCustomerDetailObj.get("OpportunitySourceName")!=null?lfCustomerDetailObj.get("OpportunitySourceName").toString():""; //来源
+		            remark = lfCustomerDetailObj.get("Remark")!=null?lfCustomerDetailObj.get("Remark").toString():""; //备注
+		            saleUserName = lfCustomerDetailObj.get("SaleUserName")!=null?lfCustomerDetailObj.get("SaleUserName").toString():"";//顾问姓名
+		            groupName = lfCustomerDetailObj.get("GroupName")!=null?lfCustomerDetailObj.get("GroupName").toString():"";//顾问所在组
+		            headImg = lfCustomerDetailObj.get("SaleHeadImg")!=null?lfCustomerDetailObj.get("SaleHeadImg").toString():""; //顾问头像
+		            reportTime = lfCustomerDetailObj.get("ReportTime")!=null?lfCustomerDetailObj.get("ReportTime").toString():""; //报备时间
+		            theFirstVisitDate = lfCustomerDetailObj.get("TheFirstVisitDate")!=null?lfCustomerDetailObj.get("TheFirstVisitDate").toString():""; //首访日期
+		            customerTag = lfCustomerDetailObj.get("CustomerTag")!=null?lfCustomerDetailObj.get("CustomerTag").toString():"";//顾客标签
+	            }
 
 	            model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID")); //潜在客户ID
 	            JSONObject reSource = GetClueOpportunitySource(model);
@@ -336,13 +348,6 @@ public class IpadServiceImpl implements IIpadService {
 	                    optionArray.add(obj1);
 	                }
 	            }
-	            remark = lfCustomerDetailObj.get("Remark")!=null?lfCustomerDetailObj.get("Remark").toString():""; //备注
-	            saleUserName = lfCustomerDetailObj.get("SaleUserName")!=null?lfCustomerDetailObj.get("SaleUserName").toString():"";//顾问姓名
-	            groupName = lfCustomerDetailObj.get("GroupName")!=null?lfCustomerDetailObj.get("GroupName").toString():"";//顾问所在组
-	            headImg = lfCustomerDetailObj.get("SaleHeadImg")!=null?lfCustomerDetailObj.get("SaleHeadImg").toString():""; //顾问头像
-	            reportTime = lfCustomerDetailObj.get("ReportTime")!=null?lfCustomerDetailObj.get("ReportTime").toString():""; //报备时间
-	            theFirstVisitDate = lfCustomerDetailObj.get("TheFirstVisitDate")!=null?lfCustomerDetailObj.get("TheFirstVisitDate").toString():""; //首访日期
-	            customerTag = lfCustomerDetailObj.get("CustomerTag")!=null?lfCustomerDetailObj.get("CustomerTag").toString():"";//顾客标签
 	        }else{//新客户
 	            isReAlloc = 1;
 	            JSONObject re_j_1 = customerTemplate.CustomerExist(model.getMobile());
@@ -412,7 +417,7 @@ public class IpadServiceImpl implements IIpadService {
 	        //如果是公共客户池客户，销支没有分配权限，只能查看
 	        Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
 	        Map<String, Object> objCustomerPublicPool = ipadMapper.mCustomerPublicPoolByMobile_Select(pmap);
-	        if (objCustomerPublicPool.size() > 0){
+	        if (objCustomerPublicPool!=null && objCustomerPublicPool.size() > 0){
 	            isNew = 0;
 	            isAlloc = 1;
 	            isReAlloc = 0;
@@ -737,6 +742,9 @@ public class IpadServiceImpl implements IIpadService {
                         if (SaleUserID.length() > 0){
                         	 parameter.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
                              Map<String,Object> pmap =JSONObject.parseObject(parameter.toJSONString(), Map.class);
+                             if (pmap.get("ClueID")==null){
+                            	 pmap.put("ClueID","");
+                             }
                              if(sqlKey.equals("mCustomerFJDetail_Update")){
                              	Map<String, Object> step1_map = vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step1(pmap);
                              	if(step1_map!=null && step1_map.size()>0){
@@ -1020,7 +1028,7 @@ public class IpadServiceImpl implements IIpadService {
                                             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
                                         }else{
                                             if ("E30825AA-B894-4A5F-AF55-24CAC34C8F1F".equals(FollwUpWay)){
-                                            	if (entity.getErrcode() == 0 && model.getIsSend().equals("1")){
+                                            	if (entity.getErrcode() == 0 && "1".equals(model.getIsSend())){
                                                     String UserID = parameter.getString("UserID");
                                                     String ProjectID = parameter.getString("ProjectID");
                                                     String BizID = parameter.getString("OpportunityID");
@@ -1111,8 +1119,11 @@ public class IpadServiceImpl implements IIpadService {
             param.put("Mobile",paramAry.getString("CustomerMobile"));
             param.put("ProjectID",paramAry.getString("ProjectID"));
             param.put("SiteUrl", SiteUrl);
-            Map<String,Object> lFCustomerDetailObj = ipadMapper.mLFCustomerDetailByMobile_Select(param);
-            entity.setData(lFCustomerDetailObj);
+            List<Map<String,Object>> lFCustomerDetailObj = ipadMapper.mLFCustomerDetailByMobile_Select(param);
+            Map<String,Object> data  = lFCustomerDetailObj.get(0);
+            String dataStr = new JSONObject(data).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+            entity.setData(data_re);
         }
         return entity;
 	}
@@ -1212,14 +1223,21 @@ public class IpadServiceImpl implements IIpadService {
         paramAry.put("WHERE", whereSb.toString());
         //待分配列表
         Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
-        List<Map<String, Object>> pageObj = ipadMapper.mLFCustomerNeedFPList_Select(pmap);
-        if (pageObj != null && pageObj.size() > 0){
+        IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
+    	page.setSize(paramAry.getLongValue("PageSize"));
+    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+        IPage<Map<String, Object>> pageObj = ipadMapper.mLFCustomerNeedFPList_Select(page,pmap);
+        if (pageObj != null && pageObj.getRecords()!=null && pageObj.getRecords().size() > 0){
             re.setErrcode(0);
             re.setErrmsg("成功");
-            re.setData(pageObj);
+            JSONObject j_data = new JSONObject();
+        	j_data.put("List", pageObj.getRecords());
+        	j_data.put("AllCount", pageObj.getTotal());
+        	j_data.put("PageSize", pageObj.getSize());
+        	re.setData(j_data);
             return re;
         }
-        re.setErrcode(0);
+        re.setErrcode(1);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1240,14 +1258,21 @@ public class IpadServiceImpl implements IIpadService {
         paramAry.put("SiteUrl", SiteUrl);
         //接待记录列表
         Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
-        List<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordList_Select(pmap);
-        if (pageObj != null && pageObj.size() > 0){
+        IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
+    	page.setSize(paramAry.getLongValue("PageSize"));
+    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+        IPage<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordList_Select(page,pmap);
+        if (pageObj != null && pageObj.getRecords()!=null && pageObj.getRecords().size() > 0){
             re.setErrcode(0);
             re.setErrmsg("成功");
-            re.setData(pageObj);
+            JSONObject j_data = new JSONObject();
+        	j_data.put("List", pageObj.getRecords());
+        	j_data.put("AllCount", pageObj.getTotal());
+        	j_data.put("PageSize", pageObj.getSize());
+        	re.setData(j_data);
             return re;
         }
-        re.setErrcode(0);
+        re.setErrcode(1);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1268,14 +1293,21 @@ public class IpadServiceImpl implements IIpadService {
         paramAry.put("SiteUrl", SiteUrl);
         //接待记录列表
         Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
-        List<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordCustomerList_Select(pmap);
-        if (pageObj != null && pageObj.size() > 0){
+        IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
+    	page.setSize(paramAry.getLongValue("PageSize"));
+    	page.setCurrent(paramAry.getLongValue("PageIndex"));
+        IPage<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordCustomerList_Select(page,pmap);
+        if (pageObj != null && pageObj.getRecords()!=null && pageObj.getRecords().size() > 0){
             re.setErrcode(0);
             re.setErrmsg("成功");
-            re.setData(pageObj);
+            JSONObject j_data = new JSONObject();
+        	j_data.put("List", pageObj.getRecords());
+        	j_data.put("AllCount", pageObj.getTotal());
+        	j_data.put("PageSize", pageObj.getSize());
+        	re.setData(j_data);
             return re;
         }
-        re.setErrcode(0);
+        re.setErrcode(1);
         re.setErrmsg("暂无数据");
         return re;
 	}

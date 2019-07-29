@@ -236,7 +236,7 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * 获取顾问客户基本信息
 	 * @return
 	 */
-	Map<String,Object> sCustomerPotentialClue(@Param("where")String where);
+	List<Map<String,Object>> sCustomerPotentialClue(@Param("where")String where);
 	
 	/**
 	 * 获取CustomerAttach详情信息

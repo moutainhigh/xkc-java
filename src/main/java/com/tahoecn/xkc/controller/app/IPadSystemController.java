@@ -1,4 +1,4 @@
-package com.tahoecn.xkc.controller.ipad;
+package com.tahoecn.xkc.controller.app;
 
 import java.util.Date;
 import java.util.HashMap;

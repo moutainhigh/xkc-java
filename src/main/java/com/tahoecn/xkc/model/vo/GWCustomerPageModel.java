@@ -3,8 +3,6 @@ package com.tahoecn.xkc.model.vo;
 import java.io.Serializable;
 import java.util.List;
 
-import com.tahoecn.xkc.model.dto.GWCustomerPageDto.FilterItem;
-
 public class GWCustomerPageModel implements Serializable{
 
 	/**

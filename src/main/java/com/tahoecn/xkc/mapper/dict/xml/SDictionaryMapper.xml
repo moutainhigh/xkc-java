@@ -19,7 +19,8 @@
         A.DictName,
         A.DictType,
         A.Levels,
-        A.ListIndex
+        A.ListIndex,
+        A.Ext4
         FROM
         [S_Dictionary] A
         INNER JOIN S_Dictionary B ON B.IsDel = 0
@@ -37,7 +38,8 @@
         C.DictName,
         C.DictType,
         C.Levels,
-        C.ListIndex
+        C.ListIndex,
+        A.Ext4
         FROM
         [S_Dictionary] A
         INNER JOIN S_Dictionary B ON B.IsDel = 0

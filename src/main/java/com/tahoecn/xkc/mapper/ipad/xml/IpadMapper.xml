@@ -22,9 +22,11 @@
 		WHERE   A.Level = 1
 		        AND A.IsDel = 0
 		        AND A.Status = 1
-		        AND A.IsNoAllotRole = 0
-		        AND A.Name LIKE '%#{ProjectName}%'
-		ORDER BY C.OrgName ,
+		        AND A.IsNoAllotRole = 0]]>
+		        <if test="ProjectName!=null and ProjectName!=''">
+		         	AND A.Name LIKE CONCAT('%',#{ProjectName},'%')
+		        </if>
+		<![CDATA[ORDER BY C.OrgName ,
 		        A.Name
 	    ]]>
 	</select>
@@ -84,7 +86,7 @@
 	            LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
 	            LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID AND sgm1.IsDel = 0 AND sgm1.Status = 1 AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND sgm1.ProjectID = #{ProjectID}
 	            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
-	    WHERE c.Mobile = #{Mobile}' AND o.ProjectID = #{ProjectID}   
+	    WHERE c.Mobile = #{Mobile} AND o.ProjectID = #{ProjectID}   
 	    ]]>
 	</select>
 	
@@ -152,7 +154,7 @@
 		                                              AND cc.Status <= 2        
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
-		          WHERE     o.ProjectID = #{ProjectID}
+		          WHERE     o.ProjectID = #{pmap.ProjectID}
 		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		                    AND ISNULL(o.SalePartnerID,'') = ''
 		          UNION ALL
@@ -177,15 +179,15 @@
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
 		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
-		                    AND c.IntentProjectID = #{ProjectID}
-		        ) n WHERE 1=1 ${WHERE} 
+		                    AND c.IntentProjectID = #{pmap.ProjectID}
+		        ) n WHERE 1=1 ${pmap.WHERE} 
 		        ORDER BY ReportTime DESC
 	    ]]>
 	</select>
 	
 	<select id="mLFReceptRecordList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT    ROW_NUMBER() OVER ( PARTITION BY o.SaleUserID ORDER BY ca.VisitTime DESC ) RowNum ,
+		SELECT
 		                    o.ProjectID ,
 		                    o.CustomerID ,
 		                    o.CustomerName ,
@@ -197,7 +199,7 @@
 		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
 		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
 		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
-					              #{SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
+					              #{pmap.SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
 		                    cc.CreateTime ReportTime,
 		                    ca.VisitTime
 		          FROM      dbo.B_Opportunity AS o
@@ -207,14 +209,14 @@
 		                                                            AND sgm.IsDel = 0
 		                                                            AND sgm.Status = 1
 		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
-		                                                            AND sgm.ProjectID = '{ProjectID}'
+		                                                            AND sgm.ProjectID = #{pmap.ProjectID}
 		                    LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
 		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
 		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
 		                                                            AND sgm1.IsDel=0 
 		                                                            AND sgm1.Status=1 
 		                                                            AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
-		                                                            AND sgm1.ProjectID = #{ProjectID}
+		                                                            AND sgm1.ProjectID = #{pmap.ProjectID}
 		                    LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
 		                    LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
@@ -222,8 +224,8 @@
 		                    AND o.Status > 0
 		                    AND o.Status <> 6
 		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
-		                    AND o.ProjectID = #{ProjectID}
-		                    ${WHERE}
+		                    AND o.ProjectID = #{pmap.ProjectID}
+		                    ${pmap.WHERE}
 		    ]]>
 	</select>
 	
@@ -239,11 +241,11 @@
 		            o.SaleUserID ,
 		            su.Name SaleUserName ,
 		            sg.Name GroupName,
-		            #{SiteUrl} + su.HeadImg SaleHeadImg,
+		            #{pmap.SiteUrl} + su.HeadImg SaleHeadImg,
 		            o.SalePartnerID ,
 		            (CASE WHEN ca.IsOld = 1 THEN su1.Name ELSE '' END) SalePartnerName,
 		            (CASE WHEN ca.IsOld = 1 THEN sg1.Name ELSE '' END) SalePartnerGroupName,
-		            (CASE WHEN ca.IsOld = 1 THEN #{SiteUrl} + su1.HeadImg ELSE '' END) SalePartnerHeadImg,
+		            (CASE WHEN ca.IsOld = 1 THEN #{pmap.SiteUrl} + su1.HeadImg ELSE '' END) SalePartnerHeadImg,
 		            c.Remark,
 		            cc.ReportUserName ReportName,
 		            cc.ReportUserMobile ReportMobile,
@@ -256,13 +258,13 @@
 		            LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID 
 		                                                    AND sgm.IsDel=0 AND sgm.Status=1 
 		                                                    AND sgm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
-		                                                    AND sgm.ProjectID = #{ProjectID}
+		                                                    AND sgm.ProjectID = #{pmap.ProjectID}
 		            LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
 		            LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
 		            LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
 		                                                    AND sgm1.IsDel=0 AND sgm1.Status=1 
 		                                                    AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
-		                                                    AND sgm1.ProjectID = #{ProjectID}
+		                                                    AND sgm1.ProjectID = #{pmap.ProjectID}
 		            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
 		            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
 		            LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
@@ -271,8 +273,8 @@
 		        AND o.Status <> 6
 		        AND o.SaleUserID IS NOT NULL AND o.SaleUserID ! = ''
 		        AND o.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
-		        AND o.ProjectID = #{ProjectID}
-		        AND (o.SaleUserID = #{SaleUserID} OR o.SalePartnerID = #{SaleUserID}) ${WHERE}
+		        AND o.ProjectID = #{pmap.ProjectID}
+		        AND (o.SaleUserID = #{pmap.SaleUserID} OR o.SalePartnerID = #{pmap.SaleUserID}) ${pmap.WHERE}
 		    ORDER BY ca.VisitTime DESC    
 	    ]]>
 	</select>

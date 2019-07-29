@@ -3,6 +3,8 @@ package com.tahoecn.xkc.model.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.tahoecn.xkc.model.vo.FilterItem;
+
 public class GWCustomerPageDto implements Serializable {
 	/**
 	 * 
@@ -142,27 +144,6 @@ public class GWCustomerPageDto implements Serializable {
 		this.order = order;
 	}
 
-	public class FilterItem {
-		public String TagID;
-		public List<String> Child;
-
-		public String getTagID() {
-			return TagID;
-		}
-
-		public void setTagID(String TagID) {
-			this.TagID = TagID;
-		}
-
-		public List<String> getChild() {
-			return Child;
-		}
-
-		public void setChild(List<String> Child) {
-			this.Child = Child;
-		}
-
-	}
 
 	public String getOrgID() {
 		return orgID;
