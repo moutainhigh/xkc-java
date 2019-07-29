@@ -244,7 +244,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         {
                             isKHGGCSXGZZQ = true;
                         }
-                        if (res.get("Code")== null)
+                        if (res.get(Code)== null)
                         {
                             DictCodes = DictCodes + " OR B.DictCode = '"+Code+"'";
                             res.put(Code,new ArrayList<>());
@@ -552,18 +552,22 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 dictTop.put(DictNameAlias,"全部");
                 dictTop.put(ChildAlias,new ArrayList<>());
 //            ((JArray)res["PKSXGZXSJL"]).AddFirst(dictTop);  AddFirst插入到list第一位置??
-                res.put("PKSXGZXSJL",dictTop);
+                List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
+                pk.add(dictTop);
+                res.put("PKSXGZXSJL",pk);
             }
 //        处理房间户型数据
             if (isFJHX){
                 List<Map<String,Object>> list=projectroomService.RoomTypeList_Select((String)param.get("BuildingID"));
+                List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
                 for (Map<String, Object> map : list) {
                     Map<String,Object> dict = new HashMap<>();
                     dict.put(IDAlias,map.get("RoomType"));
                     dict.put(DictNameAlias,map.get("RoomType"));
                     dict.put(ChildAlias,new ArrayList<>());
-                    res.put("FJHX",dict);
+                    pk.add(dict);
                 }
+                res.put("FJHX",pk);
             }
 //        处理客户筛选规则(自渠)数据
             if (isKHSXGZZQ){
@@ -673,6 +677,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
             }
             return Result.ok(data);
+            
         }catch (Exception e){
             e.printStackTrace();
             return Result.errormsg(99,"数据字典错误");
