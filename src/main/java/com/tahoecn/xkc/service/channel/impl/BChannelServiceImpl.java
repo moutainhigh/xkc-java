@@ -126,29 +126,29 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         	if ("1".equals(rule.getIsOnlyAllowNew())){
         		ruleList.add(rule.getRuleName() + "，仅允许报备项目新客户");
         	}
-        	if (rule.getIsOnlyAllowNew() == 0){
-        		if (rule.getOldOwnerLimit() == 0){
+        	if (rule.getIsOnlyAllowNew() != null && rule.getIsOnlyAllowNew() == 0){
+        		if (rule.getOldOwnerLimit() != null && rule.getOldOwnerLimit() == 0){
         			ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且不允许报备集团老业主");
         		}
-        		if (rule.getOldOwnerLimit() == 1){
+        		if (rule.getOldOwnerLimit() != null && rule.getOldOwnerLimit() == 1){
         			ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且仅允许报备其他项目的老业主");
         		}
         	}
-        	if (rule.getFollowUpOverdueDays() > 0){
+        	if (rule.getFollowUpOverdueDays() != null && rule.getFollowUpOverdueDays() > 0){
         		ruleList.add("保护期：距离上一次跟进时间超过" + rule.getFollowUpOverdueDays() + "天未跟进自动失效");
         	}
-        	if (rule.getIsProtect() == 1){
+        	if (rule.getIsProtect() != null && rule.getIsProtect() == 1){
         		String leixing = "";
-        		if (rule.getUserBehaviorID().equals("1")){
+        		if ("1".equals(rule.getUserBehaviorID())){
         			leixing = ("签约");
         		}
-        		if (rule.getUserBehaviorID().equals("2")){
+        		if ("2".equals(rule.getUserBehaviorID())){
         			leixing = ("认购");
         		}
-        		if (rule.getUserBehaviorID().equals("3")){
+        		if ("3".equals(rule.getUserBehaviorID())){
         			leixing = ("认筹");
         		}
-        		if (rule.getIsSelect() == 1){
+        		if (rule.getIsSelect() != null && rule.getIsSelect() == 1){
         			ruleList.add("保护期模式：两段式 报备-到访-" + leixing);
         			ruleList.add("到访保护期" + rule.getProtectVisitTime() + "天，提前" + rule.getProtectVisitRemindTime() + "天提醒");
         		}else{
@@ -157,7 +157,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         		ruleList.add(leixing + "保护期" + rule.getProtectTime() + "天，提前" + rule.getProtectRemindTime() + "天提醒");
         		
         	}
-        	if (rule.getIsPreIntercept() == 1){
+        	if (rule.getIsPreIntercept() != null && rule.getIsPreIntercept() == 1){
         		ruleList.add("启用防截客时间" + rule.getPreInterceptTime() + "分钟");
         	}
         	ruleList.add("规则在:" + sdf.format(rule.getTakeEffectTime()) + "生效");

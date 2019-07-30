@@ -413,11 +413,12 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             }
 //        处理分配顾问筛选规则(分接)数据
             if (isFPGWSXGZFJ){
+            	List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
                 Map<String,Object> dictTop=new HashMap<>();
                 dictTop.put(IDAlias,"");
                 dictTop.put(DictNameAlias,"全部");
                 dictTop.put(ChildAlias,new ArrayList<>());
-                res.put("FPGWSXGZFJ",dictTop);
+                pk.add(dictTop);
                 QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
                 wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
                 wrapper.gt("Nature",0);
@@ -427,16 +428,18 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dict.put(IDAlias,bSalesgroup.getId());
                     dict.put(DictNameAlias,bSalesgroup.getName());
                     dict.put(ChildAlias,new ArrayList<>());
-                    res.put("FPGWSXGZFJ",dict);
+                    pk.add(dictTop);
                 }
+                res.put("FPGWSXGZFJ",pk);
             }
 //        处理分配顾问筛选规则(营销经理)数据
             if (isFPGWSXGZYXJL){
+            	List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
                 Map<String,Object> dictTop=new HashMap<>();
                 dictTop.put(IDAlias,"");
                 dictTop.put(DictNameAlias,"全部");
                 dictTop.put(ChildAlias,new ArrayList<>());
-                res.put("FPGWSXGZYXJL",dictTop);
+                pk.add(dictTop);
                 if ("YXJL".equals((String) param.get("JobCode"))){
                     QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
                     wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
@@ -447,7 +450,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         dict.put(IDAlias,bSalesgroup.getId());
                         dict.put(DictNameAlias,bSalesgroup.getName());
                         dict.put(ChildAlias,new ArrayList<>());
-                        res.put("FPGWSXGZYXJL",dict);
+                        pk.add(dict);
                     }
                 }
                 if ("XSJL".equals(param.get("JobCode"))){
@@ -460,18 +463,20 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                             Map<String,Object> dict = new HashMap<>();
                             dict.put(IDAlias,map.get("ID"));
                             dict.put(DictNameAlias,map.get("Name"));
-                            res.put("FPGWSXGZYXJL",dict);
+                            pk.add(dict);
                         }
                     }
                 }
+                res.put("FPGWSXGZYXJL",pk);
             }
 //            处理公共池客户筛选规则(营销经理)数据
             if (isGGCKHSXGZYXJL){
+            	List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
                 Map<String,Object> dictTop=new HashMap<>();
                 dictTop.put(IDAlias,"");
                 dictTop.put(DictNameAlias,"全部");
                 dictTop.put(ChildAlias,new ArrayList<>());
-                res.put("GGCKHSXGZYXJL",dictTop);
+                pk.add(dictTop);
                 if ("YXJL".equals(param.get("JobCode"))){
                     QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
                     wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
@@ -482,7 +487,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                         dict.put(IDAlias,bSalesgroup.getId());
                         dict.put(DictNameAlias,bSalesgroup.getName());
                         dict.put(ChildAlias,new ArrayList<>());
-                        res.put("GGCKHSXGZYXJL",dict);
+                        pk.add(dict);
                     }
                 }
                 if ("XSJL".equals(param.get("JobCode"))){
@@ -495,10 +500,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                             Map<String,Object> dict = new HashMap<>();
                             dict.put(IDAlias,map.get("ID"));
                             dict.put(DictNameAlias,map.get("Name"));
-                            res.put("GGCKHSXGZYXJL",dict);
+                            pk.add(dict);
                         }
                     }
                 }
+                res.put("GGCKHSXGZYXJL",pk);
             }
 //        处理顾问跟进客户筛选规则(销售经理)数据
             if (isGWGJKHSXGZXSJL){
@@ -635,7 +641,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dat.put("FilterDesc", FilterDesc);
                     groupArr.add(dat);
                 }
-                ((Map) ((List) res.get("KHSXGZZQ")).get(2)).put("Child",groupArr);
+                ((Map) ((List) res.get("KHGGCSXGZGW")).get(2)).put("Child",groupArr);
             }
 //        处理客户公共池筛选规则(自渠)
             if (isKHGGCSXGZZQ){
