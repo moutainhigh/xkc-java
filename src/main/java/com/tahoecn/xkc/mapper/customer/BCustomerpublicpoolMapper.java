@@ -39,7 +39,7 @@ public interface BCustomerpublicpoolMapper extends BaseMapper<BCustomerpublicpoo
 	/**
 	 * 公共池抢客
 	 */
-	String mCustomerGGCList_Insert(Map<String, Object> paramMap);
+	void mCustomerGGCList_Insert(Map<String, Object> paramMap);
 	/**
 	 * 获取自渠所在组织
 	 */

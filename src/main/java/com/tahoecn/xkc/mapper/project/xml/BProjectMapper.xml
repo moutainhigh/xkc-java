@@ -37,7 +37,7 @@
     </select>
 
     <!--查询项目是否开启分接-->
-    <select id="ProjectIsNoAllot_Select" resultType="int" parameterType="string">
+    <select id="ProjectIsNoAllot_Select" resultType="string" parameterType="string">
         SELECT
         isnull( IsNoAllotRole, 0 ) IsNoAllotRole
         FROM

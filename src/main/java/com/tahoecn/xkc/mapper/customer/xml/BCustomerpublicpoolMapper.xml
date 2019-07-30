@@ -164,7 +164,8 @@
 	</select>
 	<!-- 公共池抢客 -->
 	<select id="mCustomerGGCList_Insert" statementType="CALLABLE">
-		{call P_CustomerAllotOneSelf_Update(#{UserID},#{ProjectID},#{OrgID},#{JobID},#{PublicIDs},${str1,mode=out})}
+		{call P_CustomerAllotOneSelf_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{PublicIDs},
+		#{MessageInfo,mode=OUT,jdbcType=VARCHAR})}
 	</select>
 	<!-- 获取自渠所在组织 -->
 	<select id="fromBSalesGroupMember" parameterType="java.util.Map" resultType="java.util.Map">

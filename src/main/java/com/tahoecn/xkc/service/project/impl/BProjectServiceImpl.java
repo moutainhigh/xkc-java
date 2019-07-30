@@ -52,7 +52,12 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
 
     @Override
     public int ProjectIsNoAllot_Select(String projectID) {
-        return baseMapper.ProjectIsNoAllot_Select(projectID);
+    	String IsNoAllotRole = baseMapper.ProjectIsNoAllot_Select(projectID);
+    	if(IsNoAllotRole == null || "".equals(IsNoAllotRole)){
+    		return 0;
+    	}else{
+    		return Integer.parseInt(IsNoAllotRole);
+    	}
     }
 
 }
