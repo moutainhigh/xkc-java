@@ -10,6 +10,7 @@ import com.sun.org.apache.regexp.internal.RE;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.LocalDateTimeUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
@@ -463,6 +464,20 @@ public class CustomerController extends TahoeBaseController {
     @RequestMapping(value = "/CustomerGuidePrintDetail_Select", method = {RequestMethod.GET})
     public Result CustomerGuidePrintDetail_Select(String ProjectID, String UserID, String ID){
         Map<String,Object> result = customerService.CustomerGuidePrintDetail_Select(ProjectID, UserID, ID);
+
+        if(result.get("SerialNumber") == null || !result.get("SerialNumber").toString().startsWith("201")){
+            String SerialNumberText = LocalDateTimeUtils.formatDateTime(LocalDateTime.now(),"yyyyMMdd");
+            String condtion = SerialNumberText+"____";
+            int dateCount = customerService.findPrintNumByDate(condtion);
+            result.put("SerialNumberText",SerialNumberText+(String.format("%04d",dateCount+1)));
+            result.put("SerialNumber",SerialNumberText+(String.format("%04d",dateCount+1)));
+            result.put("ID",ID);
+            customerService.CustomerGuidePrintDetail_Update(result);
+        }
+        if ("中介同行".equals(result.get("SourceType"))){
+            result.put("SourceType","分销中介");
+        }
+
         StringBuilder OpenHtml = new StringBuilder();
         StringBuilder html = new StringBuilder();
         if (result.get("CustomerGuideTemplate")!=null&& !Objects.equals(result.get("CustomerGuideTemplate").toString(), "") &&
@@ -524,7 +539,7 @@ public class CustomerController extends TahoeBaseController {
             result.put("SerialNumberText",(result.get("SerialNumberText") == null ? "" : result.get("SerialNumberText")));
 
             customerService.CustomerGuidePrintDetail_Insert(result);
-            customerService.CustomerGuidePrintDetail_Update(result);
+
         }
         return Result.ok(result);
     }
