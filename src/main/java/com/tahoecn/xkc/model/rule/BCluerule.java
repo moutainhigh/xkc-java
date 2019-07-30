@@ -2,6 +2,7 @@ package com.tahoecn.xkc.model.rule;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import com.tahoecn.xkc.model.vo.BClueruleGourpVo;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
 /**
  * <p>
@@ -119,6 +121,9 @@ public class BCluerule implements Serializable {
 
     @TableField("IsProtectVisit")
     private Integer IsProtectVisit;
+
+    @TableField(exist = false)
+    private List<BClueruleGourpVo> clueruleGourpVoList;
 
     public Integer getIsOnlyAllowNew() {
         return IsOnlyAllowNew;
@@ -329,6 +334,14 @@ public class BCluerule implements Serializable {
 
     public void setIsProtectVisit(Integer IsProtectVisit) {
         this.IsProtectVisit = IsProtectVisit;
+    }
+
+    public List<BClueruleGourpVo> getClueruleGourpVoList() {
+        return clueruleGourpVoList;
+    }
+
+    public void setClueruleGourpVoList(List<BClueruleGourpVo> clueruleGourpVoList) {
+        this.clueruleGourpVoList = clueruleGourpVoList;
     }
 
     @Override
