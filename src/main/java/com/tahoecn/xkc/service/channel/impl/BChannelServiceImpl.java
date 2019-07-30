@@ -109,7 +109,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         //获取客户信息
         ob = iBClueService.CaseFieCustomerDetail_Select(paramMap);
         //获取线索信息
-        int invalidType = (int) ob.get(0).get("InvalidType");//无效类型
+        int invalidType = ob.get(0).get("InvalidType")== null ? -1 : (int)ob.get(0).get("InvalidType");//无效类型
         String InvalidReason = (String) ob.get(0).get("InvalidReason");//无效说明
         //获取无效信息
         Map<String,Object> RuleP = new HashMap<String,Object>();
@@ -122,44 +122,46 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         //组建规则说明 根据规则id获取规则
         List<String> ruleList = new ArrayList<String>();
-        if (rule.getIsOnlyAllowNew().equals("1")){
-            ruleList.add(rule.getRuleName() + "，仅允许报备项目新客户");
+        if(rule != null){
+        	if ("1".equals(rule.getIsOnlyAllowNew())){
+        		ruleList.add(rule.getRuleName() + "，仅允许报备项目新客户");
+        	}
+        	if (rule.getIsOnlyAllowNew() == 0){
+        		if (rule.getOldOwnerLimit() == 0){
+        			ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且不允许报备集团老业主");
+        		}
+        		if (rule.getOldOwnerLimit() == 1){
+        			ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且仅允许报备其他项目的老业主");
+        		}
+        	}
+        	if (rule.getFollowUpOverdueDays() > 0){
+        		ruleList.add("保护期：距离上一次跟进时间超过" + rule.getFollowUpOverdueDays() + "天未跟进自动失效");
+        	}
+        	if (rule.getIsProtect() == 1){
+        		String leixing = "";
+        		if (rule.getUserBehaviorID().equals("1")){
+        			leixing = ("签约");
+        		}
+        		if (rule.getUserBehaviorID().equals("2")){
+        			leixing = ("认购");
+        		}
+        		if (rule.getUserBehaviorID().equals("3")){
+        			leixing = ("认筹");
+        		}
+        		if (rule.getIsSelect() == 1){
+        			ruleList.add("保护期模式：两段式 报备-到访-" + leixing);
+        			ruleList.add("到访保护期" + rule.getProtectVisitTime() + "天，提前" + rule.getProtectVisitRemindTime() + "天提醒");
+        		}else{
+        			ruleList.add("启用保护期模式：一段式 报备-" + leixing);
+        		}
+        		ruleList.add(leixing + "保护期" + rule.getProtectTime() + "天，提前" + rule.getProtectRemindTime() + "天提醒");
+        		
+        	}
+        	if (rule.getIsPreIntercept() == 1){
+        		ruleList.add("启用防截客时间" + rule.getPreInterceptTime() + "分钟");
+        	}
+        	ruleList.add("规则在:" + sdf.format(rule.getTakeEffectTime()) + "生效");
         }
-        if (rule.getIsOnlyAllowNew() == 0){
-            if (rule.getOldOwnerLimit() == 0){
-                ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且不允许报备集团老业主");
-            }
-            if (rule.getOldOwnerLimit() == 1){
-                ruleList.add(rule.getRuleName() + "，允许报备新客户或者不在保护期的老客户，且仅允许报备其他项目的老业主");
-            }
-        }
-        if (rule.getFollowUpOverdueDays() > 0){
-            ruleList.add("保护期：距离上一次跟进时间超过" + rule.getFollowUpOverdueDays() + "天未跟进自动失效");
-        }
-        if (rule.getIsProtect() == 1){
-            String leixing = "";
-            if (rule.getUserBehaviorID().equals("1")){
-                leixing = ("签约");
-            }
-            if (rule.getUserBehaviorID().equals("2")){
-                leixing = ("认购");
-            }
-            if (rule.getUserBehaviorID().equals("3")){
-                leixing = ("认筹");
-            }
-            if (rule.getIsSelect() == 1){
-                ruleList.add("保护期模式：两段式 报备-到访-" + leixing);
-                ruleList.add("到访保护期" + rule.getProtectVisitTime() + "天，提前" + rule.getProtectVisitRemindTime() + "天提醒");
-            }else{
-                ruleList.add("启用保护期模式：一段式 报备-" + leixing);
-            }
-            ruleList.add(leixing + "保护期" + rule.getProtectTime() + "天，提前" + rule.getProtectRemindTime() + "天提醒");
-
-        }
-        if (rule.getIsPreIntercept() == 1){
-            ruleList.add("启用防截客时间" + rule.getPreInterceptTime() + "分钟");
-        }
-        ruleList.add("规则在:" + sdf.format(rule.getTakeEffectTime()) + "生效");
         //无效信息 根据手机号获取有效的线索
         List<Map<String,Object>> invalidList = new ArrayList<Map<String,Object>>();
         Map<String,Object> jos = null;
