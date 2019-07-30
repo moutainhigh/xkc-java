@@ -47,24 +47,24 @@
         )
         VALUES
         (
-        #{ID},
+        #{id},
         #{pid},
-        #{MenuName},
-        #{MenuSysName},
-        #{Url},
-        #{ImageUrl},
-        #{IconClass},
-        #{IsHomePage},
-        #{IsShow},
-        #{Levels},
-        #{ListIndex},
-        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{pid} ) + '/', '' ) + #{MenuSysName},
-        #{IsLast},
-        #{Creator},
+        #{menuName},
+        #{menuSysName},
+        #{url},
+        #{imageUrl},
+        #{iconClass},
+        #{isHomePage},
+        #{isShow},
+        #{levels},
+        #{listIndex},
+        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{pid} ) + '/', '' ) + #{menuSysName},
+        #{isLast},
+        #{creator},
         GETDATE(),
         NULL,
         NULL,
-        #{Status},
+        #{status},
         0
         )
     </insert>
