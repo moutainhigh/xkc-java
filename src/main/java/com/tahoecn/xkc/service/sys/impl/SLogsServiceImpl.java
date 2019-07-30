@@ -7,6 +7,7 @@ import com.tahoecn.xkc.model.sys.SLogs;
 import com.tahoecn.xkc.service.sys.ISLogsService;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,19 @@ public class SLogsServiceImpl extends ServiceImpl<SLogsMapper, SLogs> implements
 		log.setStatus(1);
 		log.setIsDel(0);
 		sLogsMapper.insert(log);
+	}
+	
+	/*
+	 * 操作日志
+	 */
+	@Override
+	public List<Map<String, Object>> mBrokerCustomerDetail_Select(Map<String, Object> map) {
+		return sLogsMapper.mBrokerCustomerDetail_Select(map);
+	}
+
+	@Override
+	public int mBrokerCustomerDetail_SelectAll(Map<String, Object> map) {
+		return sLogsMapper.mBrokerCustomerDetail_SelectAll(map);
 	}
 
 

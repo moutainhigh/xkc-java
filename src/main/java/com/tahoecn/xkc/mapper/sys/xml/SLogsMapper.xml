@@ -2,4 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.sys.SLogsMapper">
 
+<!-- 操作日志 -->
+<select id="mBrokerCustomerDetail_Select" resultType="java.util.Map" parameterType="String">
+    <![CDATA[
+    SELECT * FROM (
+		SELECT ROW_NUMBER() OVER ( ORDER BY CreateTime DESC ) num, *
+		FROM   (
+				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
+				FROM dbo.S_Logs_Bak 
+				WHERE 1=1 ${str1}
+				UNION
+				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
+				FROM dbo.S_Logs 
+				WHERE 1=1 ${str1} 
+				 )sp
+		)t 
+		WHERE t.num > ( #{PageIndex} - 1 ) * #{PageSize}
+		        AND t.num <= #{PageIndex} * #{PageSize};
+    ]]>
+    </select>
+    
+    <select id="mBrokerCustomerDetail_SelectAll" resultType="int" parameterType="java.util.Map">
+    <![CDATA[
+    SELECT  COUNT(1) recordCount 
+		FROM   (
+				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
+				FROM dbo.S_Logs_Bak 
+				WHERE 1=1 ${str1}
+				UNION
+				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
+				FROM dbo.S_Logs 
+				WHERE 1=1 ${str1} 
+				 )a
+    ]]>
+    </select>
 </mapper>
