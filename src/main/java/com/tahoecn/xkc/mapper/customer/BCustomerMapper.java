@@ -124,4 +124,6 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
      * 线上预约客户列表
      */
 	IPage<Map<String, Object>> mCustomerShareList_Select(IPage page, String UserID, String ProjectID);
+
+    int findPrintNumByDate(@Param("id")String serialNumberText);
 }

@@ -199,6 +199,11 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
         return baseMapper.CustomerGuidePrintDetail_Select(num, num1,username,UserID,ID);
     }
 
+    @Override
+    public int findPrintNumByDate(String serialNumberText) {
+        return baseMapper.findPrintNumByDate(serialNumberText);
+    }
+
     /**
      * 验证是否是本项目老业主
      */

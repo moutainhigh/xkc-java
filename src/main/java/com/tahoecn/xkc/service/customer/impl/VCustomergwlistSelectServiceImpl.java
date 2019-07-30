@@ -302,13 +302,13 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 String tclueID = "";
                 String reportUserID = "";
                 String protectSource = "";
-                if(res.get("clueID")!=null){
+                if(res!=null && res.get("clueID")!=null){
                 	tclueID = res.get("clueID").toString();
                 }
-                if(res.get("reportUserID")!=null){
+                if(res!=null && res.get("reportUserID")!=null){
                 	reportUserID = res.get("reportUserID").toString();
                 }
-                if(res.get("protectSource")!=null){
+                if(res!=null && res.get("protectSource")!=null){
                 	protectSource = res.get("protectSource").toString();
                 }
                 if (!StringUtils.isEmpty(tclueID) &&  !StringUtils.isEmpty(reportUserID)){
@@ -318,18 +318,18 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 	if(!"".equals(protectSource)){
                     	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
                     	int customerVisitsRemind = 0;
-                    	if(resf.get("customerVisitsRemind")!=null){
+                    	if(resf!=null && resf.get("customerVisitsRemind")!=null){
                     		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
                     	}
                     	if(customerVisitsRemind>0){
                     		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
-                    		if(ress.get("LastName")!=null){
+                    		if(ress!=null && ress.get("LastName")!=null){
                     			LastName = ress.get("LastName").toString();
                     		}
-                    		if(ress.get("FirstName")!=null){
+                    		if(ress!=null && ress.get("FirstName")!=null){
                     			FirstName = ress.get("FirstName").toString();
                     		}
-                    		if(ress.get("Mobile")!=null){
+                    		if(ress!=null && ress.get("Mobile")!=null){
                     			Mobile = ress.get("Mobile").toString();
                     		}
                     	}
@@ -1157,13 +1157,13 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                     Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select("", tClueID);
                                     String reportUserID = "";
                                     String tprotectSource = "";
-                                    if(res.get("clueID")!=null){
+                                    if(res!=null && res.get("clueID")!=null){
                                     	tClueID = res.get("clueID").toString();
                                     }
-                                    if(res.get("reportUserID")!=null){
+                                    if(res!=null && res.get("reportUserID")!=null){
                                     	reportUserID = res.get("reportUserID").toString();
                                     }
-                                    if(res.get("protectSource")!=null){
+                                    if(res!=null && res.get("protectSource")!=null){
                                     	tprotectSource = res.get("protectSource").toString();
                                     }
                                     if (!StringUtils.isEmpty(tClueID) &&  !StringUtils.isEmpty(reportUserID)){
@@ -1173,18 +1173,18 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                     	if(!"".equals(tprotectSource)){
                                         	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
                                         	int customerVisitsRemind = 0;
-                                        	if(resf.get("customerVisitsRemind")!=null){
+                                        	if(resf!=null && resf.get("customerVisitsRemind")!=null){
                                         		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
                                         	}
                                         	if(customerVisitsRemind>0){
                                         		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
-                                        		if(ress.get("LastName")!=null){
+                                        		if(ress!=null && ress.get("LastName")!=null){
                                         			LastName = ress.get("LastName").toString();
                                         		}
-                                        		if(ress.get("FirstName")!=null){
+                                        		if(ress!=null && ress.get("FirstName")!=null){
                                         			FirstName = ress.get("FirstName").toString();
                                         		}
-                                        		if(ress.get("Mobile")!=null){
+                                        		if(ress!=null && ress.get("Mobile")!=null){
                                         			tMobile = ress.get("Mobile").toString();
                                         		}
                                         	}
@@ -1429,13 +1429,13 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                 String tclueID = "";
                                 String reportUserID = "";
                                 String protectSource = "";
-                                if(res.get("clueID")!=null){
+                                if(res!=null && res.get("clueID")!=null){
                                 	tclueID = res.get("clueID").toString();
                                 }
-                                if(res.get("reportUserID")!=null){
+                                if(res!=null && res.get("reportUserID")!=null){
                                 	reportUserID = res.get("reportUserID").toString();
                                 }
-                                if(res.get("protectSource")!=null){
+                                if(res!=null && res.get("protectSource")!=null){
                                 	protectSource = res.get("protectSource").toString();
                                 }
                                 
@@ -1447,18 +1447,18 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                 	if(!"".equals(protectSource)){
                                     	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
                                     	int customerVisitsRemind = 0;
-                                    	if(resf.get("customerVisitsRemind")!=null){
+                                    	if(resf!=null && resf.get("customerVisitsRemind")!=null){
                                     		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
                                     	}
                                     	if(customerVisitsRemind>0){
                                     		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
-                                    		if(ress.get("LastName")!=null){
+                                    		if(ress!=null && ress.get("LastName")!=null){
                                     			LastName = ress.get("LastName").toString();
                                     		}
-                                    		if(ress.get("FirstName")!=null){
+                                    		if(ress!=null && ress.get("FirstName")!=null){
                                     			FirstName = ress.get("FirstName").toString();
                                     		}
-                                    		if(ress.get("Mobile")!=null){
+                                    		if(ress!=null && ress.get("Mobile")!=null){
                                     			Mobile = ress.get("Mobile").toString();
                                     		}
                                     	}

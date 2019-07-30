@@ -59,7 +59,7 @@
         )
     </insert>
     <update id="CustomerGuidePrintDetail_Update">
-        UPDATE dbo.B_ClueAllocation SET SerialNumber=#{RiseText}+#{MarkText}+#{SerialNumberText} WHERE ID=#{ID}
+        UPDATE dbo.B_ClueAllocation SET SerialNumber=#{SerialNumberText} WHERE ID=#{ID}
     </update>
 
     <select id="customerChangePageList_Select" resultType="java.util.Map">
@@ -1123,7 +1123,7 @@
             p.CustomerGuideTemplate,                                                                      --带看确认单打印模板
             p.Rise,                                                                                       --抬头
             p.Mark,                                                                                       --符号
-            p.SerialNumber,                                                                               --流水号
+            ca.SerialNumber,                                                                               --流水号
             right('000000' + ltrim((CONVERT(INT, #{num1}) + ISNULL(#{num}, 0))), LEN(#{num1})) SerialNumberText,
             co.OrgName,                                                                                   --所属机构
             c.ReportUserName,                                                                             --渠道人员
@@ -1134,12 +1134,16 @@
             o.ProjectID,                                                                                  --项目ID
             ca.CustomerID,                                                                                --客户ID
             ca.OpportunityID,                                                                             --机会ID
+            p.Name  projectName,
+            CASE WHEN ISNULL(sacc.Mobile, '') <> '' THEN sacc.Mobile ELSE chuser.Mobile END SaleUserMobile,
             #{userID}                                                                   UserID
             FROM dbo.B_ClueAllocation ca
             LEFT JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
             INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
             LEFT JOIN dbo.B_Project p ON p.ID = o.ProjectID
             LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
+            left join dbo.S_Account sacc on o.SaleUserID = sacc.ID
+            left join B_ChannelUser chuser on o.SaleUserId = chuser.ID
             WHERE ca.ID = #{id}
         ]]>
     </select>
@@ -1258,5 +1262,10 @@ FROM (
 				AND a.IsDel = 0
 
         ]]>
+    </select>
+    <select id="findPrintNumByDate" resultType="java.lang.Integer">
+        SELECT count(ca.ID)
+        FROM dbo.B_ClueAllocation ca
+        WHERE ca.SerialNumber like #{id}
     </select>
 </mapper>
