@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,5 +119,21 @@ public class SDictionaryController extends TahoeBaseController {
             return Result.okm("成功");
         }
         return Result.errormsg(99,"删除失败");
+    }
+
+
+    @ApiOperation(value = "PC数据字典", notes = "PC数据字典")
+    @RequestMapping(value = "/SystemDictionaryDetail_Select", method = {RequestMethod.GET})
+    public Result SystemDictionaryDetail_Select(String Code,String UserID,String Model,String JobID,String JobCode,String OrgID,String ProjectID) {
+        HashMap<String,Object> param=new HashMap<>();
+        param.put("Code",Code);
+        param.put("UserID",UserID);
+        param.put("Model",Model);
+        param.put("JobID",JobID);
+        param.put("JobCode",JobCode);
+        param.put("OrgID",OrgID);
+        param.put("ProjectID",ProjectID);
+        Result result=dictionaryService.PCSystemDictionaryDetail(param);
+        return result;
     }
 }

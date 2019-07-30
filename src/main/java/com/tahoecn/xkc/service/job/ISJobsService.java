@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.job;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.xkc.model.dto.SMenusXkcDto;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.sys.SAccount;
 
@@ -42,7 +43,7 @@ public interface ISJobsService extends IService<SJobs> {
 
     List<Map<String, Object>> CommonJobList_Select();
 
-    List<Map<String, Object>> MenuOrFunIDList_Select_Tree();
+    List<SMenusXkcDto> MenuOrFunIDList_Select_Tree();
 
     List<Map<String, Object>> MenuOrFunIDList_Select(String JobID);
 

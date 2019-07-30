@@ -9,7 +9,6 @@ import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import com.tahoecn.xkc.model.vo.BClueruleGourpVo;
-import com.tahoecn.xkc.model.vo.BClueruleVo;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
@@ -18,14 +17,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "渠道规则设置", value = "渠道规则设置")
-@RequestMapping("/ruleApp")
+@RequestMapping("/webapi/ruleApp")
 public class RuleAppController extends TahoeBaseController {
 
     @Autowired
@@ -58,18 +56,18 @@ public class RuleAppController extends TahoeBaseController {
 
     //规则设置：自有渠道，分销中介，推荐渠道
     @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "protectSource1", value = "保护来源:0.推荐 1.自有 2.分销", required = true, dataType = "String")})
+            @ApiImplicitParam(name = "protectSource", value = "保护来源:0.推荐 1.自有 2.分销", required = true, dataType = "String")})
     @ApiOperation(value = "获取项目信息接口", notes = "获取项目信息接口")
     @RequestMapping(value = "/RuleClue_Select", method = { RequestMethod.GET })
-    public ResponseMessage RuleClue_Select(@RequestParam(required = true) String projectId,@RequestParam(required = true) String protectSource1) {
-        Integer protectSource = Integer.parseInt(protectSource1);
+    public ResponseMessage RuleClue_Select(@RequestParam(required = true) String projectId,@RequestParam(required = true) String protectSource) {
+        Integer protectSourceInt = Integer.parseInt(protectSource);
     	QueryWrapper<BCluerule> queryWrapper = new QueryWrapper<BCluerule>();
         queryWrapper.eq(StringUtils.isNotBlank(projectId), "ProjectID", projectId);
-        queryWrapper.eq(StringUtils.isNotBlank(projectId), "ProtectSource", protectSource);
+        queryWrapper.eq("ProtectSource", protectSourceInt);
         queryWrapper.eq("isdel", 0);
         //先看线索规则表有没有，没有就要初始化数据
-        BCluerule cluerule = (BCluerule)iBClueruleService.getObj(queryWrapper);
-        if(cluerule==null){
+        int clueruleCount = iBClueruleService.count(queryWrapper);
+        if(clueruleCount==0){
             //初始化线索规则
             BCluerule newCluerule = new BCluerule();
             newCluerule.setProjectID(projectId);
@@ -80,11 +78,11 @@ public class RuleAppController extends TahoeBaseController {
             newCluerule.setVersionStartTime(new Date());
             newCluerule.setIsDel(0);
             newCluerule.setStatus(1);
-            newCluerule.setProtectSource(protectSource);
+            newCluerule.setProtectSource(protectSourceInt);
             iBClueruleService.save(newCluerule);
 
             //初始化线索规则群体
-            if(protectSource==2){//2.分销
+            if(protectSourceInt==2){//2.分销
                 List<BChannelorg> channelorgList = iRuleAppService.getChanelorgList(projectId);
                 for(int i=0;i<channelorgList.size();i++){
                     BChannelorg channelorg = channelorgList.get(i);
@@ -100,9 +98,9 @@ public class RuleAppController extends TahoeBaseController {
             }else{//0.推荐 1.自有
                 QueryWrapper<SDictionary> dictQueryWrapper = new QueryWrapper<SDictionary>();
                 dictQueryWrapper.eq("pid", "5316B9EF-2AA7-43BA-A8C8-14A5CA368C95");
-                if(protectSource==0){
+                if(protectSourceInt==0){
                     dictQueryWrapper.eq("Ext1", 0);
-                }else if(protectSource==1){
+                }else if(protectSourceInt==1){
                     dictQueryWrapper.eq("Ext1", 1);
                 }
                 List<SDictionary> dictList = iSDictionaryService.list(dictQueryWrapper);
@@ -122,26 +120,23 @@ public class RuleAppController extends TahoeBaseController {
 
         QueryWrapper<BCluerule> clueruleQueryWrapper = new QueryWrapper<BCluerule>();
         clueruleQueryWrapper.eq(StringUtils.isNotBlank(projectId), "ProjectID", projectId);
-        clueruleQueryWrapper.eq("ProtectSource", protectSource);
+        clueruleQueryWrapper.eq("ProtectSource", protectSourceInt);
         clueruleQueryWrapper.eq("isdel", 0);
-        clueruleQueryWrapper.isNull("versionstarttime");
+        clueruleQueryWrapper.isNull("versionendtime");
         clueruleQueryWrapper.orderByAsc("versionstarttime");
         List<BCluerule> clueruleList = iBClueruleService.list(clueruleQueryWrapper);
-        List<BClueruleVo> clueruleVoList = new ArrayList<BClueruleVo>();
-        BeanUtils.copyProperties(clueruleList,clueruleVoList);
 
-        for(int i=0;i<clueruleVoList.size();i++){
-            BClueruleVo clueruleVo = clueruleVoList.get(i);
-            if(protectSource==2) {//2.分销
-                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getFenxiao(projectId,protectSource);
-                clueruleVo.setClueruleGourpVoList(clueruleGourpVoList);
+        for(int i=0;i<clueruleList.size();i++){
+            BCluerule cluerule = clueruleList.get(i);
+            if(protectSourceInt==2) {//2.分销
+                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getFenxiao(projectId,protectSourceInt);
+                cluerule.setClueruleGourpVoList(clueruleGourpVoList);
             }else{//0.推荐 1.自有
-                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId,protectSource);
-                clueruleVo.setClueruleGourpVoList(clueruleGourpVoList);
+                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId,protectSourceInt);
+                cluerule.setClueruleGourpVoList(clueruleGourpVoList);
             }
         }
-
-        return ResponseMessage.ok(clueruleVoList);
+        return ResponseMessage.ok(clueruleList);
     }
     
     @ApiImplicitParams({@ApiImplicitParam(name = "clueRuleId", value = "规则ID", required = true, dataType = "String"),
@@ -288,8 +283,8 @@ public class RuleAppController extends TahoeBaseController {
 //    }
 
     @ApiOperation(value = "保存线索规则接口", notes = "保存线索规则接口")
-    @RequestMapping(value = "/RuleClue_Update", method = { RequestMethod.GET })
-    public ResponseMessage RuleClue_Update(@RequestParam(required = true) BCluerule bCluerule,@RequestParam(required = true) String IsUpdateGroup,@RequestParam(required = true) String grouplist){
+    @RequestMapping(value = "/RuleClue_Update", method = { RequestMethod.POST })
+    public ResponseMessage RuleClue_Update(@RequestBody BCluerule bCluerule, @RequestParam(required = true) String IsUpdateGroup, @RequestParam(required = true) String grouplist){
 
         if (bCluerule.getProtectSource() == 1)//自有渠道
         {

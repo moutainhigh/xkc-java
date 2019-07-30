@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.mapper.job.SJobsMapper;
+import com.tahoecn.xkc.model.dto.SMenusXkcDto;
 import com.tahoecn.xkc.model.job.BProjectjobrel;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.job.SJobsmenurel;
@@ -279,97 +280,176 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     }
 
     @Override
-    public List<Map<String, Object>> MenuOrFunIDList_Select_Tree() {
-        SMenusXkc menus=baseMapper.MenuOrFunIDList_Select_Tree();
-        List<Map<String, Object>> children = getChildren(menus.getId());
-        List<Map<String,Object>> result = new ArrayList<>();
-        //加入单选复选标识
-        for (Map<String, Object> map : children) {
-            if (!(Boolean) map.get("isLeaf")){
-                List<Map<String,Object>> resultChildren=new ArrayList<>();
-                if (StringUtils.equals((String) map.get("MenuName"),"数据")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",false);
-                        resultChildren.add(objectMap);
+    public List<SMenusXkcDto> MenuOrFunIDList_Select_Tree() {
+        List<SMenusXkcDto> menus=baseMapper.MenuOrFunIDList_Select_Tree();
+        List<SMenusXkcDto> build = this.buildByRecursive(menus);
+        List<SMenusXkcDto> result = new ArrayList<>();
+        //build第一集为APP菜单,getChildren筛选
+        for (SMenusXkcDto sMenusXkcDto : build.get(0).getChildren()) {
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"数据")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"消息")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",true);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"消息")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(true);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"客户")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",true);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"客户")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(true);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"锦囊")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",false);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"锦囊")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"团队")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",false);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"团队")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"考勤")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",false);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"考勤")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"房源页面")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",false);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"房源页面")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"任务")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",true);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"任务")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(true);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"作战图")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",true);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"作战图")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(true);
                     }
-                    map.put("children",resultChildren);
                 }
-                if (StringUtils.equals((String) map.get("MenuName"),"个人中心")){
-                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
-                    for (Map<String, Object> objectMap : children1) {
-                        objectMap.put("signal",false);
-                        resultChildren.add(objectMap);
+            }
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"个人中心")){
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
                     }
-                    map.put("children",resultChildren);
                 }
-                result.add(map);
+            }
+
+            if (sMenusXkcDto.getChildren()!=null){
+                result.add(sMenusXkcDto);
             }
         }
+//        List<Map<String, Object>> children = getChildren(menus.getId());
+//        List<Map<String,Object>> result = new ArrayList<>();
+//        //加入单选复选标识
+//        for (Map<String, Object> map : children) {
+//            if (!(Boolean) map.get("isLeaf")){
+//                List<Map<String,Object>> resultChildren=new ArrayList<>();
+//                if (StringUtils.equals((String) map.get("MenuName"),"数据")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",false);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"消息")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",true);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"客户")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",true);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"锦囊")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",false);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"团队")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",false);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"考勤")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",false);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"房源页面")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",false);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"任务")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",true);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"作战图")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",true);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                if (StringUtils.equals((String) map.get("MenuName"),"个人中心")){
+//                    List<Map<String, Object>> children1 = (List<Map<String, Object>>) map.get("children");
+//                    for (Map<String, Object> objectMap : children1) {
+//                        objectMap.put("signal",false);
+//                        resultChildren.add(objectMap);
+//                    }
+//                    map.put("children",resultChildren);
+//                }
+//                result.add(map);
+//            }
+//        }
         return result;
     }
 
@@ -426,31 +506,65 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     }
 
 
+//    /**
+//     * 通过父级id获取所有子集
+//     * @param PID
+//     * @return
+//     */
+//    public List<Map<String,Object>> getChildren(String PID){
+//        List<Map<String,Object>> list = new ArrayList<>();
+//        //menu
+//        List<Map<String,Object>> children = baseMapper.getChildrenByPID(PID);
+//        for (Map<String,Object> typeInfo : children) {
+//            List<Map<String,Object>> children1 = getChildren((String) typeInfo.get("ID"));
+//            List<Map<String,Object>> FuncChildren = baseMapper.getFuncChildren((String) typeInfo.get("ID"));
+//            if (FuncChildren.size()>0){
+//                typeInfo.put("isLeaf",false);
+//                typeInfo.put("children", FuncChildren);
+//            }
+//            if (children1.size()>0){
+//                typeInfo.put("isLeaf",false);
+//                typeInfo.put("children", children1);
+//            }else {
+//                typeInfo.put("isLeaf",true);
+//            }
+//            list.add(typeInfo);
+//        }
+//        return list;
+//    }
 
-
-
-    public List<Map<String,Object>> getChildren(String PID){
-        List<Map<String,Object>> list = new ArrayList<>();
-        //menu
-        List<Map<String,Object>> children = baseMapper.getChildrenByPID(PID);
-        for (Map<String,Object> typeInfo : children) {
-            List<Map<String,Object>> children1 = getChildren((String) typeInfo.get("ID"));
-            List<Map<String,Object>> FuncChildren = baseMapper.getFuncChildren((String) typeInfo.get("ID"));
-            if (FuncChildren.size()>0){
-                typeInfo.put("isLeaf",false);
-                typeInfo.put("children", FuncChildren);
+    /**
+     * 使用递归方法建树
+     * @param treeNodes
+     * @return
+     */
+    private   List<SMenusXkcDto> buildByRecursive(List<SMenusXkcDto> treeNodes) {
+        List<SMenusXkcDto> trees = new ArrayList<SMenusXkcDto>();
+        for (SMenusXkcDto treeNode : treeNodes) {
+            if ("-1".equals(treeNode.getPid())) {
+                trees.add(findChildren(treeNode,treeNodes));
             }
-            if (children1.size()>0){
-                typeInfo.put("isLeaf",false);
-                typeInfo.put("children", children1);
-            }else {
-                typeInfo.put("isLeaf",true);
-            }
-            list.add(typeInfo);
         }
-        return list;
+        return trees;
     }
 
 
+    /**
+     * 递归查找子节点
+     * @param treeNodes
+     * @return
+     */
+    private  SMenusXkcDto findChildren(SMenusXkcDto treeNode,List<SMenusXkcDto> treeNodes) {
+        for (SMenusXkcDto it : treeNodes) {
+            if(treeNode.getId().equals(it.getPid())) {
+                if (treeNode.getChildren() == null) {
+                    treeNode.setChildren(new ArrayList<SMenusXkcDto>());
+                }
+                treeNode.setisLeaf(false);
+                treeNode.getChildren().add(findChildren(it,treeNodes));
+            }
+        }
+        return treeNode;
+    }
 
 }

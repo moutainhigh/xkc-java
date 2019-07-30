@@ -2,6 +2,7 @@ package com.tahoecn.xkc.mapper.job;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.model.dto.SMenusXkcDto;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SMenus;
@@ -36,7 +37,7 @@ public interface SJobsMapper extends BaseMapper<SJobs> {
 
     List<Map<String,Object>> getChildrenByPID(@Param("pid")String pid);
 
-    SMenusXkc MenuOrFunIDList_Select_Tree();
+    List<SMenusXkcDto> MenuOrFunIDList_Select_Tree();
 
     List<Map<String, Object>> MenuOrFunIDList_Select(@Param("JobID")String JobID);
 
