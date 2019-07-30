@@ -713,9 +713,9 @@ public class CustomerHelp implements ICustomerHelp {
 		JSONObject json = new JSONObject();
 		if (obj != null && obj.size() > 0){
 			List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
-			Item item = null;
             for (DicInfo dicInfo : dicList){
                 List<Item> itemList = model.getItemList();
+                Item item = null;
     			for (Item it : itemList) {
     				if (it.getID().equals(dicInfo.getDicID())) {
     					item = it;
