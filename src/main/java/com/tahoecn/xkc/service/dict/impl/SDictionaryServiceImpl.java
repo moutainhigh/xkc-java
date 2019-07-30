@@ -683,4 +683,383 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             return Result.errormsg(99,"数据字典错误");
         }
     }
+
+    @Override
+    public Result PCSystemDictionaryDetail(HashMap<String,Object> param) {
+
+            try {
+                String IDAlias = "ID";
+                String ChildAlias = "Child";
+                String DictNameAlias = "DictName";
+
+                Map<String,String> Alias = (Map<String, String>) param.get("Alias");
+                if (Alias!=null){
+                    IDAlias=Alias.get("IDAlias");
+                    ChildAlias=Alias.get("ChildAlias");
+                    DictNameAlias=Alias.get("DictNameAlias");
+                }
+                boolean isCity = false;
+                boolean isKHSXGZGW = false;
+                boolean isFPGWSXGZFJ = false;
+                boolean isFPGWSXGZYXJL = false;
+                boolean isGGCKHSXGZYXJL = false;
+                boolean isGWGJKHSXGZXSJL = false;
+                boolean isGWGGKHSXGZXSJL = false;
+                boolean isGWDSKHSXGZXSJL = false;
+                boolean isPKSXGZXSJL = false;
+                boolean isFJHX = false;
+
+                Map<String,Object> res=new HashMap<>();
+                String DictCodes = "";
+                String[] CodeList = param.get("Code").toString().toUpperCase().split(",");
+                //遍历参数
+                for (String Code : CodeList) {
+                    switch (Code){
+                        case "CITY":
+                            isCity = true;
+                            break;
+                        default:
+                            if ("KHSXGZGW".equals(Code))//客户筛选规则(顾问)
+                            {
+                                isKHSXGZGW = true;
+                            }
+                            if ("FPGWSXGZFJ".equals(Code))//分配顾问筛选规则(分接)
+                            {
+                                isFPGWSXGZFJ = true;
+                            }
+                            if ("FPGWSXGZYXJL".equals(Code))//分配顾问筛选规则(营销经理)
+                            {
+                                isFPGWSXGZYXJL = true;
+                            }
+                            if ("GGCKHSXGZYXJL".equals(Code))//公共池客户筛选规则(营销经理)
+                            {
+                                isGGCKHSXGZYXJL = true;
+                            }
+                            if ("GWGJKHSXGZXSJL".equals(Code))//顾问公共客户排序规则(销售经理)
+                            {
+                                isGWGJKHSXGZXSJL = true;
+                            }
+                            if ("GWGGKHSXGZXSJL".equals(Code))//顾问公共客户筛选规则(销售经理)
+                            {
+                                isGWGGKHSXGZXSJL = true;
+                            }
+                            if ("GWDSKHSXGZXSJL".equals(Code))//顾问丢失客户筛选规则(销售经理)
+                            {
+                                isGWDSKHSXGZXSJL = true;
+                            }
+                            if ("PKSXGZXSJL".equals(Code))//盘客筛选规则(销售经理)
+                            {
+                                isPKSXGZXSJL = true;
+                            }
+                            if ("FJHX".equals(Code))//房间户型
+                            {
+                                isFJHX = true;
+                            }
+
+                            if (res.get(Code)== null)
+                            {
+                                DictCodes = DictCodes + " OR B.DictCode = '"+Code+"'";
+                                res.put(Code,new ArrayList<>());
+                            }
+                            break;
+                    }
+                }
+                //region 城市处理
+                if (isCity){
+                    QueryWrapper<SCity> wrapper=new QueryWrapper<>();
+                    wrapper.eq("Status",1).le("Levels",4).orderByAsc("Levels","StandardIndex");
+                    List<SCity> list =  cityService.list(wrapper);
+                    Map<String,Map<String,Object>> province = new HashMap<>();
+                    Map<String,Map<String,Object>> city = new HashMap<>();
+                    for (SCity sCity : list) {
+                        String PID=sCity.getPid();
+                        int Levels=sCity.getLevels();
+                        if (Levels==2){
+                            String ID=sCity.getId();
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,ID);
+                            dict.put(DictNameAlias,sCity.getDispName());
+                            dict.put(ChildAlias,new ArrayList<>());
+                            province.put(ID,dict);
+                        }
+                        if (Levels==3){
+                            if (province.get(PID) != null)
+                            {
+                                String ID=sCity.getId();
+                                Map<String,Object> dict = new HashMap<>();
+                                dict.put(IDAlias,ID);
+                                dict.put(DictNameAlias,sCity.getDispName());
+                                dict.put(ChildAlias,new ArrayList<>());
+                                dict.put("PID",PID);
+                                city.put(ID,dict);
+                            }
+                        }
+                        if (Levels == 4)
+                        {
+                            if (city.get(PID)!= null)
+                            {
+                                String ID=sCity.getId();
+                                Map<String,Object> dict = new HashMap<>();
+                                dict.put(IDAlias,ID);
+                                dict.put(DictNameAlias,sCity.getDispName());
+                                Map<String,Object> pid = city.get(PID);
+                                ArrayList  childAlias = (ArrayList) pid.get(ChildAlias);
+                                childAlias.add(dict);
+                            }
+                        }
+                    }
+                    if (province.size()>0){
+                        List resJa=new ArrayList();
+                        for (String key : city.keySet()) {
+                            String PID= (String) city.get(key).get("PID");
+                            if (province.get(PID)!=null){
+                                city.get(key).remove("PID");
+                                ArrayList  arrayList= (ArrayList) province.get(PID).get(ChildAlias);
+                                arrayList.add(city.get(key));
+                            }
+                        }
+                        for (String key : province.keySet()) {
+                            resJa.add(province.get(key));
+                        }
+                        res.put("City",resJa);
+                    }
+                }
+//        通用数据字典处理
+                List<Map<String,Object>> dictArray=new ArrayList<>();
+
+                try {
+                    dictArray=dictionaryService.ListByCode_Select(DictCodes);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return Result.errormsg(99,"数据库查询异常");
+                }
+
+                Map<String,Object> one = new HashMap<>();
+                for (Map<String, Object> map : dictArray) {
+                    String PDictCode = (String) map.get("PDictCode");
+                    int Levels = (int) map.get("Levels");
+                    if (Levels == 2)
+                    {
+
+                            String DictCode = (String) map.get("DictCode");
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,map.get("ID"));
+                            dict.put(DictNameAlias,map.get("DictName"));
+
+                            dict.put(ChildAlias,new ArrayList<>());
+                            one.put(DictCode,dict);
+
+                    }
+                    if (Levels == 3)
+                    {
+                        if (one.get(PDictCode) != null)
+                        {
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,map.get("ID"));
+                            dict.put(DictNameAlias,map.get("DictName"));
+                            Map<String,Object> pDictCode = (Map<String, Object>) one.get(PDictCode);
+                            ArrayList childAlias = (ArrayList) pDictCode.get(ChildAlias);
+                            childAlias.add(dict);
+                        }
+                    }
+                }
+                for (Map<String, Object> map : dictArray) {
+                    String PDictCode = (String) map.get("PDictCode");
+                    int Levels = (int) map.get("Levels");
+                    if (Levels == 2)
+                    {
+                        String DictCode = (String) map.get("DictCode");
+                        if (res.get(PDictCode)!= null )
+                        {
+                            ArrayList pDictCode = (ArrayList) res.get(PDictCode);
+                            pDictCode.add(one.get(DictCode));
+                        }
+                    }
+                }
+
+//      处理客户筛选规则(顾问)数据
+                if (isKHSXGZGW)
+                {
+                    String userID = (String) param.get("UserID");
+                    List<Map<String, Object>> list = vCustomergwlistSelectMapper.TagList_Select(userID);
+                    ((Map) ((List) res.get("KHSXGZGW")).get(3)).put("Child",list);
+
+                }
+//        处理分配顾问筛选规则(分接)数据
+                if (isFPGWSXGZFJ){
+                    Map<String,Object> dictTop=new HashMap<>();
+                    dictTop.put(IDAlias,"");
+                    dictTop.put(DictNameAlias,"全部");
+                    dictTop.put(ChildAlias,new ArrayList<>());
+                    res.put("FPGWSXGZFJ",dictTop);
+                    QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
+                    wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
+                    wrapper.gt("Nature",0);
+                    List<BSalesgroup> groupArray = salesgroupService.list(wrapper);
+                    for (BSalesgroup bSalesgroup : groupArray) {
+                        Map<String,Object> dict = new HashMap<>();
+                        dict.put(IDAlias,bSalesgroup.getId());
+                        dict.put(DictNameAlias,bSalesgroup.getName());
+                        dict.put(ChildAlias,new ArrayList<>());
+                        res.put("FPGWSXGZFJ",dict);
+                    }
+                }
+//        处理分配顾问筛选规则(营销经理)数据
+                if (isFPGWSXGZYXJL){
+                    Map<String,Object> dictTop=new HashMap<>();
+                    dictTop.put(IDAlias,"");
+                    dictTop.put(DictNameAlias,"全部");
+                    dictTop.put(ChildAlias,new ArrayList<>());
+                    res.put("FPGWSXGZYXJL",dictTop);
+                    if ("YXJL".equals((String) param.get("JobCode"))){
+                        QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
+                        wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
+                        wrapper.gt("Nature",0);
+                        List<BSalesgroup> groupArray = salesgroupService.list(wrapper);
+                        for (BSalesgroup bSalesgroup : groupArray) {
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,bSalesgroup.getId());
+                            dict.put(DictNameAlias,bSalesgroup.getName());
+                            dict.put(ChildAlias,new ArrayList<>());
+                            res.put("FPGWSXGZYXJL",dict);
+                        }
+                    }
+                    if ("XSJL".equals(param.get("JobCode"))){
+                        String ProjectID= (String) param.get("ProjectID");
+                        String TeamID= (String) param.get("OrgID");
+                        List<Map<String,Object>> saleArray=null;
+                        if (!StringUtils.isAllBlank(ProjectID,TeamID)){
+                            saleArray=salesuserService.UserSalesList_Select(ProjectID,TeamID);
+                            for (Map<String, Object> map : saleArray) {
+                                Map<String,Object> dict = new HashMap<>();
+                                dict.put(IDAlias,map.get("ID"));
+                                dict.put(DictNameAlias,map.get("Name"));
+                                res.put("FPGWSXGZYXJL",dict);
+                            }
+                        }
+                    }
+                }
+//            处理公共池客户筛选规则(营销经理)数据
+                if (isGGCKHSXGZYXJL){
+                    Map<String,Object> dictTop=new HashMap<>();
+                    dictTop.put(IDAlias,"");
+                    dictTop.put(DictNameAlias,"全部");
+                    dictTop.put(ChildAlias,new ArrayList<>());
+                    res.put("GGCKHSXGZYXJL",dictTop);
+                    if ("YXJL".equals(param.get("JobCode"))){
+                        QueryWrapper<BSalesgroup> wrapper=new QueryWrapper();
+                        wrapper.eq("IsDel",0).eq("Status",1).eq("ProjectID",param.get("ProjectID"));
+                        wrapper.gt("Nature",0);
+                        List<BSalesgroup> groupArray = salesgroupService.list(wrapper);
+                        for (BSalesgroup bSalesgroup : groupArray) {
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,bSalesgroup.getId());
+                            dict.put(DictNameAlias,bSalesgroup.getName());
+                            dict.put(ChildAlias,new ArrayList<>());
+                            res.put("GGCKHSXGZYXJL",dict);
+                        }
+                    }
+                    if ("XSJL".equals(param.get("JobCode"))){
+                        String ProjectID= null;
+                        String TeamID= (String) param.get("OrgID");
+                        List<Map<String,Object>> saleArray=null;
+                        if (!StringUtils.isAllBlank(ProjectID,TeamID)){
+                            saleArray=salesuserService.UserSalesList_Select(ProjectID,TeamID);
+                            for (Map<String, Object> map : saleArray) {
+                                Map<String,Object> dict = new HashMap<>();
+                                dict.put(IDAlias,map.get("ID"));
+                                dict.put(DictNameAlias,map.get("Name"));
+                                res.put("GGCKHSXGZYXJL",dict);
+                            }
+                        }
+                    }
+                }
+//        处理顾问跟进客户筛选规则(销售经理)数据
+                if (isGWGJKHSXGZXSJL){
+                    String TeamID=null;
+
+                        TeamID= (String) param.get("OrgID");
+
+                    List<Map<String,Object>> saleArray=null;
+                    if (StringUtils.isNotBlank(TeamID)){
+                        saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                        for (Map<String, Object> map : saleArray) {
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,map.get("ID"));
+                            dict.put(DictNameAlias,map.get("Name"));
+                            ((List) ((Map) ((List) res.get("GWGJKHSXGZXSJL")).get(2)).get("Child")).add(dict);
+                        }
+                    }
+                }
+//        处理顾问公共客户筛选规则(销售经理)数据
+                if (isGWGGKHSXGZXSJL){
+                    String TeamID=null;
+
+                        TeamID= (String) param.get("OrgID");
+                        List<Map<String,Object>> saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                        for (Map<String, Object> map : saleArray) {
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,map.get("ID"));
+                            dict.put(DictNameAlias,map.get("Name"));
+                            ((List) ((Map) ((List) res.get("GWGGKHSXGZXSJL")).get(0)).get("Child")).add(dict);
+                        }
+
+                }
+//        处理顾问丢失客户筛选规则(销售经理)数据
+                if (isGWDSKHSXGZXSJL){
+                    String TeamID=null;
+
+                        TeamID= (String) param.get("OrgID");
+                        List<Map<String,Object>> saleArray=salesuserService.UserSalesList_Select(null,TeamID);
+                        for (Map<String, Object> map : saleArray) {
+                            Map<String,Object> dict = new HashMap<>();
+                            dict.put(IDAlias,map.get("ID"));
+                            dict.put(DictNameAlias,map.get("Name"));
+                            ((List) ((Map) ((List) res.get("GWDSKHSXGZXSJL")).get(0)).get("Child")).add(dict);
+                        }
+
+                }
+//        处理盘客筛选规则(销售经理) 数据
+                if (isPKSXGZXSJL){
+                    Map<String,Object> dictTop=new HashMap<>();
+                    dictTop.put(IDAlias,"");
+                    dictTop.put(DictNameAlias,"全部");
+                    dictTop.put(ChildAlias,new ArrayList<>());
+//            ((JArray)res["PKSXGZXSJL"]).AddFirst(dictTop);  AddFirst插入到list第一位置??
+                    List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
+                    pk.add(dictTop);
+                    res.put("PKSXGZXSJL",pk);
+                }
+//        处理房间户型数据
+                if (isFJHX){
+                    List<Map<String,Object>> list=projectroomService.RoomTypeList_Select((String)param.get("BuildingID"));
+                    List<Map<String,Object>> pk = new ArrayList<Map<String,Object>>();
+                    for (Map<String, Object> map : list) {
+                        Map<String,Object> dict = new HashMap<>();
+                        dict.put(IDAlias,map.get("RoomType"));
+                        dict.put(DictNameAlias,map.get("RoomType"));
+                        dict.put(ChildAlias,new ArrayList<>());
+                        pk.add(dict);
+                    }
+                    res.put("FJHX",pk);
+                }
+
+                List data=new ArrayList();
+                if (res.size() == 1){
+                    for (String key : res.keySet()) {
+                        data = (List) res.get(key);
+                    }
+                }
+                if (res.size() > 1){
+                    for (String key : res.keySet()) {
+                        data.add(res.get(key));
+                    }
+                }
+                return Result.ok(data);
+
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.errormsg(99,"数据字典错误");
+            }
+    }
 }

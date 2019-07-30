@@ -29,4 +29,6 @@ public interface ISDictionaryService extends IService<SDictionary> {
     List<Map<String, Object>> SystemAllParams_Select_Tree(String pid);
 
     Result SystemDictionaryDetail(HashMap<String,Object> param);
+
+    Result PCSystemDictionaryDetail(HashMap<String,Object> param);
 }

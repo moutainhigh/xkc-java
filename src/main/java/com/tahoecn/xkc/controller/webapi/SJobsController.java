@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.dto.SMenusXkcDto;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
@@ -238,7 +239,7 @@ public class SJobsController extends TahoeBaseController {
     @ApiOperation(value = "APP功能授权(树形结构)", notes = "APP功能授权(树形结构)")
     @RequestMapping(value = "/MenuOrFunIDList_Select_Tree", method = {RequestMethod.POST})
     public Result MenuOrFunIDList_Select_Tree(){
-        List<Map<String, Object>> list=jobsService.MenuOrFunIDList_Select_Tree();
+        List<SMenusXkcDto> list=jobsService.MenuOrFunIDList_Select_Tree();
         return Result.ok(list);
     }
     @ApiOperation(value = "APP功能授权(树形结构)回显信息", notes = "APP功能授权(树形结构)回显信息")

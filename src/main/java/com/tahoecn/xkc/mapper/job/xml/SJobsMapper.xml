@@ -170,12 +170,12 @@
     </select>
 
     <select id="getChildrenByPID" resultType="java.util.HashMap" parameterType="string">
-        SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE PID=#{pid} AND FullPath LIKE 'App菜单/%'
+        SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE PID=#{pid}
     </select>
 
-    <select id="MenuOrFunIDList_Select_Tree" parameterType="string" resultType="com.tahoecn.xkc.model.sys.SMenusXkc">
+    <select id="MenuOrFunIDList_Select_Tree" parameterType="string" resultType="com.tahoecn.xkc.model.dto.SMenusXkcDto">
         SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE
-        FullPath LIKE 'App菜单'
+        FullPath LIKE 'App菜单%'
     </select>
 
     <select id="MenuOrFunIDList_Select" resultType="java.util.HashMap" parameterType="string">
