@@ -30,7 +30,7 @@ public class SMenusXkcDto extends SMenusXkc implements Serializable {
     public void setisLeaf(boolean isLeaf) {
         isLeaf = isLeaf;
     }
-    public boolean getisSignal() {
+    public boolean getSignal() {
         return signal;
     }
 

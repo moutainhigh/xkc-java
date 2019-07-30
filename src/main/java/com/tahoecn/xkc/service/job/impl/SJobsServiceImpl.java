@@ -282,7 +282,6 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     @Override
     public List<SMenusXkcDto> MenuOrFunIDList_Select_Tree() {
         List<SMenusXkcDto> menus=baseMapper.MenuOrFunIDList_Select_Tree();
-        System.out.println("menus = " + menus);
         List<SMenusXkcDto> build = this.buildByRecursive(menus);
         List<SMenusXkcDto> result = new ArrayList<>();
         //build第一集为APP菜单,getChildren筛选
