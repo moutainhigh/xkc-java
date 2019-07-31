@@ -283,8 +283,10 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     public List<SMenusXkcDto> MenuOrFunIDList_Select_Tree() {
         List<SMenusXkcDto> menus=baseMapper.MenuOrFunIDList_Select_Tree();
         List<SMenusXkcDto> build = this.buildByRecursive(menus);
+        //查询子功能列表在Sfunction表
+        List<Map<String,Object>> list=getFuncList();
         List<SMenusXkcDto> result = new ArrayList<>();
-        //build第一集为APP菜单,getChildren筛选
+        //build第一级为APP菜单,getChildren筛选
         for (SMenusXkcDto sMenusXkcDto : build.get(0).getChildren()) {
             if (StringUtils.equals(sMenusXkcDto.getMenuName(),"数据")){
                 if (sMenusXkcDto.getChildren()!=null){
@@ -296,14 +298,42 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             if (StringUtils.equals(sMenusXkcDto.getMenuName(),"消息")){
                 if (sMenusXkcDto.getChildren()!=null){
                     for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setisLeaf(false);
                         child.setSignal(true);
+                        //添加子集
+                        SMenusXkcDto menusXkcDto=new SMenusXkcDto();
+                        List funcList=new ArrayList();
+                        for (Map<String, Object> map : list) {
+                            if (StringUtils.equals(child.getId(),(String)map.get("MenuID"))){
+                                menusXkcDto.setId((String) map.get("ID"));
+                                menusXkcDto.setMenuName((String) map.get("FuncName"));
+                                menusXkcDto.setisLeaf(true);
+                                menusXkcDto.setSignal(false);
+                                funcList.add(menusXkcDto);
+                            }
+                        }
+                        child.setChildren(funcList);
                     }
                 }
             }
             if (StringUtils.equals(sMenusXkcDto.getMenuName(),"客户")){
                 if (sMenusXkcDto.getChildren()!=null){
                     for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setisLeaf(false);
                         child.setSignal(true);
+                        //添加子集
+                        List funcList=new ArrayList();
+                        for (Map<String, Object> map : list) {
+                            if (StringUtils.equals(child.getId(),(String)map.get("MenuID"))){
+                                SMenusXkcDto menusXkcDto=new SMenusXkcDto();
+                                menusXkcDto.setId((String) map.get("ID"));
+                                menusXkcDto.setMenuName((String) map.get("FuncName"));
+                                menusXkcDto.setisLeaf(true);
+                                menusXkcDto.setSignal(false);
+                                funcList.add(menusXkcDto);
+                            }
+                        }
+                        child.setChildren(funcList);
                     }
                 }
             }
@@ -453,6 +483,10 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
         return result;
     }
 
+    private List<Map<String, Object>> getFuncList() {
+        return baseMapper.getFuncList();
+    }
+
     @Override
     public List<Map<String, Object>> MenuOrFunIDList_Select(String JobID) {
         return  baseMapper.MenuOrFunIDList_Select(JobID);
@@ -565,6 +599,10 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             }
         }
         return treeNode;
+    }
+
+    private List<Map<String, Object>> getFuncChildren(String  menuID){
+        return baseMapper.getFuncChildren(menuID);
     }
 
 }

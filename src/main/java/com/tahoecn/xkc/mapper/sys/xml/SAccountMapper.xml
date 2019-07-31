@@ -600,8 +600,8 @@
             and b.AccountType = #{Type}
         </if>
         AND b.UserOrgID IS NULL
-        ) q
         </if>
+        ) q
         ORDER BY CreateTime DESC
     </select>
 

@@ -42,4 +42,7 @@ public interface SJobsMapper extends BaseMapper<SJobs> {
     List<Map<String, Object>> MenuOrFunIDList_Select(@Param("JobID")String JobID);
 
     List<Map<String, Object>> getFuncChildren(@Param("menuID")String menuID);
+
+    List<Map<String, Object>> getFuncList();
+
 }

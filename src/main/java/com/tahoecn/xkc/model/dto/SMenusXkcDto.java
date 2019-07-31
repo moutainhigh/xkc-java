@@ -28,7 +28,7 @@ public class SMenusXkcDto extends SMenusXkc implements Serializable {
     }
 
     public void setisLeaf(boolean isLeaf) {
-        isLeaf = isLeaf;
+        this.isLeaf = isLeaf;
     }
     public boolean getSignal() {
         return signal;
@@ -37,4 +37,6 @@ public class SMenusXkcDto extends SMenusXkc implements Serializable {
     public void setSignal(boolean signal) {
         this.signal = signal;
     }
+
+
 }

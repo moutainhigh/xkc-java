@@ -206,4 +206,8 @@
         SELECT ID,  FuncName as MenuName  FROM S_Functions WHERE MenuID=#{menuID}
 
     </select>
+
+    <select id="getFuncList" resultType="java.util.HashMap">
+        SELECT ID,  FuncName ,MenuID FROM S_Functions
+    </select>
 </mapper>
