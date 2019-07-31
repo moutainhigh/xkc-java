@@ -58,6 +58,9 @@ public class LoginAppController extends TahoeBaseController {
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
 
+    @Value("CaseLinkageUrl")
+    private String CaseLinkageUrl;
+
     @ResponseBody
     @ApiOperation(value = "登陆", notes = "登陆")
     @RequestMapping(value = "/mLoginAC_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -325,7 +328,7 @@ public class LoginAppController extends TahoeBaseController {
                 } else {
                     sb.append(",'AR':0");
                 }
-                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("Helper"))) {
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("Helper"))) {   //营销助手
                     sb.append(",'Helper':1");
                 } else {
                     sb.append(",'Helper':0");
@@ -337,11 +340,24 @@ public class LoginAppController extends TahoeBaseController {
                     sb.append(",'RobbingCustomerPool':0");
                 }
 
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("PerformanceBoard"))) {  //业绩看板
+                    sb.append(",'PerformanceBoard':1");
+                } else {
+                    sb.append(",'PerformanceBoard':0");
+                }
+
                 if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("IsDynamic"))) {    //动态
                     sb.append(",'IsDynamic':1");
                 } else {
                     sb.append(",'IsDynamic':0");
                 }
+
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("CaseLinkage")) && !Objects.equals(ProjectID.toUpperCase(), "252B3699-51B2-E711-80C7-00505686C900")) {    //案场联动
+                    sb.append(",'IsCaseLinkage':1");
+                } else {
+                    sb.append(",'IsCaseLinkage':0");
+                }
+                sb.append(",'CaseLinkageUrl':'").append(CaseLinkageUrl).append("'");
                 sb.append("}},");
             }
 

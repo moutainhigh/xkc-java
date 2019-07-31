@@ -140,8 +140,9 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 	 */
 	@Override
 	public String mCustomerGGCList_Insert(Map<String, Object> paramMap) {
-		String str = baseMapper.mCustomerGGCList_Insert(paramMap);
-		return str;
+		paramMap.put("MessageInfo", null);
+		baseMapper.mCustomerGGCList_Insert(paramMap);
+		return paramMap.get("MessageInfo").toString();
 	}
 	/**
 	 * 自渠抢客公共池客户

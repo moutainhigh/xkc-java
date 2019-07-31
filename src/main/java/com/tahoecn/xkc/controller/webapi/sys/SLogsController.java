@@ -2,12 +2,13 @@ package com.tahoecn.xkc.controller.webapi.sys;
 
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
-
+import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.sys.ISLogsService;
 
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -111,4 +113,28 @@ public class SLogsController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
         }
     }
+	private void mBrokerCustomerDetail_SelectN(Map<String, Object> map) {
+		
+		List<Map<String, Object>> result = iSLogsService.mBrokerCustomerDetail_Select(map);
+        List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+        entity.add(new ExcelExportEntity("序号", "num"));
+        entity.add(new ExcelExportEntity("请求类型", "BizType"));
+        entity.add(new ExcelExportEntity("请求说明", "BizDesc"));
+        entity.add(new ExcelExportEntity("IP", "IP"));
+        entity.add(new ExcelExportEntity("方法名", "Ext1"));
+        entity.add(new ExcelExportEntity("请求路径", "Ext2"));
+        entity.add(new ExcelExportEntity("请求终端", "Ext3"));
+        entity.add(new ExcelExportEntity("参数", "Data"));
+        entity.add(new ExcelExportEntity("请求时间", "CreateTime"));
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xlsx";
+            ExcelUtil.exportExcel(entity,result,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
