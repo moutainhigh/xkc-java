@@ -4,6 +4,7 @@ package com.tahoecn.xkc.controller.webapi.report;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.json.JSONResult;
@@ -14,12 +15,15 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.channel.BPojectchannelorgrel;
+import com.tahoecn.xkc.model.customer.CostomerReport;
+import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.channel.IBPojectchannelorgrelService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
+import com.tahoecn.xkc.service.report.ICostomerReportService;
 import com.tahoecn.xkc.service.report.ReportService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -29,10 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +54,9 @@ public class ReportController extends TahoeBaseController {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private ICostomerReportService costomerReportService;
 
 
     @ApiOperation(value = "客储动态监测表", notes = "客储动态监测表")
@@ -226,7 +230,7 @@ public class ReportController extends TahoeBaseController {
         return Result.ok(list);
     }
     @ApiOperation(value = "考勤报表导出", notes = "考勤报表导出")
-    @RequestMapping(value = "/mChannelCheckReportList_Export", method = {RequestMethod.POST})
+    @RequestMapping(value = "/mChannelCheckReportList_Export", method = {RequestMethod.GET})
     public Result mChannelCheckReportList_Export(String ProjectID, Date StartTime,Date EndTime) {
         List<Map<String,Object>> list=reportService.mChannelCheckReportList_Export(StartTime,EndTime,ProjectID);
         SetExcel_mChannelCheckReportList(list);
@@ -254,4 +258,34 @@ public class ReportController extends TahoeBaseController {
             e.printStackTrace();
         }
     }
+
+    @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
+    @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report) {
+        IPage page=new Page(PageIndex,PageSize);
+        QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCityName()), CostomerReport::getCityName, report.getCityName());   //城市名
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getIntentProjectName()), CostomerReport::getIntentProjectName, report.getIntentProjectName());    //项目名
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerName()), CostomerReport::getCustomerName, report.getCustomerName());   //客户名
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerMobile()), CostomerReport::getCustomerMobile, report.getCustomerMobile()); //客户电话
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getSaleUserName()), CostomerReport::getSaleUserName, report.getSaleUserName());   //置业顾问
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getOpportunitySource()), CostomerReport::getOpportunitySource, report.getOpportunitySource());    //客户源
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getFollwUpWayTxt()), CostomerReport::getFollwUpWayTxt, report.getFollwUpWayTxt());    //跟进类型
+
+        wrapper.lambda().between(report.getCreateTime() != null, CostomerReport::getCreateTime, report.getCreateTime(),report.getCreateTimeEnd());  //创建时间
+        wrapper.lambda().between(report.getReportTime() != null, CostomerReport::getReportTime, report.getReportTime(),report.getReportTimeEnd());  //宝贝时间
+        wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(),report.getTheFirstVisitDateEnd());  //首访时间
+        wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(),report.getZjdfEnd());  //最近到访
+        wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(),report.getTheLatestFollowUpDateEnd());  //最近跟进
+        wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(),report.getBookingCreateTimeEnd());  //认筹时间
+        wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(),report.getOrderCreateTimeEnd());  //认购时间
+        wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),report.getmYContractCreateTimeEnd());  //签约时间
+        IPage<CostomerReport> list=costomerReportService.page(page,wrapper);
+        return Result.ok(list);
+    }
+
+
 }
