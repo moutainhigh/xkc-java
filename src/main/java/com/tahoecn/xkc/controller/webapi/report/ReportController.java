@@ -222,7 +222,7 @@ public class ReportController extends TahoeBaseController {
     @RequestMapping(value = "/mChannelCheckReportList_Select", method = {RequestMethod.GET})
     public Result mChannelCheckReportList_Select(String ProjectID, Date StartTime,Date EndTime,int PageIndex,int PageSize) {
         IPage page=new Page(PageIndex,PageSize);
-        List<Map<String,Object>> list=reportService.mChannelCheckReportList_Select(page,StartTime,EndTime,ProjectID);
+        IPage<Map<String,Object>> list=reportService.mChannelCheckReportList_Select(page,StartTime,EndTime,ProjectID);
         return Result.ok(list);
     }
     @ApiOperation(value = "考勤报表导出", notes = "考勤报表导出")
