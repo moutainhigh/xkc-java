@@ -622,4 +622,12 @@ public class CustomerController extends TahoeBaseController {
     }
 
 
+
+    @ApiOperation(value = "变更认知途径列表")
+    @RequestMapping(value = "/getMedia", method = {RequestMethod.GET})
+    public Result getMedia(String ProjectID){
+        List<Map<String,Object>> list=customerService.getMedia(ProjectID);
+        return Result.ok(list);
+    }
+
 }

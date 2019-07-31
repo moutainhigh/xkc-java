@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -126,4 +127,8 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
 	IPage<Map<String, Object>> mCustomerShareList_Select(IPage page, String UserID, String ProjectID);
 
     int findPrintNumByDate(@Param("id")String serialNumberText);
+
+    List<Map<String, Object>> getMediaLarge();
+
+    List<Map<String, Object>> getMediaChild(String projectID);
 }

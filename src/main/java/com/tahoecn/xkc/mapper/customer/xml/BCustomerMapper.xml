@@ -1268,4 +1268,12 @@ FROM (
         FROM dbo.B_ClueAllocation ca
         WHERE ca.SerialNumber like #{id}
     </select>
+
+    <select id="getMediaLarge" resultType="java.util.HashMap">
+        SELECT ID ,Name  FROM dbo.B_MediaLarge WHERE IsDel=0 AND Status=1
+    </select>
+
+    <select id="getMediaChild" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,MediaLargeID,Name FROM B_MediaChild WHERE  ProjectID=#{projectID}
+    </select>
 </mapper>

@@ -8,6 +8,7 @@ import com.tahoecn.xkc.model.customer.BCustomer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -73,4 +74,7 @@ public interface IBCustomerService extends IService<BCustomer> {
 	IPage<Map<String, Object>> mCustomerShareList_Select(IPage page, String UserID, String ProjectID);
 
     int findPrintNumByDate(String serialNumberText);
+
+    List<Map<String, Object>> getMedia(String projectID);
+
 }
