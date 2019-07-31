@@ -230,7 +230,7 @@ public class SJobsController extends TahoeBaseController {
     }
 
     @ApiOperation(value = "APP功能授权列表", notes = "APP功能授权列表")
-    @RequestMapping(value = "/CommonJobList_Select", method = {RequestMethod.POST})
+        @RequestMapping(value = "/CommonJobList_Select", method = {RequestMethod.POST})
     public Result CommonJobList_Select(){
         List<Map<String, Object>> list=jobsService.CommonJobList_Select();
         return Result.ok(list);

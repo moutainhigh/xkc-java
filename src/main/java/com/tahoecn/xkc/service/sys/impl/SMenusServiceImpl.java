@@ -7,6 +7,7 @@ import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.sys.SMenusMapper;
 import com.tahoecn.xkc.model.dict.BTag;
+import com.tahoecn.xkc.model.dto.SMenusXkcDto;
 import com.tahoecn.xkc.model.salegroup.BSalesgroup;
 import com.tahoecn.xkc.model.sys.SCity;
 import com.tahoecn.xkc.model.sys.SMenus;
@@ -750,13 +751,15 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
         try {
 //        登录人有权限的菜单
             List<HashMap<String,Object>> userMenus=menusXkcService.UserMenus(userID,authCompanyID,productID);
+            //排序成树形结构
+            List<HashMap<String, Object>> userMenusTree = getChild(userMenus);
 //        登录人有权限的功能
             List<Map<String,Object>>  userFunctions= menusXkcService.UserFunctions(userID,authCompanyID,productID);
 //        该岗位已有的菜单和功能
             Map<String,Object> ids=menusXkcService.CommonJobFunctions(jobID);
 
             result = new HashMap();
-            result.put("UserMenus",userMenus);
+            result.put("UserMenus",userMenusTree);
             result.put("UserFunctions",userFunctions);
             if (!ids.isEmpty()){
                 result.put("CommonJobFunctions",ids);
@@ -766,4 +769,43 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
         }
         return result;
     }
+
+    /**
+     * 组成树形结构
+     * @param userMenus
+     * @return
+     */
+    private  List<HashMap<String,Object>> getChild(List<HashMap<String,Object>> userMenus){
+        List<HashMap<String,Object>> result=new ArrayList<>();
+        List<String> removeList=new ArrayList();
+        for (HashMap<String, Object> userMenu : userMenus) {
+            List<HashMap<String,Object>> child=new ArrayList<>();
+            for (HashMap<String, Object> menu : userMenus) {
+                if (StringUtils.equals((String)userMenu.get("ID"),(String)menu.get("PID"))){
+                    menu.put("IsLeaf",true);
+                    child.add(menu);
+                    userMenu.put("IsLeaf",false);
+                    removeList.add((String) menu.get("ID"));
+                }
+            }
+            userMenu.put("Children",child);
+            result.add(userMenu);
+        }
+        for (HashMap<String, Object> map : result) {
+            //删除装入children的项
+            for (String s : removeList) {
+                if (StringUtils.equals(s, (String) map.get("ID"))){
+                    map.put("Del",true);
+                }
+            }
+        }
+        List<HashMap<String,Object>> resultList=new ArrayList<>();
+        for (HashMap<String, Object> map : result) {
+            if (map.get("Del")==null){
+                resultList.add(map);
+            }
+        }
+        return  resultList;
+    }
+
 }
