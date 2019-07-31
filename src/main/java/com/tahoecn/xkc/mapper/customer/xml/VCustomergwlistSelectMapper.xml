@@ -117,10 +117,9 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
       ]]>
 	</select>
 	
-	<select id="mCustomerFollowUpList_Select" resultType="java.util.HashMap">
+	<select id="mCustomerFollowUpList_Select" resultType="java.util.HashMap" parameterType="java.util.Map">
 		<![CDATA[
-		SELECT  T.*
-		FROM    ( SELECT    ClueID ,
+		SELECT a.* FROM (SELECT t.*, ROW_NUMBER() OVER (  ORDER BY t.CreateTime DESC ) num FROM ( SELECT    ClueID ,
 		                    CustomerPotentialID CustomerID ,
 		                    FollwUpUserMobile ,
 		                    dbo.F_DictName(FollwUpType) AS Mode ,
@@ -133,11 +132,11 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		          FROM      dbo.B_CustomerPotentialFollowUp
 		          WHERE     IsDel = 0
 		                    AND Status = 1
-		                    AND ProjectID = #{projectID}
+		                    AND ProjectID = #{ProjectID}
 		                    AND CustomerPotentialMobile = ( SELECT TOP 1
 		                                                            CustomerMobile
 		                                                    FROM    dbo.B_Opportunity
-		                                                    WHERE   ID = #{opportunityID}
+		                                                    WHERE   ID = #{OpportunityID}
 		                                                  )
 		          UNION ALL
 		          SELECT    OpportunityID ,
@@ -153,13 +152,61 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		          FROM      dbo.B_CustomerFollowUp
 		          WHERE     IsDel = 0
 		                    AND Status = 1
-		                    AND ProjectID = #{projectID}
+		                    AND ProjectID = #{ProjectID}
 		                    AND CustomerMobile = ( SELECT TOP 1
 		                                                    CustomerMobile
 		                                           FROM     dbo.B_Opportunity
-		                                           WHERE    ID = #{opportunityID}
+		                                           WHERE    ID = #{OpportunityID}
 		                                         )
-		        ) T
+		        ) t
+		   ) a
+	WHERE   a.num > (#{PageIndex}-1) * #{PageSize}
+        AND a.num <= #{PageIndex} * #{PageSize}
+    ]]>
+	</select>
+	
+	<select id="mCustomerFollowUpList_Select_Count" resultType="java.lang.Long" parameterType="java.util.Map">
+		<![CDATA[
+		SELECT COUNT(1) FROM ( SELECT    ClueID ,
+		                    CustomerPotentialID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerPotentialFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND ProjectID = #{ProjectID}
+		                    AND CustomerPotentialMobile = ( SELECT TOP 1
+		                                                            CustomerMobile
+		                                                    FROM    dbo.B_Opportunity
+		                                                    WHERE   ID = #{OpportunityID}
+		                                                  )
+		          UNION ALL
+		          SELECT    OpportunityID ,
+		                    CustomerID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND ProjectID = #{ProjectID}
+		                    AND CustomerMobile = ( SELECT TOP 1
+		                                                    CustomerMobile
+		                                           FROM     dbo.B_Opportunity
+		                                           WHERE    ID = #{OpportunityID}
+		                                         )
+		        ) t
     ]]>
 	</select>
 	

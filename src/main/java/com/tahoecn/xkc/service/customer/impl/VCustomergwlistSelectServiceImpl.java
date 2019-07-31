@@ -1,6 +1,8 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.fastjson.JSONObject;
@@ -213,16 +216,13 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 	@Override
 	public Result mCustomerFollowUpList_Select(JSONObject paramAry) {
 		Result re = new Result();
-        IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
-    	page.setSize(paramAry.getLongValue("PageSize"));
-    	page.setCurrent(paramAry.getLongValue("PageIndex"));
-    	String opportunityID = paramAry.getString("OpportunityID");
-    	String projectID = paramAry.getString("ProjectID");
-    	IPage<Map<String,Object>> data = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select(page,opportunityID,projectID);
+    	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+    	List<Map<String,Object>> data = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select(pmp);
+    	Long AllCount = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select_Count(pmp);
     	JSONObject j_data = new JSONObject();
-    	j_data.put("List", data.getRecords());
-    	j_data.put("AllCount", data.getTotal());
-    	j_data.put("PageSize", data.getSize());
+    	j_data.put("List", data);
+    	j_data.put("AllCount", AllCount);
+    	j_data.put("PageSize", paramAry.getInteger("PageSize"));
     	re.setData(j_data);
         re.setErrmsg("成功");
         re.setErrcode(0);
@@ -1121,7 +1121,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                 obj1.put("OldSaleUserName", "");
                                 obj1.put("FollwUpUserID", parameter.getString("UserID"));
                                 obj1.put("FollwUpWay", "");
-                                obj1.put("FollowUpContent", "");
+                                obj1.put("FollowUpContent", "报备成功");
                                 obj1.put("IntentionLevel", "");
                                 obj1.put("OrgID",parameter.getString("OrgID"));
                                 obj1.put("FollwUpUserRole", parameter.getString("JobID"));

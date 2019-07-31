@@ -80,19 +80,19 @@ public class SLogsController extends TahoeBaseController {
             	PageSize = (int)paramMap.get("PageSize");//每页数量
         	}
             if(BizType.length() > 0) {
-            	str.append(" AND BizType='").append(BizType).append("'");
+            	str.append(" AND BizType like'%").append(BizType).append("%'");
             }
             if(Ext1.length() > 0) {
-            	str.append(" AND Ext1='").append(Ext1).append("'");
+            	str.append(" AND Ext1 like'%").append(Ext1).append("%'");
             }
             if(Ext3.length() > 0) {
-            	str.append(" AND Ext3='").append(Ext3).append("'");
+            	str.append(" AND Ext3 like'%").append(Ext3).append("%'");
             }
             if(CreateTime.length() > 0) {
-            	str.append(" AND CreateTime='").append(CreateTime).append("'");
+            	str.append(" AND CreateTime like'%").append(CreateTime).append("%'");
             }
             if(IP.length() > 0) {
-            	str.append(" AND IP='").append(IP).append("'");
+            	str.append(" AND IP like'%").append(IP).append("%'");
             } 
             map.put("str1",str.toString());
             map.put("PageIndex",PageIndex);
