@@ -54,7 +54,10 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param projectID
 	 * @return
 	 */
-	IPage<Map<String,Object>> mCustomerFollowUpList_Select(IPage<Map<String,Object>> page,@Param("opportunityID")String opportunityID,@Param("projectID")String projectID);
+	//IPage<Map<String,Object>> mCustomerFollowUpList_Select(IPage<Map<String,Object>> page,@Param("opportunityID")String opportunityID,@Param("projectID")String projectID);
+	//List<Map<String,Object>> mCustomerFollowUpList_Select(@Param("opportunityID")String opportunityID,@Param("projectID")String projectID);
+	List<Map<String,Object>> mCustomerFollowUpList_Select(Map<String,Object> pmap);
+	Long mCustomerFollowUpList_Select_Count(Map<String,Object> pmap);
 	
 	/**
 	 * 置业顾问销售轨迹
