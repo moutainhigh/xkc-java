@@ -1,16 +1,16 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
 import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -202,6 +202,23 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
     @Override
     public int findPrintNumByDate(String serialNumberText) {
         return baseMapper.findPrintNumByDate(serialNumberText);
+    }
+
+    @Override
+    public List<Map<String, Object>> getMedia(String projectID) {
+        List<Map<String, Object>> largeList=baseMapper.getMediaLarge();
+        List<Map<String, Object>> childList=baseMapper.getMediaChild(projectID);
+        for (Map<String, Object> large : largeList) {
+            List<Map<String, Object>> list=new ArrayList<>();
+            for (Map<String, Object> child : childList) {
+                if (StringUtils.equals((String)large.get("ID"),(String)child.get("MediaLargeID"))){
+                    list.add(child);
+                }
+            }
+            large.put("Children",list);
+        }
+
+        return largeList;
     }
 
     /**

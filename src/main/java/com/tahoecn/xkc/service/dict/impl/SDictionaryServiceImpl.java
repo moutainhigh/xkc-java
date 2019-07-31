@@ -257,8 +257,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 QueryWrapper<SCity> wrapper=new QueryWrapper<>();
                 wrapper.eq("Status",1).le("Levels",4).orderByAsc("Levels","StandardIndex");
                 List<SCity> list =  cityService.list(wrapper);
-                Map<String,Map<String,Object>> province = new HashMap<>();
-                Map<String,Map<String,Object>> city = new HashMap<>();
+                Map<String,Map<String,Object>> province = new LinkedHashMap<>();
+                Map<String,Map<String,Object>> city = new LinkedHashMap<>();
                 for (SCity sCity : list) {
                     String PID=sCity.getPid();
                     int Levels=sCity.getLevels();
