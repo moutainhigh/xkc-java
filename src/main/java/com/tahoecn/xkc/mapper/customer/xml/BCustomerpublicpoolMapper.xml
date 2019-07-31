@@ -15,8 +15,8 @@
 	            OpportunityStatus ,
 	            OpportunitySource ,
 	            CustomerRank ,
-	            HSTime ,
-	            TheLatestFollowUpDate ,
+	            CONVERT(varchar(100), HSTime, 120) as HSTime ,
+	            CONVERT(varchar(100), TheLatestFollowUpDate, 120) as TheLatestFollowUpDate ,
 	            TheLatestFollowUpWay ,
 	            TheLatestFollowUpContent
     		FROM    ( SELECT    B.ID PublicID ,
