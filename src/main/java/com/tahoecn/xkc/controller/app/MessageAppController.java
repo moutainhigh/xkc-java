@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/app/message")
 public class MessageAppController extends TahoeBaseController {
 
-	@Value("${ThemeUrl}")
+	@Value("${tahoe.application.physicalPath}")
     private String ThemeUrl;
 	@Value("${H5Url}")
 	private String H5Url;
