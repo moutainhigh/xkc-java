@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -167,6 +168,21 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        }
 	        String dataStr = new JSONObject(data).toJSONString();
             JSONObject data_re = JSONObject.parseObject(dataStr);
+            try {
+            	String CreateTime = data_re.getString("CreateTime");
+                String TractTime = data_re.getString("TractTime");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                if(CreateTime!=null && !CreateTime.equals("")){
+                	 Date d_CreateTime = new Date(Long.valueOf(CreateTime));
+                	 data_re.put("CreateTime",sdf.format(d_CreateTime));
+                }
+                if(TractTime!=null && !TractTime.equals("")){
+                	 Date d_TractTime = new Date(Long.valueOf(TractTime));
+                	 data_re.put("TractTime", sdf.format(d_TractTime));
+                }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	        re.setData(data_re);
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
