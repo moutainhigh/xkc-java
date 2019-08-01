@@ -60,6 +60,14 @@
     </select>
 
     <select id="list" parameterType="string" resultType="java.util.HashMap">
-        SELECT * FROM S_Dictionary WHERE PID=#{pid} AND Status=1 AND IsDel=0
+        SELECT * FROM S_Dictionary WHERE PID=#{pid} AND Status=1 AND IsDel=0 ORDER BY ListIndex
+    </select>
+
+    <select id="getMediaLargeList" resultType="java.util.HashMap" >
+        SELECT ID,Name FROM B_MediaLarge WHERE Status=1 AND IsDel=0 ORDER BY ListIndex
+    </select>
+
+    <select id="getMediaChildList" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,Name,MediaLargeID FROM B_MediaChild WHERE ProjectID=#{projectID} AND MediaLargeID=#{pid} ORDER BY ListIndex
     </select>
 </mapper>

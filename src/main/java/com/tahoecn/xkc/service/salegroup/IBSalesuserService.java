@@ -5,6 +5,7 @@ import com.tahoecn.xkc.model.salegroup.BSalesuser;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -25,4 +26,5 @@ public interface IBSalesuserService extends IService<BSalesuser> {
 
 	String mShareAppDetail_Select1(Map<String, Object> map);
 
+    Map<String, Object> mLFLogin_Select(Map<String, Object> paramMap);
 }

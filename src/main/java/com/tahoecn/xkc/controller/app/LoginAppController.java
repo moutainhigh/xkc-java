@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.controller.app;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -10,6 +11,7 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
+import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.IASharelogService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
@@ -22,11 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <p>
@@ -54,6 +52,9 @@ public class LoginAppController extends TahoeBaseController {
     private ISAccountService accountService;
     @Autowired
     private IASharelogService iASharelogService;
+
+    @Autowired
+    private IBSalesuserService salesuserService;
 
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
@@ -556,5 +557,60 @@ public class LoginAppController extends TahoeBaseController {
     		e.printStackTrace();
     		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
+    }
+
+    @ApiOperation(value = "ipad移动端来访登录", notes = "ipad移动端来访登录")
+    @RequestMapping(value = "/mLFLogin_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mLFLogin_Select(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        //登录日志记录
+        String UserName= (String) paramMap.get("UserName");
+        String BizType="LoginLF";
+        String BizDesc="来访登录,账号:"+UserName;
+        String Ext3=UserName;
+        String Data=jsonParam.toJSONString();
+        iSLogsService.SystemLogsDetail_Insert(paramMap,request);
+        if (paramMap.get("Password")!=null){
+            String Password = (String) paramMap.get("paramMap");
+            paramMap.put("Password",SecureUtil.md5(Password));
+        }
+        Map<String,Object> res=salesuserService.mLFLogin_Select(paramMap);
+        if (res.size()==0){
+        return Result.errormsg(9,"用户名不存在");
+        }
+        //是否开启分接/销支 0.开启 1.关闭
+        int isNoAllotRole = (int) res.get("IsNoAllotRole");
+        //允许登录设备类型 0.都不允许 1.只允许APP登录 2.只允许ipad登录 3.允许所有设备登录
+        int allowDeviceType = (int) res.get("AllowDeviceType");
+        String jobCode = (String) res.get("JobCode");
+        String accountType = (String) res.get("AccountType");
+        String password = (String) paramMap.get("Password");
+        String projectID = (String) res.get("ProjectID");
+
+        // 0.禁用 1.开启
+        int accountStatus = (int) res.get("AccountStatus");
+        if (isNoAllotRole == 1 && ("XSZC").equals(jobCode)){
+            return Result.errormsg(10,"请联系管理员开通销支角色");
+        }
+        if (allowDeviceType != 2 && allowDeviceType != 3)
+        {
+            return Result.errormsg(10,"无法登录,此账号所属项目没有开通ipad登录权限");
+        }
+        if (accountStatus == 0)
+        {
+            return Result.errormsg(10,"该账号已被禁用");
+        }
+        if (DateUtil.format(new Date(),"yyyyMMddHHmm").equals(password)){
+            if ("1".equals(accountType))
+            {
+                // 用户验证
+                accountService.mCheckUCUser(paramMap);
+
+            }
+        }
+
+
+
+        return Result.ok("");
     }
 }

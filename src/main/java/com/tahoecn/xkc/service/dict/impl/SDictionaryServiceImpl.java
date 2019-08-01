@@ -62,6 +62,8 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
 
     @Autowired
     private IVProjectroomService projectroomService;
+
+
     @Override
     public List<Map<String, String>> AgenCertificatesList_SelectN() {
         return baseMapper.AgenCertificatesList_SelectN();
@@ -144,20 +146,30 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
     }
 
     @Override
-    public List<Map<String, Object>> SystemAllParams_Select_Tree(String pid) {
+    public List<Map<String, Object>> SystemAllParams_Select_Tree(String pid,String ProductID,String Media) {
+        //参数查询
+
         List<Map<String,Object>> list=baseMapper.list(pid);
         List<Map<String, Object>> result=new ArrayList<>();
 
-            for (Map<String, Object> map : list) {
-                List<Map<String, Object>> id = baseMapper.list((String) map.get("ID"));
-                if (id.size()>0){
-                    map.put("hasChild",true);
-                }else {
-                    map.put("hasChild",false);
-                }
-                result.add(map);
+        for (Map<String, Object> map : list) {
+            List<Map<String, Object>> id = baseMapper.list((String) map.get("ID"));
+            if (id.size()>0){
+                map.put("hasChild",true);
+            }else {
+                map.put("hasChild",false);
             }
+            result.add(map);
+        }
+        if (Media!=null){
+            //媒体查询
+            List<Map<String, Object>> mediaLargeList_tree = getMediaLargeList_Tree(pid, ProductID);
+            return mediaLargeList_tree;
+        }
+
         return result;
+
+
     }
 
     @Override
@@ -1067,5 +1079,26 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 e.printStackTrace();
                 return Result.errormsg(99,"数据字典错误");
             }
+    }
+
+    @Override
+    public List<Map<String, Object>> getMediaLargeList_Tree(String pid,String projectID) {
+        if (StringUtils.equals("-1",pid)){
+            List<Map<String,Object>> list=baseMapper.getMediaLargeList();
+            for (Map<String, Object> map : list) {
+                map.put("hasChild",true);
+                map.put("Media","Media");
+            }
+            return list;
+        }else {
+            List<Map<String,Object>> childList=baseMapper.getMediaChildList(pid,projectID);
+            for (Map<String, Object> map : childList) {
+                map.put("hasChild",false);
+                map.put("Media","Media");
+            }
+            return childList;
+        }
+
+
     }
 }
