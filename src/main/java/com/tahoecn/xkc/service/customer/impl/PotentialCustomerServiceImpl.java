@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
@@ -221,14 +219,12 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 		Result entity = new Result();
 		try {
 			Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
-			IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
-	    	page.setSize(paramAry.getLongValue("PageSize"));
-	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
-			IPage<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select(page,pmap);
+			List<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select(pmap);
+			Long AllCount = bCustomerpotentialMapper.mCustomerPotentialFollowUpList_Select_Count(pmap);
 			JSONObject j_data = new JSONObject();
-	    	j_data.put("List", data.getRecords());
-	    	j_data.put("AllCount", data.getTotal());
-	    	j_data.put("PageSize", data.getSize());
+	    	j_data.put("List", data);
+	    	j_data.put("AllCount", AllCount);
+	    	j_data.put("PageSize", paramAry.getInteger("PageSize"));
 			entity.setData(j_data);
             entity.setErrcode(0);
             entity.setErrmsg("成功！");
@@ -273,6 +269,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                         if (!StringUtils.isEmpty(FollwUpType)){
                         	JSONObject obj = new JSONObject();
                             obj.put("FollwUpType", FollwUpType);
+                            obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                             obj.put("SalesType", 3);
                             obj.put("NewSaleUserName", "");
                             obj.put("OldSaleUserName", "");
@@ -417,7 +414,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                     Boolean res = true;
                     if (res){
                         JSONObject obj1 = new JSONObject();
-                        obj1.put("FollwUpType", ActionType.渠道报备.getValue());
+                        obj1.put("FollwUpType", "渠道报备");
+                        obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
                         obj1.put("SalesType", 3);
                         obj1.put("NewSaleUserName", "");
                         obj1.put("OldSaleUserName", "");
@@ -434,9 +432,10 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                         iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
                         //增加跟进记录
                         String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(Parameter.getString("FollwUpWay"));
-                        if (StringUtils.isEmpty(FollwUpType)){
+                        if (!StringUtils.isEmpty(FollwUpType)){
                         	JSONObject obj = new JSONObject();
                             obj.put("FollwUpType", FollwUpType);
+                            obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                             obj.put("SalesType", 3);
                             obj.put("NewSaleUserName", "");
                             obj.put("OldSaleUserName", "");
@@ -1081,6 +1080,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        if (!StringUtils.isEmpty(FollwUpType)){
 	        	JSONObject obj = new JSONObject();
 	            obj.put("FollwUpType", FollwUpType);
+	            obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
 	            obj.put("SalesType", 3);
 	            obj.put("NewSaleUserName", "");
 	            obj.put("OldSaleUserName", "");

@@ -348,7 +348,55 @@
 	
 	<select id="mCustomerPotentialFollowUpList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT  *
+		SELECT a.* FROM (SELECT t.*, ROW_NUMBER() OVER ( ORDER BY t.CreateTime DESC ) num  FROM ( SELECT    ClueID ,
+		                    CustomerPotentialID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerPotentialFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND CustomerPotentialMobile = ( SELECT TOP 1
+		                                                            Mobile
+		                                                    FROM    dbo.B_Clue
+		                                                    WHERE   ID = #{pmap.ClueID}
+		                                                  )
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                 
+		                    AND FollowUpContent IS NOT NULL AND FollowUpContent != ''                                          
+		          UNION ALL
+		          SELECT    OpportunityID ,
+		                    CustomerID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND CustomerMobile = ( SELECT TOP 1
+		                                                    Mobile
+		                                           FROM     dbo.B_Clue
+		                                           WHERE    ID = #{pmap.ClueID}
+		                                         )
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                          
+		        ) t ) a
+		    WHERE   a.num > (#{pmap.PageIndex}-1) * #{pmap.PageSize}
+        AND a.num <= #{pmap.PageIndex} * #{pmap.PageSize}
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialFollowUpList_Select_Count" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		SELECT  COUNT(1)
 		FROM    ( SELECT    ClueID ,
 		                    CustomerPotentialID CustomerID ,
 		                    FollwUpUserMobile ,

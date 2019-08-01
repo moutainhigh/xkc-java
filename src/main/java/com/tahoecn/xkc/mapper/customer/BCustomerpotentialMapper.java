@@ -102,6 +102,8 @@ public interface BCustomerpotentialMapper extends BaseMapper<BCustomerpotential>
 	 * @return
 	 */
 	IPage<Map<String,Object>> mCustomerPotentialFollowUpList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
+	List<Map<String,Object>> mCustomerPotentialFollowUpList_Select(@Param("pmap")Map<String,Object> pmap);
+	Long mCustomerPotentialFollowUpList_Select_Count(@Param("pmap")Map<String,Object> pmap);
 	
 	/**
 	 * 自渠潜在客户资料完善

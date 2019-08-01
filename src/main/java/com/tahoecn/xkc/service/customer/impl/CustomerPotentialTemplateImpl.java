@@ -264,8 +264,8 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
 	public JSONObject GetParameters(CGWDetailModel model) {
 		List<DicInfo> dicList = iCustomerHelp.InitCustomerDicModel("CustomerPotentialDic.json");
 		JSONObject parameter = new JSONObject();
-        Item item = null;
         for(DicInfo dicInfo : dicList){
+        	Item item = null;
             for(Item it : model.getItemList()){
             	if(it.getID().equals(dicInfo.getDicID())){
             		item = it;
@@ -290,8 +290,8 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
 		if (obj != null && obj.size() > 0){
 			List<DicInfo> dicList = iCustomerHelp.InitCustomerDicModel("CustomerPotentialDic.json");
 			JSONObject parameter = new JSONObject();
-            Item item = null;
             for(DicInfo dicInfo : dicList){
+            	Item item = null;
                 for(Item it : model.getItemList()){
                 	if(it.getID().equals(dicInfo.getDicID())){
                 		item = it;
