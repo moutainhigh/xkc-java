@@ -22,10 +22,9 @@ public class CbFyServiceImpl extends ServiceImpl<CbFyMapper, CbFy> implements IC
 
     @Override
     //@DS("slave_my")
-    @DataSource(DataSourceEnum.DB2)
     public void save1() {
         CbFy cbFy = new CbFy();
         cbFy.setFyGUID("123231123");
-        baseMapper.insert(cbFy);
+        baseMapper.testSave(cbFy);
     }
 }

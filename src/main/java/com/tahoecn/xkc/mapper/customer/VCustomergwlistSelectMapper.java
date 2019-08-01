@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tahoecn.xkc.common.annotation.DataSource;
+import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
@@ -557,28 +559,28 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * 明源添加用户信息
 	 * @param map
 	 */
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYUserDetail_Insert_valid_1(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYUserDetail_Insert_valid_2(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYUserDetail_Insert_step1(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYUserDetail_Insert_step2(Map<String,Object> map);
 	
 	/**
 	 * 添加明源客户信息
 	 * @param map
 	 */
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_1(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_2(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_insert_1(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_insert_2(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_update(Map<String,Object> map);
 	
 	
@@ -596,25 +598,25 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 */
 	List<Map<String,Object>> LocalOpportunityCustomerList_Select(@Param("opportunityID")String opportunityID);
 	
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_1(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_2(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_3(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_4(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYOpportunityDetail_Insert_insert_1(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYOpportunityDetail_Insert_insert_2(Map<String,Object> map);
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MYOpportunityDetail_Insert_update(Map<String,Object> map);
 	
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MyOpportunityCustomerDetail_Delete(Map<String,Object> map);
 	
-	@DS("slave_my")
+	@DataSource(DataSourceEnum.DB2)
 	void MyOpportunityCustomerDetail_Insert(Map<String,Object> map);
 	
 	
