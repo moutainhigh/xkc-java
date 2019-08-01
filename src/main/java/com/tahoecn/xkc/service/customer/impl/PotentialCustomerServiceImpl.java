@@ -408,7 +408,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                     bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step5(pmap);
                     bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step6(pmap);
                     bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step7(pmap);
-                    if(StringUtils.isEmpty(Parameter.getString("OppID"))){
+                    if(!StringUtils.isEmpty(Parameter.getString("OppID"))){
                     	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Insert_step8(pmap);
                     }
                     pmap.put("CustomerRank", "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");

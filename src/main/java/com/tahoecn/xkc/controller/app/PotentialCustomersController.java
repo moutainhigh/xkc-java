@@ -105,7 +105,7 @@ public class PotentialCustomersController extends TahoeBaseController{
     }
 	
 	@ResponseBody
-    @ApiOperation(value = "客户等级", notes = "客户等级")
+    @ApiOperation(value = "客户等级", notes = "客户登记")
     @RequestMapping(value = "/mCustomerPotentialZQDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mCustomerPotentialZQDetail_Insert(@RequestBody JSONObject paramAry) {
 		JSONObject json = paramAry.getJSONObject("_param");
