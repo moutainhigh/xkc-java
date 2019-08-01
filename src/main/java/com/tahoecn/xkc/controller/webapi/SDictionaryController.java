@@ -56,8 +56,8 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "获取所有参数--树形", notes = "获取所有参数--树形")
     @RequestMapping(value = "/SystemAllParams_Select_Tree", method = {RequestMethod.POST})
-    public Result SystemAllParams_Select_Tree(String PID){
-        List<Map<String,Object>> list=dictionaryService.SystemAllParams_Select_Tree(PID);
+    public Result SystemAllParams_Select_Tree(String PID,String ProductID,String Media){
+        List<Map<String,Object>> list=dictionaryService.SystemAllParams_Select_Tree(PID,ProductID,Media);
 
         return Result.ok(list);
     }
@@ -135,5 +135,13 @@ public class SDictionaryController extends TahoeBaseController {
         param.put("ProjectID",ProjectID);
         Result result=dictionaryService.PCSystemDictionaryDetail(param);
         return result;
+    }
+
+    @ApiOperation(value = "媒体类别管理--树形", notes = "媒体类别管理--树形")
+    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.POST})
+    public Result getMediaLargeList_Tree(String PID,String ProjectID){
+        List<Map<String,Object>> list=dictionaryService.getMediaLargeList_Tree(PID,ProjectID);
+
+        return Result.ok(list);
     }
 }

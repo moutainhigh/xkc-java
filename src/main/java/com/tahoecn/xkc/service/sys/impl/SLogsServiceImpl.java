@@ -34,20 +34,40 @@ public class SLogsServiceImpl extends ServiceImpl<SLogsMapper, SLogs> implements
 	@Override
 	public void SystemLogsDetail_Insert(Map<String, Object> logMap, HttpServletRequest request) {
 		SLogs log = new SLogs();
-		log.setBizID((String) logMap.get("BizID"));
-		log.setBizType((String) logMap.get("BizType"));
-		log.setBizDesc((String) logMap.get("BizDesc"));
+		if (logMap.get("BizID")!=null){
+            log.setBizID((String) logMap.get("BizID"));
+        }
+        if (logMap.get("BizType")!=null){
+            log.setBizType((String) logMap.get("BizType"));
+        }
+        if (logMap.get("BizDesc")!=null){
+            log.setBizDesc((String) logMap.get("BizDesc"));
+        }
 //		log.setIp(NetUtil.localIpv4s().toString());//本地ip
 		log.setIp(NetUtil.getRemoteAddr(request));//客户端IP
-		log.setExt1((String) logMap.get("Ext1"));
-		log.setExt2((String) logMap.get("Ext2"));
-		log.setExt3((String) logMap.get("Ext3"));
-		log.setExt4((String) logMap.get("Ext4"));
-		log.setData((String) logMap.get("Data"));
-		log.setOrgID((String) logMap.get("OrgID"));
+        if (logMap.get("Ext1")!=null){
+            log.setExt1((String) logMap.get("Ext1"));
+        }
+        if (logMap.get("Ext2")!=null){
+            log.setExt2((String) logMap.get("Ext2"));
+        }
+        if (logMap.get("Ext3")!=null){
+            log.setExt3((String) logMap.get("Ext3"));
+        }
+        if (logMap.get("Ext4")!=null){
+            log.setExt4((String) logMap.get("Ext4"));
+        }
+        if (logMap.get("Data")!=null){
+            log.setData((String) logMap.get("Data"));
+        }
+        if (logMap.get("OrgID")!=null){
+            log.setOrgID((String) logMap.get("OrgID"));
+        }
 		log.setAuthCompanyID("17BA4307-D05A-4A57-8729-FC1BD45302B6");
 		log.setProductID("10A9328C-2ADF-4797-A666-92E2E4CD92A1");
-		log.setCreator((String) logMap.get("UserID"));
+        if (logMap.get("UserID")!=null){
+            log.setCreator((String) logMap.get("UserID"));
+        }
 		log.setCreateTime(new Date());
 		log.setStatus(1);
 		log.setIsDel(0);

@@ -22,4 +22,8 @@ public interface SDictionaryMapper extends BaseMapper<SDictionary> {
     List<Map<String,Object>> ListByCode_Select(@Param("DictCodes") String dictCodes);
 
     List<Map<String, Object>> list(@Param("pid") String pid);
+
+    List<Map<String, Object>> getMediaLargeList();
+
+    List<Map<String, Object>> getMediaChildList(@Param("pid")String pid,@Param("projectID")String projectID);
 }

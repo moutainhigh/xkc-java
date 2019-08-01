@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -26,4 +27,5 @@ public interface BSalesuserMapper extends BaseMapper<BSalesuser> {
 
 	String mShareAppDetail_Select1(Map<String, Object> map);
 
+    Map<String, Object> mLFLogin_Select(Map<String, Object> paramMap);
 }

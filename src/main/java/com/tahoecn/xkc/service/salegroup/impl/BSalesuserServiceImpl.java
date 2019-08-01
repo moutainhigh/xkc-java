@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,4 +37,9 @@ public class BSalesuserServiceImpl extends ServiceImpl<BSalesuserMapper, BSalesu
 	public String mShareAppDetail_Select1(Map<String, Object> map) {
 		return baseMapper.mShareAppDetail_Select1(map);
 	}
+
+    @Override
+    public Map<String, Object> mLFLogin_Select(Map<String, Object> paramMap) {
+        return baseMapper.mLFLogin_Select(paramMap);
+    }
 }
