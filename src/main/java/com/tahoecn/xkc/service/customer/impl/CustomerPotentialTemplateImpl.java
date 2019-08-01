@@ -309,7 +309,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                 parameter.put(dicInfo.getFieldName(), dicInfo.getValue().replaceAll("'", ""));
             }
             parameter.put("ClueID", model.getClueID());
-            parameter.put("CustomerID'", StringUtils.isEmpty(model.getCustomerID())?obj.getString("CustomerID"):"");
+            parameter.put("CustomerID", StringUtils.isEmpty(model.getCustomerID())?obj.getString("CustomerID"):"");
             parameter.put("ProjectID", model.getProjectID());
             parameter.put("JobID", model.getJobID());
             parameter.put("JobCode", model.getJobCode());

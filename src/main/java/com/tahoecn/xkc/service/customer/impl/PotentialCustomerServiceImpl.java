@@ -448,7 +448,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                             obj.put("OpportunityID", "");
                             obj.put("ClueID", Parameter.getString("ClueID"));
                             obj.put("NextFollowUpDate", Parameter.getString("NextFollowUpDate"));
-                            CustomerActionVo customerActionVo1 = JSONObject.parseObject(obj1.toJSONString(),CustomerActionVo.class);
+                            CustomerActionVo customerActionVo1 = JSONObject.parseObject(obj.toJSONString(),CustomerActionVo.class);
                             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo1);
                         }
                         CustomerPotentialClueFollowUpDetail_Update(Parameter);//潜在客户线索跟进记录更新
