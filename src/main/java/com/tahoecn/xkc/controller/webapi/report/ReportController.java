@@ -23,6 +23,7 @@ import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.channel.IBPojectchannelorgrelService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
+import com.tahoecn.xkc.service.report.ICbFyService;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
 import com.tahoecn.xkc.service.report.ReportService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
@@ -57,6 +58,9 @@ public class ReportController extends TahoeBaseController {
 
     @Autowired
     private ICostomerReportService costomerReportService;
+
+    @Autowired
+    ICbFyService iCbFyService;
 
 
     @ApiOperation(value = "客储动态监测表", notes = "客储动态监测表")
@@ -261,7 +265,7 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
-    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report) {
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel) {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
@@ -283,9 +287,22 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(),report.getBookingCreateTimeEnd());  //认筹时间
         wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(),report.getOrderCreateTimeEnd());  //认购时间
         wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),report.getmYContractCreateTimeEnd());  //签约时间
+        if (StringUtils.isNotEmpty(isExcel)){
+            page = new Page(1,-1);
+        }
         IPage<CostomerReport> list=costomerReportService.page(page,wrapper);
+        if (StringUtils.isNotEmpty(isExcel)){
+            //(list);
+            return null;
+        }
         return Result.ok(list);
     }
 
+    @ApiOperation(value = "test", notes = "test")
+    @RequestMapping(value = "/test", method = {RequestMethod.GET})
+    public Result test(String ProjectID, Date StartTime,Date EndTime) {
+        iCbFyService.save1();
+        return null;
+    }
 
 }
