@@ -505,7 +505,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                             }
                                         }
                                         JSONObject obj1 = new JSONObject();
-                                        obj1.put("FollwUpType", ActionType.分配顾问.getValue());
+                                        obj1.put("FollwUpType", "分配顾问");
+                                        obj1.put("FollwUpTypeID", ActionType.分配顾问.getValue());
                                         obj1.put("SalesType", 1);
                                         obj1.put("NewSaleUserName", NewSaleUserName);
                                         obj1.put("OldSaleUserName", "");
@@ -525,6 +526,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                     if (StringUtils.isEmpty(FollwUpType)){
                                     	JSONObject obj = new JSONObject();
                                         obj.put("FollwUpType", FollwUpType);
+                                        obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                                         obj.put("SalesType", 1);
                                         obj.put("NewSaleUserName", "");
                                         obj.put("OldSaleUserName", "");
@@ -593,7 +595,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                                 }
                                             }
                                             JSONObject obj1 = new JSONObject();
-                                            obj1.put("FollwUpType", ActionType.分配顾问.getValue());
+                                            obj1.put("FollwUpType", "分配顾问");
+                                            obj1.put("FollwUpTypeID", ActionType.分配顾问.getValue());
                                             obj1.put("SalesType", 1);
                                             obj1.put("NewSaleUserName", NewSaleUserName);
                                             obj1.put("OldSaleUserName", "");
@@ -649,6 +652,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                             if (!StringUtils.isEmpty(FollwUpType)){
                                             	JSONObject obj = new JSONObject();
                                                 obj.put("FollwUpType", FollwUpType);
+                                                obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                                                 obj.put("SalesType", 1);
                                                 obj.put("NewSaleUserName", "");
                                                 obj.put("OldSaleUserName", "");

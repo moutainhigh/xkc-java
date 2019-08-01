@@ -416,27 +416,27 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         String message = null;
         try
         {
-            switch (customerActionVo.getFollwUpType())
+            switch (customerActionVo.getFollwUpTypeID())
             {
-                case "顾问报备":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8901":
                     message = "报备成功";
                     break;
-                case "渠道报备":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8902":
                     message = getChannelReportContent(customerActionVo.getClueID());
                     break;
-                case "确客有效":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8903":
                     message = getChannelReportEnableContent(customerActionVo.getClueID());
                     break;
-                case "报备无效":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8904":
                     message = getChannelReportDisableContent(customerActionVo.getClueID());
                     break;
-                case "分配顾问":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8905":
                     message = getSaleUserAllotContent(customerActionVo.getNewSaleUserName());
                     break;
-                case "系统回收":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8911":
                     message = getCustomerReleaseContent(customerActionVo.getSalesType(),customerActionVo.getOpportunityID(),customerActionVo.getClueID());
                     break;
-                case "重新分配顾问":
+                case "69331990-DBF4-0A2F-80CD-7BC424AA8912":
                     message = getSaleUserAllotReContent(customerActionVo.getOldSaleUserName(), customerActionVo.getNewSaleUserName());
                     break;
                 default:
@@ -1115,13 +1115,14 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                         	customerTemplate.IntentProjectAdd(parameter);
                             if (StringUtils.isEmpty(ClueID)){
                             	JSONObject obj1 = new JSONObject();
-                                obj1.put("FollwUpType", ActionType.顾问报备.getValue());
+                                obj1.put("FollwUpType", "顾问报备");
+                                obj1.put("FollwUpTypeID", ActionType.顾问报备.getValue());
                                 obj1.put("SalesType", 1);
                                 obj1.put("NewSaleUserName", "");
                                 obj1.put("OldSaleUserName", "");
                                 obj1.put("FollwUpUserID", parameter.getString("UserID"));
                                 obj1.put("FollwUpWay", "");
-                                obj1.put("FollowUpContent", "报备成功");
+                                obj1.put("FollowUpContent", "");
                                 obj1.put("IntentionLevel", "");
                                 obj1.put("OrgID",parameter.getString("OrgID"));
                                 obj1.put("FollwUpUserRole", parameter.getString("JobID"));
@@ -1137,6 +1138,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                             if (!StringUtils.isEmpty(FollwUpType)){
                             	JSONObject obj = new JSONObject();
                                 obj.put("FollwUpType", FollwUpType);
+                                obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                                 obj.put("SalesType", 1);
                                 obj.put("NewSaleUserName", "");
                                 obj.put("OldSaleUserName", "");
@@ -1211,7 +1213,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                             String tIsLittleBooking = parameter.getString("IsLittleBooking");
                             if (tIsLittleBooking.equals("1DCCBDB8-AD44-44D4-B23A-571A38337D5C")){//小筹
                             	JSONObject obj2 = new JSONObject();
-                                obj2.put("FollwUpType", ActionType.小筹.getValue());
+                                obj2.put("FollwUpType", "小筹");
+                                obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
                                 obj2.put("SalesType", 1);
                                 obj2.put("NewSaleUserName", "");
                                 obj2.put("OldSaleUserName", "");
@@ -1405,6 +1408,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                         if (!StringUtils.isEmpty(FollwUpType)){
                             JSONObject obj = new JSONObject();
                             obj.put("FollwUpType", FollwUpType);
+                            obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                             obj.put("SalesType", 1);
                             obj.put("NewSaleUserName", "");
                             obj.put("OldSaleUserName", "");
@@ -1478,7 +1482,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                         }
                         if (IsLittleBooking.equals("1DCCBDB8-AD44-44D4-B23A-571A38337D5C") && !IsLittleBookingOld.equals(IsLittleBooking)){//小筹
                             JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", ActionType.小筹.getValue());
+                            obj2.put("FollwUpType", "小筹");
+                            obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
                             obj2.put("SalesType", 1);
                             obj2.put("NewSaleUserName", "");
                             obj2.put("OldSaleUserName", "");
@@ -1496,7 +1501,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                         }
                         if (IsLittleBooking.equals("DFE6406C-120B-45E5-9293-DD093E416C68") && !IsLittleBookingOld.equals(IsLittleBooking)){//退小筹
                             JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", ActionType.退小筹.getValue());
+                            obj2.put("FollwUpType", "退小筹");
+                            obj2.put("FollwUpTypeID", ActionType.退小筹.getValue());
                             obj2.put("SalesType", 1);
                             obj2.put("NewSaleUserName", "");
                             obj2.put("OldSaleUserName", "");
@@ -1638,7 +1644,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                         }
                         if (IsLittleBooking.equals("1DCCBDB8-AD44-44D4-B23A-571A38337D5C") &&  !IsLittleBookingOld.equals(IsLittleBooking)){//小筹
                             JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", ActionType.小筹.getValue());
+                            obj2.put("FollwUpType", "小筹");
+                            obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
                             obj2.put("SalesType", 1);
                             obj2.put("NewSaleUserName", "");
                             obj2.put("OldSaleUserName", "");
@@ -1656,7 +1663,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                         }
                         if (IsLittleBooking.equals("DFE6406C-120B-45E5-9293-DD093E416C68") && !IsLittleBookingOld.equals(IsLittleBooking)){//退小筹
                             JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", ActionType.退小筹.getValue());
+                            obj2.put("FollwUpType", "退小筹");
+                            obj2.put("FollwUpTypeID", ActionType.退小筹.getValue());
                             obj2.put("SalesType", 1);
                             obj2.put("NewSaleUserName", "");
                             obj2.put("OldSaleUserName", "");
