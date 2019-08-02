@@ -131,4 +131,9 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
     List<Map<String, Object>> getMediaLarge();
 
     List<Map<String, Object>> getMediaChild(String projectID);
+    
+    /*
+     * 判断是否老业主
+     */
+    String isOwner(@Param("projectId") String projectId, @Param("mobile") String mobile);
 }
