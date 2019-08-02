@@ -5,7 +5,6 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Component;
@@ -41,12 +40,17 @@ public class SaleInfoTask implements SchedulingConfigurer {
 	@Autowired
 	private ITaskService saleService;;
 
-	/**   
-	 * <p>Title: configureTasks</p>   
-	 * <p>Description: 动态定时处理</p>   
-	 * @param scheduledTaskRegistrar   
-	 * @see org.springframework.scheduling.annotation.SchedulingConfigurer#configureTasks(org.springframework.scheduling.config.ScheduledTaskRegistrar)   
-	 */  
+	/**
+	 * <p>
+	 * Title: configureTasks
+	 * </p>
+	 * <p>
+	 * Description: 动态定时处理
+	 * </p>
+	 * 
+	 * @param scheduledTaskRegistrar
+	 * @see org.springframework.scheduling.annotation.SchedulingConfigurer#configureTasks(org.springframework.scheduling.config.ScheduledTaskRegistrar)
+	 */
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
 		if (isHost()) {
@@ -74,12 +78,8 @@ public class SaleInfoTask implements SchedulingConfigurer {
 	}
 
 	/**
-	 * TODO 执行定时任务
-	 * @Title: doTask
-	 * @param: @param service
-	 * @param: @return      
-	 * @return: Runnable      
-	 * @throws   
+	 * TODO 执行定时任务 @Title: doTask @param: @param service @param: @return @return:
+	 * Runnable @throws
 	 */
 	private Runnable doTask(SService service) {
 		return new Runnable() {
@@ -91,26 +91,18 @@ public class SaleInfoTask implements SchedulingConfigurer {
 					saleService.taskRun(service.getServiceCode());
 					log.info("{}：{}（{}）调度执行结束", st, service.getServiceDesc(), service.getServiceCode());
 					servicelog.save(SServicelog.isSuccess(service.getId(), st, new Date()));
-				} catch (TransientDataAccessResourceException e) {
-					Throwable t = e.getCause();
+				} catch (Exception e) {
+					Throwable t = e.getCause() == null ? e : e.getCause();
 					log.info("{}：{}（{}）调度执行失败：{}", st, service.getServiceDesc(), service.getServiceCode(),
 							t.getMessage());
 					servicelog.save(SServicelog.isError(service.getId(), st, new Date(), t.getMessage()));
-				} catch (Exception e) {
-					log.info("{}：{}（{}）调度执行失败：{}", st, service.getServiceDesc(), service.getServiceCode(),
-							e.getMessage());
-					servicelog.save(SServicelog.isError(service.getId(), st, new Date(), e.getMessage()));
 				}
 			}
 		};
 	}
 
 	/**
-	 * TODO 判断本地IP
-	 * @Title: isHost
-	 * @param: @return      
-	 * @return: Boolean      
-	 * @throws   
+	 * TODO 判断本地IP @Title: isHost @param: @return @return: Boolean @throws
 	 */
 	private Boolean isHost() {
 		if (StringUtils.isNotBlank(bindHost)) {

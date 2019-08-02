@@ -237,8 +237,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskProjectDetail_Insert();
 		} catch (Exception e) {
-			log.error(e);
-			throw new RuntimeException("插入项目数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入项目数据失败:" + t.getMessage());
 		}
 	}
 
@@ -260,7 +260,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskOpportunityDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入机会数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入机会数据失败:" + t.getMessage());
 		}
 	}
 
@@ -296,7 +297,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskRoomDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入房间数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入房间数据失败:" + t.getMessage());
 		}
 	}
 
@@ -318,7 +320,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskBuildingDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入楼栋数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入楼栋数据失败:" + t.getMessage());
 		}
 	}
 
@@ -340,7 +343,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskContractDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入合同数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入合同数据失败:" + t.getMessage());
 		}
 	}
 
@@ -369,7 +373,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskFeeDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入费用数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入费用数据失败:" + t.getMessage());
 		}
 	}
 
@@ -418,7 +423,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskTradeDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入费用数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入费用数据失败:" + t.getMessage());
 		}
 	}
 
@@ -457,7 +463,8 @@ public class TaskServiceImpl implements ITaskService {
 		try {
 			taskMapper.TaskOrderDetail_Insert();
 		} catch (Exception e) {
-			throw new RuntimeException("插入费用数据失败");
+			Throwable t = e.getCause() == null ? e : e.getCause();
+			throw new RuntimeException("插入费用数据失败:" + t.getMessage());
 		}
 	}
 
