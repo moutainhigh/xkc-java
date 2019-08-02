@@ -64,10 +64,56 @@
     </select>
 
     <select id="getMediaLargeList" resultType="java.util.HashMap" >
-        SELECT ID,Name FROM B_MediaLarge WHERE Status=1 AND IsDel=0 ORDER BY ListIndex
+        SELECT ID,Name as DictName FROM B_MediaLarge WHERE Status=1 AND IsDel=0 ORDER BY ListIndex
     </select>
 
     <select id="getMediaChildList" resultType="java.util.HashMap" parameterType="string">
-        SELECT ID,Name,MediaLargeID FROM B_MediaChild WHERE ProjectID=#{projectID} AND MediaLargeID=#{pid} ORDER BY ListIndex
+        SELECT ID,Name as DictName,MediaLargeID as PID ,ListIndex FROM B_MediaChild WHERE ProjectID=#{projectID} AND MediaLargeID=#{pid} AND Status=1 AND IsDel=0 ORDER BY ListIndex
     </select>
+
+    <update id="updateMediaStatus" >
+        UPDATE B_MediaChild SET Status=#{status} WHERE ID=#{id}
+    </update>
+
+    <insert id="saveMediaLarge" >
+        insert into B_MediaLarge(
+        ID,
+        Name,
+        ShortName,
+        [Desc],
+        ListIndex,
+        Creator,
+        CreateTime
+        ) values(
+        #{id},
+        #{dictName},
+        #{dictName},
+        #{dictName},
+        #{listIndex},
+        #{creator},
+        getdate()
+        )
+    </insert>
+
+    <insert id="saveMediaChild">
+        insert into B_MediaChild(
+        ID,
+        ProjectID,
+        MediaLargeID,
+        Name,
+        ShortName,
+        ListIndex,
+        Creator,
+        CreateTime
+        ) values(
+        #{id},
+        #{projectID},
+        #{pid},
+        #{dictName},
+        #{dictName},
+        #{listIndex},
+        #{creator},
+        GETDATE()
+        )
+    </insert>
 </mapper>

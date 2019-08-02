@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.dict.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
@@ -146,9 +147,10 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
     }
 
     @Override
-    public List<Map<String, Object>> SystemAllParams_Select_Tree(String pid,String ProductID,String Media) {
-        //参数查询
-
+    public List<Map<String, Object>> SystemAllParams_Select_Tree(String pid,String ProjectID,String Media) {
+        //参数第一层查询
+        if ("-1".equals(pid))
+        {
         List<Map<String,Object>> list=baseMapper.list(pid);
         List<Map<String, Object>> result=new ArrayList<>();
 
@@ -161,13 +163,41 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             }
             result.add(map);
         }
-        if (Media!=null){
-            //媒体查询
-            List<Map<String, Object>> mediaLargeList_tree = getMediaLargeList_Tree(pid, ProductID);
-            return mediaLargeList_tree;
+          Map<String,Object> map=new HashMap<>();
+          map.put("DictName","媒体类别管理");
+          map.put("Media","Media");
+          map.put("hasChild",true);
+          result.add(map);
+          return result;
+         }
+         //非第一层查询
+         else {
+             //选择原参数管理项的子集
+             if (Media==null){
+                 List<Map<String,Object>> list=baseMapper.list(pid);
+                 List<Map<String, Object>> result=new ArrayList<>();
+
+                 for (Map<String, Object> map : list) {
+                     List<Map<String, Object>> id = baseMapper.list((String) map.get("ID"));
+                     if (id.size()>0){
+                         map.put("hasChild",true);
+                     }else {
+                         map.put("hasChild",false);
+                     }
+                     result.add(map);
+                 }
+                 return result;
+             }
+             //选择媒体类别管理子集
+             else {
+                 //媒体查询
+                 List<Map<String, Object>> mediaLargeList_tree = getMediaLargeList_Tree(pid, ProjectID);
+                 return mediaLargeList_tree;
+             }
         }
 
-        return result;
+
+
 
 
     }
@@ -1098,7 +1128,54 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             }
             return childList;
         }
+    }
 
+
+    @Override
+    public IPage<Map<String,Object>> getMediaList(IPage page, String pid, String projectID) {
+        if (pid==null){
+            IPage<Map<String,Object>> list=baseMapper.getMediaLargeList(page);
+            for (Map<String, Object> map : list.getRecords()) {
+                map.put("hasChild",true);
+                map.put("Media","Media");
+            }
+            return list;
+        }else {
+            IPage<Map<String,Object>> childList=baseMapper.getMediaChildList(page,pid,projectID);
+            for (Map<String, Object> map : childList.getRecords()) {
+                map.put("hasChild",false);
+                map.put("Media","Media");
+            }
+            return childList;
+        }
+    }
+
+    @Override
+    public void updateMediaStatus(String id, int status) {
+        baseMapper.updateMediaStatus(id,status);
 
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result saveMedia(String pid, String id, String dictName, int listIndex,  String projectID) {
+        try {
+            String Creator=ThreadLocalUtils.getUserName();
+            //pid==-1为父级B_MediaLarge
+            if ("-1".equals(pid)){
+            baseMapper.saveMediaLarge(id,dictName,listIndex,Creator);
+            }
+            //pid!=-1 为子集B_MediaChild
+            else {
+                baseMapper.saveMediaChild(id,dictName,listIndex,Creator,projectID,pid);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.errormsg(99,"新增失败");
+        }
+        return Result.okm("成功");
+    }
+
 }

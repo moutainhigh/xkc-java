@@ -84,6 +84,5 @@ public interface ISAccountService extends IService<SAccount> {
 
     List<HashMap<String, Object>> insertJob(String userID, String authCompanyID, String productID);
 
-    void mCheckUCUser(Map<String, Object> paramMap);
 
 }

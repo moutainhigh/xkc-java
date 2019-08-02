@@ -179,8 +179,4 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
         return result;
     }
 
-    @Override
-    public void mCheckUCUser(Map<String, Object> paramMap) {
-
-    }
 }

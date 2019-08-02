@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.mapper.dict;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,5 +27,16 @@ public interface SDictionaryMapper extends BaseMapper<SDictionary> {
 
     List<Map<String, Object>> getMediaLargeList();
 
-    List<Map<String, Object>> getMediaChildList(@Param("pid")String pid,@Param("projectID")String projectID);
+    List<Map<String, Object>> getMediaChildList(@Param("projectID")String pid,@Param("projectID")String projectID);
+
+    IPage<Map<String, Object>> getMediaLargeList(IPage page);
+
+    IPage<Map<String, Object>> getMediaChildList(IPage page,@Param("pid")String pid,@Param("projectID")String projectID);
+
+    void updateMediaStatus(@Param("id")String id, @Param("status")int status);
+
+    void saveMediaLarge(@Param("id")String id, @Param("dictName")String dictName, @Param("listIndex")int listIndex, @Param("creator")String creator);
+
+    void saveMediaChild(@Param("id")String id, @Param("dictName")String dictName, @Param("listIndex")int listIndex,
+                        @Param("creator")String creator,  @Param("projectID")String projectID, @Param("pid")String pid);
 }
