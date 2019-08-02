@@ -10,6 +10,7 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
+import com.tahoecn.xkc.model.sys.SLogs;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.IASharelogService;
@@ -61,6 +62,18 @@ public class LoginAppController extends TahoeBaseController {
 
     @Value("CaseLinkageUrl")
     private String CaseLinkageUrl;
+
+    @Value("${uc_api_url}")
+    private String baseUrl;
+
+    @Value("${uc_sysId}")
+    private String sysId;
+
+    @Value("${uc_priv_key}")
+    private String privKey;
+
+    @Value("${ImgSiteUrl}")
+    private String imgSiteUrl;
 
     @ResponseBody
     @ApiOperation(value = "登陆", notes = "登陆")
@@ -565,11 +578,15 @@ public class LoginAppController extends TahoeBaseController {
         Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
         //登录日志记录
         String UserName= (String) paramMap.get("UserName");
-        String BizType="LoginLF";
-        String BizDesc="来访登录,账号:"+UserName;
-        String Ext3=UserName;
-        String Data=jsonParam.toJSONString();
-        iSLogsService.SystemLogsDetail_Insert(paramMap,request);
+
+
+        Map<String, Object> log=new HashMap<>();
+        log.put("BizType","LoginLF");
+        log.put("BizDesc","来访登录成功,账号:"+UserName);
+        log.put("Data",jsonParam.toJSONString());
+        log.put("Ext3",UserName);
+
+        iSLogsService.SystemLogsDetail_Insert(log,request);
         if (paramMap.get("Password")!=null){
             String Password = (String) paramMap.get("paramMap");
             paramMap.put("Password",SecureUtil.md5(Password));
@@ -604,13 +621,41 @@ public class LoginAppController extends TahoeBaseController {
             if ("1".equals(accountType))
             {
                 // 用户验证
-                accountService.mCheckUCUser(paramMap);
-
+                String s = accountService.checkUCUser(UserName, password);
+                JSONObject ucResult = JSONObject.parseObject(s);
+                if (0 != ucResult.getInteger("code")) {
+                    return Result.errormsg(11, "登录异常" + ucResult.getString("msg"));
+                }
+            }
+            else {
+                    String Password = (String) res.get("Password");
+                    String RePassword = (String) res.get("RePassword");
+                    if (StringUtils.equals(Password,RePassword)){
+                        return Result.errormsg(10,"用户名密码不正确");
+                    }
             }
         }
+        if (paramMap.get("UserID")!=null){
+            paramMap.put("UserID",res.get("UserID"));
+        }else {
+            paramMap.put("UserID",res.get("UserID"));
+        }
+        String headImg = (String) res.get("HeadImg");
+        String newHeadImg=imgSiteUrl+headImg;
+        res.put("HeadImg",newHeadImg);
 
-
-
-        return Result.ok("");
+        //登录成功日志记录
+        Map<String, Object> logMap=new HashMap<>();
+        logMap.put("BizType","LoginLFSuccess");
+        logMap.put("BizDesc","来访登录成功,账号:"+paramMap.get("UserName"));
+        logMap.put("Data",jsonParam.toJSONString());
+        logMap.put("Ext3",(String) paramMap.get("UserName"));
+        iSLogsService.SystemLogsDetail_Insert(logMap,request);
+        //移除无用信息
+        res.remove("Password");
+        res.remove("RePassword");
+        res.remove("ChannelTypeID");
+        res.remove("AccountStatus");
+        return Result.ok(res);
     }
 }

@@ -117,9 +117,9 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
                     for (SCommonjobsmenurel commonjobsmenurel : list) {
                         String menuID = commonjobsmenurel.getMenuID();
                         SMenus byId = menusService.getById(menuID);
-//                        if (byId==null){
+                        if (byId==null){
                             commonjobsmenurelService.removeById(commonjobsmenurel);
-//                        }
+                        }
                     }
 //            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
 //            queryWrapper.eq("JobID",jobID);

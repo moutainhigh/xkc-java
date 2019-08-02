@@ -100,4 +100,11 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 */
 	List<Map<String,Object>> mLFReceptRecordCustomerList_Select(@Param("pmap")Map<String,Object> pmap);
 	IPage<Map<String,Object>> mLFReceptRecordCustomerList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
+	
+	/**
+	 * 获取有效置业顾问列表
+	 * @param pmap
+	 * @return
+	 */
+	List<Map<String,Object>> mLFReceptRecordList_Select_forSaleUser(@Param("pmap")Map<String,Object> pmap);
 }

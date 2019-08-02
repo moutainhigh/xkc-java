@@ -99,4 +99,12 @@ public class IPadController extends TahoeBaseController{
 		return iIpadService.mLFReceptRecordCustomerList_Select(json);
     }
 	
+	@ResponseBody
+    @ApiOperation(value = "接待记录置业顾问列表", notes = "接待记录置业顾问列表")
+    @RequestMapping(value = "/mLFReceptRecordList_Select_forSaleUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mLFReceptRecordList_Select_forSaleUser(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iIpadService.mLFReceptRecordList_Select_forSaleUser(json);
+    }
+	
 }
