@@ -812,25 +812,13 @@
     ]]>
 	</update>
 	
-	<!-- 查询设置回收规则的项目 -->
-	<select id="RemindRuleList_Select" resultType="java.util.HashMap">
-		SELECT * FROM B_RemindRule WHERE IsDel=0 AND Status=1  AND VersionEndTime IS NULL
-	</select>
-	
-	<!-- 跟进即将逾期消息更新为无效 -->
-	<update id="ToFollowOverdueDate_Update">
-	<![CDATA[
-		  update [S_Message]  set status=2 ,editor='系统2' where ext2 < getdate() and  messagetype='12D36558-A8A1-20D4-58E5-612338026AE7' and Status=1
-	]]>
-	</update>
-	
 	<!-- 插入销售变更数据 -->
 	<insert id="TaskSaleModiApplyDetail_Insert">
 		INSERT INTO C_MYSaleModiApply SELECT A.*, GETDATE() CreateTime, 0 [Version], 0 IsHandle, NULL HandleTime FROM MY.dotnet_erp250919.dbo.s_SaleModiApply A WHERE NOT EXISTS( SELECT SaleModiApplyGUID FROM C_MYSaleModiApply B WHERE A.SaleModiApplyGUID = B.SaleModiApplyGUID);
 	</insert>
 	
 	<!-- 获取本地明源房间最后数据时间戳 -->
-	<select id="RemindRuleList_Select" resultType="java.lang.Long">
+	<select id="TaskMYRoomDetailLast_Select" resultType="java.lang.Long">
 		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM H_C_MYRoom
 	</select>
 	
