@@ -3,12 +3,13 @@ package com.tahoecn.xkc.controller.webapi;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.xkc.controller.TahoeBaseController;
-import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import com.tahoecn.xkc.model.vo.BClueruleGourpVo;
+import com.tahoecn.xkc.model.vo.BClueruleVo;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -39,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "渠道规则设置", value = "渠道规则设置")
-@RequestMapping("/webapi/ruleApp")
+@RequestMapping("/ncs/webapi/ruleApp")
 public class RuleAppController extends TahoeBaseController {
 
     @Autowired
@@ -57,9 +59,9 @@ public class RuleAppController extends TahoeBaseController {
     //规则设置：自有渠道，分销中介，推荐渠道
     @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
             @ApiImplicitParam(name = "protectSource", value = "保护来源:0.推荐 1.自有 2.分销", required = true, dataType = "String")})
-    @ApiOperation(value = "获取项目信息接口", notes = "获取项目信息接口")
+    @ApiOperation(value = "查询线索规则接口", notes = "查询线索规则接口")
     @RequestMapping(value = "/RuleClue_Select", method = { RequestMethod.GET })
-    public ResponseMessage RuleClue_Select(@RequestParam(required = true) String projectId,@RequestParam(required = true) String protectSource) {
+    public Result RuleClue_Select(@RequestParam(required = true) String projectId, @RequestParam(required = true) String protectSource) {
         Integer protectSourceInt = Integer.parseInt(protectSource);
     	QueryWrapper<BCluerule> queryWrapper = new QueryWrapper<BCluerule>();
         queryWrapper.eq(StringUtils.isNotBlank(projectId), "ProjectID", projectId);
@@ -129,31 +131,25 @@ public class RuleAppController extends TahoeBaseController {
         for(int i=0;i<clueruleList.size();i++){
             BCluerule cluerule = clueruleList.get(i);
             if(protectSourceInt==2) {//2.分销
-                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getFenxiao(projectId,protectSourceInt);
+                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getFenxiao(projectId,protectSourceInt,cluerule.getId());
                 cluerule.setClueruleGourpVoList(clueruleGourpVoList);
             }else{//0.推荐 1.自有
-                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId,protectSourceInt);
+                List<BClueruleGourpVo> clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId,protectSourceInt,cluerule.getId());
                 cluerule.setClueruleGourpVoList(clueruleGourpVoList);
             }
         }
-        return ResponseMessage.ok(clueruleList);
+        return Result.ok(clueruleList);
     }
     
-    @ApiImplicitParams({@ApiImplicitParam(name = "clueRuleId", value = "规则ID", required = true, dataType = "String"),
-        @ApiImplicitParam(name = "status", value = "渠道规则：0禁用、1启用、2删除", required = true, dataType = "String"),
-        @ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
-        @ApiImplicitParam(name = "protectSource", value = "保护来源:0.推荐 1.自有 2.分销", required = true, dataType = "String")})
+
 	@ApiOperation(value = "渠道规则设置-禁用/启用/删除", notes = "渠道规则：0禁用、1启用、2删除")
 	@RequestMapping(value = "/ClueRuleDetail_Delete", method = { RequestMethod.POST })
-	public ResponseMessage ClueRuleDetail_Delete(@RequestParam(required = true) String clueRuleId,
-			@RequestParam(required = true) String status,
-			@RequestParam(required = true) String projectId,
-			@RequestParam(required = true) String protectSource) {
+	public Result ClueRuleDetail_Delete(String clueRuleId,String status,String projectId,Integer protectSource) {
     	//1.检查参数完整性
     	if(StringUtils.isBlank(clueRuleId) || StringUtils.isBlank(status)
     			|| StringUtils.isBlank(projectId)
-    			|| StringUtils.isBlank(protectSource)){
-    		return ResponseMessage.error("参数录入不完整，请检查参数信息");
+    			|| protectSource == null){
+    		return Result.errormsg(0,"参数录入不完整，请检查参数信息");
     	}
     	try{
     		//2.封装参数
@@ -173,15 +169,15 @@ public class RuleAppController extends TahoeBaseController {
         		if(count == 1){
         			iBClueruleService.updateAdviserGroup(map);
         		}
-        		return ResponseMessage.ok("删除成功");
+        		return Result.ok("删除成功");
         	}else{//禁用、启用
         		iBClueruleService.updateClueRuleStatusById(map);
         		iBClueruleService.updateAdviserGroupStatusById(map);
-        		return ResponseMessage.ok("修改成功");
+        		return Result.ok("修改成功");
         	}
     	}catch (Exception e) {
     		e.printStackTrace();
-            return ResponseMessage.error("系统错误，请联系管理员");
+            return Result.errormsg(0,"系统错误，请联系管理员");
 		}
 	}
     
@@ -194,13 +190,13 @@ public class RuleAppController extends TahoeBaseController {
     })
 	@ApiOperation(value = "渠道规则设置-新增规则", notes = "新增规则")
 	@RequestMapping(value = "/RuleClue_Insert", method = { RequestMethod.POST })
-	public ResponseMessage RuleClue_Insert(String projectId, String calMode,
+	public Result RuleClue_Insert(String projectId, String calMode,
 			String ruleName, String ruleType, String creator, String protectSource) {
     	//1.检查参数完整性
     	if(StringUtils.isBlank(projectId) || StringUtils.isBlank(calMode)
     			|| StringUtils.isBlank(ruleName)|| StringUtils.isBlank(ruleType)|| StringUtils.isBlank(creator)
     			|| StringUtils.isBlank(protectSource)){
-    		return ResponseMessage.error("参数录入不完整，请检查参数信息");
+    		return Result.errormsg(0,"参数录入不完整，请检查参数信息");
     	}
     	try{
     		BCluerule bCluerule = new BCluerule();
@@ -214,83 +210,27 @@ public class RuleAppController extends TahoeBaseController {
     		bCluerule.setStatus(1);
     		bCluerule.setProtectSource(Integer.parseInt(protectSource));
     		iBClueruleService.save(bCluerule);
-        	return ResponseMessage.ok(bCluerule.getId());
+        	return Result.ok(bCluerule.getId());
     	}catch (Exception e) {
-    		e.printStackTrace();
-            return ResponseMessage.error("系统错误，请联系管理员");
-		}
+            e.printStackTrace();
+            return Result.errormsg(0,"系统错误，请联系管理员");
+        }
 	}
 
-//    //保存线索规则
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "ID", value = "ID", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "UserID", value = "UserID", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "ProjectID", value = "ProjectID", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "CalMode", value = "CalMode", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "RuleName", value = "RuleName", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "RuleType", value = "RuleType", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "ProtectSource", value = "ProtectSource", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "IsUpdateGroup", value = "IsUpdateGroup", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "ValidationMode", value = "ValidationMode", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "IsOnlyAllowNew", value = "IsOnlyAllowNew", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "ProtectTypeID", value = "ProtectTypeID", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "OverdueTime", value = "OverdueTime", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "OldOwnerLimit", value = "OldOwnerLimit", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "FollowUpOverdueDays", value = "FollowUpOverdueDays", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "IsPermanent", value = "IsPermanent", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "IsSelect", value = "IsSelect", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "IsPreIntercept", value = "IsPreIntercept", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "PreInterceptTime", value = "PreInterceptTime", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "UserBehaviorID", value = "UserBehaviorID", required = true, dataType = "String"),
-//            @ApiImplicitParam(name = "IsProtectVisit", value = "IsProtectVisit", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "ProtectVisitTime", value = "ProtectVisitTime", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "ProtectVisitRemindTime", value = "ProtectVisitRemindTime", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "IsProtect", value = "IsProtect", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "ProtectTime", value = "ProtectTime", required = true, dataType = "Integer"),
-//            @ApiImplicitParam(name = "ProtectRemindTime", value = "ProtectRemindTime", required = true, dataType = "Integer")
-//    })
-//    @ApiOperation(value = "保存线索规则接口", notes = "保存线索规则接口")
-//    @RequestMapping(value = "/RuleClue_Update", method = { RequestMethod.GET })
-//    public ResponseMessage RuleClue_Update(@RequestParam(required = true) String ID,
-//                                           @RequestParam(required = true) String UserID,
-//                                           @RequestParam(required = true) String ProjectID,
-//                                           @RequestParam(required = true) String CalMode,
-//                                           @RequestParam(required = true) String RuleName,
-//                                           @RequestParam(required = true) String RuleType,
-//                                           @RequestParam(required = true) String ProtectSource,
-//                                           @RequestParam(required = true) String IsUpdateGroup,
-//                                           @RequestParam(required = true) String ValidationMode,
-//                                           @RequestParam(required = true) String IsOnlyAllowNew,
-//                                           @RequestParam(required = true) String ProtectTypeID,
-//                                           @RequestParam(required = true) String OverdueTime,
-//                                           @RequestParam(required = true) String OldOwnerLimit,
-//                                           @RequestParam(required = true) String FollowUpOverdueDays,
-//                                           @RequestParam(required = true) String IsPermanent,
-//                                           @RequestParam(required = true) String IsSelect,
-//                                           @RequestParam(required = true) String IsPreIntercept,
-//                                           @RequestParam(required = true) String PreInterceptTime,
-//                                           @RequestParam(required = true) String UserBehaviorID,
-//                                           @RequestParam(required = true) String IsProtectVisit,
-//                                           @RequestParam(required = true) String ProtectVisitTime,
-//                                           @RequestParam(required = true) String ProtectVisitRemindTime,
-//                                           @RequestParam(required = true) String IsProtect,
-//                                           @RequestParam(required = true) String ProtectTime,
-//                                           @RequestParam(required = true) String ProtectRemindTime) {
-//
-//
-//
-//        return null;
-//    }
-
     @ApiOperation(value = "保存线索规则接口", notes = "保存线索规则接口")
+    @ResponseBody
     @RequestMapping(value = "/RuleClue_Update", method = { RequestMethod.POST })
-    public ResponseMessage RuleClue_Update(@RequestBody BCluerule bCluerule, @RequestParam(required = true) String IsUpdateGroup, @RequestParam(required = true) String grouplist){
+    public Result RuleClue_Update(@RequestBody BClueruleVo bClueruleVo){
+
+        BCluerule bCluerule = bClueruleVo.getbCluerule();
+        String IsUpdateGroup = bClueruleVo.getIsUpdateGroup();
+        String grouplist = bClueruleVo.getGrouplist();
 
         if (bCluerule.getProtectSource() == 1)//自有渠道
         {
             if (bCluerule.getFollowUpOverdueDays() <= 3)
             {
-                return ResponseMessage.error("保护期需大于3天");
+                return Result.errormsg(0,"保护期需大于3天");
             }
         }
 
@@ -322,7 +262,7 @@ public class RuleAppController extends TahoeBaseController {
         {
             bCluerule.setProtectTypeID(0);
         }
-        if(bCluerule.getRuleType()==1)//竞争带看默认变成实时验证
+        if(bCluerule.getRuleType()!=null && bCluerule.getRuleType()==1)//竞争带看默认变成实时验证
         {
             bCluerule.setValidationMode(2);
         }
@@ -332,6 +272,6 @@ public class RuleAppController extends TahoeBaseController {
         }else{
             iBClueruleAdvisergroupService.RuleClue_Update(bCluerule,grouplist);
         }
-        return ResponseMessage.ok();
+        return Result.ok("成功");
     }
 }

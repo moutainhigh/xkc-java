@@ -74,8 +74,6 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
         }
 
         setSqlWhere(map);
-
-        map.put("sqlWhere",sqlWhere.toString());
         return BQuituserMapper.QuitUserSalesTeamList_Select(page,map);
     }
 

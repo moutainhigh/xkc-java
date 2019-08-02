@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.BRemindruleMapper">
-
-
-
-
+<mapper namespace="com.tahoecn.xkc.mapper.rule.RuleAppMapper">
     <select id="getChanelorgList" resultType="com.tahoecn.xkc.model.channel.BChannelorg">
         SELECT a.* FROM B_ChannelOrg a
         INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectID}
@@ -18,6 +14,7 @@
         inner JOIN [B_ChannelOrg] b ON b.ID=a.AdviserGroupID AND b.IsDel=0 and b.Status=1
         INNER JOIN B_PojectChannelOrgRel c ON b.ID=c.OrgID AND c.IsDel=0 AND c.ProjectID=#{projectId}
         where a.IsDel=0 and ClueRuleID in (select id from B_ClueRule  where isdel=0 and ProjectID=#{projectId} and ProtectSource=#{protectSource})
+        and a.ClueRuleID= #{clueRuleId}
     </select>
 
     <select id="getZiyouOrTuijian" resultType="com.tahoecn.xkc.model.vo.BClueruleGourpVo">
@@ -26,6 +23,7 @@
         left join [dbo].[S_Dictionary] b on a.AdviserGroupID=b.id and b.IsDel=0 and b.status=1
         LEFT JOIN [B_ChannelOrg] c ON c.ID=a.AdviserGroupID AND c.IsDel=0
         where a.IsDel=0 and ClueRuleID in (select id from B_ClueRule  where isdel=0 and ProjectID=#{projectId} and ProtectSource=#{protectSource})
+        and a.ClueRuleID= #{clueRuleId}
     </select>
 
 
