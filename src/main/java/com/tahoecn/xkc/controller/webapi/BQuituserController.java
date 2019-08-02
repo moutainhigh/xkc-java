@@ -102,7 +102,7 @@ public class BQuituserController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = "离职或调岗案场自渠人员"+dtf2.format(time) + ".xlsx";
+            String name = "离职或调岗案场自渠人员"+dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result.getRecords(),name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,7 +175,7 @@ public class BQuituserController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = "离职或调岗案场销售人员"+dtf2.format(time) + ".xlsx";
+            String name = "离职或调岗案场销售人员"+dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result.getRecords(),name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -243,7 +243,7 @@ public class BQuituserController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = "离职或调岗渠道人员"+dtf2.format(time) + ".xlsx";
+            String name = "离职或调岗渠道人员"+dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result.getRecords(),name,response);
         } catch (Exception e) {
             e.printStackTrace();
