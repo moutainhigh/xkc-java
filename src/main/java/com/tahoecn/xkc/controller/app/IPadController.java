@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -60,8 +61,18 @@ public class IPadController extends TahoeBaseController{
     @ApiOperation(value = "客户登记(报备)", notes = "客户登记(报备)")
     @RequestMapping(value = "/mLFCustomerDetail_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mLFCustomerDetail_Insert(@RequestBody JSONObject paramAry) {
-		JSONObject json = paramAry.getJSONObject("_param");
-		return iIpadService.mLFCustomerDetail_Insert(json);
+		JSONArray JA = paramAry.getJSONArray("_param");
+		Result re = new Result();
+		try {
+			for(int i=0;i<JA.size();i++){
+				re = iIpadService.mLFCustomerDetail_Insert(JA.getJSONObject(i));
+			}
+		} catch (Exception e) {
+			re.setErrcode(1);
+			re.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return re;
     }
 	
 	@ResponseBody
