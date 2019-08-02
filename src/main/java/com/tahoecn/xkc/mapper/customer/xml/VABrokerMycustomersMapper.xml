@@ -5,4 +5,30 @@
     <select id="mGetMyCustomers_Select" resultType="java.util.HashMap">
         select * from V_A_Broker_MyCustomers ${Where} ${Search} ${Order}
     </select>
+    
+    <select id="selectClue" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
+		select * from V_A_Broker_MyCustomers where ClueID = #{clueId}
+	</select>
+	
+	<select id="selectMyCustomer" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
+		select * from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} and IntentProjectName=#{projectName}
+		<choose>
+		<when test="nameOrMobile!=null and nameOrMobile != ''">
+    		 and (Mobile=#{nameOrMobile} or CustomerName=#{nameOrMobile})
+  		</when>
+  		</choose>
+  		<choose>
+  		<when test="status != null and status != '' and status != '全部'">
+    		 and StatusText=#{status}
+  		</when>
+  		</choose>
+  		<choose>
+  		<when test="order == 'asc'">
+    		 order by ReportTime asc
+  		</when>
+  		<otherwise>
+  		     order by ReportTime desc
+  		</otherwise>
+  		</choose>
+	</select>
 </mapper>
