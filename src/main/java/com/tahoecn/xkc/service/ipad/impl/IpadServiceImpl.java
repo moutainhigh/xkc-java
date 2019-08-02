@@ -1298,13 +1298,56 @@ public class IpadServiceImpl implements IIpadService {
     	page.setCurrent(paramAry.getLongValue("PageIndex"));
         IPage<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordCustomerList_Select(page,pmap);
         if (pageObj != null && pageObj.getRecords()!=null && pageObj.getRecords().size() > 0){
-            re.setErrcode(0);
-            re.setErrmsg("成功");
             JSONObject j_data = new JSONObject();
         	j_data.put("List", pageObj.getRecords());
         	j_data.put("AllCount", pageObj.getTotal());
         	j_data.put("PageSize", pageObj.getSize());
+        	re.setErrcode(0);
+            re.setErrmsg("成功");
         	re.setData(j_data);
+            return re;
+        }
+        re.setErrcode(1);
+        re.setErrmsg("暂无数据");
+        return re;
+	}
+
+	@Override
+	public Result mLFReceptRecordList_Select_forSaleUser(JSONObject paramAry) {
+		Result re = new Result();
+        StringBuilder whereSb = new StringBuilder();
+        if (!StringUtils.isEmpty(paramAry.getString("BeginReceptTime")) && !StringUtils.isEmpty(paramAry.getString("EndReceptTime")) ){
+            String begintime = paramAry.getString("BeginReceptTime");
+            String endtime = paramAry.getString("EndReceptTime");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) BETWEEN '"+begintime+"' AND '"+endtime+"'");
+        }
+        paramAry.put("WHERE", whereSb.toString());
+        paramAry.put("SiteUrl", SiteUrl);
+        //接待记录列表
+        Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+        List<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordList_Select_forSaleUser(pmap);
+        
+        Map<String,List<Map<String, Object>>> re_data = new HashMap<>();
+        if (pageObj != null && pageObj.size() > 0){
+        	for(Map<String, Object> map : pageObj){
+        		if(re_data.containsKey(map.get("GroupName").toString())){
+        			re_data.get(map.get("GroupName").toString()).add(map);
+        		}else{
+        			List<Map<String, Object>> m = new ArrayList<Map<String,Object>>();
+        			m.add(map);
+        			re_data.put(map.get("GroupName").toString(), m);
+        		}
+        	}
+        	JSONObject json_data = new JSONObject();
+        	for(Map.Entry<String,List<Map<String, Object>>> entry : re_data.entrySet()){
+        		String mapKey = entry.getKey();
+        		List<Map<String, Object>> mapValue = entry.getValue();
+        		json_data.put("Type", mapKey);
+        		json_data.put("Data", mapValue);
+        	}
+            re.setErrcode(0);
+            re.setErrmsg("成功");
+        	re.setData(json_data);
             return re;
         }
         re.setErrcode(1);

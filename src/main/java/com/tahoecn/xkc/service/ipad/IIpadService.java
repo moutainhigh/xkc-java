@@ -60,4 +60,11 @@ public interface IIpadService {
 	 * @return
 	 */
 	public Result mLFReceptRecordCustomerList_Select(JSONObject paramAry);
+	
+	/**
+	 * 获取有效置业顾问列表
+	 * @param paramAry
+	 * @return
+	 */
+	public Result mLFReceptRecordList_Select_forSaleUser(JSONObject paramAry);
 }
