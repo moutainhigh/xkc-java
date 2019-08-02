@@ -2,7 +2,11 @@ package com.tahoecn.xkc.service.customer;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tahoecn.core.json.JSONResult;
+
 import com.tahoecn.xkc.model.customer.BClue;
+import com.tahoecn.xkc.model.vo.Customer;
+import com.tahoecn.xkc.model.vo.CustomerStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -73,4 +77,19 @@ public interface IBClueService extends IService<BClue> {
 	 * 报备信息列表
 	 */
 	IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, String projectID, String sqlWhere);
+	
+	/*
+	 * 客户详情
+	 */
+	public Customer detail(String clueId);
+	
+	/*
+	 * 我的客户列表
+	 */
+	public List<Customer> listMyCustomers(String reportUserId, String projectId, String order, String nameOrMobile, String status);
+	
+	/*
+	 * 报备
+	 */
+	public JSONResult report(String reportUserId, String intentProjectId, String customerName, String mobile, String gender, String remark);
 }

@@ -507,4 +507,69 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 		ORDER BY c.CreateTime DESC
      	]]>
      </select>
+     
+     <select id="selectCustomerStatus" resultType="com.tahoecn.xkc.model.clue.CStatus">
+		select * from (
+		select '报备' as status ,createtime as statusTime from b_clue where
+		id =#{clueId}
+		union
+		select '到访' as status ,TheFirstVisitDate as statusTime from B_Opportunity
+		where clueid=#{clueId}
+		union
+		select * from (
+		SELECT
+		top 1 '认购 ' as status, (CASE WHEN d.ChgDate IS NOT NULL THEN d.ChgDate
+		ELSE d.QSDate END) as statusTime
+		FROM B_Opportunity a
+		left join B_CustomerAttach b on b.OpportunityID = a.ID
+		left JOIN C_MYTrade c ON c.OppGUID = b.ID
+		left JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID AND d.CloseReason NOT
+		IN ('退房', '换房', '其它变更', '作废', '特批折扣')
+		WHERE ClueID=#{clueId} AND d.OrderGUID IS NOT NULL
+		order by d.qsdate
+		) t1
+		union
+		select * from (
+		select top 1 '签约' as status,(CASE WHEN d.ChgDate>d.ZqDate THEN d.ChgDate
+		ELSE d.ZqDate END) as statusTime
+		FROM B_Opportunity bop
+		left join B_CustomerAttach bca on bca.OpportunityID = bop.ID
+		left JOIN C_MYTrade b ON b.OppGUID = bca.ID
+		left JOIN C_MYContract d ON b.TradeGUID = d.TradeGUID AND d.CloseReason
+		NOT IN ('退房', '换房', '其它变更', '作废', '特批折扣')
+		WHERE ClueID=#{clueId} AND d.ContractGUID IS NOT NULL
+		order by d.qsdate
+		) t2
+		union
+		select * from (
+		SELECT
+		top 1 '退房 ' as status, case when d.CloseDate is not null then d.CloseDate
+		else e.CloseDate end as statusTime
+		FROM B_Opportunity a
+		left join B_CustomerAttach b on b.OpportunityID = a.ID
+		left JOIN C_MYTrade c ON c.OppGUID = b.ID
+		left JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+		left join C_MYContract e on c.TradeGUID = e.TradeGUID
+		WHERE ClueID=#{clueId} and (d.CloseReason='退房' or e.CloseReason='退房')
+		order by d.CloseDate
+		) t3
+		UNION
+		SELECT '无效('+InvalidReason+')' as status ,InvalidTime as statusTime
+		FROM B_Clue WHERE ID=#{clueId} and status=3
+
+		) tt
+		where statusTime is not null
+		order by statusTime desc
+	</select>
+	
+	<!-- 验证是否重复报备 -->
+	<select id="isRepeatedReg" resultType="java.lang.String">
+		select ID from B_Clue where Status in(1,2) 
+		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID=#{reportUserId}
+	</select>
+	<!-- 验证是否已经被他人报备 -->
+	<select id="isProtected" resultType="java.lang.String">
+		select ID from B_Clue where Status in(1,2) 
+		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID &lt;&gt; #{reportUserId}
+	</select>
 </mapper>

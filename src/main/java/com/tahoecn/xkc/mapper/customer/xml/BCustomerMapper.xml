@@ -1276,4 +1276,10 @@ FROM (
     <select id="getMediaChild" resultType="java.util.HashMap" parameterType="string">
         SELECT ID,MediaLargeID,Name FROM B_MediaChild WHERE  ProjectID=#{projectID}
     </select>
+    
+    <!-- 判断是否是老业主 -->
+    <select id="isOwner" resultType="java.lang.String">
+		select top 1  a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+ 		and a.IsOwner=1 and b.ProjectID=#{projectId} and  Mobile=#{mobile}
+	</select>
 </mapper>
