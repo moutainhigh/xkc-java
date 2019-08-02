@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Maps;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
@@ -23,6 +24,7 @@ import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.channel.IBPojectchannelorgrelService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
+import com.tahoecn.xkc.service.report.ICbFyService;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
 import com.tahoecn.xkc.service.report.ReportService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
@@ -31,10 +33,12 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -57,6 +61,9 @@ public class ReportController extends TahoeBaseController {
 
     @Autowired
     private ICostomerReportService costomerReportService;
+
+    @Autowired
+    ICbFyService iCbFyService;
 
 
     @ApiOperation(value = "客储动态监测表", notes = "客储动态监测表")
@@ -127,7 +134,7 @@ public class ReportController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,7 +153,7 @@ public class ReportController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -214,7 +221,7 @@ public class ReportController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -252,7 +259,7 @@ public class ReportController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,7 +268,7 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
-    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report) {
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel) {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
@@ -283,9 +290,79 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(),report.getBookingCreateTimeEnd());  //认筹时间
         wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(),report.getOrderCreateTimeEnd());  //认购时间
         wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),report.getmYContractCreateTimeEnd());  //签约时间
+        if (StringUtils.isNotEmpty(isExcel)){
+            page = new Page(1,-1);
+        }
         IPage<CostomerReport> list=costomerReportService.page(page,wrapper);
+        if (StringUtils.isNotEmpty(isExcel)){
+            SetExcel_costomerReport(list);
+            return null;
+        }
         return Result.ok(list);
     }
 
+    private void SetExcel_costomerReport(IPage<CostomerReport> result) {
+        List<ExcelExportEntity> entity = new ArrayList<>();
+        entity.add(new ExcelExportEntity("区域", "areaName"));
+        entity.add(new ExcelExportEntity("城市公司", "cityName"));
+        entity.add(new ExcelExportEntity("项目名称", "intentProjectName"));
+        entity.add(new ExcelExportEntity("客户姓名", "customerName"));
+        entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
+        entity.add(new ExcelExportEntity("置业顾问", "saleUserName"));
+        entity.add(new ExcelExportEntity("置业顾问所属团队", "saleTeamName"));
+        entity.add(new ExcelExportEntity("渠道来源", "sourceType"));
+        entity.add(new ExcelExportEntity("所属机构", "channelName"));
+        entity.add(new ExcelExportEntity("渠道人员", "reportUserName"));
+        entity.add(new ExcelExportEntity("渠道人员电话", "reportUserMobile"));
+        entity.add(new ExcelExportEntity("客户状态", "customerStatus"));
+        entity.add(new ExcelExportEntity("客户级别", "customerRankName"));
+        entity.add(new ExcelExportEntity("创建时间", "createTime"));
+        entity.add(new ExcelExportEntity("报备时间", "reportTime"));
+        entity.add(new ExcelExportEntity("首次到访", "theFirstVisitDate"));
+        entity.add(new ExcelExportEntity("最近到访", "zjdf"));
+        entity.add(new ExcelExportEntity("到访次数", "daofangCount"));
+        entity.add(new ExcelExportEntity("最近跟进", "theLatestFollowUpDate"));
+        entity.add(new ExcelExportEntity("跟进方式", "follwUpWayTxt"));
+        entity.add(new ExcelExportEntity("认筹数", "projNum"));
+        entity.add(new ExcelExportEntity("首次认筹", "bookingCreateTime"));
+        entity.add(new ExcelExportEntity("认购套数（套）", "orderCount"));
+        entity.add(new ExcelExportEntity("认购金额（元）", "myorderAccount"));
+        entity.add(new ExcelExportEntity("首次认购", "orderCreateTime"));
+        entity.add(new ExcelExportEntity("签约套数", "mYContractCount"));
+        entity.add(new ExcelExportEntity("签约总额(元)", "contractAccount"));
+        entity.add(new ExcelExportEntity("首次签约", "mYContractCreateTime"));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Map<String,Object>> resultMap = new ArrayList<>();
+        for (CostomerReport costomerReport : result.getRecords()) {
+            Map<String, Object> map = Maps.newHashMap();
+            BeanMap beanMap = BeanMap.create(costomerReport);
+            for (Object key : beanMap.keySet()) {
+                if (("createTime").equals(key) || ("reportTime").equals(key) || ("theFirstVisitDate").equals(key) || ("zjdf").equals(key) ||
+                ("theLatestFollowUpDate").equals(key) || ("bookingCreateTime").equals(key) || ("orderCreateTime").equals(key)|| ("mYContractCreateTime").equals(key)){
+                    if (beanMap.get(key) != null)
+                        map.put(key + "", sdf.format((Date)beanMap.get(key)));
+                }else
+                    map.put(key + "", beanMap.get(key));
+            }
+            resultMap.add(map);
+        }
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xls";
+            ExcelUtil.exportExcel(entity,resultMap,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ApiOperation(value = "test", notes = "test")
+    @RequestMapping(value = "/test", method = {RequestMethod.GET})
+    public Result test(String ProjectID, Date StartTime,Date EndTime) {
+        iCbFyService.save1();
+        return null;
+    }
 
 }

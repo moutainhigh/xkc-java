@@ -2,9 +2,9 @@ package com.tahoecn.xkc.mapper.customer;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.model.clue.CStatus;
 import com.tahoecn.xkc.model.customer.BClue;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 import java.util.Map;
 
@@ -65,4 +65,11 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	 * 报备信息列表
 	 */
 	IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, @Param("ProjectID")String ProjectID, @Param("sqlWhere")String sqlWhere);
+	
+	List<CStatus> selectCustomerStatus(@Param("clueId") String clueId);
+
+	//验证是否重复报备
+	String isRepeatedReg(@Param("mobile") String mobile, @Param("projectId") String projectId, @Param("reportUserId") String reportUserId);
+	//验证是否已经被他人报备
+	String isProtected(@Param("mobile") String mobile, @Param("projectId") String projectId, @Param("reportUserId") String reportUserId);
 }

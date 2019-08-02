@@ -1034,7 +1034,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	            whereinnerSb.append(" AND t.ChannelUserID = '"+UserID+"' ");
 	        }else if ("ZQFZR".equals(model.getJobCode())){
 	        	String ReportUserID = model.getReportUserID()!=null?model.getReportUserID():"";
-	            whereinnerSb.append(" AND t.ReportUserID = '"+ReportUserID+"' ");
+	        	whereinnerSb.append(" AND t.ReportUserID = '"+ReportUserID+"' ");
 	        }else{
 	        	String UserID = model.getUserID()!=null?model.getUserID():"";
 	            whereinnerSb.append(" AND t.ReportUserID = '"+UserID+"' ");

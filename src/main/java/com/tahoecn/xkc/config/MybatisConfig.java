@@ -17,9 +17,9 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+//@Configuration
 public class MybatisConfig {
-
+/*
     private final Logger logger = LoggerFactory.getLogger(MybatisConfig.class);
     @Autowired
     WallFilter wallFilter;
@@ -38,6 +38,13 @@ public class MybatisConfig {
         return datasource;
     }
 
+    @Bean(name = "slavemy")    //声明其为Bean实例
+    @ConfigurationProperties(prefix = "spring.datasource.dynamic.datasource.slavemy")
+    public DataSource dataSourceSlave_my() {
+        DruidDataSource datasource = new DruidDataSource();
+        return datasource;
+    }
+
     @Bean(name = "wallFilter")
     @DependsOn("wallConfig")
     public WallFilter wallFilter(WallConfig wallConfig) {
@@ -52,6 +59,6 @@ public class MybatisConfig {
         wallConfig.setMultiStatementAllow(true);//允许一次执行多条语句
         wallConfig.setNoneBaseStatementAllow(true);//允许一次执行多条语句
         return wallConfig;
-    }
+    }*/
 
 }

@@ -54,6 +54,7 @@ public class CostomerReport implements Serializable {
 
     @TableField("bookingCreateTime")
     private Date bookingCreateTime;
+    @TableField(exist = false)
     private Date bookingCreateTimeEnd;
 
     @TableField("orderCount")
@@ -64,10 +65,12 @@ public class CostomerReport implements Serializable {
 
     @TableField("orderCreateTime")
     private Date orderCreateTime;
+    @TableField(exist = false)
     private Date orderCreateTimeEnd;
 
     @TableField("MYContractCreateTime")
     private Date mYContractCreateTime;
+    @TableField(exist = false)
     private Date mYContractCreateTimeEnd;
 
     @TableField("myorderAccount")
@@ -96,10 +99,12 @@ public class CostomerReport implements Serializable {
 
     @TableField("TheFirstVisitDate")
     private Date theFirstVisitDate;
+    @TableField(exist = false)
     private Date theFirstVisitDateEnd;
 
     @TableField("ZJDF")
     private Date zjdf;
+    @TableField(exist = false)
     private Date zjdfEnd;
 
     @TableField("FollwUpWayTxt")
@@ -107,10 +112,12 @@ public class CostomerReport implements Serializable {
 
     @TableField("TheLatestFollowUpDate")
     private Date theLatestFollowUpDate;
+    @TableField(exist = false)
     private Date theLatestFollowUpDateEnd;
 
     @TableField("CreateTime")
     private Date createTime;
+    @TableField(exist = false)
     private Date createTimeEnd;
 
     @TableField("Gender")
@@ -133,6 +140,7 @@ public class CostomerReport implements Serializable {
 
     @TableField("ReportTime")
     private Date reportTime;
+    @TableField(exist = false)
     private Date reportTimeEnd;
 
     @TableField("GenderTxt")

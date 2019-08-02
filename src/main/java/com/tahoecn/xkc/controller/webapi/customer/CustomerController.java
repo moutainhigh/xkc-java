@@ -171,7 +171,7 @@ public class CustomerController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -267,7 +267,7 @@ public class CustomerController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -446,7 +446,7 @@ public class CustomerController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -606,7 +606,7 @@ public class CustomerController extends TahoeBaseController {
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
-            String name = dtf2.format(time) + ".xlsx";
+            String name = dtf2.format(time) + ".xls";
             ExcelUtil.exportExcel(entity,result,name,response);
         } catch (Exception e) {
             e.printStackTrace();
