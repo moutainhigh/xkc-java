@@ -51,8 +51,9 @@ public class SLogsController extends TahoeBaseController {
         	String BizType = "";
         	String Ext1 = "";
         	String Ext3 = "";
-        	String CreateTime = "";
         	String IP = "";
+        	String CreateTimeStart ="";
+        	String CreateTimeEnd ="";
         	int PageIndex = 1;
             int PageSize = 10;
             StringBuilder str = new StringBuilder();
@@ -67,8 +68,11 @@ public class SLogsController extends TahoeBaseController {
         	if(paramMap.get("Ext3") != null) {
         		Ext3 = (String)paramMap.get("Ext3").toString();//请求终端
         	}
-        	if(paramMap.get("CreateTime") != null) {
-        		CreateTime = (String)paramMap.get("CreateTime").toString();//请求时间
+        	if(paramMap.get("CreateTimeStart") != null) {
+        		CreateTimeStart = (String)paramMap.get("CreateTimeStart").toString();//请求开始时间
+        	}
+        	if(paramMap.get("CreateTimeEnd") != null) {
+        		CreateTimeEnd = (String)paramMap.get("CreateTimeEnd").toString();//请求结束时间
         	}
         	if(paramMap.get("IP") != null) {
         		IP = (String)paramMap.get("IP").toString();//IP
@@ -88,8 +92,8 @@ public class SLogsController extends TahoeBaseController {
             if(Ext3.length() > 0) {
             	str.append(" AND Ext3 like'%").append(Ext3).append("%'");
             }
-            if(CreateTime.length() > 0) {
-            	str.append(" AND CreateTime like'%").append(CreateTime).append("%'");
+            if(CreateTimeStart.length() > 0) {
+            	str.append(" AND CreateTime >= '" +CreateTimeStart+ "'").append("AND CreateTime <= '" +CreateTimeEnd+ "'");
             }
             if(IP.length() > 0) {
             	str.append(" AND IP like'%").append(IP).append("%'");
