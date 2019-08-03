@@ -44,7 +44,7 @@ public class SLogsController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "操作日志", notes = "操作日志")
     @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject account, String IsExcel) {
+    public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject account) {
         try {
         	//直接将json信息打印出来
         	System.out.println(account.toJSONString());
@@ -53,6 +53,7 @@ public class SLogsController extends TahoeBaseController {
         	String Ext1 = "";
         	String Ext3 = "";
         	String IP = "";
+        	String IsExcel = "";
         	String CreateTimeStart ="";
         	String CreateTimeEnd ="";
         	int PageIndex = 1;
@@ -74,6 +75,9 @@ public class SLogsController extends TahoeBaseController {
         	}
         	if(paramMap.get("CreateTimeEnd") != null) {
         		CreateTimeEnd = (String)paramMap.get("CreateTimeEnd").toString();//请求结束时间
+        	}
+        	if(paramMap.get("IsExcel") != null) {
+        		IsExcel = (String)paramMap.get("IsExcel").toString();//导出判断
         	}
         	if(paramMap.get("IP") != null) {
         		IP = (String)paramMap.get("IP").toString();//IP
@@ -112,7 +116,7 @@ public class SLogsController extends TahoeBaseController {
             data.put("List", obj);
             data.put("Count", CoutAll);
             data.put("PageSize",PageSize);
-            if(IsExcel != null) {
+            if(IsExcel.length() > 0) {
             	mBrokerCustomerDetail_SelectN(obj);
             	return null;
             }
