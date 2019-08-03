@@ -44,7 +44,7 @@
     </update>
 
     <update id="RuleClue_Update">
-        update B_ClueRule_AdviserGroup set ClueRuleID=#{bCluerule.ID},Editor=#{bCluerule.UserID},EditTime=getdate()
+        update B_ClueRule_AdviserGroup set ClueRuleID=#{bCluerule.id},Editor=#{bCluerule.UserID},EditTime=getdate()
         where AdviserGroupID in (#{grouplist})
         and ClueRuleID in (Select ID from B_ClueRule where ProjectID=#{bCluerule.ProjectID}
         and ProtectSource=#{bCluerule.ProtectSource}  AND IsDel=0 AND Status=1)

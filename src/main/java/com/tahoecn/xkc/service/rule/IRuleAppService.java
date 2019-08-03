@@ -15,7 +15,7 @@ import java.util.List;
 public interface IRuleAppService {
     List<BChannelorg> getChanelorgList(String projectID);
 
-    List<BClueruleGourpVo> getFenxiao(String projectId, Integer protectSource);
+    List<BClueruleGourpVo> getFenxiao(String projectId, Integer protectSource,String clueRuleId);
 
-    List<BClueruleGourpVo> getZiyouOrTuijian(String projectId, Integer protectSource);
+    List<BClueruleGourpVo> getZiyouOrTuijian(String projectId, Integer protectSource,String clueRuleId);
 }

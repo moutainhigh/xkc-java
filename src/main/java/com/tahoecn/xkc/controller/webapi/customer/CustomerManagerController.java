@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "客户")
 @RestController
-@RequestMapping("/customermanager")
+@RequestMapping("/ncs/webapi/customermanager")
 public class CustomerManagerController extends TahoeBaseController {
     private static final Log log = LogFactory.get();
 

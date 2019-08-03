@@ -125,6 +125,9 @@ public class BCluerule implements Serializable {
     @TableField(exist = false)
     private List<BClueruleGourpVo> clueruleGourpVoList;
 
+    @TableField(exist = false)
+    private String UserID;
+
     public Integer getIsOnlyAllowNew() {
         return IsOnlyAllowNew;
     }
@@ -342,6 +345,14 @@ public class BCluerule implements Serializable {
 
     public void setClueruleGourpVoList(List<BClueruleGourpVo> clueruleGourpVoList) {
         this.clueruleGourpVoList = clueruleGourpVoList;
+    }
+
+    public String getUserID() {
+        return UserID;
+    }
+
+    public void setUserID(String userID) {
+        UserID = userID;
     }
 
     @Override

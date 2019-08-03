@@ -29,12 +29,12 @@ public class RuleAppServiceImpl implements IRuleAppService{
     }
 
     @Override
-    public List<BClueruleGourpVo> getFenxiao(String projectId, Integer protectSource) {
-        return ruleAppMapper.getFenxiao(projectId, protectSource);
+    public List<BClueruleGourpVo> getFenxiao(String projectId, Integer protectSource,String clueRuleId) {
+        return ruleAppMapper.getFenxiao(projectId, protectSource,clueRuleId);
     }
 
     @Override
-    public List<BClueruleGourpVo> getZiyouOrTuijian(String projectId, Integer protectSource) {
-        return ruleAppMapper.getZiyouOrTuijian(projectId, protectSource);
+    public List<BClueruleGourpVo> getZiyouOrTuijian(String projectId, Integer protectSource,String clueRuleId) {
+        return ruleAppMapper.getZiyouOrTuijian(projectId, protectSource,clueRuleId);
     }
 }
