@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +44,7 @@ public class SLogsController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "操作日志", notes = "操作日志")
     @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject account) {
+    public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject account, String IsExcel) {
         try {
         	//直接将json信息打印出来
         	System.out.println(account.toJSONString());
@@ -111,15 +112,18 @@ public class SLogsController extends TahoeBaseController {
             data.put("List", obj);
             data.put("Count", CoutAll);
             data.put("PageSize",PageSize);
+            if(IsExcel != null) {
+            	mBrokerCustomerDetail_SelectN(obj);
+            	return null;
+            }
         	return Result.ok(data);
         }catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
         }
     }
-	private void mBrokerCustomerDetail_SelectN(Map<String, Object> map) {
+	private void mBrokerCustomerDetail_SelectN(List<Map<String, Object>> obj) {
 		
-		List<Map<String, Object>> result = iSLogsService.mBrokerCustomerDetail_Select(map);
         List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
         entity.add(new ExcelExportEntity("序号", "num"));
         entity.add(new ExcelExportEntity("请求类型", "BizType"));
@@ -130,12 +134,11 @@ public class SLogsController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("请求终端", "Ext3"));
         entity.add(new ExcelExportEntity("参数", "Data"));
         entity.add(new ExcelExportEntity("请求时间", "CreateTime"));
-
         try {
             LocalDateTime time= LocalDateTime.now();
             DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
             String name = dtf2.format(time) + ".xls";
-            ExcelUtil.exportExcel(entity,result,name,response);
+            ExcelUtil.exportExcel(entity,obj,name,response);
         } catch (Exception e) {
             e.printStackTrace();
         }
