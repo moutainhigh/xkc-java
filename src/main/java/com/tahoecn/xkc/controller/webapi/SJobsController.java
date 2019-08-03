@@ -47,8 +47,9 @@ public class SJobsController extends TahoeBaseController {
     @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
             @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
     @RequestMapping(value = "/SystemJobList_Select", method = {RequestMethod.POST})
-    public Result SystemJobList_Select(String AuthCompanyID,String ProductID,String OrgID){
-        List<Map<String,Object>> list=jobsService.SystemJobList_Select(AuthCompanyID,ProductID,OrgID);
+    public Result SystemJobList_Select(String AuthCompanyID,String ProductID,String OrgID,int Pageindex,int Pagesize){
+        IPage page=new Page(Pageindex,Pagesize);
+        IPage<Map<String,Object>> list=jobsService.SystemJobList_Select(page,AuthCompanyID,ProductID,OrgID);
         return Result.ok(list);
     }
 
