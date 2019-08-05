@@ -4,6 +4,7 @@ package com.tahoecn.xkc.controller.webapi;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -89,19 +90,19 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "新增参数", notes = "新增参数")
     @RequestMapping(value = "/SystemParam_Insert", method = {RequestMethod.POST})
-    public Result SystemParam_Insert(String pid,String authCompanyID,String dictCode,String dictName,int levels,
-                                     int listIndex,String productID,String remark,String Media,String ProjectID){
-        if (Media==null) {
-            SDictionary dictionary=new SDictionary();
-            dictionary.setId(UUID.randomUUID().toString());
-            dictionary.setPid(pid);
-            dictionary.setAuthCompanyID(authCompanyID);
-            dictionary.setDictCode(dictCode);
-            dictionary.setDictName(dictName);
-            dictionary.setLevels(levels);
-            dictionary.setListIndex(listIndex);
-            dictionary.setProductID(productID);
-            dictionary.setRemark(remark);
+    public Result SystemParam_Insert(@RequestBody SDictionary dictionary){
+        //取消媒体大类在参数管理中  注释掉
+//        if (Media==null) {
+//            SDictionary dictionary=new SDictionary();
+//            dictionary.setId(UUID.randomUUID().toString());
+//            dictionary.setPid(pid);
+//            dictionary.setAuthCompanyID(authCompanyID);
+//            dictionary.setDictCode(dictCode);
+//            dictionary.setDictName(dictName);
+//            dictionary.setLevels(levels);
+//            dictionary.setListIndex(listIndex);
+//            dictionary.setProductID(productID);
+//            dictionary.setRemark(remark);
             String PID = dictionary.getPid();
             SDictionary byId = dictionaryService.getById(PID);
             String fullPath = byId.getFullPath();
@@ -121,11 +122,11 @@ public class SDictionaryController extends TahoeBaseController {
                 return Result.okm("成功");
             }
             return Result.errormsg(99, "新增失败");
-        }else {
-            String id = UUID.randomUUID().toString();
-            Result result=dictionaryService.saveMedia(pid,id,dictName,listIndex,ProjectID);
-            return result;
-        }
+//        }else {
+//            String id = UUID.randomUUID().toString();
+//            Result result=dictionaryService.saveMedia(pid,id,dictName,listIndex,ProjectID);
+//            return result;
+//        }
     }
 
     @ApiOperation(value = "编辑修改参数", notes = "编辑修改参数")
@@ -167,7 +168,7 @@ public class SDictionaryController extends TahoeBaseController {
 //    }
 
 //    @ApiOperation(value = "媒体类别管理--树形", notes = "媒体类别管理--树形")
-//    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.POST})
+//    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.GET})
 //    public Result getMediaLargeList_Tree(String PID,String ProjectID){
 //        List<Map<String,Object>> list=dictionaryService.getMediaLargeList_Tree(PID,ProjectID);
 //

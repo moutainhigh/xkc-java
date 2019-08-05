@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.H5;
 
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -158,17 +159,17 @@ public class H5Controller extends TahoeBaseController {
         String UserName=(String) paramMap.get("UserName");
         String Password=(String) paramMap.get("Password");
         Date date = new Date();
-        String time = String.format(date.toString(), "yyyyMMddHHmm");
-        Map<String, Object> map=new HashMap<>();
+        String time = DateUtil.format(date,"yyyyMMddHHmm");
+        Map<String, Object> map;
         if (StringUtils.equals(time, Password)) {
             map = channeluserService.ChannelUserCurrency_Find(UserName);
         } else {
-            map =channeluserService.ChannelUser_Find(UserName,Password);
+            map =channeluserService.ChannelUser_Find(UserName,SecureUtil.md5(Password));
         }
         if (map==null){
             return Result.errormsg(1,"获取用户信息失败，用户名或密码错误");
         }
-        if ((Integer) map.get("Status")==0){
+        if ((short) map.get("Status")==0){
             return Result.errormsg(1,"获取用户信息失败，账户被禁用");
         }
         String id= (String) map.get("ID");
