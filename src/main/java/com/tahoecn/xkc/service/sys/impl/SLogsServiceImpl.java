@@ -87,5 +87,10 @@ public class SLogsServiceImpl extends ServiceImpl<SLogsMapper, SLogs> implements
 		return sLogsMapper.mBrokerCustomerDetail_SelectAll(map);
 	}
 
+	@Override
+	public List<Map<String, Object>> mBrokerCustomerDetail_Select1(Map<String, Object> map) {
+		return sLogsMapper.mBrokerCustomerDetail_Select1(map);
+	}
+
 
 }

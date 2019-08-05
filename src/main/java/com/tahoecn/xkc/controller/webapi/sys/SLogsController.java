@@ -44,7 +44,7 @@ public class SLogsController extends TahoeBaseController {
 	
 	@ResponseBody
     @ApiOperation(value = "操作日志", notes = "操作日志")
-    @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = {RequestMethod.GET})
     public Result mBrokerCustomerDetail_Select( String BizType, String Ext1, String Ext3, String IP, String CreateTimeStart, String CreateTimeEnd, int PageIndex, int PageSize, String IsExcel) {
         try {
        
@@ -69,7 +69,13 @@ public class SLogsController extends TahoeBaseController {
             map.put("str1",str.toString());
             map.put("PageIndex",PageIndex);
             map.put("PageSize",PageSize);
-            List<Map<String, Object>> obj = iSLogsService.mBrokerCustomerDetail_Select(map);
+            List<Map<String, Object>> obj;
+            if(IsExcel != null && IsExcel.length() > 0) {
+            	obj = iSLogsService.mBrokerCustomerDetail_Select1(map);
+            }
+            else {
+            	obj = iSLogsService.mBrokerCustomerDetail_Select(map);
+            }
             int CoutAll = iSLogsService.mBrokerCustomerDetail_SelectAll(map);
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             for(int x=0;x<obj.size();x++) {
