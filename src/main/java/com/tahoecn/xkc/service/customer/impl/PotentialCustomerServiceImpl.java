@@ -935,9 +935,9 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
         //1.根据手机号项目ID码判断是否为机会客户
         Map<String,Object> param = new HashMap<String, Object>();
         param.put("Mobile",Mobile);
-        Map<String,Object> data = bCustomerpotentialMapper.CustomerPotentialDetail_Select(param);
+        List<Map<String,Object>> data = bCustomerpotentialMapper.CustomerPotentialDetail_Select(param);
         if(data!=null && data.size()>0){
-        	return new JSONObject(data);
+        	return new JSONObject(data.get(0));
         }
         return new JSONObject();
 

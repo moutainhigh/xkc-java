@@ -225,7 +225,7 @@ public interface BCustomerpotentialMapper extends BaseMapper<BCustomerpotential>
 	 * @param pmap
 	 * @return
 	 */
-	Map<String,Object> CustomerPotentialDetail_Select(Map<String,Object> pmap);
+	List<Map<String,Object>> CustomerPotentialDetail_Select(Map<String,Object> pmap);
 	
 	/**
 	 * 自渠潜在客户查询列表
