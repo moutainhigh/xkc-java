@@ -945,15 +945,17 @@ public class CustomerHelp implements ICustomerHelp {
             for (int i = 0; i < IntentProjectID.length; i++){
             	pmap.put("IntentProjectID", IntentProjectID[i]);
                 Map<String,Object> re = vCustomergwlistSelectMapper.sStageCustomerAttachDetail_Insert_step1(pmap);
-                int SalesStatus = (int)re.get("SalesStatus");
+                int LastSalesStatus = 0;
+                if(re!=null && re.size()>0){
+                	LastSalesStatus = (int)re.get("SalesStatus");
+                }
                 List<Integer> list = Arrays.asList(new Integer[]{0, 4, 5, 6, 8});
-                if(list.contains(SalesStatus)){
-                	if(SalesStatus!=0){
+                if(list.contains(LastSalesStatus)){
+                	if(LastSalesStatus!=0){
                 		pmap.put("SalesStatus", 3);
-                		vCustomergwlistSelectMapper.sStageCustomerAttachDetail_Insert_step2(pmap);
                 	}
+                	vCustomergwlistSelectMapper.sStageCustomerAttachDetail_Insert_step2(pmap);
                 }else{
-                	pmap.put("SalesStatus", SalesStatus);
                 	vCustomergwlistSelectMapper.sStageCustomerAttachDetail_Insert_step3(pmap);
                 }
             }
