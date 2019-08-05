@@ -575,5 +575,10 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         return Result.ok("成功");
     }
 
+    @Override
+    public Map<String, Object> ChannelUser_Detail_FindByIdN(String id) {
+        return baseMapper.ChannelUser_Detail_FindByIdN(id);
+    }
+
 
 }

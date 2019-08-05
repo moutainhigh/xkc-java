@@ -588,24 +588,24 @@ public class LoginAppController extends TahoeBaseController {
 
         iSLogsService.SystemLogsDetail_Insert(log,request);
         if (paramMap.get("Password")!=null){
-            String Password = (String) paramMap.get("paramMap");
+            String Password = (String) paramMap.get("Password");
             paramMap.put("Password",SecureUtil.md5(Password));
         }
         Map<String,Object> res=salesuserService.mLFLogin_Select(paramMap);
-        if (res.size()==0){
+        if (res==null){
         return Result.errormsg(9,"用户名不存在");
         }
         //是否开启分接/销支 0.开启 1.关闭
-        int isNoAllotRole = (int) res.get("IsNoAllotRole");
+        short isNoAllotRole = (short) res.get("IsNoAllotRole");
         //允许登录设备类型 0.都不允许 1.只允许APP登录 2.只允许ipad登录 3.允许所有设备登录
-        int allowDeviceType = (int) res.get("AllowDeviceType");
+        short allowDeviceType = (short) res.get("AllowDeviceType");
         String jobCode = (String) res.get("JobCode");
-        String accountType = (String) res.get("AccountType");
+        short accountType = (short) res.get("AccountType");
         String password = (String) paramMap.get("Password");
         String projectID = (String) res.get("ProjectID");
 
         // 0.禁用 1.开启
-        int accountStatus = (int) res.get("AccountStatus");
+        short accountStatus = (short) res.get("AccountStatus");
         if (isNoAllotRole == 1 && ("XSZC").equals(jobCode)){
             return Result.errormsg(10,"请联系管理员开通销支角色");
         }
@@ -618,7 +618,7 @@ public class LoginAppController extends TahoeBaseController {
             return Result.errormsg(10,"该账号已被禁用");
         }
         if (DateUtil.format(new Date(),"yyyyMMddHHmm").equals(password)){
-            if ("1".equals(accountType))
+            if (accountType==1)
             {
                 // 用户验证
                 String s = accountService.checkUCUser(UserName, password);
