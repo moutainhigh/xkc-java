@@ -949,7 +949,7 @@
 	<update id="TaskTradeDetail_Insert" statementType="CALLABLE">
 	<![CDATA[
 		DELETE A FROM C_MYTrade A INNER JOIN( SELECT *, row_number() OVER( partition BY TradeGUID ORDER BY CreateTime DESC) num FROM C_MYTrade) T ON A.TradeGUID = T.TradeGUID AND A.CreateTime = T.CreateTime AND T.num <> 1;
-     	{call dbo.P_SyncMYMonthYs_Insert};
+     	exec dbo.P_SyncMYMonthYs_Insert;
 	]]>
 	</update>
 	

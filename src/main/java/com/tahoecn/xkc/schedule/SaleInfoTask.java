@@ -1,6 +1,8 @@
 package com.tahoecn.xkc.schedule;
 
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,48 +40,48 @@ public class SaleInfoTask implements SchedulingConfigurer {
 	@Autowired
 	private ISServicelogService servicelog;
 	@Autowired
-	private ITaskService saleService;;
+	private ITaskService saleService;
 
-	/**
-	 * <p>
-	 * Title: configureTasks
-	 * </p>
-	 * <p>
-	 * Description: 动态定时处理
-	 * </p>
-	 * 
-	 * @param scheduledTaskRegistrar
-	 * @see org.springframework.scheduling.annotation.SchedulingConfigurer#configureTasks(org.springframework.scheduling.config.ScheduledTaskRegistrar)
-	 */
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
 		if (isHost()) {
-			service.list().forEach(e -> {
-				TaskInfoType task = TaskInfoType.getByCode(e.getServiceCode());
-				if (task != null && task.getType() != null && !"".equals(task.getType())) {
-					log.info("配置{}（{}）调度 =>>>> {} 模式（{}）", e.getServiceDesc(), e.getServiceCode(), task.getType(),
-							task.getValue());
-					switch (task.getType()) {
-					case "cron":
-						scheduledTaskRegistrar.addCronTask(doTask(e), task.getValue());
-						break;
-					case "fixedDelay":
-						scheduledTaskRegistrar.addFixedDelayTask(doTask(e), Long.valueOf(task.getValue()));
-						break;
-					case "fixedRate":
-						scheduledTaskRegistrar.addFixedRateTask(doTask(e), Long.valueOf(task.getValue()));
-						break;
-					default:
-						break;
+			Integer corePoolSize = 0;
+			List<SService> list = service.list();
+			if (list != null && list.size() > 0) {
+				for (SService e : list) {
+					TaskInfoType task = TaskInfoType.getByCode(e.getServiceCode());
+					if (task != null && task.getType() != null && !"".equals(task.getType())) {
+						log.info("配置{}（{}）调度 =>>>> {} 模式（{}）", e.getServiceDesc(), e.getServiceCode(), task.getType(),
+								task.getValue());
+						switch (task.getType()) {
+						case "cron":
+							scheduledTaskRegistrar.addCronTask(doTask(e), task.getValue());
+							corePoolSize++;
+							break;
+						case "fixedDelay":
+							scheduledTaskRegistrar.addFixedDelayTask(doTask(e), Long.valueOf(task.getValue()));
+							corePoolSize++;
+							break;
+						case "fixedRate":
+							scheduledTaskRegistrar.addFixedRateTask(doTask(e), Long.valueOf(task.getValue()));
+							corePoolSize++;
+							break;
+						default:
+							break;
+						}
 					}
 				}
-			});
+			}
+			if (corePoolSize > 0)
+				scheduledTaskRegistrar.setScheduler(Executors.newScheduledThreadPool(corePoolSize));
 		}
 	}
 
 	/**
-	 * TODO 执行定时任务 @Title: doTask @param: @param service @param: @return @return:
-	 * Runnable @throws
+	 * TODO 执行定时任务
+	 * 
+	 * @param service
+	 * @return
 	 */
 	private Runnable doTask(SService service) {
 		return new Runnable() {
@@ -102,7 +104,9 @@ public class SaleInfoTask implements SchedulingConfigurer {
 	}
 
 	/**
-	 * TODO 判断本地IP @Title: isHost @param: @return @return: Boolean @throws
+	 * TODO 判断本地IP
+	 * 
+	 * @return
 	 */
 	private Boolean isHost() {
 		if (StringUtils.isNotBlank(bindHost)) {
