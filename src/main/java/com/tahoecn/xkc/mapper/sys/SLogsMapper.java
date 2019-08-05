@@ -23,4 +23,6 @@ public interface SLogsMapper extends BaseMapper<SLogs> {
 
 	int mBrokerCustomerDetail_SelectAll(Map<String, Object> map);
 
+	List<Map<String, Object>> mBrokerCustomerDetail_Select1(Map<String, Object> map);
+
 }
