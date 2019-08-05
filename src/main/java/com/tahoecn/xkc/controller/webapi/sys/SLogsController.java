@@ -44,7 +44,7 @@ public class SLogsController extends TahoeBaseController {
 	
 	@ResponseBody
     @ApiOperation(value = "操作日志", notes = "操作日志")
-    @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Result mBrokerCustomerDetail_Select( String BizType, String Ext1, String Ext3, String IP, String CreateTimeStart, String CreateTimeEnd, int PageIndex, int PageSize, String IsExcel) {
         try {
        
