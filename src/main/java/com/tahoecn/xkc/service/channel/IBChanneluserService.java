@@ -148,4 +148,6 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
 
     Result AgenInfo_UpdateN(BChanneluser channeluser);
+
+    Map<String, Object> ChannelUser_Detail_FindByIdN(String id);
 }

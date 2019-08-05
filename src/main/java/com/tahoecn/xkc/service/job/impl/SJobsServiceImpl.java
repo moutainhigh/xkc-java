@@ -61,8 +61,8 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private ISCommonjobsfunctionsrelService commonjobsfunctionsrelService;
 
     @Override
-    public List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID) {
-        return baseMapper.SystemJobList_Select(authCompanyID,productID,orgID);
+    public IPage<Map<String,Object>> SystemJobList_Select(IPage page,String authCompanyID, String productID, String orgID) {
+        return baseMapper.SystemJobList_Select(page,authCompanyID,productID,orgID);
     }
 
     @Override

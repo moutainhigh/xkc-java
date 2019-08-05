@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface ISJobsService extends IService<SJobs> {
 
-    List<Map<String,Object>> SystemJobList_Select(String authCompanyID, String productID, String orgID);
+    IPage<Map<String,Object>> SystemJobList_Select(IPage page,String authCompanyID, String productID, String orgID);
 
     List<SAccount> SystemUserList_Select(String jobID, String authCompanyID);
 

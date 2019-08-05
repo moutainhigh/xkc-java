@@ -23,7 +23,7 @@ import java.util.Map;
 public interface SJobsMapper extends BaseMapper<SJobs> {
     void userJobInsert(@Param("UserID") String UserID, @Param("RoleID") String RoleID,@Param("ProjectID") String ProjectID);
 
-    List<Map<String,Object>> SystemJobList_Select( @Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
+    IPage<Map<String,Object>> SystemJobList_Select(IPage page, @Param("AuthCompanyID") String authCompanyID, @Param("ProductID")String productID, @Param("OrgID")String orgID);
 
     List<SAccount> SystemUserList_Select(@Param("JobID")String jobID, @Param("AuthCompanyID")String authCompanyID);
 

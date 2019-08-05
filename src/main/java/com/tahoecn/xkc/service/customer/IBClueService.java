@@ -2,11 +2,9 @@ package com.tahoecn.xkc.service.customer;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.tahoecn.core.json.JSONResult;
-
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.vo.Customer;
-import com.tahoecn.xkc.model.vo.CustomerStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -91,5 +89,5 @@ public interface IBClueService extends IService<BClue> {
 	/*
 	 * 报备
 	 */
-	public JSONResult report(String reportUserId, String intentProjectId, String customerName, String mobile, String gender, String remark);
+	public Result report(String reportUserId, String intentProjectId, String customerName, String mobile, String gender, String remark);
 }

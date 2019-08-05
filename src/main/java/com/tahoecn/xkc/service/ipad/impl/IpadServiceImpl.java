@@ -1338,16 +1338,18 @@ public class IpadServiceImpl implements IIpadService {
         			re_data.put(map.get("GroupName").toString(), m);
         		}
         	}
-        	JSONObject json_data = new JSONObject();
+        	JSONArray re_ja = new JSONArray();
         	for(Map.Entry<String,List<Map<String, Object>>> entry : re_data.entrySet()){
+        		JSONObject json_data = new JSONObject();
         		String mapKey = entry.getKey();
         		List<Map<String, Object>> mapValue = entry.getValue();
         		json_data.put("Type", mapKey);
         		json_data.put("Data", mapValue);
+        		re_ja.add(json_data);
         	}
             re.setErrcode(0);
             re.setErrmsg("成功");
-        	re.setData(json_data);
+        	re.setData(re_ja);
             return re;
         }
         re.setErrcode(1);

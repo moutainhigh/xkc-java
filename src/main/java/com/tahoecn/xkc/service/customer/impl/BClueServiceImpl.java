@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.core.json.JSONResult;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
@@ -589,9 +590,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	 * 报备
 	 */
 	@Override
-	public JSONResult report(String reportUserId, String projectid, String customerName, String mobile,
+	public Result report(String reportUserId, String projectid, String customerName, String mobile,
 			String gender, String remark) {
-		JSONResult result = new JSONResult();
+		Result result=new Result();
 		result.setData("");
 		String projectName;
 
@@ -603,28 +604,20 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
 		BChanneluser channelUser = channeluserMapper.selectById(reportUserId);
 		if (channelUser == null) {
-			result.setCode(-1);
-			result.setMsg("报备人不存在");
-			return result;
+			return Result.errormsg(-1,"报备人不存在");
 		}
 		if (mobile == null || "".equals(mobile)) {
-			result.setCode(-1);
-			result.setMsg("手机号必须填写");
-			return result;
+			return Result.errormsg(-1,"手机号必须填写");
 		}
 
 		if (mobile.trim().equals(channelUser.getMobile())) {
-			result.setCode(-1);
-			result.setMsg("报备无效，不允许报备自己！");
-			return result;
+			return Result.errormsg(-1,"报备无效，不允许报备自己！");
 		}
 
 		// 判断是否老业主
 		String isOwner = customerMapper.isOwner(projectid, mobile);
 		if (isOwner != null && isOwner.length() > 0) {
-			result.setCode(-1);
-			result.setMsg("报备无效，该客户为项目老客户！");
-			return result;
+			return Result.errormsg(-1,"报备无效，该客户为项目老客户！");
 		}
 		// 不是业主，新客户
 
@@ -633,17 +626,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		// 验证是否重复报备
 		String isRepeatedReg = clueMapper.isRepeatedReg(mobile, projectid, reportUserId);
 		if (isRepeatedReg != null && isRepeatedReg.length() > 0) {
-			result.setCode(-1);
-			result.setMsg("报备无效，该客户已被您报备!");
-			return result;
+			return Result.errormsg(-1,"报备无效，该客户已被您报备!");
 		}
 
 		// 验证是否已被其他渠道报备
 		String isProtected = clueMapper.isProtected(mobile, projectid, reportUserId);
 		if (isProtected != null && isProtected.length() > 0) {
-			result.setCode(-1);
-			result.setMsg("报备无效，该客户已被其他渠道报备!");
-			return result;
+			return Result.errormsg(-1,"报备无效，该客户已被其他渠道报备!");
 		}
 
 		// 潜在客户如果存在则更新
@@ -740,10 +729,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customerpotentialfollowup.setProjectID(projectid);
 		customerpotentialfollowup.setOrgID(channelUser.getChannelOrgID());
 		customerpotentialfollowupMapper.insert(customerpotentialfollowup);
-		
-		result.setCode(0);
-		result.setMsg("报备成功");
-
-		return result;
+		return result.ok("报备成功");
 	}
 }

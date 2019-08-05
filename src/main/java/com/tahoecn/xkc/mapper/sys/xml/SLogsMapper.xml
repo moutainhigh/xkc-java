@@ -22,7 +22,7 @@
     ]]>
     </select>
     
-    <select id="mBrokerCustomerDetail_SelectAll" resultType="int" parameterType="java.util.Map">
+<select id="mBrokerCustomerDetail_SelectAll" resultType="int" parameterType="java.util.Map">
     <![CDATA[
     SELECT  COUNT(1) recordCount 
 		FROM   (
@@ -34,6 +34,23 @@
 				FROM dbo.S_Logs 
 				WHERE 1=1 ${str1} 
 				 )a
+    ]]>
+    </select>
+    
+<select id="mBrokerCustomerDetail_Select1" resultType="java.util.Map" parameterType="String">
+    <![CDATA[
+    SELECT * FROM (
+		SELECT ROW_NUMBER() OVER ( ORDER BY CreateTime DESC ) num, *
+		FROM   (
+				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
+				FROM dbo.S_Logs_Bak 
+				WHERE 1=1 ${str1}
+				UNION
+				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
+				FROM dbo.S_Logs 
+				WHERE 1=1 ${str1} 
+				 )sp
+		)t 
     ]]>
     </select>
 </mapper>

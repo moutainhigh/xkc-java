@@ -1,22 +1,24 @@
 package com.tahoecn.xkc.controller.app;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tahoecn.core.json.JSONResult;
+import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.controller.TahoeBaseController;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.vo.Customer;
 import com.tahoecn.xkc.model.vo.Customers;
 import com.tahoecn.xkc.service.customer.IBClueService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 
 
 @Api(tags = "客户专项报备接口", value = "客户专项报备接口")
@@ -28,58 +30,83 @@ public class AppBClueController extends TahoeBaseController {
 	private IBClueService bClueService;
 
 	@ApiOperation(value = "报备", notes = "报备新客户")
-	@RequestMapping(value = "/report", method = { RequestMethod.POST })
-	public JSONResult report(
-			@ApiParam(name = "reportId", value = "报告人ID", required = true) @RequestParam String reportId,
-			@ApiParam(name = "name", value = "客户姓名", required = true) @RequestParam String name,
-			@ApiParam(name = "sex", value = "客户性别", required = true) @RequestParam String sex,
-			@ApiParam(name = "projectId", value = "项目ID") @RequestParam(required = false) String projectId,
-			@ApiParam(name = "mobile", value = "客户手机号码", required = true) @RequestParam String mobile,
-			@ApiParam(name = "remark", value = "备注") @RequestParam(required = false) String remark) {
-
-		return bClueService.report(reportId, projectId, name, mobile, sex, remark);
+	@RequestMapping(value = "/report", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result report(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+		try {
+			System.out.println(jsonParam.toJSONString());
+			 String remark = "";
+			 String projectId = "";
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String reportId = (String)paramMap.get("reportId").toString();//报告人ID
+            String name = (String)paramMap.get("name").toString();//客户姓名
+            String sex = (String)paramMap.get("sex").toString();//客户性别 
+            String mobile = (String)paramMap.get("mobile").toString();//客户手机号码
+            if(paramMap.get("projectId") != null) {
+            	projectId = (String)paramMap.get("projectId").toString();//项目ID
+            }
+            if(paramMap.get("remark") != null) {
+            	remark = (String)paramMap.get("remark").toString();//备注
+            }
+			return bClueService.report(reportId, projectId, name, mobile, sex, remark);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
 	}
 
 	@ApiOperation(value = "我的客户列表", notes = "我的客户列表")
-	@RequestMapping(value = "/list", method = { RequestMethod.POST })
-	public JSONResult<Customers> list(
-			@ApiParam(name = "reportId", value = "报告人ID", required = true) @RequestParam String reportId,
-			@ApiParam(name = "nameOrMobile", value = "客户姓名或者手机号") @RequestParam(required = false) String nameOrMobile,
-			@ApiParam(name = "ascOrDesc", value = "排序") @RequestParam(required = false) String ascOrDesc,
-			@ApiParam(name = "status", value = "客户状态") @RequestParam(required = false) String status) {
-
-		JSONResult jsonResult = new JSONResult();
-
-		List<Customer> customers = bClueService.listMyCustomers(reportId, "", ascOrDesc, nameOrMobile, status);
-		if (customers == null) {
-			jsonResult.setCode(-1);
-			jsonResult.setMsg("未查询到客户");
-		} else {
-			Customers cs = new Customers();
-			cs.setCustomerList(customers);
-			cs.setTotal(customers.size());
-			jsonResult.setCode(0);
-			jsonResult.setMsg("SUCCESS");
-			jsonResult.setData(cs);
+	@RequestMapping(value = "/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result list(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+		try {
+			System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String reportId = (String)paramMap.get("reportId").toString();//报告人ID
+            String nameOrMobile = "";
+            String status = "";
+            String ascOrDesc = "";
+            if(paramMap.get("nameOrMobile") != null) {
+            	nameOrMobile = (String)paramMap.get("nameOrMobile").toString();//客户姓名或者手机号
+            }
+            if(paramMap.get("ascOrDesc") != null) {
+            	ascOrDesc = (String)paramMap.get("ascOrDesc").toString();//排序
+            }
+            if(paramMap.get("status") != null) {
+            	status = (String)paramMap.get("status").toString();//客户状态
+            }
+            List<Customer> customers = bClueService.listMyCustomers(reportId, "", ascOrDesc, nameOrMobile, status);
+    		if (customers == null) {
+    			return Result.errormsg(-1,"未查询到该客户");
+    		} else {
+    			Customers cs = new Customers();
+    			cs.setCustomerList(customers);
+    			cs.setTotal(customers.size());
+    			return Result.ok(cs);
+    		}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
-		return jsonResult;
 	}
 
 	@ApiOperation(value = "客户详情", notes = "客户详情")
-	@RequestMapping(value = "/detail", method = { RequestMethod.POST })
-	public JSONResult<Customer> detail(
-			@ApiParam(name = "clueId", value = "报备线索id", required = true) @RequestParam String clueId) {
-
-		JSONResult jsonResult = new JSONResult();
-		Customer customer = bClueService.detail(clueId);
-		if (customer != null) {
-			jsonResult.setCode(0);
-			jsonResult.setMsg("SUCCESS");
-			jsonResult.setData(customer);
-		} else {
-			jsonResult.setCode(-1);
-			jsonResult.setMsg("未查询到该客户");
+	@RequestMapping(value = "/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result detail(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+		try {
+			System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String clueId = (String)paramMap.get("clueId").toString();//报备线索id
+            Customer customer = bClueService.detail(clueId);
+            if (customer != null) {
+            	return Result.ok(customer);
+    		} else {
+    			return Result.errormsg(-1,"未查询到该客户");
+    		}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
-		return jsonResult;
 	}
 }

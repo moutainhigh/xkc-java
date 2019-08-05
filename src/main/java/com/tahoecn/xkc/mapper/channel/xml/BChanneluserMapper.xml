@@ -180,10 +180,9 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         WHERE ID=#{UserID};
     </update>
 
-    <select id="ChannelUser_Find" resultType="java.util.HashMap" parameterType="string">
+    <select id="ChannelUser_Find" resultType="java.util.Map" parameterType="string">
         SELECT
-        *,
-        dbo.F_DictName ( ChannelTypeID ) 'ChannelType'
+        *
         FROM
         B_ChannelUser
         WHERE
@@ -502,4 +501,64 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         ORDER BY
         ListIndex
     </select>
+
+    <select id="ChannelUser_Detail_FindByIdN" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        SELECT
+        cu.ID,
+        cu.UserName ,
+        cu.ID 'UserID',
+        cu.Name ,
+        dbo.F_DictName (
+        ISNULL( cu.Gender, '50827B18-5BCC-454C-B658-09AF4328D2A0' )) Gender,
+        ISNULL( cu.Gender, '50827B18-5BCC-454C-B658-09AF4328D2A0' ) GenderID,
+        cu.HeadImg ,
+        dbo.F_DictName ( cu.ChannelTypeID ) 'ChannelType',
+        cu.ChannelTypeID ,
+        '1' IsPass,
+        cu.Mobile ,
+        cu.Job,
+        cu.ChannelOrgID,
+        cu.ApprovalStatus,
+        (
+        CASE
+
+        WHEN cu.CertificatesType IS NOT NULL
+        AND cu.CertificatesType<> ''
+        AND cu.CertificatesName IS NOT NULL
+        AND cu.CertificatesName<> ''
+        AND cu.CertificatesNo IS NOT NULL
+        AND cu.CertificatesNo<> ''
+        AND cu.CertificatesPicFace IS NOT NULL
+        AND cu.CertificatesPicFace<> ''
+        AND cu.CertificatesPicBack IS NOT NULL
+        AND cu.CertificatesPicBack<> '' THEN
+        1 ELSE 0
+        END
+        ) IsCard,
+        ISNULL(( CASE WHEN BankCard = '' THEN 0 WHEN BankCard <> '' THEN 1 END ), 0 ) IsBankCard,
+        o.OrgCode ChannelOrgCode,
+        o.OrgName ChannelOrgName,
+        cu.CertificatesName,
+        cu.CertificatesType,
+        cu.CertificatesNo,
+        cu.CertificatesPicFace,
+        cu.CertificatesPicBack,
+        cu.BankCard,
+        cu.BankCardPerson,
+        cu.BankCardBranch,
+        cu.BankCardPic,
+        cu.BankCardCreate
+        FROM
+        dbo.B_ChannelUser cu
+        LEFT JOIN dbo.B_ChannelOrg o ON cu.ChannelOrgID= o.ID
+        AND o.IsDel= 0
+        AND o.[Status] = 1
+        WHERE
+        cu.ID = #{id}
+        AND cu.IsDel= 0
+        AND cu.[Status] =1
+        ]]>
+    </select>
+
 </mapper>

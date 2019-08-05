@@ -98,21 +98,21 @@ public class LoginAppController extends TahoeBaseController {
             return Result.errormsg(10, "用户不存在");
         }
 
-        Integer IsNoAllotRole = (Integer) map.get("IsNoAllotRole");//是否开启分接/销支
-        Integer AllowDeviceType = (Integer) map.get("AllowDeviceType"); //允许登录设备类型 0.都不允许 1.只允许APP登录 2.只允许ipad登录 3.允许所有设备登录
+        Short IsNoAllotRole = (Short) map.get("IsNoAllotRole");//是否开启分接/销支
+        Short AllowDeviceType = (Short) map.get("AllowDeviceType"); //允许登录设备类型 0.都不允许 1.只允许APP登录 2.只允许ipad登录 3.允许所有设备登录
         String JobCode = (String) map.get("JobCode");
-        Integer AccountType = (Integer) map.get("AccountType");
+        Short AccountType = (Short) map.get("AccountType");
         String tempPwd = (String) map.get("Password");
         String ProjectID = (String) map.get("ProjectID");
         String UserName = (String) map.get("UserName");
-        Integer OutUserAllowModifyPwd = (Integer) map.get("OutUserAllowModifyPwd");//外部人员是否允许修改密码0.不允许 1.允许
-        Integer OutUserIsShowHouseStyle = (Integer) map.get("OutUserIsShowHouseStyle");//外部人员展示房源页 0.不展示 1.展示
-        Integer HouseStyle = (Integer) map.get("HouseStyle");//1.小格子 2.大格子 3.列表
-        Integer AccountStatus = (Integer) map.get("AccountStatus");  // 0.禁用 1.开启
+        Short OutUserAllowModifyPwd = (Short) map.get("OutUserAllowModifyPwd");//外部人员是否允许修改密码0.不允许 1.允许
+        Short OutUserIsShowHouseStyle = (Short) map.get("OutUserIsShowHouseStyle");//外部人员展示房源页 0.不展示 1.展示
+        Short HouseStyle = (Short) map.get("HouseStyle");//1.小格子 2.大格子 3.列表
+        Short AccountStatus = (Short) map.get("AccountStatus");  // 0.禁用 1.开启
         String ChannelType = (String) map.get("ChannelType");
         String UserID = (String) map.get("UserID");
-        Integer SelfSoldTeamIsShowHouseStyle = (Integer) map.get("SelfSoldTeamIsShowHouseStyle"); //自销团队是否展示房源页 0.不展示 1.展示
-        Integer AgentTeamIsShowHouseStyle = (Integer) map.get("AgentTeamIsShowHouseStyle"); //代理团队是否展示房源页 0.不展示 1.展示
+        Short SelfSoldTeamIsShowHouseStyle = (Short) map.get("SelfSoldTeamIsShowHouseStyle"); //自销团队是否展示房源页 0.不展示 1.展示
+        Short AgentTeamIsShowHouseStyle = (Short) map.get("AgentTeamIsShowHouseStyle"); //代理团队是否展示房源页 0.不展示 1.展示
         if (1 == IsNoAllotRole && JobCode.equals("FJ")) {
             return Result.errormsg(10, "无法登陆,此账号所属项目没有开通分接角色");
         }
@@ -201,7 +201,7 @@ public class LoginAppController extends TahoeBaseController {
     /// <param name="AgentTeamIsShowHouseStyle">代理团队是否展示房源页 0.不展示 1.展示</param>
     /// <param name="debug"></param>
     /// <returns></returns>
-    public String getRoleList(String ProjectID, String JobCode, String AccountType, Integer HouseStyle, String MobileSiteUrl, Integer OutUserAllowModifyPwd, Integer OutUserIsShowHouseStyle, String ChannelType, Integer SelfSoldTeamIsShowHouseStyle, Integer AgentTeamIsShowHouseStyle) {
+    public String getRoleList(String ProjectID, String JobCode, String AccountType, Short HouseStyle, String MobileSiteUrl, Short OutUserAllowModifyPwd, Short OutUserIsShowHouseStyle, String ChannelType, Short SelfSoldTeamIsShowHouseStyle, Short AgentTeamIsShowHouseStyle) {
         String jsonStr = "";
 		List<HashMap<String,String>> MenuAndFunList = accountService.GetMenuAndFunList_Select(JobCode,ProjectID);
 		if (MenuAndFunList.size() != 0) {
@@ -588,24 +588,24 @@ public class LoginAppController extends TahoeBaseController {
 
         iSLogsService.SystemLogsDetail_Insert(log,request);
         if (paramMap.get("Password")!=null){
-            String Password = (String) paramMap.get("paramMap");
+            String Password = (String) paramMap.get("Password");
             paramMap.put("Password",SecureUtil.md5(Password));
         }
         Map<String,Object> res=salesuserService.mLFLogin_Select(paramMap);
-        if (res.size()==0){
+        if (res==null){
         return Result.errormsg(9,"用户名不存在");
         }
         //是否开启分接/销支 0.开启 1.关闭
-        int isNoAllotRole = (int) res.get("IsNoAllotRole");
+        short isNoAllotRole = (short) res.get("IsNoAllotRole");
         //允许登录设备类型 0.都不允许 1.只允许APP登录 2.只允许ipad登录 3.允许所有设备登录
-        int allowDeviceType = (int) res.get("AllowDeviceType");
+        short allowDeviceType = (short) res.get("AllowDeviceType");
         String jobCode = (String) res.get("JobCode");
-        String accountType = (String) res.get("AccountType");
+        short accountType = (short) res.get("AccountType");
         String password = (String) paramMap.get("Password");
         String projectID = (String) res.get("ProjectID");
 
         // 0.禁用 1.开启
-        int accountStatus = (int) res.get("AccountStatus");
+        short accountStatus = (short) res.get("AccountStatus");
         if (isNoAllotRole == 1 && ("XSZC").equals(jobCode)){
             return Result.errormsg(10,"请联系管理员开通销支角色");
         }
@@ -618,7 +618,7 @@ public class LoginAppController extends TahoeBaseController {
             return Result.errormsg(10,"该账号已被禁用");
         }
         if (DateUtil.format(new Date(),"yyyyMMddHHmm").equals(password)){
-            if ("1".equals(accountType))
+            if (accountType==1)
             {
                 // 用户验证
                 String s = accountService.checkUCUser(UserName, password);

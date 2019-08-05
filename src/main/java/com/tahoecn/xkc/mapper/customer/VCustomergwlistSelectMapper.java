@@ -413,7 +413,7 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param projectID
 	 * @return
 	 */
-	List<Map<String,Object>> sClue_Select(String mobile,String projectID);
+	List<Map<String,Object>> sClue_Select(@Param("mobile")String mobile,@Param("projectID")String projectID);
 	
 	/**
 	 * 新增线索客户信息

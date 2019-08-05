@@ -155,28 +155,35 @@ public class H5Controller extends TahoeBaseController {
     @RequestMapping(value = "/mLoginTK_SelectN", method = {RequestMethod.POST})
     public Result mLoginTK_SelectN(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
-        String Mobile=(String) paramMap.get("Mobile");
+        String UserName=(String) paramMap.get("UserName");
         String Password=(String) paramMap.get("Password");
         Date date = new Date();
-        Result result = new Result();
         String time = String.format(date.toString(), "yyyyMMddHHmm");
-        Map<String, Object> map;
+        Map<String, Object> map=new HashMap<>();
         if (StringUtils.equals(time, Password)) {
-            map = channeluserService.ChannelUserCurrency_Find(Mobile);
+            map = channeluserService.ChannelUserCurrency_Find(UserName);
         } else {
-            map =channeluserService.ChannelUser_Find(Mobile,Password);
+            map =channeluserService.ChannelUser_Find(UserName,Password);
         }
-        if (map.size()!=0){
-
-            result.setErrcode(0);
-            result.setErrmsg("成功");
-            result.setData(map);
-            return result;
+        if (map==null){
+            return Result.errormsg(1,"获取用户信息失败，用户名或密码错误");
         }
-        result.setErrcode(0);
-        result.setErrmsg("登录失败");
-        result.setData(map);
-        return result;
+        if ((Integer) map.get("Status")==0){
+            return Result.errormsg(1,"获取用户信息失败，账户被禁用");
+        }
+        String id= (String) map.get("ID");
+        Map<String,Object> user=channeluserService.ChannelUser_Detail_FindByIdN(id);
+        if (user==null){
+            //获取出数据，需要修改其中的SQL语句??? what??
+            return Result.errormsg(1,"获取用户信息失败，机构被禁用");
+        }else {
+            //判断中介同行的机构是否被禁用了
+            if ("32C92DA0-DA13-4C21-A55E-A1D16955882C".equals(user.get("ChannelTypeID"))
+                    &&user.get("ChannelOrgCode")==null){
+                return Result.errormsg(1,"获取用户信息失败，机构被禁用");
+            }
+        }
+        return Result.ok(user);
     }
 
     @ApiOperation(value = "微信-JSAPI包信息", notes = "微信-JSAPI包信息")
