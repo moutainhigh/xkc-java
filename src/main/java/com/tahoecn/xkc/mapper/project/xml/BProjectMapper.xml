@@ -45,5 +45,964 @@
         WHERE
         id = #{ProjectID}
     </select>
+    <!-- 业绩看板start -->
+    <!-- 首页销售业绩认购数据 -->
+    <select id="mYJKBSalesPerformanceData_Select" resultType="java.util.Map" parameterType="java.util.Map">
+    <![CDATA[
+		WITH #R_YJKBSalesPerformanceData_Select
+          	AS ( SELECT   R.ProjectID ,
+                        R.Date ,
+                        R.Year ,
+                        R.Quarter ,
+                        R.Month ,
+                        R.Week ,
+                        R.Day ,
+                        ISNULL(T6.BookingCount, 0) - ISNULL(T7.BookingCount, 0) BookingCount ,
+                        ISNULL(T6.BookingAmount, 0) - ISNULL(T7.BookingAmount, 0) BookingAmount ,
+                        ISNULL(T7.BookingCount, 0) BookingCancelCount ,
+                        ISNULL(T7.BookingAmount, 0) BookingCancelAmount ,
+                        ISNULL(T1.OrderCount, 0) - ISNULL(T2.OrderCount, 0) - ISNULL(T3.OrderCount, 0) OrderCount ,
+                        ISNULL(T1.OrderAmount, 0) - ISNULL(T2.OrderAmount, 0) - ISNULL(T3.OrderAmount, 0) OrderAmount ,
+                        ISNULL(T1.OrderCount, 0) OrderNewCount ,
+                        ISNULL(T1.OrderAmount, 0) OrderNewAmount ,
+                        ISNULL(T2.OrderBackCount, 0) + ISNULL(T3.OrderBackCount, 0) OrderBackCount ,
+                        ISNULL(T2.OrderBackAmount, 0) + ISNULL(T3.OrderBackAmount, 0) OrderBackAmount ,
+                        ISNULL(T2.OrderChangeCount, 0) + ISNULL(T3.OrderChangeCount, 0) OrderChangeCount ,
+                        ISNULL(T2.OrderChangeAmount, 0) + ISNULL(T3.OrderChangeAmount, 0) OrderChangeAmount ,
+                        ISNULL(T4.ContractCount, 0) - ISNULL(T8.ContractCount, 0) ContractCount ,
+                        ISNULL(T4.ContractAmount, 0) - ISNULL(T8.ContractAmount, 0) ContractAmount ,
+                        ISNULL(T4.ContractCount, 0) ContractNewCount ,
+                        ISNULL(T4.ContractAmount, 0) ContractNewAmount ,
+                        ISNULL(T8.ContractBackCount, 0) ContractBackCount ,
+                        ISNULL(T8.ContractBackAmount, 0) ContractBackAmount ,
+                        ISNULL(T4.ContractHouseBldArea, 0) - ISNULL(T8.ContractHouseBldArea, 0) ContractHouseBldArea ,
+                        ISNULL(T4.ContractHouseAmount, 0) - ISNULL(T8.ContractHouseAmount, 0) ContractHouseAmount ,
+                        ISNULL(T5.FeeCount, 0) FeeCount ,
+                        ISNULL(T5.FeeAmount, 0) FeeAmount
+               FROM     ( SELECT    P.ID ProjectID ,
+                                    R.Date ,
+                                    R.Year ,
+                                    R.Quarter ,
+                                    R.Month ,
+                                    R.Week ,
+                                    R.Day
+                          FROM      dbo.R_Date R ,
+                                    dbo.B_Project P
+                          WHERE     P.Level = 1
+                                    AND p.ID = #{ProjectID}
+                                    AND R.Date >= #{StartDate}
+                                    AND R.Date <= #{EndDate}
+                        ) R
+                        LEFT JOIN ( SELECT  P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), ( CASE
+                                                              WHEN A.ChgDate IS NULL
+                                                              THEN A.QsDate
+                                                              ELSE A.ChgDate
+                                                              END ), 120) Date ,
+                                            COUNT(1) OrderCount ,
+                                            SUM(CASE WHEN B.ContractGUID IS NOT NULL
+                                                     THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                     ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                END) OrderAmount
+                                    FROM    C_MYOrder (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID
+                                                              AND ( B.Status = '激活'
+                                                              OR B.CloseReason IN ( '换房', '退房' )
+                                                              )
+                                            LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID
+                                    WHERE   A.OrderType = '认购' 
+											AND SaleUserID = #{SaleUserID}
+                                            AND ( ( A.ChgDate >= #{StartDate}
+                                                    AND A.ChgDate <= #{EndDate}
+                                                  )
+                                                  OR ( A.ChgDate IS NULL
+                                                       AND A.QsDate >= #{StartDate}
+                                                       AND A.QsDate <= #{EndDate}
+                                                     )
+                                                )
+                                    GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), ( CASE
+                                                              WHEN A.ChgDate IS NULL
+                                                              THEN A.QsDate
+                                                              ELSE A.ChgDate
+                                                              END ), 120)
+                                  ) T1 ON R.ProjectID = T1.ProjectID
+                                          AND R.Date = T1.Date
+                        LEFT JOIN ( SELECT  P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), A.CloseDate, 120) Date ,
+                                            COUNT(1) OrderCount ,
+                                            SUM(CASE WHEN B.ContractGUID IS NOT NULL
+                                                     THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                     ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                END) OrderAmount ,
+                                            SUM(CASE A.CloseReason
+                                                  WHEN '退房' THEN 1
+                                                  ELSE 0
+                                                END) OrderBackCount ,
+                                            SUM(CASE A.CloseReason
+                                                  WHEN '退房'
+                                                  THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+                                                              THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                              ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                         END )
+                                                  ELSE 0
+                                                END) OrderBackAmount ,
+                                            SUM(CASE A.CloseReason
+                                                  WHEN '换房' THEN 1
+                                                  ELSE 0
+                                                END) OrderChangeCount ,
+                                            SUM(CASE A.CloseReason
+                                                  WHEN '换房'
+                                                  THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+                                                              THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                              ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                         END )
+                                                  ELSE 0
+                                                END) OrderChangeAmount
+                                    FROM    C_MYOrder (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID
+                                                              AND ( B.Status = '激活'
+                                                              OR B.CloseReason IN ( '换房', '退房' )
+                                                              )
+                                            LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID                  
+                                    WHERE   A.OrderType = '认购' 
+                                            AND A.Status = '关闭'
+                                            AND A.CloseReason IN ( '退房', '换房', '其它变更', '作废', '特批折扣' )
+                                            AND op.SaleUserID = #{SaleUserID}                 
+                                            AND A.CloseDate >= #{StartDate}
+                                            AND A.CloseDate <= #{EndDate}
+                                    GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), A.CloseDate, 120)
+                                  ) T2 ON R.ProjectID = T2.ProjectID
+                                          AND R.Date = T2.Date
+                        LEFT JOIN ( SELECT  P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), B.CloseDate, 120) Date ,
+                                            SUM(CASE B.CloseReason
+                                                  WHEN '换房' THEN 0
+                                                  ELSE 1
+                                                END) OrderCount ,
+                                            SUM(CASE WHEN B.ContractGUID IS NOT NULL
+                                                     THEN ( CASE
+                                                              WHEN C.ContractGUID IS NOT NULL
+                                                              THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal )
+                                                              + B.FactOtherTotal - ( C.HtTotal + ( ( ~CAST(C.IsZxkbrht AS BIT) ) * C.ZxTotal )
+                                                              + C.FactOtherTotal )
+                                                              ELSE B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                            END )
+                                                     ELSE A.CjTotal
+                                                          + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                END) OrderAmount ,
+                                            SUM(CASE B.CloseReason
+                                                  WHEN '退房' THEN 1
+                                                  ELSE 0
+                                                END) OrderBackCount ,
+                                            SUM(CASE B.CloseReason
+                                                  WHEN '退房'
+                                                  THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+                                                              THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                              ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                         END )
+                                                  ELSE 0
+                                                END) OrderBackAmount ,
+                                            SUM(CASE B.CloseReason
+                                                  WHEN '换房' THEN 1
+                                                  ELSE 0
+                                                END) OrderChangeCount ,
+                                            SUM(CASE B.CloseReason
+                                                  WHEN '换房'
+                                                  THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+                                                              THEN ( CASE
+                                                              WHEN C.ContractGUID IS NOT NULL
+                                                              THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal )
+                                                              + B.FactOtherTotal
+                                                              - ( C.HtTotal + ( ( ~CAST(C.IsZxkbrht AS BIT) ) * C.ZxTotal ) + C.FactOtherTotal )
+                                                              ELSE B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal
+                                                              END )
+                                                              ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal
+                                                         END )
+                                                  ELSE 0
+                                                END) OrderChangeAmount
+                                    FROM    C_MYOrder (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            JOIN C_MYContract B ON A.TradeGUID = B.TradeGUID
+                                                              AND B.CloseDate >= #{StartDate}
+                                                              AND B.CloseDate <= #{EndDate}
+                                                              AND B.CloseReason IN ( '退房', '换房' )
+                                            LEFT JOIN C_MYContract C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+                                            LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID                  
+                                    WHERE   A.OrderType = '认购'
+                                            AND A.CloseReason = '转签约'
+                                            AND op.SaleUserID = #{SaleUserID}
+                                    GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), B.CloseDate, 120)
+                                  ) T3 ON R.ProjectID = T3.ProjectID
+                                          AND R.Date = T3.Date
+                        LEFT  JOIN ( SELECT P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), ( CASE
+                                                              WHEN A.chgdate >= A.ZqDate
+                                                              THEN A.chgdate
+                                                              ELSE A.zqdate
+                                                              END ), 120) Date ,
+                                            COUNT(1) ContractCount ,
+                                            SUM(A.RmbHtTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal )
+                                                + A.FactOtherTotal) ContractAmount ,
+                                            SUM(ISNULL(A.BldArea, 0)) ContractBldArea ,
+                                            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+                                                     ELSE ( A.RmbHtTotal
+                                                            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+                                                              * A.ZxTotal )
+                                                            + A.FactOtherTotal )
+                                                END) ContractHouseAmount ,
+                                            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+                                                     ELSE ISNULL(A.BldArea, 0)
+                                                END) ContractHouseBldArea
+                                     FROM   C_MYContract (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+                                            JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+                                            LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID    
+                                     WHERE  NOT EXISTS ( SELECT
+                                                              SaleGUID
+                                                         FROM C_MYSaleModiApply c
+                                                         WHERE
+                                                              c.IsCstBg = 1
+                                                              AND c.IsPayformBg = 0
+                                                              AND c.IsYhBg = 0
+                                                              AND c.IsCjtotalBg = 0
+                                                              AND c.IsExcutive = 1
+                                                              AND a.LastSaleGUID = c.SaleGUID
+                                                              AND SaleType <> '定单' )
+                                            AND ( A.ConStatus = '正签'
+                                                  OR ISNULL(A.ConStatus, '') = ''
+                                                )
+                                            AND op.SaleUserID = #{SaleUserID}
+                                            AND ( CASE WHEN A.chgdate >= A.ZqDate
+                                                       THEN A.chgdate
+                                                       ELSE A.zqdate
+                                                  END ) >= #{StartDate}
+                                            AND ( CASE WHEN A.chgdate >= A.ZqDate
+                                                       THEN A.chgdate
+                                                       ELSE A.zqdate
+                                                  END ) <= #{EndDate}
+                                     GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), ( CASE
+                                                              WHEN A.chgdate >= A.ZqDate
+                                                              THEN A.chgdate
+                                                              ELSE A.zqdate
+                                                              END ), 120)
+                                   ) T4 ON R.ProjectID = T4.ProjectID
+                                           AND R.Date = T4.Date
+                        LEFT  JOIN ( SELECT P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), A.CloseDate, 120) Date ,
+                                            COUNT(1) ContractCount ,
+                                            SUM(A.RmbHtTotal
+                                                + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+                                                    * A.ZxTotal )
+                                                + A.FactOtherTotal) ContractAmount ,
+                                            SUM(ISNULL(A.BldArea, 0)) ContractBldArea ,
+                                            SUM(CASE A.CloseReason
+                                                  WHEN '退房' THEN 1
+                                                  ELSE 0
+                                                END) ContractBackCount ,
+                                            SUM(CASE A.CloseReason
+                                                  WHEN '退房'
+                                                  THEN ISNULL(A.Total, 0)
+                                                  ELSE 0
+                                                END) ContractBackAmount ,
+                                            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+                                                     ELSE ( A.RmbHtTotal
+                                                            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+                                                              * A.ZxTotal )
+                                                            + A.FactOtherTotal )
+                                                END) ContractHouseAmount ,
+                                            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+                                                     ELSE ISNULL(A.BldArea, 0)
+                                                END) ContractHouseBldArea
+                                     FROM   dbo.C_MYContract (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+                                            JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+                                            LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID   
+                                     WHERE  NOT EXISTS ( SELECT
+                                                              SaleGUID
+                                                         FROM C_MYSaleModiApply c
+                                                         WHERE
+                                                              c.IsCstBg = 1
+                                                              AND c.IsPayformBg = 0
+                                                              AND c.IsYhBg = 0
+                                                              AND c.IsCjtotalBg = 0
+                                                              AND c.IsExcutive = 1
+                                                              AND a.ContractGUID = c.SaleGUID )
+                                            AND ( A.ConStatus = '正签'
+                                                  OR ISNULL(A.ConStatus, '') = ''
+                                                )
+                                            AND A.CloseReason IN ( '退房', '换房', '其它变更', '重置认购', '作废', '特批折扣' )
+                                            AND A.Status = '关闭'
+                                            AND op.SaleUserID = #{SaleUserID}
+                                            AND A.CloseDate >= #{StartDate}
+                                            AND A.CloseDate <= #{EndDate}
+                                     GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), A.CloseDate, 120)
+                                   ) T8 ON R.ProjectID = T8.ProjectID
+                                           AND R.Date = T8.Date
+                        LEFT  JOIN ( SELECT P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), sv.KpDate, 120) Date ,
+                                            COUNT(DISTINCT sg.RoomGUID) FeeCount ,
+                                            SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
+                                     FROM   C_MYGetin (NOLOCK) sg
+                                            JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = sv.ProjGUID
+                                            JOIN dbo.C_MYTrade tr ON sg.SaleGUID = tr.TradeGUID
+											                      JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+											                      JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+                                     WHERE  sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+                                            AND ( sg.ItemType LIKE '%房款%'
+                                                  OR sg.ItemName = '其他'
+                                                )
+                                            AND ( sg.Status = ''
+                                                  OR sg.Status IS NULL
+                                                )
+                                            AND op.SaleUserID = #{SaleUserID}        
+                                            AND sv.KpDate >= #{StartDate}
+                                            AND sv.KpDate <= #{EndDate}
+                                     GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), sv.KpDate, 120)
+                                   ) T5 ON R.ProjectID = T5.ProjectID
+                                           AND R.Date = T5.Date
+                        LEFT  JOIN ( SELECT P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), A.BgnDate, 120) Date ,
+                                            COUNT(1) BookingCount ,
+                                            SUM(ISNULL(A.Total, 0)) BookingAmount
+                                     FROM   C_MYBooking (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID  
+                                     WHERE  A.Status IN ( '排号' )
+											AND op.SaleUserID = #{SaleUserID}
+                                            AND A.BgnDate >= #{StartDate}
+                                            AND A.BgnDate < #{EndDate}
+                                     GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), A.BgnDate, 120)
+                                   ) T6 ON R.ProjectID = T6.ProjectID
+                                           AND R.Date = T6.Date
+                        LEFT  JOIN ( SELECT P.PID ProjectID ,
+                                            CONVERT(VARCHAR(10), A.CloseDate, 120) Date ,
+                                            COUNT(1) BookingCount ,
+                                            SUM(ISNULL(A.Total, 0)) BookingAmount
+                                     FROM   C_MYBooking (NOLOCK) A
+                                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                                            LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+                                            LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID  
+                                     WHERE  A.CloseYy IN ( '退号', '作废', '转其它项目' )
+											AND OP.SaleUserID = #{SaleUserID}
+                                            AND A.CloseDate >= #{StartDate}
+                                            AND A.CloseDate < #{EndDate}
+                                     GROUP BY P.PID ,
+                                            CONVERT(VARCHAR(10), A.CloseDate, 120)
+                                   ) T7 ON R.ProjectID = T7.ProjectID
+                                           AND R.Date = T7.Date
+             )
+    SELECT  *
+    FROM    ( SELECT    T.ProjectID ,
+                        SUM(OrderCount) OrderCount ,
+                        CONVERT(DECIMAL(18,2),SUM(OrderAmount) / 10000) OrderAmount ,
+                        SUM(BookingCount) BookingCount ,
+                        CONVERT(DECIMAL(18,2),SUM(BookingAmount) / 10000) BookingAmount ,
+                        SUM(ContractCount) ContractCount ,
+                        CONVERT(DECIMAL(18,2),SUM(ContractAmount) / 10000) ContractAmount ,
+                        SUM(FeeCount) PaybackCount ,
+                        CONVERT(DECIMAL(18,2),SUM(FeeAmount) / 10000) PaybackAmount
+              FROM      #R_YJKBSalesPerformanceData_Select T
+              GROUP BY  T.ProjectID
+            ) T 
+    ]]>
+    </select>
+    <!-- 首页销售业绩逾期未签约数据 -->
+    <select id="mSalesPerformanceOverdueContractData_Select" resultType="java.util.HashMap" parameterType="java.util.Map">
+    <![CDATA[
+		SELECT  SUM(OverdueContractCount) OverdueContractCount ,
+		        CONVERT(DECIMAL(18,2),SUM(OverdueContractAmount) / 10000) OverdueContractAmount
+		FROM    ( SELECT    DATEDIFF(DAY, JhqyDate, GETDATE()) OverdueContractDay ,
+		                    1 OverdueContractCount ,
+		                    Total OverdueContractAmount ,
+		                    D.ProjectID ,
+		                    D.SaleUserID ,
+		                    D.SaleUserName
+		          FROM      dbo.C_MYOrder (NOLOCK) A
+		                    LEFT JOIN dbo.C_MYTrade (NOLOCK) B ON A.TradeGUID = B.TradeGUID
+		                    LEFT JOIN dbo.B_CustomerAttach (NOLOCK) C ON C.ID = B.OppGUID
+		                    LEFT JOIN dbo.B_Opportunity (NOLOCK) D ON C.OpportunityID = D.ID
+		          WHERE     EXISTS ( SELECT ID
+		                             FROM   dbo.B_Project (NOLOCK) P
+		                             WHERE  A.ProjGUID = P.ID AND PID = #{ProjectID} )
+		                    AND D.SaleUserID = #{UserID}
+		                    AND OrderType = '认购'
+		                    AND A.Status = '激活'
+		                    AND LEN(D.SaleUserID) = 36
+		                    AND A.JhqyDate IS NOT NULL
+		        ) A
+		WHERE   OverdueContractDay >= 0
+    ]]>
+    </select>
+    <!-- 首页销售业绩逾期款数据 -->
+    <select id="mSalesPerformanceOverduePaymentData_Select" resultType="java.util.HashMap" parameterType="java.util.Map">
+    <![CDATA[
+		SELECT  COUNT(1) OverduePaymentCount ,
+		        CONVERT(DECIMAL(18,2),SUM(OverduePaymentAmount) / 10000) OverduePaymentAmount
+		FROM    ( SELECT    A.RoomGUID ,
+		                    COUNT(1) OverduePaymentCount ,
+		                    SUM(B.Ye) OverduePaymentAmount ,
+		                    MAX(DATEDIFF(DAY,
+		                                 ISNULL(B.lastDate, DATEADD(DAY, 1, GETDATE())),
+		                                 GETDATE())) OverduePaymentDay
+		          FROM      dbo.C_MYContract (NOLOCK) A
+		                    JOIN C_MYFee (NOLOCK) B ON B.TradeGUID = A.TradeGUID
+		                    LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
+		                    LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
+		                    LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID
+		          WHERE     EXISTS ( SELECT ID
+		                             FROM   dbo.B_Project (NOLOCK) P
+		                             WHERE  A.ProjGUID = P.ID AND PID = #{ProjectID} )
+		                    AND OP.SaleUserID = #{UserID}
+		                    AND A.Status = '激活'
+		                    AND B.ItemType LIKE '%房款%'
+		                    AND B.Ye > 0
+		                    AND DATEDIFF(DAY, ISNULL(B.lastDate, DATEADD(DAY, 1, GETDATE())), GETDATE()) >= 0
+		          GROUP BY  a.RoomGUID
+		        ) n 
+    ]]>
+    </select>
+    <!-- 客储达成首页数据 -->
+    <select id="mYJKBCustomerRankData_Select" resultType="java.util.HashMap" parameterType="java.util.Map">
+    <![CDATA[
+    	SELECT  '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA' ID ,
+		        '1级客储' Name ,
+		        CONVERT(NVARCHAR(10), COUNT(1)) + '组' Value
+		FROM    dbo.B_OpportunityCustomerRankLog a WITH ( NOLOCK )
+		        INNER JOIN dbo.B_Opportunity b WITH ( NOLOCK ) ON a.OpportunityID = b.ID
+		WHERE   b.ProjectID = #{ProjectID}
+		        AND a.CustomerRank = '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA'
+		        AND a.CustomerRankValue > 0
+		        AND b.SaleUserID = #{UserID}
+		        AND a.CreateTime >= #{StartDate}
+		        AND a.CreateTime < #{EndDate}
+		UNION ALL
+		SELECT  'FC420696-6F6C-40B1-BE17-96FCEC75B0F2' ID ,
+		        '1.5级客储' Name ,
+		        CONVERT(NVARCHAR(10), COUNT(1)) + '组' Value
+		FROM    dbo.B_OpportunityCustomerRankLog a WITH ( NOLOCK )
+		        INNER JOIN dbo.B_Opportunity b WITH ( NOLOCK ) ON a.OpportunityID = b.ID
+		WHERE   b.ProjectID = #{ProjectID}
+		        AND a.CustomerRank = 'FC420696-6F6C-40B1-BE17-96FCEC75B0F2'
+		        AND a.CustomerRankValue > 0
+		        AND b.SaleUserID = #{UserID}
+		        AND a.CreateTime >= #{StartDate}
+		        AND a.CreateTime < #{EndDate}
+		UNION ALL
+		SELECT  'ED0AD9E6-AF72-424C-9EE0-9884FF31FA42' ID ,
+		        '2级客储' Name ,
+		        CONVERT(NVARCHAR(10), COUNT(1)) + '组' Value
+		FROM    dbo.B_OpportunityCustomerRankLog a WITH ( NOLOCK )
+		        INNER JOIN dbo.B_Opportunity b WITH ( NOLOCK ) ON a.OpportunityID = b.ID
+		WHERE   b.ProjectID = #{ProjectID}
+		        AND a.CustomerRank = 'ED0AD9E6-AF72-424C-9EE0-9884FF31FA42'
+		        AND a.CustomerRankValue > 0
+		        AND b.SaleUserID = #{UserID}
+		        AND a.CreateTime >= #{StartDate}
+		        AND a.CreateTime < #{EndDate}
+		UNION ALL
+		SELECT  'D47878CE-D560-44C0-A6F8-4C92CCAC9EE0' ID ,
+		        '2.5级客储' Name ,
+		        CONVERT(NVARCHAR(10), COUNT(1)) + '组' Value
+		FROM    dbo.B_OpportunityCustomerRankLog a WITH ( NOLOCK )
+		        INNER JOIN dbo.B_Opportunity b WITH ( NOLOCK ) ON a.OpportunityID = b.ID
+		WHERE   b.ProjectID = #{ProjectID}
+		        AND a.CustomerRank = 'D47878CE-D560-44C0-A6F8-4C92CCAC9EE0'
+		        AND a.CustomerRankValue > 0
+		        AND b.SaleUserID = #{UserID}
+		        AND a.CreateTime >= #{StartDate}
+		        AND a.CreateTime < #{EndDate}
+		UNION ALL
+		SELECT  '652C3B40-64DE-4E6F-984F-BDBD592E6CA3' ID ,
+		        '3级客储' Name ,
+		        CONVERT(NVARCHAR(10), COUNT(1)) + '组' Value
+		FROM    dbo.B_OpportunityCustomerRankLog a WITH ( NOLOCK )
+		        INNER JOIN dbo.B_Opportunity b WITH ( NOLOCK ) ON a.OpportunityID = b.ID
+		WHERE   b.ProjectID = #{ProjectID}
+		        AND a.CustomerRank = '652C3B40-64DE-4E6F-984F-BDBD592E6CA3'
+		        AND a.CustomerRankValue > 0
+		        AND b.SaleUserID = #{UserID}
+		        AND a.CreateTime >= #{StartDate}
+		        AND a.CreateTime < #{EndDate}
+    ]]>
+    </select>
+    <!-- 业绩排名列表 -->
+    <select id="mYJKBSaleUserRankList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+	    SELECT * FROM (    
+			SELECT  ROW_NUMBER() OVER (${ORDERBY}) RankNum ,
+			        SaleUserID ,
+			        SaleUserName ,
+			        CONVERT(VARCHAR(100), ContractCount) + '套' ContractCount ,
+			        CONVERT(VARCHAR(100), ROUND(ContractAmount / 10000, 2)) + '万' ContractAmount
+			FROM    ( SELECT    D.SaleUserID ,
+			                    D.SaleUserName ,
+			                    COUNT(1) ContractCount ,
+			                    SUM(ISNULL(A.Total, 0)) ContractAmount
+			          FROM      dbo.C_MYContract (NOLOCK) A
+			                    JOIN dbo.C_MYTrade (NOLOCK) B ON A.TradeGUID = B.TradeGUID
+			                    JOIN dbo.B_CustomerAttach (NOLOCK) C ON C.ID = B.OppGUID
+			                    JOIN dbo.B_Opportunity (NOLOCK) D ON C.OpportunityID = D.ID
+			          WHERE     EXISTS ( SELECT ID
+			                             FROM   dbo.B_Project (NOLOCK) P
+			                             WHERE  A.ProjGUID = P.ID
+			                                    AND PID = #{ProjectID} )
+			                    AND A.ZqDate >= #{StartDate}
+			                    AND A.ZqDate <= #{EndDate}
+			          GROUP BY  D.SaleUserID ,
+			                    D.SaleUserName
+			        ) n
+			 ) t WHERE 1=1 ${WHERE}
+    ]]>
+    </select>
+    <!-- 客储达成详情列表 -->
+    <select id="mYJKBCustomerRankDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+	    SELECT  CustomerName,CustomerMobile,ReportTime,OutReceptTime,FirstVisitTime,VisitTime,SmallPlanTime,BigPlanTime
+		FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY OpportunityID ORDER BY a.CreateTime ASC ) RowNum ,
+		                    b.ProjectID ,
+		                    b.CustomerName ,
+		                    b.CustomerMobile ,
+		                    CONVERT(VARCHAR(100), c.CreateTime, 111) ReportTime ,
+		                    (CASE WHEN CustomerRankValue = 1.5 THEN CONVERT(VARCHAR(100), a.CreateTime, 111) END) OutReceptTime,
+		                    (CASE WHEN CustomerRankValue = 2 THEN CONVERT(VARCHAR(100), a.CreateTime, 111) END) FirstVisitTime ,
+		                    CONVERT(NVARCHAR(10),(SELECT TOP 1 VisitTime FROM dbo.B_ClueAllocation WHERE OpportunityID = b.ID ORDER BY VisitTime),111)  VisitTime,
+		                    (CASE WHEN CustomerRankValue = 2.5 THEN CONVERT(VARCHAR(100), a.CreateTime, 111) END) SmallPlanTime,
+		                    (CASE WHEN CustomerRankValue = 3 THEN CONVERT(VARCHAR(100), a.CreateTime, 111) END) BigPlanTime
+		          FROM      dbo.B_OpportunityCustomerRankLog a WITH ( NOLOCK )
+		                    INNER JOIN dbo.B_Opportunity b WITH ( NOLOCK ) ON a.OpportunityID = b.ID
+		                    INNER JOIN dbo.B_Clue c WITH ( NOLOCK ) ON b.ClueID = c.ID
+		                                                              AND c.IsDel = 0
+		                                                  AND c.IntentProjectID = #{ProjectID}
+		          WHERE     b.ProjectID = #{ProjectID}
+		                    AND a.CustomerRank = #{CustomerRank} 
+		                    AND a.CustomerRankValue > 0
+		                    AND b.SaleUserID = #{UserID}
+		                    AND a.CreateTime >= #{StartDate}
+		                    AND a.CreateTime < #{EndDate}
+		        ) n
+		WHERE   n.RowNum = 1 ${ORDERBY}
+    ]]>
+    </select>
+    <!-- 认购详情列表 -->
+    <select id="mYJKBOrderDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+    	SELECT  *FROM   ( 
+			SELECT  R.RoomCode RoomName ,
+			        OP.CustomerName ,
+			        OP. CustomerMobile ,
+			        CONVERT(VARCHAR(10), ( CASE WHEN A.ChgDate IS NULL THEN A.QsDate
+			                                    ELSE A.ChgDate
+			                               END ), 111) OrderDate ,
+			        CONVERT(DECIMAL(18, 2), ( CASE WHEN B.ContractGUID IS NOT NULL
+			               THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal )
+			                    + B.FactOtherTotal
+			               ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal )
+			                    + A.FactOtherTotal
+			          END )/10000) OrderAmount ,
+			        CONVERT(VARCHAR(10), A.JhqyDate, 111) ShouldContractDate ,
+			        CONVERT(DECIMAL(18, 2), G.RmbAmount/10000) PaidAmount ,
+			        CASE WHEN B.CloseReason = '退房' THEN '退认购'
+			             ELSE ''
+			        END OrderTag
+			FROM    C_MYOrder (NOLOCK) A
+			        JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+			        LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID
+			                                             AND ( B.Status = '激活'
+			                                                   OR B.CloseReason IN ( '换房',
+			                                                              '退房' )
+			                                                 )
+			        LEFT JOIN dbo.B_Room (NOLOCK) R ON R.ID = a.RoomGUID
+			        LEFT JOIN dbo.C_MYTrade (NOLOCK) T ON A.TradeGUID = T.TradeGUID
+			        LEFT JOIN dbo.B_CustomerAttach (NOLOCK) C ON C.ID = T.OppGUID
+			        LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON C.OpportunityID = OP.ID
+			        LEFT JOIN ( SELECT  gi.RoomGUID ,
+			                            SUM(gi.RmbAmount) RmbAmount
+			                    FROM    C_MYGetin (NOLOCK) gi
+			                            JOIN C_MYVoucher (NOLOCK) vo ON vo.VouchGUID = gi.VouchGUID
+			                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = vo.ProjGUID
+			                            JOIN dbo.C_MYTrade tr ON gi.SaleGUID = tr.TradeGUID
+										              JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+										              JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+			                            WHERE   vo.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+			                                    AND ( gi.ItemType LIKE '%房款%'
+			                                          OR gi.ItemName = '其他'
+			                                        )
+			                                    AND p.PID = #{ProjectID}
+			                                    AND op.SaleUserID = #{UserID}  
+			                                    AND vo.KpDate >= #{StartDate}
+			                                    AND vo.KpDate <= #{EndDate}
+			                            GROUP BY gi.RoomGUID
+			                  ) G ON r.ID = g.RoomGUID
+			WHERE   A.OrderType = '认购'
+			        AND OP.SaleUserID = #{UserID}
+			        AND p.PID = #{ProjectID}
+			        AND ( ( A.ChgDate >= #{StartDate}
+			                AND A.ChgDate <= #{EndDate}
+			              )
+			              OR ( A.ChgDate IS NULL
+			                   AND A.QsDate >= #{StartDate}
+			                   AND A.QsDate <= #{EndDate}
+			                 )
+			            )
+			) n ORDER BY OrderDate DESC
+    ]]>
+    </select>
+    <!-- 签约详情列表 -->
+    <select id="mYJKBContractDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+    	SELECT * FROM (    
+			SELECT  B.RoomCode RoomName ,
+			        OP.CustomerName ,
+			        OP.CustomerMobile ,
+			        CONVERT(VARCHAR(10), ( CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate
+			                                    ELSE A.zqdate
+			                               END ), 120) ContractDate ,
+			        CONVERT(DECIMAL(18, 2), ( A.RmbHtTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+			                                                   * A.ZxTotal )
+			                                  + A.FactOtherTotal ) / 10000) ContractAmount ,
+			        CONVERT(DECIMAL(18, 2), G.RmbAmount / 10000) PaidAmount ,
+			        CONVERT(DECIMAL(18, 2), OPA.OverduePaymentAmount / 10000) OverdueAmount ,
+			        ( CASE WHEN a.Status = '关闭' THEN '退签约' ELSE '' END ) ContractTag
+			FROM    C_MYContract (NOLOCK) A
+			        JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+			        JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+			        LEFT JOIN dbo.C_MYTrade (NOLOCK) tr ON tr.TradeGUID = A.TradeGUID
+			        LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = tr.OppGUID
+			        LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON OP.ID = ca.OpportunityID
+			        LEFT JOIN ( SELECT  gi.RoomGUID ,
+			                            SUM(gi.RmbAmount) RmbAmount
+			                    FROM    C_MYGetin (NOLOCK) gi
+			                            JOIN C_MYVoucher (NOLOCK) vo ON vo.VouchGUID = gi.VouchGUID
+			                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = vo.ProjGUID
+			                            JOIN dbo.C_MYTrade tr ON gi.SaleGUID = tr.TradeGUID
+										              JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+										              JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+			                    WHERE   vo.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+			                            AND ( gi.ItemType LIKE '%房款%'
+			                                  OR gi.ItemName = '其他'
+			                                )
+			                            AND p.PID = #{ProjectID}
+			                            AND op.SaleUserID =  #{UserID}
+			                            AND vo.KpDate >= #{StartDate}
+			                            AND vo.KpDate <= #{EndDate}
+			                    GROUP BY gi.RoomGUID
+			                  ) G ON B.ID = g.RoomGUID
+			        LEFT JOIN ( SELECT  A.TradeGUID ,
+			                            SUM(B.Ye) OverduePaymentAmount ,
+			                            MAX(DATEDIFF(DAY,
+			                                         ISNULL(B.lastDate,
+			                                                DATEADD(DAY, 1, GETDATE())),
+			                                         GETDATE())) OverduePaymentDay
+			                    FROM    dbo.C_MYContract (NOLOCK) A
+			                            JOIN C_MYFee (NOLOCK) B ON B.TradeGUID = A.TradeGUID
+			                    WHERE   EXISTS ( SELECT ID
+			                                     FROM   dbo.B_Project (NOLOCK) P
+			                                     WHERE  A.ProjGUID = P.ID
+			                                            AND PID = #{ProjectID} )
+			                            AND A.Status = '激活'
+			                            AND B.ItemType LIKE '%房款%'
+			                            AND B.Ye > 0
+			                            AND DATEDIFF(DAY,
+			                                         ISNULL(B.lastDate,
+			                                                DATEADD(DAY, 1, GETDATE())),
+			                                         GETDATE()) >= 0
+			                    GROUP BY A.TradeGUID
+			                  ) OPA ON a.TradeGUID = OPA.TradeGUID
+			WHERE   NOT EXISTS ( SELECT SaleGUID
+			                     FROM   C_MYSaleModiApply c
+			                     WHERE  c.IsCstBg = 1
+			                            AND c.IsPayformBg = 0
+			                            AND c.IsYhBg = 0
+			                            AND c.IsCjtotalBg = 0
+			                            AND c.IsExcutive = 1
+			                            AND a.LastSaleGUID = c.SaleGUID
+			                            AND SaleType <> '定单' )	
+			        AND OP.SaleUserID = #{UserID}    
+			        AND p.PID = #{ProjectID}
+			        AND ( A.ConStatus = '正签'
+			              OR ISNULL(A.ConStatus, '') = ''
+			            )
+			        AND ( CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate
+			                   ELSE A.zqdate
+			              END ) >= #{StartDate}
+			        AND ( CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate
+			                   ELSE A.zqdate
+			              END ) <= #{EndDate}
+			) n ORDER BY ContractDate DESC
+    ]]>
+    </select>
+    <!-- 逾期未签约列表 -->
+    <select id="mYJKBOverdueContractDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+    	SELECT * FROM (    
+			SELECT  RO.RoomCode RoomName ,
+			        D.CustomerName ,
+			        D.CustomerMobile ,
+			        CONVERT(VARCHAR(10), ( CASE WHEN A.ChgDate IS NULL THEN A.QsDate
+			                                    ELSE A.ChgDate
+			                               END ), 111) OrderDate ,
+			        CONVERT(DECIMAL(18, 2), ( CASE WHEN B.ContractGUID IS NOT NULL
+			               THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal )
+			                    + B.FactOtherTotal
+			               ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal )
+			                    + A.FactOtherTotal
+			          END )/10000) OrderAmount ,
+			        CONVERT(VARCHAR(10), A.JhqyDate, 111) ShouldContractDate, 
+					CONVERT(DECIMAL(18, 2), G.RmbAmount / 10000) PaidAmount,
+					'逾期签约'+ CONVERT(VARCHAR(10),DATEDIFF(DAY, JhqyDate, GETDATE()))+'天' OverdueContractTag 
+			FROM    dbo.C_MYOrder (NOLOCK) A
+			        LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID
+			        LEFT JOIN dbo.B_Room (NOLOCK) RO ON RO.ID = A.RoomGUID
+			        LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON A.TradeGUID = TR.TradeGUID
+			        LEFT JOIN dbo.B_CustomerAttach (NOLOCK) C ON C.ID = TR.OppGUID
+			        LEFT JOIN dbo.B_Opportunity (NOLOCK) D ON C.OpportunityID = D.ID
+			        LEFT JOIN ( SELECT  gi.RoomGUID ,
+			                            SUM(gi.RmbAmount) RmbAmount
+			                    FROM    C_MYGetin (NOLOCK) gi
+			                            JOIN C_MYVoucher (NOLOCK) vo ON vo.VouchGUID = gi.VouchGUID
+			                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = vo.ProjGUID
+			                            JOIN dbo.C_MYTrade tr ON gi.SaleGUID = tr.TradeGUID
+										              JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+										              JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+			                    WHERE   vo.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+			                            AND ( gi.ItemType LIKE '%房款%'
+			                                  OR gi.ItemName = '其他'
+			                                )
+			                            AND p.PID = #{ProjectID}
+			                            AND op.SaleUserID =  #{UserID}
+			                            AND vo.KpDate >= #{StartDate}
+			                            AND vo.KpDate <= #{EndDate}
+			                    GROUP BY gi.RoomGUID
+			          ) G ON RO.ID = g.RoomGUID
+			WHERE   EXISTS ( SELECT ID
+			                 FROM   dbo.B_Project (NOLOCK) P
+			                 WHERE  A.ProjGUID = P.ID
+			                        AND PID = #{ProjectID} )
+			        AND D.SaleUserID = #{UserID}                
+			        AND D.ProjectID = #{ProjectID}
+			        AND OrderType = '认购'
+			        AND A.Status = '激活'
+			        AND LEN(D.SaleUserID) = 36
+			        AND A.JhqyDate IS NOT NULL
+			        AND DATEDIFF(DAY, JhqyDate, GETDATE()) >= 0
+			) n ORDER BY OrderDate DESC
+    ]]>
+    </select>
+    <!-- 认筹详情列表 -->
+    <select id="mYJKBBookingDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+    	SELECT  '' RoomName ,
+	        OP.CustomerName ,
+	        OP. CustomerMobile ,
+	        CONVERT(VARCHAR(10), A.BgnDate, 111) BookingDate ,
+	        CONVERT(DECIMAL(18, 2), ISNULL(G.RmbAmount, 0)/10000) PaidAmount ,
+	        ( CASE WHEN A.CloseYy IN ( '退号', '作废', '转其它项目' ) THEN '退认筹'
+	               ELSE ''
+	          END ) BookingTag
+		FROM    C_MYBooking (NOLOCK) A
+	        JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+	        LEFT JOIN dbo.B_CustomerAttach (NOLOCK) C ON C.ID = A.OppGUID
+	        LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON C.OpportunityID = OP.ID
+	        LEFT JOIN ( SELECT  gi.RoomGUID ,
+	                            SUM(gi.RmbAmount) RmbAmount
+	                    FROM    C_MYGetin (NOLOCK) gi
+	                            JOIN C_MYVoucher (NOLOCK) vo ON vo.VouchGUID = gi.VouchGUID
+	                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = vo.ProjGUID
+	                            JOIN dbo.C_MYTrade tr ON gi.SaleGUID = tr.TradeGUID
+								              JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+								              JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+	                    WHERE   vo.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+	                            AND ( gi.ItemType LIKE '%房款%'
+	                                  OR gi.ItemName = '其他'
+	                                )
+	                            AND p.PID = #{ProjectID}
+	                            AND op.SaleUserID =  #{UserID}
+	                            AND vo.KpDate >= #{StartDate}
+	                            AND vo.KpDate <= #{EndDate}
+	                    GROUP BY gi.RoomGUID
+	                  ) G ON A.RoomGUID = g.RoomGUID
+	WHERE   ( A.Status IN ( '排号' )
+	          OR A.CloseYy IN ( '退号', '作废', '转其它项目' )
+	        )
+	        AND OP.SaleUserID = #{UserID}
+	        AND p.PID = #{ProjectID}
+	        AND A.BgnDate >= #{StartDate}
+	        AND A.BgnDate < #{EndDate}
+	ORDER BY A.BgnDate DESC
+    ]]>
+    </select>
+    <!-- 回款详情列表 -->
+    <select id="mYJKBPaybackDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+    	SELECT * FROM (    
+			SELECT  RoomName ,
+			        OP.CustomerName ,
+			        OP.CustomerMobile ,
+			        CONVERT(DECIMAL(18, 2), A.PaidAmount/10000) PaidAmount,
+			        CONVERT(VARCHAR(10), ( CASE WHEN O.ChgDate IS NULL THEN O.QsDate
+			                                    ELSE O.ChgDate
+			                               END ), 111) OrderDate ,
+			        CONVERT(VARCHAR(10), ( CASE WHEN CO.chgdate >= CO.ZqDate
+			                                    THEN CO.chgdate
+			                                    ELSE CO.zqdate
+			                               END ), 120) ContractDate ,
+			        CONVERT(DECIMAL(18,2),OPA.OverduePaymentAmount/10000) OverdueAmount ,
+			        '逾期交款 '+CONVERT(VARCHAR(10),OPA.OverduePaymentDay)+'天'  PaybackTag
+			FROM    ( SELECT    sg.RoomGUID ,
+			                    ro.RoomCode RoomName ,
+			                    SUM(ISNULL(sg.RmbAmount, 0)) AS PaidAmount
+			          FROM      C_MYGetin (NOLOCK) sg
+			                    JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+			                    JOIN dbo.B_Project (NOLOCK) P ON P.ID = sv.ProjGUID
+			                    JOIN dbo.C_MYTrade tr ON sg.SaleGUID = tr.TradeGUID
+								          JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+								          JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+								          LEFT JOIN dbo.B_Room ro ON ro.ID = sg.RoomGUID
+			          WHERE     sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+			                    AND ( sg.ItemType LIKE '%房款%'
+			                          OR sg.ItemName = '其他'
+			                        )
+			                    AND ( sg.Status = ''
+			                          OR sg.Status IS NULL
+			                        )
+			                    AND p.PID = #{ProjectID}
+			                    AND op.SaleUserID = #{UserID}
+			                    AND sv.KpDate >= #{StartDate}
+			                    AND sv.KpDate <= #{EndDate}
+			          GROUP BY  sg.RoomGUID ,
+			                    ro.RoomCode
+			        ) A
+			        LEFT JOIN dbo.C_MYOrder (NOLOCK) O ON A.RoomGUID = O.RoomGUID
+			        LEFT JOIN dbo.C_MYContract (NOLOCK) CO ON co.TradeGUID = o.TradeGUID
+			        LEFT JOIN dbo.C_MYTrade (NOLOCK) T ON o.TradeGUID = T.TradeGUID
+			        LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON ca.ID = T.OppGUID
+			        LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON OP.ID = ca.OpportunityID
+			        LEFT JOIN (
+						              SELECT  A.TradeGUID ,
+			                            SUM(B.Ye) OverduePaymentAmount ,
+			                            MAX(DATEDIFF(DAY,
+			                                         ISNULL(B.lastDate,
+			                                                DATEADD(DAY, 1, GETDATE())),
+			                                         GETDATE())) OverduePaymentDay
+			                    FROM    dbo.C_MYContract (NOLOCK) A
+			                            JOIN C_MYFee (NOLOCK) B ON B.TradeGUID = A.TradeGUID
+			                    WHERE   EXISTS ( SELECT ID
+			                                     FROM   dbo.B_Project (NOLOCK) P
+			                                     WHERE  A.ProjGUID = P.ID
+			                                            AND PID = #{ProjectID} )
+			                            AND A.Status = '激活'
+			                            AND B.ItemType LIKE '%房款%'
+			                            AND B.Ye > 0
+			                            AND DATEDIFF(DAY,
+			                                         ISNULL(B.lastDate,
+			                                                DATEADD(DAY, 1, GETDATE())),
+			                                         GETDATE()) >= 0
+			                    GROUP BY A.TradeGUID
+			        ) OPA ON OPA.TradeGUID = T.TradeGUID
+			WHERE   CA.ProjectID = #{ProjectID} AND op.SaleUserID = #{UserID}
+			) n ORDER BY OrderDate DESC
+    ]]>
+    </select>
+    <!-- 逾期款详情列表 -->
+    <select id="mYJKBOverduePayDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
+    <![CDATA[
+    	SELECT * FROM (      
+			SELECT  ro.RoomCode RoomName ,
+			        op.CustomerName ,
+			        op.CustomerMobile,
+			        A.TradeGUID ,
+			        CONVERT(VARCHAR(10), ( CASE WHEN A.ChgDate IS NULL THEN A.QsDate
+			                                    ELSE A.ChgDate
+			                               END ), 111) OrderDate ,
+			        CONVERT(DECIMAL(18, 2),( CASE WHEN B.ContractGUID IS NOT NULL
+			               THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal )
+			                    + B.FactOtherTotal
+			               ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal )
+			                    + A.FactOtherTotal
+			          END )/10000) OrderAmount ,
+			        CONVERT(VARCHAR(10), A.JhqyDate, 111) ShouldContractDate ,
+			        CONVERT(DECIMAL(18, 2), ( B.RmbHtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+			                                                   * B.ZxTotal )
+			                                  + B.FactOtherTotal ) / 10000) ContractAmount ,
+			        CONVERT(DECIMAL(18, 2), g.RmbAmount / 10000) PaidAmount,                          
+			        CONVERT(DECIMAL(18, 2), n.OverduePaymentAmount / 10000) OverdueAmount ,
+			        
+			        '逾期交款 ' + CONVERT(VARCHAR(10), OverduePaymentDay) + '天' OverduePayTag
+			FROM    ( SELECT    A.TradeGUID ,
+			                    COUNT(1) OverduePaymentCount ,
+			                    SUM(B.Ye) OverduePaymentAmount ,
+			                    MAX(DATEDIFF(DAY,
+			                                 ISNULL(B.lastDate, DATEADD(DAY, 1, GETDATE())),
+			                                 GETDATE())) OverduePaymentDay
+			          FROM      dbo.C_MYContract (NOLOCK) A
+			                    JOIN C_MYFee (NOLOCK) B ON B.TradeGUID = A.TradeGUID
+			          WHERE     EXISTS ( SELECT ID
+			                             FROM   dbo.B_Project (NOLOCK) P
+			                             WHERE  A.ProjGUID = P.ID
+			                                    AND PID = #{ProjectID})
+			                    AND A.Status = '激活'
+			                    AND B.ItemType LIKE '%房款%'
+			                    AND B.Ye > 0
+			                    AND DATEDIFF(DAY,ISNULL(B.lastDate, DATEADD(DAY, 1, GETDATE())),GETDATE()) >= 0
+			          GROUP BY  A.TradeGUID
+			        ) n
+			        LEFT JOIN dbo.C_MYOrder A ON n.TradeGUID = A.TradeGUID
+			                                     AND A.OrderType = '认购'
+			                                     AND ( A.Status = '激活'
+			                                           OR A.CloseReason = '转签约'
+			                                         )
+			        LEFT JOIN dbo.C_MYContract B ON b.TradeGUID = n.TradeGUID
+			                                        AND b.Status = '激活'
+			        LEFT JOIN dbo.C_MYTrade tr ON tr.TradeGUID = n.TradeGUID
+			        LEFT JOIN dbo.B_CustomerAttach ca ON ca.ID = tr.OppGUID
+			        LEFT JOIN dbo.B_Room ro ON ro.ID = tr.RoomGUID
+			        LEFT JOIN dbo.B_Opportunity OP ON OP.ID = ca.OpportunityID
+			        LEFT JOIN ( SELECT  gi.RoomGUID ,
+			                            SUM(gi.RmbAmount) RmbAmount
+			                    FROM    C_MYGetin (NOLOCK) gi
+			                            JOIN C_MYVoucher (NOLOCK) vo ON vo.VouchGUID = gi.VouchGUID
+			                            JOIN dbo.B_Project (NOLOCK) P ON P.ID = vo.ProjGUID
+			                            JOIN dbo.C_MYTrade tr ON gi.SaleGUID = tr.TradeGUID
+										              JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
+										              JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+			                    WHERE   vo.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+			                            AND ( gi.ItemType LIKE '%房款%'
+			                                  OR gi.ItemName = '其他'
+			                                )
+			                            AND p.PID = #{ProjectID}
+			                            AND op.SaleUserID =  #{UserID}
+			                            AND vo.KpDate >= #{StartDate}
+			                            AND vo.KpDate <= #{EndDate}
+			                    GROUP BY gi.RoomGUID
+			          ) G ON RO.ID = g.RoomGUID
+			        WHERE op.SaleUserID = #{UserID}
+			 ) n ORDER BY OrderDate DESC
+    ]]>
+    </select>
+    <!-- 业绩看板end -->
 
 </mapper>
