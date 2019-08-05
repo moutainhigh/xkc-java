@@ -1029,8 +1029,8 @@ public class CustomerHelp implements ICustomerHelp {
 	public Boolean GetProjectIsNoAllotRole(String projectId) {
 		Map<String, Object> obj = vCustomergwlistSelectMapper.ProjectIsNoAllot_Select(projectId);
         if(obj!=null && obj.size()>0){
-            int IsNoAllotRole =(int)obj.get("IsNoAllotRole");
-            return IsNoAllotRole == 0;//0.开启 1.关闭
+            Number num = (Number)obj.get("IsNoAllotRole");
+            return num.intValue() == 0;//0.开启 1.关闭
         }else{
             return false;
         }
