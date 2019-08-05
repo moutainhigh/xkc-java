@@ -35,13 +35,19 @@ public class AppBClueController extends TahoeBaseController {
 		Result re=new Result();
 		try {
 			System.out.println(jsonParam.toJSONString());
+			 String remark = "";
+			 String projectId = "";
             Map paramMap = (HashMap)jsonParam.get("_param");
             String reportId = (String)paramMap.get("reportId").toString();//报告人ID
             String name = (String)paramMap.get("name").toString();//客户姓名
-            String sex = (String)paramMap.get("sex").toString();//客户性别
-            String projectId = (String)paramMap.get("projectId").toString();//项目ID
+            String sex = (String)paramMap.get("sex").toString();//客户性别 
             String mobile = (String)paramMap.get("mobile").toString();//客户手机号码
-            String remark = (String)paramMap.get("remark").toString();//备注
+            if(paramMap.get("projectId") != null) {
+            	projectId = (String)paramMap.get("projectId").toString();//项目ID
+            }
+            if(paramMap.get("remark") != null) {
+            	remark = (String)paramMap.get("remark").toString();//备注
+            }
 			return bClueService.report(reportId, projectId, name, mobile, sex, remark);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -57,9 +63,18 @@ public class AppBClueController extends TahoeBaseController {
 			System.out.println(jsonParam.toJSONString());
             Map paramMap = (HashMap)jsonParam.get("_param");
             String reportId = (String)paramMap.get("reportId").toString();//报告人ID
-            String nameOrMobile = (String)paramMap.get("nameOrMobile").toString();//客户姓名或者手机号
-            String ascOrDesc = (String)paramMap.get("ascOrDesc").toString();//排序
-            String status = (String)paramMap.get("status").toString();//客户状态
+            String nameOrMobile = "";
+            String status = "";
+            String ascOrDesc = "";
+            if(paramMap.get("nameOrMobile") != null) {
+            	nameOrMobile = (String)paramMap.get("nameOrMobile").toString();//客户姓名或者手机号
+            }
+            if(paramMap.get("ascOrDesc") != null) {
+            	ascOrDesc = (String)paramMap.get("ascOrDesc").toString();//排序
+            }
+            if(paramMap.get("status") != null) {
+            	status = (String)paramMap.get("status").toString();//客户状态
+            }
             List<Customer> customers = bClueService.listMyCustomers(reportId, "", ascOrDesc, nameOrMobile, status);
     		if (customers == null) {
     			return Result.errormsg(-1,"未查询到该客户");
