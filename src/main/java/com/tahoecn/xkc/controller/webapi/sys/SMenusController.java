@@ -99,7 +99,7 @@ public class SMenusController extends TahoeBaseController {
         menus.setCreateTime(new Date());
         menus.setIsDel(0);
         //判断层级
-        if (menus.getPid()!="-1"){
+        if (!"-1".equals(menus.getPid())){
             SMenusXkc byId = isMenusService.getById(menus.getPid());
             menus.setLevels(byId.getLevels()+1);
         }else {
