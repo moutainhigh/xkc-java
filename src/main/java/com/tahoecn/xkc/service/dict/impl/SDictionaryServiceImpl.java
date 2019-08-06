@@ -1114,14 +1114,14 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
     @Override
     public List<Map<String, Object>> getMediaLargeList_Tree(String pid,String projectID) {
         if (StringUtils.equals("-1",pid)){
-            List<Map<String,Object>> list=baseMapper.getMediaLargeList();
+            List<Map<String,Object>> list=baseMapper.getMediaLargeList_New();
             for (Map<String, Object> map : list) {
                 map.put("hasChild",true);
                 map.put("Media","Media");
             }
             return list;
         }else {
-            List<Map<String,Object>> childList=baseMapper.getMediaChildList(pid,projectID);
+            List<Map<String,Object>> childList=baseMapper.getMediaChildListByPid(pid,projectID);
             for (Map<String, Object> map : childList) {
                 map.put("hasChild",false);
                 map.put("Media","Media");
@@ -1131,24 +1131,24 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
     }
 
 
-    @Override
-    public IPage<Map<String,Object>> getMediaList(IPage page, String pid, String projectID) {
-        if (pid==null){
-            IPage<Map<String,Object>> list=baseMapper.getMediaLargeList(page);
-            for (Map<String, Object> map : list.getRecords()) {
-                map.put("hasChild",true);
-                map.put("Media","Media");
-            }
-            return list;
-        }else {
-            IPage<Map<String,Object>> childList=baseMapper.getMediaChildList(page,pid,projectID);
-            for (Map<String, Object> map : childList.getRecords()) {
-                map.put("hasChild",false);
-                map.put("Media","Media");
-            }
-            return childList;
-        }
-    }
+//    @Override
+//    public IPage<Map<String,Object>> getMediaList(IPage page, String pid, String projectID) {
+//        if (pid==null){
+//            IPage<Map<String,Object>> list=baseMapper.getMediaLargeList(page);
+//            for (Map<String, Object> map : list.getRecords()) {
+//                map.put("hasChild",true);
+//                map.put("Media","Media");
+//            }
+//            return list;
+//        }else {
+//            IPage<Map<String,Object>> childList=baseMapper.getMediaChildListByPid(page,pid,projectID);
+//            for (Map<String, Object> map : childList.getRecords()) {
+//                map.put("hasChild",false);
+//                map.put("Media","Media");
+//            }
+//            return childList;
+//        }
+//    }
 
     @Override
     public void updateMediaStatus(String id, int status) {
@@ -1177,5 +1177,6 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
         }
         return Result.okm("成功");
     }
+
 
 }

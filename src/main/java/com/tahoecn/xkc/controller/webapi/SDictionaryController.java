@@ -40,7 +40,7 @@ public class SDictionaryController extends TahoeBaseController {
     public Result SystemAllParams_Select(String PID,String AuthCompanyID,String ProductID,String ProjectID,String Media,int Pageindex,int Pagesize){
         //参数获取
         IPage page=new Page(Pageindex,Pagesize);
-        if (Media==null){
+
         QueryWrapper<SDictionary> wrapper=new QueryWrapper<>();
         wrapper.eq("IsDel",0).eq("AuthCompanyID",AuthCompanyID).eq("ProductID",ProductID);
         wrapper.eq("PID",PID);
@@ -48,16 +48,6 @@ public class SDictionaryController extends TahoeBaseController {
         wrapper.orderByAsc("Levels","ListIndex");
         IPage page1 = dictionaryService.page(page, wrapper);
         return Result.ok(page1);
-        }
-        //媒体小类获取
-        else {
-            IPage<Map<String,Object>>   page1=dictionaryService.getMediaList(page,PID,ProjectID);
-            List<Map<String, Object>> records = page1.getRecords();
-            for (Map<String, Object> record : records) {
-                record.put("Media","Media");
-            }
-            return Result.ok(page1);
-        }
     }
 
     @ApiOperation(value = "获取所有参数--树形", notes = "获取所有参数--树形")
@@ -161,13 +151,14 @@ public class SDictionaryController extends TahoeBaseController {
 //        return result;
 //    }
 
-    @ApiOperation(value = "媒体类别管理--树形", notes = "媒体类别管理--树形")
-    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.GET})
-    public Result getMediaLargeList_Tree(String PID,String ProjectID){
-        List<Map<String,Object>> list=dictionaryService.getMediaLargeList_Tree(PID,ProjectID);
+//    @ApiOperation(value = "媒体类别管理--树形", notes = "媒体类别管理--树形")
+//    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.GET})
+//    public Result getMediaLargeList_Tree(String PID,String ProjectID){
+//        List<Map<String,Object>> list=dictionaryService.getMediaLargeList_Tree(PID,ProjectID);
+//        return Result.ok(list);
+//    }
 
-        return Result.ok(list);
-    }
+
 
 
 }

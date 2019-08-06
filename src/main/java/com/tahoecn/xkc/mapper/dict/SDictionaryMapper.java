@@ -25,13 +25,15 @@ public interface SDictionaryMapper extends BaseMapper<SDictionary> {
 
     List<Map<String, Object>> list(@Param("pid") String pid);
 
-    List<Map<String, Object>> getMediaLargeList();
+    List<Map<String, Object>> getMediaLargeList_New();
 
-    List<Map<String, Object>> getMediaChildList(@Param("projectID")String pid,@Param("projectID")String projectID);
+    List<Map<String, Object>> getMediaChildListByPid(@Param("pid")String pid,@Param("projectID")String projectID);
 
-    IPage<Map<String, Object>> getMediaLargeList(IPage page);
+    List<Map<String, Object>> getMediaChildList(@Param("projectID")String projectID);
 
-    IPage<Map<String, Object>> getMediaChildList(IPage page,@Param("pid")String pid,@Param("projectID")String projectID);
+//    IPage<Map<String, Object>> getMediaLargeList(IPage page);
+
+    IPage<Map<String, Object>> getMediaChildListByPid(IPage page,@Param("pid")String pid,@Param("projectID")String projectID);
 
     void updateMediaStatus(@Param("id")String id, @Param("status")int status);
 

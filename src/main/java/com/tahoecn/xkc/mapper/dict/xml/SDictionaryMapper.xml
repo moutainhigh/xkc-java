@@ -63,12 +63,16 @@
         SELECT * FROM S_Dictionary WHERE PID=#{pid} AND Status=1 AND IsDel=0 ORDER BY ListIndex
     </select>
 
-    <select id="getMediaLargeList" resultType="java.util.HashMap" >
-        SELECT ID,Name as DictName FROM B_MediaLarge WHERE Status=1 AND IsDel=0 ORDER BY ListIndex
+    <select id="getMediaLargeList_New" resultType="java.util.HashMap" >
+        SELECT * FROM B_MediaLarge WHERE Status=1 AND IsDel=0 ORDER BY ListIndex
+    </select>
+
+    <select id="getMediaChildListByPid" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,Name as DictName,MediaLargeID as PID ,ListIndex FROM B_MediaChild WHERE ProjectID=#{projectID} AND MediaLargeID=#{pid} AND Status=1 AND IsDel=0 ORDER BY ListIndex
     </select>
 
     <select id="getMediaChildList" resultType="java.util.HashMap" parameterType="string">
-        SELECT ID,Name as DictName,MediaLargeID as PID ,ListIndex FROM B_MediaChild WHERE ProjectID=#{projectID} AND MediaLargeID=#{pid} AND Status=1 AND IsDel=0 ORDER BY ListIndex
+        SELECT * FROM B_MediaChild WHERE ProjectID=#{projectID}  AND Status=1 AND IsDel=0 ORDER BY ListIndex
     </select>
 
     <update id="updateMediaStatus" >
