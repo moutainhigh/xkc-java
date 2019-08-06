@@ -69,7 +69,7 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             Integer IsShow = menu.getIsShow();
             String pid=menu.getPid();
             Integer Levels;
-            if (pid!="-1"){
+            if ("-1".equals(pid)){
                 SMenusXkc sMenusXkc = baseMapper.selectById(pid);
                 Levels=sMenusXkc.getLevels()+1;
             }else {
