@@ -605,7 +605,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
         Map<String,Object> data = bCustomerpotentialMapper.IsOverdueCome_Select(obj);
         if(data!=null && data.size()>0){
         	if(data.get("IsOverdueCome")!=null){
-        		int IsOverdueCome = (int) data.get("IsOverdueCome");
+        		Number number = (Number)data.get("IsOverdueCome");
+        		int IsOverdueCome = number.intValue();
         		if(IsOverdueCome==0){
         			return false;
         		}
@@ -748,7 +749,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 		for(Map<String,Object> clue : clues){
 			int status = 0;
 			if(clue.get("Status")!=null){
-				status = (int) clue.get("Status");
+				Number number = (Number) clue.get("Status");
+				status = number.intValue();
 			}
 			if(status==2){
 				tc=true;
@@ -769,14 +771,16 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
             return msg;
         }
         if (clues!=null && clues.size() == 1){//该手机号线索已存在，此条件下需要进一步证明规则类型
-            int ruleType = (int) clues.get(0).get("RuleType");
+        	Number number = (Number) clues.get(0).get("RuleType");
+            int ruleType = number.intValue();
             if (UserRule.getRuleType() == ruleType && ruleType == 1){//线索为竞争带看，并且当前渠道用户规则也为竞争带看
                 msg.setErrcode(0);
             }else{//线索为报备保护
                 msg.setErrcode(4);
             }
         }else{//该手机号存在多条线索，说明报备模式为竞争带看
-            int ruleType = (int) clues.get(0).get("RuleType");
+        	Number number = (Number)clues.get(0).get("RuleType");
+            int ruleType = number.intValue();
             if (UserRule.getRuleType() == ruleType){//当前渠道的报备规则也为竞争带看
                 msg.setErrcode(0);
             }else{//当前渠道的报备规则为报备保护，报备规则模式不同则互斥

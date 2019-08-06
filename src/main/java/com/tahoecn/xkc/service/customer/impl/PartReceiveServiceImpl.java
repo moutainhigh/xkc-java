@@ -336,7 +336,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                 	int IsIPad = parameter.getIntValue("IsIPad");
                                 	List<Integer> list = Arrays.asList(new Integer[]{1,2,3,4});
                                 	String tSaleUserID= step1_map.get("SaleUserID").toString();
-                                	int tStatus = (int)step1_map.get("Status");
+                                	Number number = (Number)step1_map.get("Status");
+                                	int tStatus = number.intValue();
                                 	if(Status==2 && list.contains(tStatus) && (tSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899") || tSaleUserID.equals(""))){
                                 		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step2(pmap);
                                 	}
@@ -420,7 +421,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                             
                                             String ReportUserID = "";
                                             ClueID = "";
-                                            if((int)re_map_step2.get("AllotRemind")>0){
+                                            Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
+                                            if(AllotRemind.intValue()>0){
                                             	if(re_map_step1.get("ReportUserID")!=null){
                                             		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                             	}
@@ -462,7 +464,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                                 	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
                                                 	int customerVisitsRemind = 0;
                                                 	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                                		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
+                                                		Number numb = (Number)resf.get("customerVisitsRemind");
+                                                		customerVisitsRemind = numb.intValue();
                                                 	}
                                                 	if(customerVisitsRemind>0){
                                                 		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
@@ -568,7 +571,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                                 Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
                                                 String ReportUserID = "";
                                                 ClueID = "";
-                                                if((int)re_map_step2.get("AllotRemind")>0){
+                                                Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
+                                                if(AllotRemind.intValue()>0){
                                                 	if(re_map_step1.get("ReportUserID")!=null){
                                                 		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                                 	}
@@ -632,7 +636,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                                     Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
                                                     String ReportUserID = "";
                                                     ClueID = "";
-                                                    if((int)re_map_step2.get("AllotRemind")>0){
+                                                    Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
+                                                    if(AllotRemind.intValue()>0){
                                                     	if(re_map_step1.get("ReportUserID")!=null){
                                                     		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                                     	}
