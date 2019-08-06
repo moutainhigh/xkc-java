@@ -410,7 +410,7 @@ FROM    dbo.B_Opportunity A
                 AND ( sg.Status = ''
                       OR sg.Status IS NULL
                     )
-                AND sg.SaleGUID = #{TradeGUID}
+                AND sg.SaleGUID = #{tradeGUID}
         ORDER BY GetDate
     ]]>
     </select>
