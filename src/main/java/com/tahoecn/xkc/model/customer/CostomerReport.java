@@ -33,6 +33,8 @@ public class CostomerReport implements Serializable {
 
     @TableField("CustomerMobile")
     private String customerMobile;
+    @TableField("CustomerMobileWhole")
+    private String customerMobileWhole;
 
     @TableField("CustomerRankName")
     private String customerRankName;
@@ -149,6 +151,14 @@ public class CostomerReport implements Serializable {
     @TableField("SaleTeamName")
     private String saleTeamName;
 
+
+    public String getCustomerMobileWhole() {
+        return customerMobileWhole;
+    }
+
+    public void setCustomerMobileWhole(String customerMobileWhole) {
+        this.customerMobileWhole = customerMobileWhole;
+    }
 
     public Date getBookingCreateTimeEnd() {
         return bookingCreateTimeEnd;
