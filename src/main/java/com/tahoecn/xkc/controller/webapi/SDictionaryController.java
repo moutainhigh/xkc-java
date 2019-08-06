@@ -70,8 +70,8 @@ public class SDictionaryController extends TahoeBaseController {
 
     @ApiOperation(value = "启用/禁用参数", notes = "启用/禁用参数")
     @RequestMapping(value = "/SystemParamStatus_Update", method = {RequestMethod.POST})
-    public Result SystemParamStatus_Update(String ID,int Status,String Media){
-        if (Media==null){
+    public Result SystemParamStatus_Update(String ID,int Status){
+
             SDictionary dictionary=new SDictionary();
             dictionary.setId(ID);
             dictionary.setStatus(Status);
@@ -80,10 +80,6 @@ public class SDictionaryController extends TahoeBaseController {
                 return Result.okm("成功");
             }
             return Result.errormsg(99,"修改失败");
-        }else {
-            dictionaryService.updateMediaStatus(ID,Status);
-        }
-        return null;
     }
 
     @ApiOperation(value = "新增参数", notes = "新增参数")
@@ -165,11 +161,13 @@ public class SDictionaryController extends TahoeBaseController {
 //        return result;
 //    }
 
-//    @ApiOperation(value = "媒体类别管理--树形", notes = "媒体类别管理--树形")
-//    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.GET})
-//    public Result getMediaLargeList_Tree(String PID,String ProjectID){
-//        List<Map<String,Object>> list=dictionaryService.getMediaLargeList_Tree(PID,ProjectID);
-//
-//        return Result.ok(list);
-//    }
+    @ApiOperation(value = "媒体类别管理--树形", notes = "媒体类别管理--树形")
+    @RequestMapping(value = "/getMediaLargeList_Tree", method = {RequestMethod.GET})
+    public Result getMediaLargeList_Tree(String PID,String ProjectID){
+        List<Map<String,Object>> list=dictionaryService.getMediaLargeList_Tree(PID,ProjectID);
+
+        return Result.ok(list);
+    }
+
+
 }
