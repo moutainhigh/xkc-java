@@ -4,7 +4,6 @@ package com.tahoecn.xkc.controller.webapi;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * <p>
