@@ -607,7 +607,8 @@ public class CustomerHelp implements ICustomerHelp {
 		}
 		if (optionList!=null && optionList.size() > 0) {// 存在线索
 			List<OptionItem> ClueList = new ArrayList<OptionItem>();
-			int RuleType = (int) optionList.get("RuleType");
+			Number number = (Number)optionList.get("RuleType");
+			int RuleType = number.intValue();
 			Boolean HasChoose = false;
 			if (RuleType == 1) {// 竞争带看规则线索
 				for (OptionItem item : childItem.getOption()) {
@@ -620,12 +621,12 @@ public class CustomerHelp implements ICustomerHelp {
 				}
 			}
 			if (!HasChoose) {
-				HasChoose = (int) optionList.get("IsChoose") == 1 ? true
-						: false;
+				Number numb = (Number)optionList.get("IsChoose");
+				HasChoose = numb.intValue() == 1 ? true: false;
 				OptionItem optionItem = new OptionItem();
 				optionItem.setID(String.valueOf(optionList.get("ID")));
 				optionItem.setName(String.valueOf(optionList.get("Name")));
-				optionItem.setIsChoose((int) optionList.get("IsChoose"));
+				optionItem.setIsChoose(numb.intValue());
 				ClueList.add(optionItem);
 			}
 			if (HasChoose) {
@@ -947,7 +948,8 @@ public class CustomerHelp implements ICustomerHelp {
                 Map<String,Object> re = vCustomergwlistSelectMapper.sStageCustomerAttachDetail_Insert_step1(pmap);
                 int LastSalesStatus = 0;
                 if(re!=null && re.size()>0){
-                	LastSalesStatus = (int)re.get("SalesStatus");
+                	Number SalesStatus = (Number)re.get("SalesStatus");
+                	LastSalesStatus = SalesStatus.intValue();
                 }
                 List<Integer> list = Arrays.asList(new Integer[]{0, 4, 5, 6, 8});
                 if(list.contains(LastSalesStatus)){
@@ -1016,7 +1018,8 @@ public class CustomerHelp implements ICustomerHelp {
 			optionList = optionList_data.get(0);
 		}
         if (optionList!=null && optionList.size() > 0){
-            int RuleType = (int)optionList.get("RuleType");
+        	Number number = (Number)optionList.get("RuleType");
+            int RuleType = number.intValue();
             if (RuleType == 1){//竞争带看规则线索
                 return 1;
             }else{

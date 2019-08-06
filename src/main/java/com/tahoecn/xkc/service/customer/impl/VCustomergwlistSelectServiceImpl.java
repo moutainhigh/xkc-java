@@ -319,7 +319,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                     	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
                     	int customerVisitsRemind = 0;
                     	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                    		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
+                    		Number number = (Number)resf.get("customerVisitsRemind");
+                    		customerVisitsRemind = number.intValue();
                     	}
                     	if(customerVisitsRemind>0){
                     		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
@@ -871,7 +872,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 List<Map<String,Object>> NoMoneyList = new ArrayList<Map<String,Object>>();
                 
                 for (Map<String,Object> item : childResult){
-                    if ((int)item.get("IsPay") == 0){
+                	Number number = (Number)item.get("IsPay");
+                    if (number.intValue() == 0){
                         NoMoneyList.add(item);
                     }
                 }
@@ -1044,7 +1046,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                 
                                 String ReportUserID = "";
                                 ClueID = "";
-                                if((int)re_map_step2.get("AllotRemind")>0){
+                                Number number = (Number)re_map_step2.get("AllotRemind");
+                                if(number.intValue()>0){
                                 	if(re_map_step1.get("ReportUserID")!=null){
                                 		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                 	}
@@ -1176,7 +1179,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                         	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
                                         	int customerVisitsRemind = 0;
                                         	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                        		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
+                                        		Number number = (Number)resf.get("customerVisitsRemind");
+                                        		customerVisitsRemind = number.intValue();
                                         	}
                                         	if(customerVisitsRemind>0){
                                         		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
@@ -1452,7 +1456,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                                     	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
                                     	int customerVisitsRemind = 0;
                                     	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                    		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
+                                    		Number number = (Number)resf.get("customerVisitsRemind");
+                                    		customerVisitsRemind = number.intValue();
                                     	}
                                     	if(customerVisitsRemind>0){
                                     		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
