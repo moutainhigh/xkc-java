@@ -581,8 +581,8 @@
     <!-- 客储达成详情列表 -->
     <select id="mYJKBCustomerRankDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-	    SELECT  CustomerName,CustomerMobile,ReportTime,OutReceptTime,FirstVisitTime,VisitTime,SmallPlanTime,BigPlanTime
-		FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY OpportunityID ORDER BY a.CreateTime ASC ) RowNum ,
+	    SELECT TOP 100 PERCENT CustomerName,CustomerMobile,ReportTime,OutReceptTime,FirstVisitTime,VisitTime,SmallPlanTime,BigPlanTime
+		FROM  ( SELECT    ROW_NUMBER() OVER ( PARTITION BY OpportunityID ORDER BY a.CreateTime ASC ) RowNum ,
 		                    b.ProjectID ,
 		                    b.CustomerName ,
 		                    b.CustomerMobile ,
@@ -598,19 +598,19 @@
 		                                                              AND c.IsDel = 0
 		                                                  AND c.IntentProjectID = #{ProjectID}
 		          WHERE     b.ProjectID = #{ProjectID}
-		                    AND a.CustomerRank = #{CustomerRank} 
+		                    AND a.CustomerRank = #{CustomerRank}
 		                    AND a.CustomerRankValue > 0
 		                    AND b.SaleUserID = #{UserID}
 		                    AND a.CreateTime >= #{StartDate}
 		                    AND a.CreateTime < #{EndDate}
 		        ) n
-		WHERE   n.RowNum = 1 ${ORDERBY}
+		WHERE  n.RowNum = 1  ${ORDERBY}
     ]]>
     </select>
     <!-- 认购详情列表 -->
     <select id="mYJKBOrderDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-    	SELECT  *FROM   ( 
+    	SELECT top 100 PERCENT * FROM   ( 
 			SELECT  R.RoomCode RoomName ,
 			        OP.CustomerName ,
 			        OP. CustomerMobile ,
@@ -674,7 +674,7 @@
     <!-- 签约详情列表 -->
     <select id="mYJKBContractDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-    	SELECT * FROM (    
+    	SELECT top 100 PERCENT  * FROM (    
 			SELECT  B.RoomCode RoomName ,
 			        OP.CustomerName ,
 			        OP.CustomerMobile ,
@@ -758,7 +758,7 @@
     <!-- 逾期未签约列表 -->
     <select id="mYJKBOverdueContractDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-    	SELECT * FROM (    
+    	SELECT top 100 PERCENT * FROM (    
 			SELECT  RO.RoomCode RoomName ,
 			        D.CustomerName ,
 			        D.CustomerMobile ,
@@ -815,7 +815,7 @@
     <!-- 认筹详情列表 -->
     <select id="mYJKBBookingDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-    	SELECT  '' RoomName ,
+    	SELECT top 100 PERCENT '' RoomName ,
 	        OP.CustomerName ,
 	        OP. CustomerMobile ,
 	        CONVERT(VARCHAR(10), A.BgnDate, 111) BookingDate ,
@@ -858,7 +858,7 @@
     <!-- 回款详情列表 -->
     <select id="mYJKBPaybackDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-    	SELECT * FROM (    
+    	SELECT top 100 PERCENT * FROM (    
 			SELECT  RoomName ,
 			        OP.CustomerName ,
 			        OP.CustomerMobile ,
@@ -930,7 +930,7 @@
     <!-- 逾期款详情列表 -->
     <select id="mYJKBOverduePayDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
-    	SELECT * FROM (      
+    	SELECT top 100 PERCENT * FROM (      
 			SELECT  ro.RoomCode RoomName ,
 			        op.CustomerName ,
 			        op.CustomerMobile,
