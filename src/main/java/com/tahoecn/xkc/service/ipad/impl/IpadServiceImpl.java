@@ -1225,17 +1225,15 @@ public class IpadServiceImpl implements IIpadService {
         paramAry.put("WHERE", whereSb.toString());
         //待分配列表
         Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
-        IPage<Map<String,Object>> page =new Page<Map<String,Object>>();
-    	page.setSize(paramAry.getLongValue("PageSize"));
-    	page.setCurrent(paramAry.getLongValue("PageIndex"));
-        IPage<Map<String, Object>> pageObj = ipadMapper.mLFCustomerNeedFPList_Select(page,pmap);
-        if (pageObj != null && pageObj.getRecords()!=null && pageObj.getRecords().size() > 0){
+        List<Map<String, Object>> pageObj = ipadMapper.mLFCustomerNeedFPList_Select(pmap);
+        Long AllCount = ipadMapper.mLFCustomerNeedFPList_Select_count(pmap);
+        if (pageObj != null &&  pageObj.size() > 0){
             re.setErrcode(0);
             re.setErrmsg("成功");
             JSONObject j_data = new JSONObject();
-        	j_data.put("List", pageObj.getRecords());
-        	j_data.put("AllCount", pageObj.getTotal());
-        	j_data.put("PageSize", pageObj.getSize());
+        	j_data.put("List", pageObj);
+        	j_data.put("AllCount", AllCount);
+        	j_data.put("PageSize", paramAry.getInteger("PageSize"));
         	re.setData(j_data);
             return re;
         }
