@@ -54,18 +54,19 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status,String ID,String Desc) {
+    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, String ID,String Desc) {
         //媒体大类
         try {
             if ("-1".equals(mediaLargeID)){
                 BMedialarge bMedialarge=new BMedialarge();
                 if (StringUtils.isNotBlank(ID)){
                     bMedialarge.setId(ID);
+                }else {
+                    bMedialarge.setStatus(1);
                 }
                 bMedialarge.setName(name);
                 bMedialarge.setShortName(shortName);
                 bMedialarge.setListIndex(listIndex);
-                bMedialarge.setStatus(status);
                 bMedialarge.setDesc(Desc);
                 bMedialarge.setIsDel(0);
                 bMedialarge.setCreateTime(new Date());
@@ -75,13 +76,14 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 BMediachild bMediachild=new BMediachild();
                 if (StringUtils.isNotBlank(ID)){
                     bMediachild.setId(ID);
+                }else {
+                    bMediachild.setStatus(1);
                 }
                 bMediachild.setName(name);
                 bMediachild.setShortName(shortName);
                 bMediachild.setListIndex(listIndex);
                 bMediachild.setDesc(Desc);
                 bMediachild.setIsDel(0);
-                bMediachild.setStatus(status);
                 bMediachild.setProjectID(projectID);
                 bMediachild.setCreateTime(new Date());
                 bMediachild.setCreator(ThreadLocalUtils.getUserName());

@@ -19,7 +19,7 @@ public interface IBMedialargeService extends IService<BMedialarge> {
 
     List<Map<String, Object>> getMediaList_Select(String projectID);
 
-    Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status,String ID,String Desc);
+    Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex,String ID,String Desc);
 
     Result Media_Status(String mediaLargeID, String id, int status);
 
