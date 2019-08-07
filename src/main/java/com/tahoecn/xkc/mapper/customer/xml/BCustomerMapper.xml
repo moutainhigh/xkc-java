@@ -70,7 +70,7 @@
             m.CustomerName,
             m.CustomerMobile,
             CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
-            dbo.F_GetClueStatusName(m.Status, 0)                                                             Status,
+            dbo.F_GetClueStatusName_xkc(m.Status, 0)                                                             Status,
             m.InvalidReason,
             m.ComeOverdueTime,
             m.TradeOverdueTime,
@@ -98,7 +98,7 @@
             WHERE o.ID = m.OpportunityID)
             AND r.ProjectID in (select ID from B_Project where PID = #{projectID}) FOR XML PATH ('')), 1, 1,
             '')                                                                                        Room,
-            dbo.F_GetClueStatusName('', m.OpportunityStatus)                                                 OpportunityStatus
+            dbo.F_GetClueStatusName_xkc('', m.OpportunityStatus)                                                 OpportunityStatus
             FROM (
             SELECT *
             FROM (
@@ -151,7 +151,7 @@
 					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
 
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
-					dbo.F_GetClueStatusName(m.Status,0) Status,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,
 					CASE WHEN m.ComeOverdueTime ='1900-01-01 00:00:00.000' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,
 					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,
@@ -230,7 +230,7 @@
 					m.CustomerMobile,
 
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
-					dbo.F_GetClueStatusName(m.Status,0) Status,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,
 					m.ComeOverdueTime,
 					m.TradeOverdueTime,
@@ -297,7 +297,7 @@
 					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
 
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
-					dbo.F_GetClueStatusName(m.Status,0) Status,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,
 					CASE WHEN m.ComeOverdueTime ='1900-01-01' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,
 					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,
@@ -1250,7 +1250,7 @@ FROM (
 			a.CustomerMobile,
 			a.CustomerCount,
 			a.AppointmentTime,
-			dbo.F_GetClueStatusName(c.Status,b.Status) OpportunityStatus,
+			dbo.F_GetClueStatusName_xkc(c.Status,b.Status) OpportunityStatus,
 			b.Status OpportunityStatusValue,
 			dbo.F_GetClueStatusName(c.Status,0) ClueStatus,
 			CASE WHEN ISNULL(b.SaleUserID,'') <> '' THEN 1 ELSE 0 END IsAlloc

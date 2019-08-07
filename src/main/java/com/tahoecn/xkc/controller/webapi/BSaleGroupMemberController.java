@@ -1,15 +1,19 @@
 package com.tahoecn.xkc.controller.webapi;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.controller.TahoeBaseController;
-import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.dict.SDictionary;
+import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.salegroup.IBSalesgroupmemberService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,15 +35,28 @@ public class BSaleGroupMemberController extends TahoeBaseController {
     @Autowired
     private IBSalesgroupmemberService iSaleGroupMemberService;
 
+    @Autowired
+    private ISDictionaryService iSDictionaryService;
+
     @ApiImplicitParams({ @ApiImplicitParam(name = "ProjectID", value = "ProjectID", required = true, dataType = "String")})
     @ApiOperation(value = "人员管理", notes = "人员管理")
     @RequestMapping(value = "/SalesGroupMemberList_Select", method = { RequestMethod.GET })
-    public ResponseMessage SalesGroupMemberList_Select(@RequestParam(required = true) String ProjectID) {
+    public Result SalesGroupMemberList_Select(@RequestParam(required = true) String ProjectID) {
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ProjectID",ProjectID);
         result.put("List",iSaleGroupMemberService.SalesGroupMemberList_Select(map));
-        return ResponseMessage.ok(result);
+        QueryWrapper<SDictionary> dictWrapper = new QueryWrapper<>();
+        
+        //获取渠道类型
+        dictWrapper.eq("PID","0770B012-897B-49DF-A11F-A36B94D0178A");
+        dictWrapper.eq("IsDel",0);
+        dictWrapper.eq("Status",1);
+        List channelTypeList = iSDictionaryService.list(dictWrapper);
+        
+        result.put("channelTypeList",channelTypeList);
+
+        return Result.ok(result);
     }
 
 
@@ -53,7 +70,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
             @ApiImplicitParam(name = "Kw", value = "Kw", required = true, dataType = "String")})
     @ApiOperation(value = "查询团队人员列表接口", notes = "查询团队人员列表接口")
     @RequestMapping(value = "/SalesGroupTeamList_Select", method = { RequestMethod.GET })
-    public ResponseMessage SalesGroupTeamList_Select(@RequestParam(required = true) String ProjectID,
+    public Result SalesGroupTeamList_Select(@RequestParam(required = true) String ProjectID,
                 @RequestParam(required = true) String ReceptionGroupID,
                 @RequestParam(required = true) String UserID,
                 @RequestParam(required = true) String RoleID,
@@ -77,7 +94,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
         page.setCurrent(Integer.valueOf(PageIndex));
 
         result.put("List",iSaleGroupMemberService.SalesGroupTeamList_Select(page,map));
-        return ResponseMessage.ok(result);
+        return Result.ok(result);
     }
 
 
@@ -93,7 +110,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
             })
     @ApiOperation(value = "添加移除成员接口", notes = "添加移除成员接口")
     @RequestMapping(value = "/SalesGroupMembers_Insert", method = { RequestMethod.GET })
-    public ResponseMessage SalesGroupMembers_Insert(@RequestParam(required = true) String Ids,
+    public Result SalesGroupMembers_Insert(@RequestParam(required = true) String Ids,
                                                      @RequestParam(required = true) String ProjectID,
                                                      @RequestParam(required = true) String RoleID,
                                                      @RequestParam(required = true) String PersonId,
@@ -111,7 +128,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
         map.put("RoleName",RoleName);
 
         iSaleGroupMemberService.SalesGroupMembers_Insert(map);
-        return ResponseMessage.ok();
+        return Result.ok("成功");
     }
 
 
