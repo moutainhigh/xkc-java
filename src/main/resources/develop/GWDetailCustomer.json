@@ -2,6 +2,9 @@
   "ClueID": "",
   "OpportunityID": "",
   "CustomerID": "",
+  "SpareMobile":"",
+  "UseMobile":"",
+  "CustomerMobile":""
   "Panel": [
     {
       "Name": "客户信息",

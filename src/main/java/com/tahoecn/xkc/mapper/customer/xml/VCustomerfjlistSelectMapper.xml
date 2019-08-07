@@ -135,7 +135,9 @@
           CreateTime ,
           TheFirstVisitDate ,
           isDel ,
-          Status
+          Status,
+          SpareMobile,
+          UseMobile
         )
 VALUES  ( #{CustomerID},
           #{Name},
@@ -152,7 +154,9 @@ VALUES  ( #{CustomerID},
           GETDATE(),
           NULL,
           0,
-          1
+          1,
+          '',
+          #{Mobile}
         )
 		]]>
 	</insert>
@@ -219,7 +223,9 @@ VALUES  ( NEWID() ,
           FollowupCount ,
           AllotUserID ,
           AllotTime ,
-          FirstVisitAddress
+          FirstVisitAddress,
+          SpareMobile,
+          UseMobile
         )
 VALUES  ( #{OpportunityID},
           #{ProjectID},
@@ -248,7 +254,9 @@ VALUES  ( #{OpportunityID},
           1 ,
           #{UserID},
           GETDATE(),
-          #{VisitAddress}
+          #{VisitAddress},
+          '',
+          #{Mobile}
         )
 		]]>
 	</insert>

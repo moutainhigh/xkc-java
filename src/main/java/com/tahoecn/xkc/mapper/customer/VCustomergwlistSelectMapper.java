@@ -4,13 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.tahoecn.xkc.common.annotation.DataSource;
-import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import org.apache.ibatis.annotations.Param;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.common.annotation.DataSource;
+import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
@@ -32,6 +31,20 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	List<Map<String,Object>> sCustomerGWListNew_Select(GWCustomerPageDto gWCustomerPageDto);
 	
 	Long sCustomerGWListNew_Select_count(GWCustomerPageDto gWCustomerPageDto);
+	
+	/**
+	 * 设置机会的父ID
+	 * @param ParentID
+	 * @param list
+	 */
+	void UpdateOpportunityParentID(@Param("ParentID")String ParentID,@Param("list")List<String> list);
+	
+	/**
+	 * 获取机会子集信息
+	 * @param list
+	 * @return
+	 */
+	List<Map<String,Object>> SelectOpportunityByParentID(@Param("list")List<String> list);
 	
 	/**
 	 * 置业顾问客户基本信息1

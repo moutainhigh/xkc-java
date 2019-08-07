@@ -3,7 +3,8 @@
 <mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper">
 	<select id="sCustomerGWListNew_Select" resultType="java.util.HashMap" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
 		<![CDATA[
-	SELECT  OpportunityID ,
+	SELECT
+		OpportunityID ,
         CustomerID ,
         CustomerName ,
         CustomerMobile ,
@@ -46,6 +47,7 @@ FROM    ( SELECT m.*, ROW_NUMBER() OVER ( ${order} ) num FROM (SELECT    t.ID AS
                     AND ISNULL(t.SaleUserID,'') != '' 
                     AND t.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899' 
                     AND t.ProjectID = #{projectID}
+                    AND t.ParenID IS NULL
 					) m WHERE 1=1 ${where}
         ) t
 WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
@@ -71,10 +73,54 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		                    AND t.Status <> 6
 		                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
 		                    AND t.ProjectID = #{projectID}
+		                    AND t.ParenID IS NULL
 		        ) t
 		WHERE 1 = 1 ${where}
 		]]>
 	</select>
+	
+	<update id="UpdateOpportunityParentID">
+		UPDATE B_Opportunity SET ParentID = #{ParentID}
+		WHERE ID IN 
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<select id="SelectOpportunityByParentID" resultType="java.util.HashMap" parameterType="java.util.List">
+		<![CDATA[
+		SELECT    t.ID AS OpportunityID ,
+					t.ParentID,
+                    t.CustomerID ,
+                    t.CustomerName ,
+                    t.CustomerMobile ,
+                    t.CustomerLevel ,
+                    t.CustomerRank ,
+                    t.Status OpportunityStatusValue ,
+                    t.IsCustomerFirstEdit ,
+                    dbo.F_FormatDate(ISNULL(t.TheLatestFollowUpDate,
+                                            t.AllotTime)) AS TheLatestFollowUpDate ,
+                    CASE WHEN t.TheLatestFollowUpDate IS NULL THEN '无跟进信息'
+                         ELSE t.TheLatestFollowUpContent
+                    END TheLatestFollowUpContent ,
+                    t.TheLatestFollowUpWay ,
+                    t.SaleUserID ,
+                    t.SaleUserName ,
+                    dbo.F_GetSaleIsCare(t.ID, t.SaleUserID) IsCare,
+                    t.CreateTime,
+                    (CASE WHEN ISNULL(t.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
+          FROM      dbo.B_Opportunity AS t
+          WHERE     t.IsDel = 0
+                    AND t.Status > 0
+                    AND t.Status <> 6
+                    AND ISNULL(t.SaleUserID,'') != '' 
+                    AND ParentID IN 
+		]]>
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
+	
 	
 	<select id="sCustomerGWBase_Select" resultType="java.util.HashMap">
 		 <![CDATA[
@@ -89,7 +135,9 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		        ISNULL(su.TelPhone,'') Mobile,
 		        ISNULL(sg.Name,'')GroupName ,
 		        #{siteUrl} + ISNULL(su.HeadImg,'') HeadImg ,
-		        0 IsCooperat
+		        0 IsCooperat,
+		        o.SpareMobile,
+		        o.UseMobile
 		FROM    dbo.B_Opportunity AS o
 		        LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
 		        LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
@@ -104,7 +152,9 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		        ISNULL(su.TelPhone,'') Mobile,
 		        ISNULL(sg.Name,'')GroupName ,
 		        #{siteUrl} + ISNULL(su.HeadImg,'') HeadImg ,
-		        1 IsCooperat
+		        1 IsCooperat,
+		        o.SpareMobile,
+		        o.UseMobile
 		FROM    dbo.B_Opportunity AS o
 		        LEFT JOIN dbo.B_SalesUser su ON o.SalePartnerID = su.ID
 		        LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SalePartnerID = sgm.MemberID
@@ -791,13 +841,13 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	
 	<select id="CustomerOpportunity_Exist" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT * FROM V_Opportunity WHERE IsDel = 0 And ProjectID = #{ProjectID} AND CustomerMobile = #{Mobile} AND Status <> 6
+		SELECT * FROM V_Opportunity WHERE IsDel = 0 And ProjectID = #{ProjectID} AND (CustomerMobile = #{Mobile} OR SpareMobile = #{Mobile}) AND Status <> 6
 	    ]]>
 	</select>
 	
 	<select id="Customer_Exist" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT * FROM V_Customer WHERE IsDel = 0 AND Mobile = #{mobile}
+		SELECT * FROM V_Customer WHERE IsDel = 0 AND (Mobile = #{mobile} OR SpareMobile = #{Mobile})
 	    ]]>
 	</select>
 	
@@ -831,7 +881,9 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		          CreateTime ,
 		          IsEmployee ,
 		          isDel ,
-		          Status
+		          Status,
+		          UseMobile,
+		          SpareMobile
 		        )
 		VALUES  ( #{CustomerID},
 		          #{Name} ,
@@ -848,7 +900,9 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		          GETDATE(),
 		          #{IsEmployee},
 		          0,
-		          1)
+		          1,
+		          #{Mobile},
+		          '')
         ]]>
 	</insert>
 	
@@ -920,7 +974,9 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
           AllotTime ,
           IsCustomerFirstEdit ,
           CustomerFirstEditTime ,
-          Status
+          Status,
+          UseMobile
+          SpareMobile
         )
 VALUES  ( #{OpportunityID},
           #{ProjectID},
@@ -947,7 +1003,9 @@ VALUES  ( #{OpportunityID},
           GETDATE(),
           1 ,
           GETDATE(),
-          #{Status})
+          #{Status},
+          #{Mobile},
+          '')
 		]]>
 	</insert>
 	
@@ -1181,7 +1239,9 @@ VALUES  ( #{OpportunityID},
           AllotTime ,
           IsCustomerFirstEdit ,
           CustomerFirstEditTime ,
-          Status
+          Status,
+          SpareMobile,
+          UseMobile
         )
 VALUES  ( #{OpportunityID},
           #{ProjectID},
@@ -1211,7 +1271,9 @@ VALUES  ( #{OpportunityID},
           GETDATE(),
           1 ,
           GETDATE(),
-          #{Status}
+          #{Status},
+          '',
+          #{Mobile}
         )
         ]]>
 	</insert>
@@ -1373,7 +1435,7 @@ VALUES  ( #{OpportunityID},
 		<![CDATA[ 
 		SELECT  ID
 		FROM    dbo.B_Opportunity
-		WHERE   CustomerMobile = #{Mobile}
+		WHERE   (CustomerMobile = #{Mobile} OR SpareMobile = #{Mobile})
 		        AND ProjectID = #{ProjectID}
 		]]>
 	</select>
@@ -1529,7 +1591,9 @@ VALUES  ( #{OpportunityID},
 		        IsEmployee = #{IsEmployee},
 		        OrgID = #{OrgID},
 		        Editor = #{UserID},
-		        EditeTime = GETDATE()
+		        EditeTime = GETDATE(),
+		        SpareMobile = #{SpareMobile},
+		        UseMobile = #{UseMobile}
 		WHERE   ID = #{CustomerID}
 		]]>
 	</update>
@@ -1657,7 +1721,9 @@ VALUES  ( #{OpportunityID},
 		        IsCustomerFirstEdit = 1,
 		        CustomerFirstEditTime = ISNULL(CustomerFirstEditTime, GETDATE()) ,
 		        Editor = #{UserID},
-		        EditeTime = GETDATE()
+		        EditeTime = GETDATE(),
+		        SpareMobile = #{SpareMobile},
+		        UseMobile = #{UseMobile}
 		WHERE   ID = #{OpportunityID}
 		]]>
 	</update>

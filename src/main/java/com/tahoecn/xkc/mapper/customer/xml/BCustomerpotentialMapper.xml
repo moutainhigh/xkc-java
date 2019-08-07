@@ -660,14 +660,14 @@
 		<![CDATA[
 		select ID from B_Customer
 		where Status=1
-		and IsOwner=1 and Mobile= #{Mobile}
+		and IsOwner=1 and (Mobile= #{Mobile} or SpareMobile=#{Mobile})
 	    ]]>
 	</select>
 	
 	<select id="IsProjectOwner_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
 		select a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
-	 	and a.IsOwner=1 and b.ProjectID=#{ProjectID} and  Mobile=#{Mobile}
+	 	and a.IsOwner=1 and b.ProjectID=#{ProjectID} and  (Mobile= #{Mobile} or SpareMobile=#{Mobile})
 	    ]]>
 	</select>
 	
