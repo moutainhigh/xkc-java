@@ -562,4 +562,29 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         ]]>
     </select>
 
+
+    <select id="mChannelStoreUserList_SelectN" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        SELECT
+        ID AS ID,
+        Name AS Name,
+        CustomerNumber,
+        Mobile AS Mobile,
+        ApprovalStatus,
+        Gender,
+        volume
+        FROM
+        ChannelUser_List_Select AS bo
+        WHERE
+        ChannelOrgID = #{StoreID}
+        AND IsDel = '0'
+        AND bo.Job<> 0 ${sqlWhere}
+        AND Status = 1 ${Parameter}
+        ORDER BY
+        ApprovalStatus ASC,
+        CreateTime DESC,
+        ApprovalDate DESC
+         ]]>
+    </select>
+
 </mapper>

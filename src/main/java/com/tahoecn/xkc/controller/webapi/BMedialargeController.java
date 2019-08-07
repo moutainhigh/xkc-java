@@ -39,8 +39,8 @@ public class BMedialargeController extends TahoeBaseController {
 
     @ApiOperation(value = "媒体新增或编辑", notes = "媒体新增或编辑")
     @RequestMapping(value = "/Media_SaveOrUpdate", method = {RequestMethod.POST})
-    public Result Media_SaveOrUpdate(String ProjectID,String MediaLargeID,String Name,String ShortName,int ListIndex,int Status){
-        Result result=medialargeService.Media_SaveOrUpdate(ProjectID,MediaLargeID,Name,ShortName,ListIndex,Status);
+    public Result Media_SaveOrUpdate(String ProjectID,String MediaLargeID,String Name,String ShortName,int ListIndex,int Status,String ID){
+        Result result=medialargeService.Media_SaveOrUpdate(ProjectID,MediaLargeID,Name,ShortName,ListIndex,Status,ID);
         return result;
     }
 

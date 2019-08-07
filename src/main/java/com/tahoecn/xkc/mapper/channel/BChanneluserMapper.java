@@ -135,4 +135,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     List<Map<String, Object>> AgenChannelTypeList_SelectN();
 
     Map<String, Object> ChannelUser_Detail_FindByIdN(@Param("id") String id);
+
+    IPage<Map<String, Object>> mChannelStoreUserList_SelectN(IPage page, @Param("StoreID")String storeID, @Param("sqlWhere")String sqlWhere, @Param("Parameter")String Parameter);
 }

@@ -54,11 +54,14 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status) {
+    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status,String ID) {
         //媒体大类
         try {
             if ("-1".equals(mediaLargeID)){
                 BMedialarge bMedialarge=new BMedialarge();
+                if (StringUtils.isNotBlank(ID)){
+                    bMedialarge.setId(ID);
+                }
                 bMedialarge.setName(name);
                 bMedialarge.setShortName(shortName);
                 bMedialarge.setListIndex(listIndex);
@@ -69,6 +72,9 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 this.saveOrUpdate(bMedialarge);
             }else {
                 BMediachild bMediachild=new BMediachild();
+                if (StringUtils.isNotBlank(ID)){
+                    bMediachild.setId(ID);
+                }
                 bMediachild.setName(name);
                 bMediachild.setShortName(shortName);
                 bMediachild.setListIndex(listIndex);
