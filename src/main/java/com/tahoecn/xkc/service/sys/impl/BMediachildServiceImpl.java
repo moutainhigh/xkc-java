@@ -17,4 +17,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class BMediachildServiceImpl extends ServiceImpl<BMediachildMapper, BMediachild> implements IBMediachildService {
 
+    @Override
+    public void MediaChildSave(BMediachild bMediachild) {
+        baseMapper.MediaChildSave(bMediachild);
+    }
+
+    @Override
+    public void MediaChildUpdate(BMediachild bMediachild) {
+        baseMapper.MediaChildUpdate(bMediachild);
+    }
 }

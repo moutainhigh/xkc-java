@@ -13,4 +13,8 @@ import com.tahoecn.xkc.model.sys.BMediachild;
  */
 public interface IBMediachildService extends IService<BMediachild> {
 
+    void MediaChildSave(BMediachild bMediachild);
+
+    void MediaChildUpdate(BMediachild bMediachild);
+
 }

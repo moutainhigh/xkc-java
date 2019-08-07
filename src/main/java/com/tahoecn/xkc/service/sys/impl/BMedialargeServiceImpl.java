@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.sys.BMedialargeMapper;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -62,6 +60,7 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 if (StringUtils.isNotBlank(ID)){
                     bMedialarge.setId(ID);
                 }else {
+                    bMedialarge.setId(UUID.randomUUID().toString());
                     bMedialarge.setStatus(1);
                 }
                 bMedialarge.setName(name);
@@ -71,12 +70,19 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 bMedialarge.setIsDel(0);
                 bMedialarge.setCreateTime(new Date());
                 bMedialarge.setCreator(ThreadLocalUtils.getUserName());
-                this.saveOrUpdate(bMedialarge);
+                if (StringUtils.isNotBlank(ID)){
+                    baseMapper.MediaLargeUpdate(bMedialarge);
+                }else {
+
+                    baseMapper.MediaLargeSave(bMedialarge);
+                }
+//                this.saveOrUpdate(bMedialarge);
             }else {
                 BMediachild bMediachild=new BMediachild();
                 if (StringUtils.isNotBlank(ID)){
                     bMediachild.setId(ID);
                 }else {
+                    bMediachild.setId(UUID.randomUUID().toString());
                     bMediachild.setStatus(1);
                 }
                 bMediachild.setName(name);
@@ -87,7 +93,13 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 bMediachild.setProjectID(projectID);
                 bMediachild.setCreateTime(new Date());
                 bMediachild.setCreator(ThreadLocalUtils.getUserName());
-                mediachildService.saveOrUpdate(bMediachild);
+                if (StringUtils.isNotBlank(ID)){
+                    mediachildService.MediaChildUpdate(bMediachild);
+                }else {
+
+                    mediachildService.MediaChildSave(bMediachild);
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
