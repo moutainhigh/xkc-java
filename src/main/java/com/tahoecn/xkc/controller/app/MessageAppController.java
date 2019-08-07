@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +57,9 @@ public class MessageAppController extends TahoeBaseController {
     		String UserID = (String)paramMap.get("UserID");//用户id
     		String JobCode = (String)paramMap.get("JobCode");//岗位代码
     		String TypeCode = (String)paramMap.get("TypeCode");//页签代码
-    		/*GJ(置业顾问--跟进):今日待跟进,到访提醒,跟进将逾期
-    		YQ(置业顾问--逾期):跟进即将逾期,认购即将逾期,签约即将逾期,回款即将逾期
+    		String CurrentDate = (String)paramMap.get("CurrentDate");//当日
+    		/*GJ(置业顾问--跟进):当日待跟进,到访提醒,跟进将逾期
+    		YQ(置业顾问--逾期):当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期
     		XX(置业顾问--消息):丢失审批通知,客户被回收通知,系统通知,到访通知
     		CB(置业顾问--催办):跟进逾期催办,认购逾期催办,签约逾期催办,回款逾期催办
     		YJ(营销经理--预警):跟进逾期,认购逾期,签约逾期,回款逾期
@@ -69,6 +71,7 @@ public class MessageAppController extends TahoeBaseController {
 	    	map.put("UserID", UserID);
 	    	map.put("JobCode", JobCode);
 	    	map.put("TypeCode", TypeCode);
+	    	map.put("CurrentDate", CurrentDate);
 	    	//1.该项目是否有分享项目信息
     		int isCount = iSystemMessageService.IsExistsShareProject(map);
     		//2.统计消息类型id
@@ -81,19 +84,19 @@ public class MessageAppController extends TahoeBaseController {
     			switch(TypeCode.toUpperCase()){
     			case "GJ":
     				if(isCount == 0){
-    					msgType = new String[]{MessageType.今日待跟进.getTypeID(),
+    					msgType = new String[]{MessageType.当日待跟进.getTypeID(),
                                 MessageType.分配待跟进.getTypeID(),
-                                MessageType.跟进即将逾期.getTypeID(),
-                                MessageType.认购即将逾期.getTypeID(),
-                                MessageType.签约即将逾期.getTypeID(),
-                                MessageType.回款即将逾期.getTypeID()};
+                                MessageType.当日跟进逾期.getTypeID(),
+                                MessageType.当日认购逾期.getTypeID(),
+                                MessageType.当日签约逾期.getTypeID(),
+                                MessageType.当日回款逾期.getTypeID()};
     				}else{
-    					msgType = new String[]{MessageType.今日待跟进.getTypeID(),
+    					msgType = new String[]{MessageType.当日待跟进.getTypeID(),
                                 MessageType.分配待跟进.getTypeID(),
-                                MessageType.跟进即将逾期.getTypeID(),
-                                MessageType.认购即将逾期.getTypeID(),
-                                MessageType.签约即将逾期.getTypeID(),
-                                MessageType.回款即将逾期.getTypeID(),
+                                MessageType.当日跟进逾期.getTypeID(),
+                                MessageType.当日认购逾期.getTypeID(),
+                                MessageType.当日签约逾期.getTypeID(),
+                                MessageType.当日回款逾期.getTypeID(),
                                 MessageType.楼盘动态.getTypeID(),
                                 MessageType.预约客户.getTypeID()};
     				}
@@ -109,9 +112,9 @@ public class MessageAppController extends TahoeBaseController {
     		case "XSJL":
     			switch(TypeCode.toUpperCase()){
     			case "YJ":
-    				msgType = new String[]{MessageType.认购即将逾期.getTypeID(),
-                            MessageType.签约即将逾期.getTypeID(),
-                            MessageType.回款即将逾期.getTypeID()};
+    				msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
+                            MessageType.当日签约逾期.getTypeID(),
+                            MessageType.当日回款逾期.getTypeID()};
     				break;
     			case "DB":
     				msgType = new String[]{MessageType.客户丢失通知.getTypeID()};
@@ -126,9 +129,9 @@ public class MessageAppController extends TahoeBaseController {
     		case "XSFZR":
     			switch(TypeCode.toUpperCase()){
     			case "YJ":
-    				msgType = new String[]{MessageType.认购即将逾期.getTypeID(),
-    						MessageType.签约即将逾期.getTypeID(),
-    						MessageType.回款即将逾期.getTypeID()};
+    				msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
+    						MessageType.当日签约逾期.getTypeID(),
+    						MessageType.当日回款逾期.getTypeID()};
     				break;
     			case "DB":
     				msgType = new String[]{MessageType.客户丢失通知.getTypeID()};
@@ -143,9 +146,9 @@ public class MessageAppController extends TahoeBaseController {
     		case "YXJL":
     			switch (TypeCode.toUpperCase()){
                 case "YJ":
-                	msgType = new String[] {MessageType.认购即将逾期.getTypeID(),
-                    		MessageType.签约即将逾期.getTypeID(),
-                            MessageType.回款即将逾期.getTypeID()};
+                	msgType = new String[] {MessageType.当日认购逾期.getTypeID(),
+                    		MessageType.当日签约逾期.getTypeID(),
+                            MessageType.当日回款逾期.getTypeID()};
                         break;
                 case "DB":
                     msgType = new String[] {MessageType.客户丢失通知.getTypeID()};
@@ -164,7 +167,7 @@ public class MessageAppController extends TahoeBaseController {
     			msgType = new String[] {MessageType.客户丢失通知.getTypeID()};
                 break;
     		case "ZQFZR":
-    			msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+    			msgType = new String[] {MessageType.当日跟进逾期.getTypeID(),
                         MessageType.带看通知.getTypeID(),
                         MessageType.认筹通知.getTypeID(),
                         MessageType.认购通知.getTypeID(),
@@ -173,7 +176,7 @@ public class MessageAppController extends TahoeBaseController {
                         MessageType.无效通知.getTypeID()};
                 break;
     		case "ZQJL":
-    			msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+    			msgType = new String[] {MessageType.当日跟进逾期.getTypeID(),
                         MessageType.带看通知.getTypeID(),
                         MessageType.认筹通知.getTypeID(),
                         MessageType.认购通知.getTypeID(),
@@ -183,7 +186,7 @@ public class MessageAppController extends TahoeBaseController {
                 break;
     		case "ZQ":
     			if(isCount == 0){
-    				msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+    				msgType = new String[] {MessageType.当日跟进逾期.getTypeID(),
                             MessageType.带看通知.getTypeID(),
                             MessageType.认筹通知.getTypeID(),
                             MessageType.认购通知.getTypeID(),
@@ -191,7 +194,7 @@ public class MessageAppController extends TahoeBaseController {
                             MessageType.退房通知.getTypeID(),
                             MessageType.无效通知.getTypeID()};
     			}else{
-    				msgType = new String[] {MessageType.跟进即将逾期.getTypeID(),
+    				msgType = new String[] {MessageType.当日跟进逾期.getTypeID(),
                             MessageType.带看通知.getTypeID(),
                             MessageType.认筹通知.getTypeID(),
                             MessageType.认购通知.getTypeID(),
@@ -332,10 +335,10 @@ public class MessageAppController extends TahoeBaseController {
                 res.put("Count", 0);
                 res.put("Content", "");
             }
-            if (item.equals(MessageType.今日待跟进.getTypeID()))
+            if (item.equals(MessageType.当日待跟进.getTypeID()) || item.equals(MessageType.今日待跟进.getTypeID()))
             {
-                res.put("TypeID",  MessageType.今日待跟进.getTypeID());
-                res.put("TypeName", MessageType.今日待跟进.toString());
+                res.put("TypeID",  MessageType.当日待跟进.getTypeID());
+                res.put("TypeName", MessageType.当日待跟进.toString());
                 res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
                 res.put("Icon", ThemeUrl + "images/icon_daihuifang.png");
                 res.put("Count", 0);
@@ -359,37 +362,37 @@ public class MessageAppController extends TahoeBaseController {
                 res.put("Count", 0);
                 res.put("Content", "");
             }
-            if (item.equals(MessageType.跟进即将逾期.getTypeID()))
+            if (item.equals(MessageType.当日跟进逾期.getTypeID()) ||item.equals(MessageType.跟进即将逾期.getTypeID()))
             {
-                res.put("TypeID",  MessageType.跟进即将逾期.getTypeID());
-                res.put("TypeName", MessageType.跟进即将逾期.toString());
+                res.put("TypeID",  MessageType.当日跟进逾期.getTypeID());
+                res.put("TypeName", MessageType.当日跟进逾期.toString());
                 res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
                 res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
                 res.put("Count", 0);
                 res.put("Content", "");
             }
-            if (item.equals(MessageType.认购即将逾期.getTypeID()))
+            if (item.equals(MessageType.当日认购逾期.getTypeID()) || item.equals(MessageType.认购即将逾期.getTypeID()))
             {
-                res.put("TypeID",  MessageType.认购即将逾期.getTypeID());
-                res.put("TypeName", MessageType.认购即将逾期.toString());
+                res.put("TypeID",  MessageType.当日认购逾期.getTypeID());
+                res.put("TypeName", MessageType.当日认购逾期.toString());
                 res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
                 res.put("Icon", ThemeUrl + "images/icon_rengouyuqi.png");
                 res.put("Count", 0);
                 res.put("Content", "");
             }
-            if (item.equals(MessageType.签约即将逾期.getTypeID()))
+            if (item.equals(MessageType.当日签约逾期.getTypeID()) || item.equals(MessageType.签约即将逾期.getTypeID()))
             {
-                res.put("TypeID",  MessageType.签约即将逾期.getTypeID());
-                res.put("TypeName", MessageType.签约即将逾期.toString());
+                res.put("TypeID",  MessageType.当日签约逾期.getTypeID());
+                res.put("TypeName", MessageType.当日签约逾期.toString());
                 res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
                 res.put("Icon", ThemeUrl + "images/icon_qianyueyuqi.png");
                 res.put("Count", 0);
                 res.put("Content", "");
             }
-            if (item.equals(MessageType.回款即将逾期.getTypeID()))
+            if (item.equals(MessageType.当日回款逾期.getTypeID()) || item.equals(MessageType.回款即将逾期.getTypeID()))
             {
-                res.put("TypeID",  MessageType.回款即将逾期.getTypeID());
-                res.put("TypeName", MessageType.回款即将逾期.toString());
+                res.put("TypeID",  MessageType.当日回款逾期.getTypeID());
+                res.put("TypeName", MessageType.当日回款逾期.toString());
                 res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
                 res.put("Icon", ThemeUrl + "images/icon_huikuanyuqi.png");
                 res.put("Count", 0);
@@ -556,6 +559,16 @@ public class MessageAppController extends TahoeBaseController {
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=T.Receiver "
 					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
 		}
+		/*改造start:列表显示当日的数据-当日待跟进,当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期*/
+		if(Arrays.asList(msgTypeTemp).contains(MessageType.当日待跟进.getTypeID())
+				|| Arrays.asList(msgTypeTemp).contains(MessageType.今日待跟进.getTypeID())){
+//				|| Arrays.asList(msgTypeTemp).contains(MessageType.当日回款逾期.getTypeID())
+//				|| Arrays.asList(msgTypeTemp).contains(MessageType.当日签约逾期.getTypeID())
+//				|| Arrays.asList(msgTypeTemp).contains(MessageType.当日认购逾期.getTypeID())
+//				|| Arrays.asList(msgTypeTemp).contains(MessageType.当日跟进逾期.getTypeID())){
+			sqlWhere += " AND DATEDIFF(day,SendTime,"+map.get("CurrentDate")+")=0";
+		}
+		/*改造end:列表显示当日的数据-当日待跟进,当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期*/
 		map.put("sqlWhere", sqlWhere);
 		return iSystemMessageService.UnreadCountListByMessageType_Select(map);
 	}
@@ -632,7 +645,7 @@ public class MessageAppController extends TahoeBaseController {
 	    		//更新操作
 	    		iSystemMessageService.updMessageZQ(map);
 	    	}
-	    	if(MessageType.今日待跟进.getTypeID().equals(TypeID)
+	    	if(MessageType.当日待跟进.getTypeID().equals(TypeID) || MessageType.今日待跟进.getTypeID().equals(TypeID)
 	    			|| MessageType.待完善首访客户资料.getTypeID().equals(TypeID)){
 	    		result.put("EmptyHandleMsg", "今日的任务全部完成了，你真棒。");
 	    		result.put("EmptyHandleIconType", 3);
@@ -647,10 +660,10 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyUnHandleIconType", 3);
 	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
-	    	if(MessageType.跟进即将逾期.getTypeID().equals(TypeID)){
+	    	if(MessageType.当日跟进逾期.getTypeID().equals(TypeID) || MessageType.跟进即将逾期.getTypeID().equals(TypeID)){
 	    		result.put("EmptyHandleMsg", "暂无列表信息，请及时处理即将逾期的客户。");
 	    		result.put("EmptyHandleIconType", 2);
-	    		result.put("EmptyUnHandleMsg", "暂无跟进即将逾期的客户，请继续保持和客户的沟通频次。");
+	    		result.put("EmptyUnHandleMsg", "暂无当日跟进逾期的客户，请继续保持和客户的沟通频次。");
 	    		result.put("EmptyUnHandleIconType", 1);
 	    		if("GW".equals(JobCode) || "YXJL".equals(JobCode)){
 	    			result = ListByMessageTypeOpportunity_Select(result,map);
@@ -658,24 +671,24 @@ public class MessageAppController extends TahoeBaseController {
 	    			result = ListByMessageTypeClue_Select(result,map);
 	    		}
 	    	}
-	    	if(MessageType.认购即将逾期.getTypeID().equals(TypeID)){
+	    	if(MessageType.当日认购逾期.getTypeID().equals(TypeID) || MessageType.认购即将逾期.getTypeID().equals(TypeID)){
 	    		result.put("EmptyHandleMsg", "暂无列表信息，请及时处即将理逾期的客户。");
 	    		result.put("EmptyHandleIconType", 2);
-	    		result.put("EmptyUnHandleMsg", "暂无认购即将逾期的客户，请注意认购时间。");
+	    		result.put("EmptyUnHandleMsg", "暂无当日认购逾期的客户，请注意认购时间。");
 	    		result.put("EmptyUnHandleIconType", 2);
 	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
-	    	if(MessageType.签约即将逾期.getTypeID().equals(TypeID)){
+	    	if(MessageType.当日签约逾期.getTypeID().equals(TypeID) || MessageType.签约即将逾期.getTypeID().equals(TypeID)){
 	    		result.put("EmptyHandleMsg", "暂无列表信息，请及时处理即将逾期的客户。");
 	    		result.put("EmptyHandleIconType", 2);
-	    		result.put("EmptyUnHandleMsg", "暂无签约即将逾期的客户，请注意签约时间。");
+	    		result.put("EmptyUnHandleMsg", "暂无当日签约逾期的客户，请注意签约时间。");
 	    		result.put("EmptyUnHandleIconType", 2);
 	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
-	    	if(MessageType.回款即将逾期.getTypeID().equals(TypeID)){
+	    	if(MessageType.当日回款逾期.getTypeID().equals(TypeID)||MessageType.回款即将逾期.getTypeID().equals(TypeID)){
 	    		result.put("EmptyHandleMsg", "暂无列表信息，请及时处理即将逾期的客户。");
 	    		result.put("EmptyHandleIconType", 2);
-	    		result.put("EmptyUnHandleMsg", "暂无回款即将逾期的客户，请注意回款时间。");
+	    		result.put("EmptyUnHandleMsg", "暂无当日回款逾期的客户，请注意回款时间。");
 	    		result.put("EmptyUnHandleIconType", 2);
 	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
@@ -855,6 +868,16 @@ public class MessageAppController extends TahoeBaseController {
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
 					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
 		}
+		/*改造start:列表显示当日的数据-当日待跟进,当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期*/
+		if(MessageType.当日待跟进.getTypeID().equals(map.get("MessageType"))
+				|| MessageType.今日待跟进.getTypeID().equals(map.get("MessageType"))){
+//				|| MessageType.当日回款逾期.getTypeID().equals(map.get("MessageType"))
+//				|| MessageType.当日签约逾期.getTypeID().equals(map.get("MessageType"))
+//				|| MessageType.当日认购逾期.getTypeID().equals(map.get("MessageType"))
+//				|| MessageType.当日跟进逾期.getTypeID().equals(map.get("MessageType"))){
+			sqlWhere += " AND DATEDIFF(day,SendTime,"+map.get("CurrentDate")+")=0";
+		}
+		/*改造end:列表显示当日的数据-当日待跟进,当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期*/
 		map.put("sqlWhere", sqlWhere);
 		//列表
 		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageTypeClue_Select(map))));
@@ -881,7 +904,16 @@ public class MessageAppController extends TahoeBaseController {
 		}
 		sqlWhere += " AND ( MessageType = '" + map.get("MessageType") + "'  )";
 		
-		
+		/*改造start:列表显示当日的数据-当日待跟进,当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期*/
+		if(MessageType.当日待跟进.getTypeID().equals(map.get("MessageType"))
+				|| MessageType.今日待跟进.getTypeID().equals(map.get("MessageType"))){
+//				|| MessageType.当日回款逾期.getTypeID().equals(map.get("MessageType"))
+//				|| MessageType.当日签约逾期.getTypeID().equals(map.get("MessageType"))
+//				|| MessageType.当日认购逾期.getTypeID().equals(map.get("MessageType"))
+//				|| MessageType.当日跟进逾期.getTypeID().equals(map.get("MessageType"))){
+			sqlWhere += " AND DATEDIFF(day,SendTime,"+map.get("CurrentDate")+")=0";
+		}
+		/*改造end:列表显示当日的数据-当日待跟进,当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期*/
 		map.put("sqlWhere", sqlWhere);
 		//列表
 		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageTypeOpportunity_Select(map))));
@@ -939,8 +971,9 @@ public class MessageAppController extends TahoeBaseController {
     		String UserID = (String)paramMap.get("UserID");//用户id
     		String JobCode = (String)paramMap.get("JobCode");//岗位代码
     		String TypeCode = (String)paramMap.get("TypeCode");//页签代码
-    		/*GJ(置业顾问--跟进):今日待跟进,到访提醒,跟进将逾期
-    		YQ(置业顾问--逾期):跟进即将逾期,认购即将逾期,签约即将逾期,回款即将逾期
+    		String CurrentDate = (String)paramMap.get("CurrentDate");//当日
+    		/*GJ(置业顾问--跟进):当日待跟进,到访提醒,跟进将逾期
+    		YQ(置业顾问--逾期):当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期
     		XX(置业顾问--消息):丢失审批通知,客户被回收通知,系统通知,到访通知
     		CB(置业顾问--催办):跟进逾期催办,认购逾期催办,签约逾期催办,回款逾期催办
     		YJ(营销经理--预警):跟进逾期,认购逾期,签约逾期,回款逾期
@@ -952,6 +985,7 @@ public class MessageAppController extends TahoeBaseController {
 	    	map.put("UserID", UserID);
 	    	map.put("JobCode", JobCode);
 	    	map.put("TypeCode", TypeCode);
+	    	map.put("CurrentDate", CurrentDate);
 	    	//1.该项目是否有分享项目信息
     		int isCount = iSystemMessageService.IsExistsShareProject(map);
     		//2.统计消息类型id
@@ -968,12 +1002,12 @@ public class MessageAppController extends TahoeBaseController {
                 if(isCount == 1){//该项目是否有分享项目
                 	res.put("DTCount", 0);//动态数
                     res.put("YYCount", 0);//预约客户数
-                    msgType = new String[]{MessageType.今日待跟进.getTypeID(),
+                    msgType = new String[]{MessageType.当日待跟进.getTypeID(),
                             MessageType.分配待跟进.getTypeID(),
-                            MessageType.跟进即将逾期.getTypeID(),
-                            MessageType.认购即将逾期.getTypeID(),
-                            MessageType.签约即将逾期.getTypeID(),
-                            MessageType.回款即将逾期.getTypeID(),
+                            MessageType.当日跟进逾期.getTypeID(),
+                            MessageType.当日认购逾期.getTypeID(),
+                            MessageType.当日签约逾期.getTypeID(),
+                            MessageType.当日回款逾期.getTypeID(),
                             MessageType.跟进逾期.getTypeID(),
                             MessageType.认购逾期.getTypeID(),
                             MessageType.签约逾期.getTypeID(),
@@ -989,12 +1023,12 @@ public class MessageAppController extends TahoeBaseController {
                             MessageType.楼盘动态.getTypeID(),
                             MessageType.预约客户.getTypeID()};
                 }else{
-                	msgType = new String[] {MessageType.今日待跟进.getTypeID(),
+                	msgType = new String[] {MessageType.当日待跟进.getTypeID(),
                             MessageType.分配待跟进.getTypeID(),
-                            MessageType.跟进即将逾期.getTypeID(),
-                            MessageType.认购即将逾期.getTypeID(),
-                            MessageType.签约即将逾期.getTypeID(),
-                            MessageType.回款即将逾期.getTypeID(),
+                            MessageType.当日跟进逾期.getTypeID(),
+                            MessageType.当日认购逾期.getTypeID(),
+                            MessageType.当日签约逾期.getTypeID(),
+                            MessageType.当日回款逾期.getTypeID(),
                             MessageType.跟进逾期.getTypeID(),
                             MessageType.认购逾期.getTypeID(),
                             MessageType.签约逾期.getTypeID(),
@@ -1012,11 +1046,16 @@ public class MessageAppController extends TahoeBaseController {
                 for(UnreadCountVo msg : msgArray){
                 	String TypeID = msg.getMessageType();
                     int Count = msg.getMessageCount();
-                    if (MessageType.今日待跟进.getTypeID().equals(TypeID)
+                    if (MessageType.当日待跟进.getTypeID().equals(TypeID)
+                    		|| MessageType.今日待跟进.getTypeID().equals(TypeID)
                             || MessageType.分配待跟进.getTypeID().equals(TypeID)
+                            || MessageType.当日跟进逾期.getTypeID().equals(TypeID)
                             || MessageType.跟进即将逾期.getTypeID().equals(TypeID)
+                            || MessageType.当日认购逾期.getTypeID().equals(TypeID)
                             || MessageType.认购即将逾期.getTypeID().equals(TypeID)
+                            || MessageType.当日签约逾期.getTypeID().equals(TypeID)
                             || MessageType.签约即将逾期.getTypeID().equals(TypeID)
+                            || MessageType.当日回款逾期.getTypeID().equals(TypeID)
                             || MessageType.回款即将逾期.getTypeID().equals(TypeID)){
                     	int CountTemp = (int) res.get("GJCount");
                     	res.put("GJCount", CountTemp + Count);
