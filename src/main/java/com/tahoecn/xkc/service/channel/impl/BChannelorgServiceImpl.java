@@ -108,6 +108,11 @@ public class BChannelorgServiceImpl extends ServiceImpl<BChannelorgMapper, BChan
         return baseMapper.ChannelExcelList_SelectN(projectID,sqlWhere);
     }
 
+    @Override
+    public List<Map<String, Object>> getParentOrg() {
+        return baseMapper.getParentOrg();
+    }
+
     /**
      * 新增和修改机构
      *

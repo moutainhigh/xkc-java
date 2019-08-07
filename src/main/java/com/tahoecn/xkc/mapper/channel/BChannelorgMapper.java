@@ -39,4 +39,6 @@ public interface BChannelorgMapper extends BaseMapper<BChannelorg> {
     List<Map<String,Object>> ChannelExcelList_SelectN(@Param("projectID")String projectID, @Param("sqlWhere")StringBuilder sqlWhere);
 
     IPage<Map<String,String>> AgenList_SelectN(IPage page, @Param("where")StringBuffer where, @Param("orderBy")StringBuffer orderBy);
+
+    List<Map<String,Object>> getParentOrg();
 }

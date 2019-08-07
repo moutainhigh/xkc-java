@@ -38,6 +38,7 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
     <insert id="ChannelDetail_InsertN" parameterType="com.tahoecn.xkc.model.dto.ChannelInsertDto">
         INSERT INTO [dbo].[B_ChannelOrg] (
         ID,
+        PID,
         OrgCode,
         OrgName,
         OrgShortName,
@@ -57,6 +58,7 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
         VALUES
         (
         #{orgID},
+        #{pid},
         #{orgCode},
         #{orgName},
         #{orgShortName},
@@ -214,5 +216,8 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
             WHERE 1 = 1
             and cu.IsDel = 0 ${where} ${orderBy}
         ]]>
+    </select>
+    <select id="getParentOrg" resultType="java.util.Map">
+        select * from B_ChannelOrg where (PID IS NULL or PID = '')
     </select>
 </mapper>

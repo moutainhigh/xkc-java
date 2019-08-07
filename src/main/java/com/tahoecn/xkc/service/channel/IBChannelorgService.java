@@ -36,4 +36,6 @@ public interface IBChannelorgService extends IService<BChannelorg> {
     List<Map<String, Object>> ChannelExcelList_SelectN(String projectID, StringBuilder sqlWhere);
 
     IPage<Map<String, String>> AgenList_SelectN(IPage page,StringBuffer where, StringBuffer orderBy);
+
+    List<Map<String, Object>> getParentOrg();
 }
