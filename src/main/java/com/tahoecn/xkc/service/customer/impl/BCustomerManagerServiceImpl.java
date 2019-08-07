@@ -107,15 +107,15 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         if (StringUtil.isNotNull(Status))
         {
             if ("11".equals(Status))//线索（报备）
-                sqlWhere.append(" AND m.ClueStatus=1 AND m.OpportunityStatus=0");
+                sqlWhere.append(" AND tm.ClueStatus=1 AND tm.OpportunityStatus=0");
             else if ("12".equals(Status))//线索（确认带看）
-                sqlWhere.append(" AND m.ClueStatus= 2  AND m.OpportunityStatus=0");
+                sqlWhere.append(" AND tm.ClueStatus= 2  AND tm.OpportunityStatus=0");
             else if ("13".equals(Status))//线索（无效）
-                sqlWhere.append(" AND m.ClueStatus= 3  AND m.OpportunityStatus=0");
+                sqlWhere.append(" AND tm.ClueStatus= 3  AND tm.OpportunityStatus=0");
             else if ("6".equals(Status))   //机会丢失为6  线索丢失为4
-                sqlWhere.append(" AND m.ClueStatus= 4 AND m.OpportunityStatus=6 ");
+                sqlWhere.append(" AND tm.ClueStatus= 4 AND tm.OpportunityStatus=6 ");
             else//其余为机会的状态
-                sqlWhere.append(" AND m.OpportunityStatus='"+Status+"'");
+                sqlWhere.append(" AND tm.OpportunityStatus='"+Status+"'");
         }
         //客储等级
         if (StringUtil.isNotNull(CustomerRank))
@@ -168,22 +168,22 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         //创建时间
         if (StringUtil.isNotNull(CreateTime_Start))
         {
-            sqlWhere.append(" and  m.CreateTime>='"+CreateTime_Start+"'");
+            sqlWhere.append(" and  tm.CreateTime>='"+CreateTime_Start+"'");
         }
         //创建时间
         if (StringUtil.isNotNull(CreateTime_End))
         {
-            sqlWhere.append(" and  m.CreateTime<='"+CreateTime_End+"'");
+            sqlWhere.append(" and  tm.CreateTime<='"+CreateTime_End+"'");
         }
         //首访时间TheFirstVisitDate_Start
         if (StringUtil.isNotNull(TheFirstVisitDate_Start))
         {
-            sqlWhere.append(" and  m.TheFirstVisitDate>='"+TheFirstVisitDate_Start+"'");
+            sqlWhere.append(" and  tm.TheFirstVisitDate>='"+TheFirstVisitDate_Start+"'");
         }
         //首访时间
         if (StringUtil.isNotNull(TheFirstVisitDate_End))
         {
-            sqlWhere.append(" and  m.TheFirstVisitDate<='"+TheFirstVisitDate_End+"'");
+            sqlWhere.append(" and  tm.TheFirstVisitDate<='"+TheFirstVisitDate_End+"'");
         }
         //最近到访时间
         if (StringUtil.isNotNull(ZJDF_Start))

@@ -361,7 +361,7 @@ FROM    dbo.B_Opportunity A
       FROM    dbo.C_MYTrade A
                 INNER JOIN dbo.s_Fee B ON A.TradeGUID = B.TradeGUID
                 join B_Project P on A.ProjGUID = P.ID
-        WHERE a.CstAllGUID like '%'+#{paramMap.customerID}+'%' and P.PID=#{paramMap.projectID}
+        WHERE a.CstAllGUID like CONCAT('%',#{paramMap.customerID},'%') and P.PID=#{paramMap.projectID}
         order by B.Sequence
       ]]>
     </select>
