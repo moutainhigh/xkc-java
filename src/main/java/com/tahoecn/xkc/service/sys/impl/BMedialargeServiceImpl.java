@@ -54,7 +54,7 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status,String ID) {
+    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status,String ID,String Desc) {
         //媒体大类
         try {
             if ("-1".equals(mediaLargeID)){
@@ -66,6 +66,7 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 bMedialarge.setShortName(shortName);
                 bMedialarge.setListIndex(listIndex);
                 bMedialarge.setStatus(status);
+                bMedialarge.setDesc(Desc);
                 bMedialarge.setIsDel(0);
                 bMedialarge.setCreateTime(new Date());
                 bMedialarge.setCreator(ThreadLocalUtils.getUserName());
@@ -78,6 +79,7 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 bMediachild.setName(name);
                 bMediachild.setShortName(shortName);
                 bMediachild.setListIndex(listIndex);
+                bMediachild.setDesc(Desc);
                 bMediachild.setIsDel(0);
                 bMediachild.setStatus(status);
                 bMediachild.setProjectID(projectID);

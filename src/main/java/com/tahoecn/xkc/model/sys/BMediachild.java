@@ -62,6 +62,9 @@ public class BMediachild implements Serializable {
     @TableField("QRCodeImg")
     private String QRCodeImg;
 
+    @TableField("Desc")
+    private String Desc;
+
     public String getId() {
         return id;
     }
@@ -69,83 +72,95 @@ public class BMediachild implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
     public String getProjectID() {
         return ProjectID;
     }
 
-    public void setProjectID(String ProjectID) {
-        this.ProjectID = ProjectID;
+    public void setProjectID(String projectID) {
+        ProjectID = projectID;
     }
+
     public String getMediaLargeID() {
         return MediaLargeID;
     }
 
-    public void setMediaLargeID(String MediaLargeID) {
-        this.MediaLargeID = MediaLargeID;
+    public void setMediaLargeID(String mediaLargeID) {
+        MediaLargeID = mediaLargeID;
     }
+
     public String getName() {
         return Name;
     }
 
-    public void setName(String Name) {
-        this.Name = Name;
+    public void setName(String name) {
+        Name = name;
     }
+
     public String getShortName() {
         return ShortName;
     }
 
-    public void setShortName(String ShortName) {
-        this.ShortName = ShortName;
+    public void setShortName(String shortName) {
+        ShortName = shortName;
     }
+
     public Integer getListIndex() {
         return ListIndex;
     }
 
-    public void setListIndex(Integer ListIndex) {
-        this.ListIndex = ListIndex;
+    public void setListIndex(Integer listIndex) {
+        ListIndex = listIndex;
     }
+
     public String getCreator() {
         return Creator;
     }
 
-    public void setCreator(String Creator) {
-        this.Creator = Creator;
+    public void setCreator(String creator) {
+        Creator = creator;
     }
+
     public Date getCreateTime() {
         return CreateTime;
     }
 
-    public void setCreateTime(Date CreateTime) {
-        this.CreateTime = CreateTime;
+    public void setCreateTime(Date createTime) {
+        CreateTime = createTime;
     }
+
     public String getEditor() {
         return Editor;
     }
 
-    public void setEditor(String Editor) {
-        this.Editor = Editor;
+    public void setEditor(String editor) {
+        Editor = editor;
     }
+
     public Date getEditTime() {
         return EditTime;
     }
 
-    public void setEditTime(Date EditTime) {
-        this.EditTime = EditTime;
+    public void setEditTime(Date editTime) {
+        EditTime = editTime;
     }
+
     public Integer getIsDel() {
         return IsDel;
     }
 
-    public void setIsDel(Integer IsDel) {
-        this.IsDel = IsDel;
+    public void setIsDel(Integer isDel) {
+        IsDel = isDel;
     }
+
     public Integer getStatus() {
         return Status;
     }
 
-    public void setStatus(Integer Status) {
-        this.Status = Status;
+    public void setStatus(Integer status) {
+        Status = status;
     }
+
     public String getQRCodeImg() {
         return QRCodeImg;
     }
@@ -154,22 +169,31 @@ public class BMediachild implements Serializable {
         this.QRCodeImg = QRCodeImg;
     }
 
+    public String getDesc() {
+        return Desc;
+    }
+
+    public void setDesc(String desc) {
+        Desc = desc;
+    }
+
     @Override
     public String toString() {
         return "BMediachild{" +
-        "id=" + id +
-        ", ProjectID=" + ProjectID +
-        ", MediaLargeID=" + MediaLargeID +
-        ", Name=" + Name +
-        ", ShortName=" + ShortName +
-        ", ListIndex=" + ListIndex +
-        ", Creator=" + Creator +
-        ", CreateTime=" + CreateTime +
-        ", Editor=" + Editor +
-        ", EditTime=" + EditTime +
-        ", IsDel=" + IsDel +
-        ", Status=" + Status +
-        ", QRCodeImg=" + QRCodeImg +
-        "}";
+                "id='" + id + '\'' +
+                ", ProjectID='" + ProjectID + '\'' +
+                ", MediaLargeID='" + MediaLargeID + '\'' +
+                ", Name='" + Name + '\'' +
+                ", ShortName='" + ShortName + '\'' +
+                ", ListIndex=" + ListIndex +
+                ", Creator='" + Creator + '\'' +
+                ", CreateTime=" + CreateTime +
+                ", Editor='" + Editor + '\'' +
+                ", EditTime=" + EditTime +
+                ", IsDel=" + IsDel +
+                ", Status=" + Status +
+                ", QRCodeImg='" + QRCodeImg + '\'' +
+                ", Desc='" + Desc + '\'' +
+                '}';
     }
 }
