@@ -847,7 +847,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	
 	<select id="Customer_Exist" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT * FROM V_Customer WHERE IsDel = 0 AND (Mobile = #{mobile} OR SpareMobile = #{Mobile})
+		SELECT * FROM V_Customer WHERE IsDel = 0 AND (Mobile = #{mobile} OR SpareMobile = #{mobile})
 	    ]]>
 	</select>
 	
