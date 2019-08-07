@@ -35,9 +35,11 @@ public interface ISDictionaryService extends IService<SDictionary> {
 
     List<Map<String, Object>> getMediaLargeList_Tree(String pid,String ProjectID);
 
-    IPage<Map<String,Object>> getMediaList(IPage page, String pid, String projectID);
+//    IPage<Map<String,Object>> getMediaList(IPage page, String pid, String projectID);
 
     void updateMediaStatus(String id, int status);
 
     Result saveMedia(String pid, String id, String dictName, int listIndex, String projectID);
+
+
 }

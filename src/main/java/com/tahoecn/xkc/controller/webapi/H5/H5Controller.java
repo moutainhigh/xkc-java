@@ -335,26 +335,26 @@ public class H5Controller extends TahoeBaseController {
     }
 
     //未完成
-    @ApiOperation(value = "生成FormSessionID", notes = "生成FormSessionID")
-    @RequestMapping(value = "/mSystemFormSession_Insert", method = {RequestMethod.POST})
-    public Result mSystemFormSession_Insert(@RequestBody JSONObject jsonParam) {
-        //将FormSessionID IP Data存入表S_FormSession 其中Data为传入参数  ID为生成
-        String data = JSON.toJSONString(jsonParam.get("_param"));
-        data=data.replace("'","%27");
-        String ip= NetUtil.getClientIp(request);
-        SFormsession formsession=new SFormsession();
-        formsession.setIp(ip);
-        formsession.setData(data);
-        formsession.setCreateTime(new Date());
-        formsession.setStatus(1);
-        boolean save = formsessionService.save(formsession);
-        Map map=new HashMap();
-        map.put("FormSessionID",formsession.getId());
-        if (save){
-           return Result.ok(map);
-        }
-        return Result.errormsg(99,"生成FormSession失败");
-    }
+//    @ApiOperation(value = "生成FormSessionID", notes = "生成FormSessionID")
+//    @RequestMapping(value = "/mSystemFormSession_Insert", method = {RequestMethod.POST})
+//    public Result mSystemFormSession_Insert(@RequestBody JSONObject jsonParam) {
+//        //将FormSessionID IP Data存入表S_FormSession 其中Data为传入参数  ID为生成
+//        String data = JSON.toJSONString(jsonParam.get("_param"));
+//        data=data.replace("'","%27");
+//        String ip= NetUtil.getClientIp(request);
+//        SFormsession formsession=new SFormsession();
+//        formsession.setIp(ip);
+//        formsession.setData(data);
+//        formsession.setCreateTime(new Date());
+//        formsession.setStatus(1);
+//        boolean save = formsessionService.save(formsession);
+//        Map map=new HashMap();
+//        map.put("FormSessionID",formsession.getId());
+//        if (save){
+//           return Result.ok(map);
+//        }
+//        return Result.errormsg(99,"生成FormSession失败");
+//    }
 
     //未完成
     @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(tags = "渠道规则设置", value = "渠道规则设置")
-@RequestMapping("/ncs/webapi/ruleApp")
+@RequestMapping("/webapi/ruleApp")
 public class RuleAppController extends TahoeBaseController {
 
     @Autowired
@@ -140,7 +141,56 @@ public class RuleAppController extends TahoeBaseController {
         }
         return Result.ok(clueruleList);
     }
-    
+
+    //未分配渠道
+    @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "protectSource", value = "保护来源:0.推荐 1.自有 2.分销", required = true, dataType = "String")})
+    @ApiOperation(value = "未分配渠道接口", notes = "未分配渠道接口")
+    @RequestMapping(value = "/ClueRuleUnassignedList_Select", method = { RequestMethod.GET })
+    public Result ClueRuleUnassignedList_Select(@RequestParam(required = true) String projectId, @RequestParam(required = true) Integer protectSource) {
+        if (protectSource == 0 || protectSource == 1)
+        {
+            List<Map<String,Object>> unassignedOneList = iRuleAppService.ClueRuleUnassignedOneList_Select(projectId,protectSource);
+            return Result.ok(unassignedOneList);
+        }
+        else if (protectSource == 2)
+        {
+            List<Map<String,Object>> unassignedTwoList = iRuleAppService.ClueRuleUnassignedTwoList_Select(projectId,protectSource);
+            return Result.ok(unassignedTwoList);
+        }
+        return null;
+    }
+
+    //未分配渠道添加规则
+    @ApiImplicitParams({@ApiImplicitParam(name = "ids", value = "ids", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "clueRuleId", value = "clueRuleId", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "userId", value = "userId", required = true, dataType = "String")})
+    @ApiOperation(value = "未分配渠道添加规则接口", notes = "未分配渠道添加规则接口")
+    @RequestMapping(value = "/ClueRuleAdviserGroup_Insert", method = { RequestMethod.POST })
+    public Result ClueRuleAdviserGroup_Insert(@RequestParam(required = true)String ids, @RequestParam(required = true)String clueRuleId,@RequestParam(required = true)String userId) {
+        String[] idStrArr = ids.split(",");
+        for(int i =0;i<idStrArr.length;i++){
+            QueryWrapper<BClueruleAdvisergroup> clueRuleAdviserGroupWrapper = new QueryWrapper<>();
+            clueRuleAdviserGroupWrapper.eq("IsDel",0);
+            clueRuleAdviserGroupWrapper.eq("ClueRuleID",clueRuleId);
+            clueRuleAdviserGroupWrapper.eq("AdviserGroupID",idStrArr[i]);
+            int count = iBClueruleAdvisergroupService.count(clueRuleAdviserGroupWrapper);
+            if(count == 0){
+                BClueruleAdvisergroup item = new BClueruleAdvisergroup();
+                item.setId(UUID.randomUUID().toString());
+                item.setClueRuleID(clueRuleId);
+                item.setAdviserGroupID(idStrArr[i]);
+                item.setCreator(userId);
+                item.setCreateTime(new Date());
+                item.setEditor(null);
+                item.setEditTime(null);
+                item.setIsDel(0);
+                item.setStatus(1);
+                iBClueruleAdvisergroupService.save(item);
+            }
+        }
+        return Result.ok("添加成功");
+    }
 
 	@ApiOperation(value = "渠道规则设置-禁用/启用/删除", notes = "渠道规则：0禁用、1启用、2删除")
 	@RequestMapping(value = "/ClueRuleDetail_Delete", method = { RequestMethod.POST })

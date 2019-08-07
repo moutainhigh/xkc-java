@@ -26,5 +26,28 @@
         and a.ClueRuleID= #{clueRuleId}
     </select>
 
+    <select id="ClueRuleUnassignedOneList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT Id,DictName Name FROM dbo.S_Dictionary WHERE IsDel=0 AND PID='5316B9EF-2AA7-43BA-A8C8-14A5CA368C95' AND Status=1 AND Ext1=#{protectSource} AND id NOT IN
+            (
+            SELECT b.AdviserGroupID FROM dbo.B_ClueRule a
+            INNER JOIN B_ClueRule_AdviserGroup b ON a.ID=b.ClueRuleID AND b.IsDel=0
+             WHERE a.IsDel=0 AND a.ProjectID=#{projectId} AND a.ProtectSource=#{protectSource}
+            )
+        ]]>
 
+    </select>
+
+    <select id="ClueRuleUnassignedTwoList_Select" resultType="java.util.Map">
+        <![CDATA[
+             SELECT a.Id,a.OrgName Name FROM B_ChannelOrg a
+             INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectId}
+            WHERE a.IsDel=0 AND a.OrgCategory=1 and a.Status=1 AND a.id NOT IN
+            (
+            SELECT b.AdviserGroupID FROM dbo.B_ClueRule a
+            INNER JOIN B_ClueRule_AdviserGroup b ON a.ID=b.ClueRuleID AND b.IsDel=0
+             WHERE a.IsDel=0 AND a.ProjectID=#{projectId} AND a.ProtectSource=#{protectSource}
+            )
+        ]]>
+    </select>
 </mapper>

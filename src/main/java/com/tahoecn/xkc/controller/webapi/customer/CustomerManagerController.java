@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "客户")
 @RestController
-@RequestMapping("/ncs/webapi/customermanager")
+@RequestMapping("/webapi/customermanager")
 public class CustomerManagerController extends TahoeBaseController {
     private static final Log log = LogFactory.get();
 
@@ -66,7 +66,26 @@ public class CustomerManagerController extends TahoeBaseController {
                                                     String IsExcel,
                                                     Long PageSize,
                                                     Long PageIndex,
-                                                    String UserID) {
+                                                    String UserID,
+                                                    String CustomerRank,
+                                                    String Status,
+                                                    String SourceType,
+                                                    String SaleTeamID,
+                                                    String CustomerName,
+                                                    String CustomerMobile,
+                                                    String ReportUserName,
+                                                    String ReportUserMobile,
+                                                    String ChannelName,
+                                                    String SaleUserName,
+                                                    String CreateTime_Start,
+                                                    String CreateTime_End,
+                                                    String TheFirstVisitDate_Start,
+                                                    String TheFirstVisitDate_End,
+                                                    String ZJDF_Start,
+                                                    String ZJDF_End,
+                                                    String TheLatestFollowUpDate_Start,
+                                                    String TheLatestFollowUpDate_End,
+                                                    String type) {
 
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -76,6 +95,27 @@ public class CustomerManagerController extends TahoeBaseController {
         map.put("PageSize",PageSize);
         map.put("PageIndex",PageIndex);
         map.put("UserID",UserID);
+
+        map.put("CustomerRank",CustomerRank);
+        map.put("Status",Status);
+        map.put("SourceType",SourceType);
+        map.put("SaleTeamID",SaleTeamID);
+        map.put("CustomerName",CustomerName);
+        map.put("CustomerMobile",CustomerMobile);
+        map.put("ReportUserName",ReportUserName);
+        map.put("ReportUserMobile",ReportUserMobile);
+        map.put("ChannelName",ChannelName);
+        map.put("SaleUserName",SaleUserName);
+        map.put("CreateTime_Start",CreateTime_Start);
+        map.put("CreateTime_End",CreateTime_End);
+        map.put("TheFirstVisitDate_Start",TheFirstVisitDate_Start);
+        map.put("TheFirstVisitDate_End",TheFirstVisitDate_End);
+        map.put("ZJDF_Start",ZJDF_Start);
+        map.put("ZJDF_End",ZJDF_End);
+        map.put("TheLatestFollowUpDate_Start",TheLatestFollowUpDate_Start);
+        map.put("TheLatestFollowUpDate_End",TheLatestFollowUpDate_End);
+        map.put("type",type);
+
         //获取团队
         QueryWrapper<BSalesgroup> salesgroupWrapper = new QueryWrapper<>();
         salesgroupWrapper.eq("ProjectID", ProjectID);

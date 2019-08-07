@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
-@RequestMapping("/ncs/webapi/parameter")
+@RequestMapping("/webapi/parameter")
 public class ParameterDetailController extends TahoeBaseController {
     @Autowired
     private IBProjectService iBProjectService;
