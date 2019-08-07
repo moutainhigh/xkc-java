@@ -47,7 +47,7 @@ FROM    ( SELECT m.*, ROW_NUMBER() OVER ( ${order} ) num FROM (SELECT    t.ID AS
                     AND ISNULL(t.SaleUserID,'') != '' 
                     AND t.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899' 
                     AND t.ProjectID = #{projectID}
-                    AND t.ParenID IS NULL
+                    AND t.ParentID IS NULL
 					) m WHERE 1=1 ${where}
         ) t
 WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
@@ -73,7 +73,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		                    AND t.Status <> 6
 		                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
 		                    AND t.ProjectID = #{projectID}
-		                    AND t.ParenID IS NULL
+		                    AND t.ParentID IS NULL
 		        ) t
 		WHERE 1 = 1 ${where}
 		]]>
