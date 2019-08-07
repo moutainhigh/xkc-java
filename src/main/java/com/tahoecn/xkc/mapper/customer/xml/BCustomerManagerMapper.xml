@@ -10,7 +10,7 @@
         tr.CustomerName ,
         STUFF(tr.CustomerMobile ,4,4,'****') CustomerMobile ,
         CASE dbo.F_DictName(tr.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(tr.CustomerRank) END  CustomerRankName ,
-        dbo.F_GetClueStatusName(tr.ClueStatus, tr.OpportunityStatus) CustomerStatus ,
+        dbo.F_GetClueStatusName_xkc(tr.ClueStatus, tr.OpportunityStatus) CustomerStatus ,
         dbo.F_GetProjectName(tr.ProjectID) AS IntentProjectName ,
         dbo.F_DictName(tr.OpportunitySource) OpportunitySource ,
         dbo.F_GetMediaLargeName(tr.CognitiveChannel) CognitiveChannel ,
@@ -425,7 +425,7 @@ FROM    dbo.B_Opportunity A
 					m.CustomerMobile,
 					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
-					dbo.F_GetClueStatusName(m.Status,0) Status,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,<!--原因-->
 					CASE WHEN m.ComeOverdueTime ='1900-01-01' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,<!--到访逾期时间-->
 					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,<!--成交逾期时间-->

@@ -19,6 +19,13 @@ public interface IVCustomergwlistSelectService extends IService<VCustomergwlistS
 	 public Result customerList(GWCustomerPageDto gWCustomerPageDto);
 	 
 	 /**
+	  * 设置父级ID
+	  * @param paramAry
+	  * @return
+	  */
+	 public Result updateParentID(JSONObject paramAry);
+	 
+	 /**
 	  * 置业顾问客户基本信息
 	  * @param paramAry
 	  * @return

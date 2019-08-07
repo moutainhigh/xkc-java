@@ -581,6 +581,7 @@
     <!-- 客储达成详情列表 -->
     <select id="mYJKBCustomerRankDetailList_Select" resultType="java.util.HashMap" parameterType="java.lang.String">
     <![CDATA[
+select * from (
 	    SELECT TOP 100 PERCENT CustomerName,CustomerMobile,ReportTime,OutReceptTime,FirstVisitTime,VisitTime,SmallPlanTime,BigPlanTime
 		FROM  ( SELECT    ROW_NUMBER() OVER ( PARTITION BY OpportunityID ORDER BY a.CreateTime ASC ) RowNum ,
 		                    b.ProjectID ,
@@ -605,6 +606,7 @@
 		                    AND a.CreateTime < #{EndDate}
 		        ) n
 		WHERE  n.RowNum = 1  ${ORDERBY}
+		) as abc
     ]]>
     </select>
     <!-- 认购详情列表 -->

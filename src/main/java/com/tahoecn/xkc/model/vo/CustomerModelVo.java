@@ -19,7 +19,13 @@ public class CustomerModelVo implements Serializable{
 	private String CustomerID;
 
 	private String OrgID;
-
+	
+	private String SpareMobile;
+	
+	private String UseMobile;
+	
+	private String CustomerMobile;
+	
 	private int IsNew;
 
 	private List<PanelItem> Panel;
@@ -76,6 +82,30 @@ public class CustomerModelVo implements Serializable{
 
 	public void setPanel(List<PanelItem> panel) {
 		Panel = panel;
+	}
+
+	public String getSpareMobile() {
+		return SpareMobile;
+	}
+
+	public void setSpareMobile(String spareMobile) {
+		SpareMobile = spareMobile;
+	}
+
+	public String getUseMobile() {
+		return UseMobile;
+	}
+
+	public void setUseMobile(String useMobile) {
+		UseMobile = useMobile;
+	}
+
+	public String getCustomerMobile() {
+		return CustomerMobile;
+	}
+
+	public void setCustomerMobile(String customerMobile) {
+		CustomerMobile = customerMobile;
 	}
 
 }

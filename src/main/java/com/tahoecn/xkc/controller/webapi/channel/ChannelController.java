@@ -168,6 +168,13 @@ public class ChannelController extends TahoeBaseController {
     }
 
 
+    @ApiOperation(value = "上级机构", notes = "上级机构")
+    @RequestMapping(value = "/parent_org", method = {RequestMethod.GET})
+    public Result parentOrg() {
+        return Result.ok(channelorgService.getParentOrg());
+    }
+
+
     /**
      * {"_datatype":"text","_param":{"
      * ProjectID":"cd69e423-63b5-e711-80c7-00505686c900","

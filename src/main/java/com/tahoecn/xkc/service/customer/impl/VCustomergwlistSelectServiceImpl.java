@@ -1,8 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.fastjson.JSONObject;
@@ -172,6 +169,34 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	page.setSize(model.getPageSize());
         	page.setCurrent(model.getPageIndex());
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
+        	List<String> OpportunityID_list = new ArrayList<String>();
+        	if(data!=null && data.size()>0){
+        		for(Map<String,Object> data_map : data){
+        			OpportunityID_list.add(data_map.get("OpportunityID").toString());
+        		}
+        	}
+        	Map<String,List<Map<String,Object>>> childs = new HashMap<>();
+        	List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
+        	if(data_child!=null && data_child.size()>0){
+        		for(Map<String,Object> data_child_map : data_child){
+        			String tkey = data_child_map.get("ParentID").toString();
+        			if(!childs.containsKey(tkey)){
+        				List<Map<String,Object>> list = new ArrayList<>();
+        				list.add(data_child_map);
+        				childs.put(tkey, list);
+        			}else{
+        				childs.get(tkey).add(data_child_map);
+        			}
+        		}
+        	}
+        	if(childs!=null && childs.size()>0){
+        		for(Map<String,Object> data_map : data){
+        			String tkey = data_map.get("OpportunityID").toString();
+        			if(childs.containsKey(tkey)){
+        				data_map.put("childItem", childs.get(tkey));
+        			}
+        		}
+        	}
         	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_count(model);
         	Map<String,Object> re = new HashMap<String, Object>();
         	re.put("List", data);
@@ -188,6 +213,38 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 			e.printStackTrace();
 		}
 		return entity;
+	}
+	
+	@Override
+	public Result updateParentID(JSONObject paramAry) {
+		Result entity = new Result();
+		try {
+			if(!paramAry.containsKey("OpportunityID") || "".equals(paramAry.getString("OpportunityID"))){
+				entity.setErrmsg("父ID不能为空");
+				entity.setErrcode(1);
+				return entity;
+			}
+			if(!paramAry.containsKey("ChildID") || "".equals(paramAry.getString("ChildID"))){
+				entity.setErrmsg("子集ID不能为空");
+				entity.setErrcode(1);
+				return entity;
+			}
+			String OpportunityID = paramAry.getString("OpportunityID");
+			String ChildID = paramAry.getString("ChildID");
+			String[] ChildIDs = ChildID.split(",");
+			List<String> child_list = new ArrayList<String>();
+			for(String cId : ChildIDs){
+				child_list.add(cId);
+			}
+			vCustomergwlistSelectMapper.UpdateOpportunityParentID(OpportunityID, child_list);
+			entity.setErrmsg("成功");
+			entity.setErrcode(0);
+		} catch (Exception e) {
+			entity.setErrmsg("服务器异常");
+			entity.setErrcode(1);
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -275,24 +332,38 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 			}
 		}
 		String follwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(mode);
+		
 		if(!StringUtils.isEmpty(follwUpType)){
-			CustomerActionVo customerActionVo = new CustomerActionVo();
-			customerActionVo.setFollwUpType(follwUpType);
-			customerActionVo.setFollwUpTypeID(ActionType.valueOf(follwUpType).getValue());
-			customerActionVo.setSalesType(1);
-			customerActionVo.setNewSaleUserName("");
-			customerActionVo.setOldSaleUserName("");
-			customerActionVo.setFollwUpUserID(paramAry.getString("UserID"));
-			customerActionVo.setFollwUpWay(paramAry.getString("Mode"));
-			customerActionVo.setFollowUpContent(paramAry.getString("Content"));
-			customerActionVo.setIntentionLevel(paramAry.getString("Level"));
-			customerActionVo.setOrgID(paramAry.getString("OrgID"));
-			customerActionVo.setFollwUpUserRole(paramAry.getString("JobID"));
-			customerActionVo.setOpportunityID(paramAry.getString("OpportunityID"));
-			customerActionVo.setClueID("");
-			customerActionVo.setNextFollowUpDate(paramAry.getString("NextTime"));
-			
-			re = this.CustomerFollowUp_Insert(customerActionVo);
+			String OpportunityID = paramAry.getString("OpportunityID");
+			if(OpportunityID!=null && !"".equals(OpportunityID)){
+				//获取子集信息
+				List<String> opportunityIDlist = new ArrayList<String>();
+				opportunityIDlist.add(OpportunityID);
+				List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
+				if(childs!=null && childs.size()>0){
+					for(Map<String, Object> child : childs){
+						opportunityIDlist.add(child.get("OpportunityID").toString());
+					}
+				}
+				for(String oppoID : opportunityIDlist){
+					CustomerActionVo customerActionVo = new CustomerActionVo();
+					customerActionVo.setFollwUpType(follwUpType);
+					customerActionVo.setFollwUpTypeID(ActionType.valueOf(follwUpType).getValue());
+					customerActionVo.setSalesType(1);
+					customerActionVo.setNewSaleUserName("");
+					customerActionVo.setOldSaleUserName("");
+					customerActionVo.setFollwUpUserID(paramAry.getString("UserID"));
+					customerActionVo.setFollwUpWay(paramAry.getString("Mode"));
+					customerActionVo.setFollowUpContent(paramAry.getString("Content"));
+					customerActionVo.setIntentionLevel(paramAry.getString("Level"));
+					customerActionVo.setOrgID(paramAry.getString("OrgID"));
+					customerActionVo.setFollwUpUserRole(paramAry.getString("JobID"));
+					customerActionVo.setOpportunityID(oppoID);
+					customerActionVo.setClueID("");
+					customerActionVo.setNextFollowUpDate(paramAry.getString("NextTime"));
+					re = this.CustomerFollowUp_Insert(customerActionVo);
+				}
+			}
 			if (follwUpType.equals("售场接待")){
                 //客户到访
                 String clueID = paramAry.getString("ClueID");
