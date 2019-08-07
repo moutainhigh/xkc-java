@@ -5,6 +5,7 @@ import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.vo.BClueruleGourpVo;
 import com.tahoecn.xkc.service.rule.IRuleAppService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,15 @@ public class RuleAppServiceImpl implements IRuleAppService{
     @Override
     public List<BClueruleGourpVo> getZiyouOrTuijian(String projectId, Integer protectSource,String clueRuleId) {
         return ruleAppMapper.getZiyouOrTuijian(projectId, protectSource,clueRuleId);
+    }
+
+    @Override
+    public List<Map<String, Object>> ClueRuleUnassignedOneList_Select(String projectId, Integer protectSource) {
+        return ruleAppMapper.ClueRuleUnassignedOneList_Select(projectId,protectSource);
+    }
+
+    @Override
+    public List<Map<String, Object>> ClueRuleUnassignedTwoList_Select(String projectId, Integer protectSource) {
+        return ruleAppMapper.ClueRuleUnassignedTwoList_Select(projectId,protectSource);
     }
 }
