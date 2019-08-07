@@ -292,8 +292,10 @@ public class IpadServiceImpl implements IIpadService {
 	                Map<String,Object> proParam = new HashMap<>();
 	                proParam.put("ID", model.getProjectID());
 	                Map<String, Object> objProject = ipadMapper.Project_Detail_FindById(proParam);
-	                Integer IsLocationValidate = (Integer) objProject.get("IsLocationValidate"); //是否开启地理位置验证 1.开启 0.不开启
-	                Integer IsOffSiteSale = (Integer) objProject.get("IsOffSiteSale"); //是否开启异地销售 1.开启 0.不开启
+	                Number numberIsLocationValidate = (Number)objProject.get("IsLocationValidate");
+	                Integer IsLocationValidate = numberIsLocationValidate.intValue(); //是否开启地理位置验证 1.开启 0.不开启
+	                Number numberIsOffSiteSale = (Number)objProject.get("IsOffSiteSale");
+	                Integer IsOffSiteSale = numberIsOffSiteSale.intValue(); //是否开启异地销售 1.开启 0.不开启
 
 	                String SaleGroupName = CustomerObj.getString("SaleGroupName"); //顾问分组
 	                String FirstVisitAddress = CustomerObj.getString("FirstVisitAddress");//首访地址

@@ -120,7 +120,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                                     break;
                                 case "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D":{//意向项目
                                         if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_新潜在客户.getTypeID()) ||
-                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_老潜在客户)){
+                                            customerPotentialModeType.equals(CustomerPotentialModeType.自渠_新线索_老潜在客户.getTypeID())){
                                             String where = " and ID='" + model.getProjectID() + "' and level='1'";
                                             List<Map<String, Object>> optionList = vCustomergwlistSelectMapper.sProject_Select(where);
                                             if (optionList.size() > 0){
