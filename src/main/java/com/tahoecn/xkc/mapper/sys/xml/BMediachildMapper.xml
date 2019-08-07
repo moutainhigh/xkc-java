@@ -4,8 +4,8 @@
 
 
     <insert id="MediaChildSave" parameterType="com.tahoecn.xkc.model.sys.BMediachild">
-        INSERT INTO B_MediaChild  ( id, Name, ShortName, [Desc], ListIndex,  CreateTime, Creator,  IsDel, Status )
-        VALUES  ( #{id}, #{Name}, #{ShortName}, #{Desc}, #{ListIndex},  #{CreateTime}, #{Creator},  #{IsDel}, #{Status} )
+        INSERT INTO B_MediaChild  ( id, Name, ShortName, [Desc], MediaLargeID,ListIndex,ProjectID,  CreateTime, Creator,  IsDel, Status )
+        VALUES  ( #{id}, #{Name}, #{ShortName}, #{Desc}, #{MediaLargeID},#{ListIndex},#{ProjectID},  #{CreateTime}, #{Creator},  #{IsDel}, #{Status} )
     </insert>
 
     <update id="MediaChildUpdate" parameterType="com.tahoecn.xkc.model.sys.BMediachild">
@@ -13,6 +13,7 @@
         Name=#{Name},
         ShortName=#{ShortName},
         [Desc]=#{Desc},
+        ProjectID=#{ProjectID},
         ListIndex=#{ListIndex},
         Editor=#{Editor},
         EditTime=#{CreateTime}

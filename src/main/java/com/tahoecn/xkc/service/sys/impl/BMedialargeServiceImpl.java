@@ -59,21 +59,21 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 BMedialarge bMedialarge=new BMedialarge();
                 if (StringUtils.isNotBlank(ID)){
                     bMedialarge.setId(ID);
-                }else {
-                    bMedialarge.setId(UUID.randomUUID().toString());
-                    bMedialarge.setStatus(1);
                 }
                 bMedialarge.setName(name);
                 bMedialarge.setShortName(shortName);
                 bMedialarge.setListIndex(listIndex);
                 bMedialarge.setDesc(Desc);
                 bMedialarge.setIsDel(0);
-                bMedialarge.setCreateTime(new Date());
-                bMedialarge.setCreator(ThreadLocalUtils.getUserName());
                 if (StringUtils.isNotBlank(ID)){
+                    bMedialarge.setEditTime(new Date());
+                    bMedialarge.setEditor(ThreadLocalUtils.getUserName());
                     baseMapper.MediaLargeUpdate(bMedialarge);
                 }else {
-
+                    bMedialarge.setCreateTime(new Date());
+                    bMedialarge.setCreator(ThreadLocalUtils.getUserName());
+                    bMedialarge.setId(UUID.randomUUID().toString());
+                    bMedialarge.setStatus(1);
                     baseMapper.MediaLargeSave(bMedialarge);
                 }
 //                this.saveOrUpdate(bMedialarge);
@@ -81,25 +81,26 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 BMediachild bMediachild=new BMediachild();
                 if (StringUtils.isNotBlank(ID)){
                     bMediachild.setId(ID);
-                }else {
-                    bMediachild.setId(UUID.randomUUID().toString());
-                    bMediachild.setStatus(1);
                 }
+
+                bMediachild.setMediaLargeID(mediaLargeID);
                 bMediachild.setName(name);
                 bMediachild.setShortName(shortName);
                 bMediachild.setListIndex(listIndex);
                 bMediachild.setDesc(Desc);
                 bMediachild.setIsDel(0);
                 bMediachild.setProjectID(projectID);
-                bMediachild.setCreateTime(new Date());
-                bMediachild.setCreator(ThreadLocalUtils.getUserName());
                 if (StringUtils.isNotBlank(ID)){
+                    bMediachild.setEditTime(new Date());
+                    bMediachild.setEditor(ThreadLocalUtils.getUserName());
                     mediachildService.MediaChildUpdate(bMediachild);
                 }else {
-
+                    bMediachild.setCreateTime(new Date());
+                    bMediachild.setCreator(ThreadLocalUtils.getUserName());
+                    bMediachild.setId(UUID.randomUUID().toString());
+                    bMediachild.setStatus(1);
                     mediachildService.MediaChildSave(bMediachild);
                 }
-
             }
         } catch (Exception e) {
             e.printStackTrace();
