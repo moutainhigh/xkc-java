@@ -134,8 +134,7 @@
 	
 	<select id="mLFCustomerNeedFPList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		 SELECT *
-		 FROM   ( SELECT    o.ProjectID ,
+		  SELECT a.* FROM (SELECT n.*, ROW_NUMBER() OVER (  ORDER BY n.ReportTime DESC ) num  FROM   ( SELECT    o.ProjectID ,
 		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
 		                    o.CustomerID ,
 		                    o.CustomerName ,
@@ -180,8 +179,60 @@
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
 		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
 		                    AND c.IntentProjectID = #{pmap.ProjectID}
-		        ) n WHERE 1=1 ${pmap.WHERE} 
-		        ORDER BY ReportTime DESC
+		        ) n WHERE 1=1 ${pmap.WHERE}
+		        ) a WHERE   a.num > (#{pmap.PageIndex}-1) * #{pmap.PageSize}
+        AND a.num <= #{pmap.PageIndex} * #{pmap.PageSize}
+	    ]]>
+	</select>
+	
+	<select id="mLFCustomerNeedFPList_Select_count" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		  SELECT count(1) FROM   ( SELECT    o.ProjectID ,
+		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
+		                    o.CustomerID ,
+		                    o.CustomerName ,
+		                    c.Mobile CustomerMobile ,
+		                    c.Gender ,
+		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    cc.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    cc.SourceType
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    INNER JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                                              AND cc.IsDel = 0
+		                                              AND cc.Status <= 2        
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
+		          WHERE     o.ProjectID = #{pmap.ProjectID}
+		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND ISNULL(o.SalePartnerID,'') = ''
+		          UNION ALL
+		          SELECT    c.IntentProjectID ProjectID ,
+		                    dbo.F_ChannelName(c.ID) AS ChannelName ,
+		                    c.CustomerPotentialID ,
+		                    cp.Name CustomerName ,
+		                    cp.Mobile CustomerMobile ,
+		                    cp.Gender ,
+		                    dbo.F_DictName(cp.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    c.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    c.SourceType
+		          FROM      dbo.B_CustomerPotential cp
+		                    LEFT JOIN dbo.B_Clue c ON c.CustomerPotentialID = cp.ID
+		                                              AND c.IsDel = 0
+		                                              AND c.Status <= 2
+		                    LEFT JOIN dbo.B_ClueRule cr ON cr.ID = c.RuleID 
+		                    LEFT JOIN dbo.B_Opportunity o ON c.ID = o.ClueID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
+		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND c.IntentProjectID = #{pmap.ProjectID}
+		        ) n WHERE 1=1 ${pmap.WHERE}
 	    ]]>
 	</select>
 	

@@ -43,44 +43,41 @@ public interface BProjectMapper extends BaseMapper<BProject> {
 	/**
 	 * 业绩看板-业绩排名列表
 	 */
-	IPage<Map<String, Object>> mYJKBSaleUserRankList_Select(IPage page, @Param("ProjectID")String ProjectID, 
-			@Param("StartDate")String StartDate, @Param("EndDate")String EndDate, 
-			@Param("ORDERBY")String ORDERBY, @Param("WHERE")String WHERE);
+	List<Map<String, Object>> mYJKBSaleUserRankList_Select(JSONObject param);
+	int mYJKBSaleUserRankList_Select_count(JSONObject param);
 	/**
 	 * 客储达成详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBCustomerRankDetailList_Select(IPage page, @Param("ProjectID")String ProjectID, 
-			@Param("CustomerRank")String CustomerRank, @Param("UserID")String UserID, 
-			@Param("StartDate")String StartDate, @Param("EndDate")String EndDate,
-			@Param("ORDERBY")String ORDERBY);
+	List<Map<String, Object>> mYJKBCustomerRankDetailList_Select(JSONObject param);
+	int mYJKBCustomerRankDetailList_Select_count(JSONObject param);
 	/**
 	 * 认购详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBOrderDetailList_Select(IPage page, @Param("ProjectID")String projectID,
-			@Param("UserID")String userID, @Param("StartDate")String StartDate, @Param("EndDate")String EndDate);
+	List<Map<String, Object>> mYJKBOrderDetailList_Select(JSONObject param);
+	int mYJKBOrderDetailList_Select_count(JSONObject param);
 	/**
 	 * 签约详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBContractDetailList_Select(IPage page, @Param("ProjectID")String projectID,
-			@Param("UserID")String userID, @Param("StartDate")String StartDate, @Param("EndDate")String EndDate);
+	List<Map<String, Object>> mYJKBContractDetailList_Select(JSONObject param);
+	int mYJKBContractDetailList_Select_count(JSONObject param);
 	/**
 	 * 逾期未签约详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBOverdueContractDetailList_Select(IPage page, @Param("ProjectID")String projectID,
-			@Param("UserID")String userID, @Param("StartDate")String StartDate, @Param("EndDate")String EndDate);
+	List<Map<String, Object>> mYJKBOverdueContractDetailList_Select(JSONObject param);
+	int mYJKBOverdueContractDetailList_Select_count(JSONObject param);
 	/**
 	 * 认筹详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBBookingDetailList_Select(IPage page, @Param("ProjectID")String projectID,
-			@Param("UserID")String userID, @Param("StartDate")String StartDate, @Param("EndDate")String EndDate);
+	List<Map<String, Object>> mYJKBBookingDetailList_Select(JSONObject param);
+	int mYJKBBookingDetailList_Select_count(JSONObject param);
 	/**
 	 * 回款详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBPaybackDetailList_Select(IPage page, @Param("ProjectID")String projectID,
-			@Param("UserID")String userID, @Param("StartDate")String StartDate, @Param("EndDate")String EndDate);
+	List<Map<String, Object>> mYJKBPaybackDetailList_Select(JSONObject param);
+	int mYJKBPaybackDetailList_Select_count(JSONObject param);
 	/**
 	 * 逾期款详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBOverduePayDetailList_Select(IPage page, @Param("ProjectID")String projectID,
-			@Param("UserID")String userID, @Param("StartDate")String StartDate, @Param("EndDate")String EndDate);
+	List<Map<String, Object>> mYJKBOverduePayDetailList_Select(JSONObject param);
+	int mYJKBOverduePayDetailList_Select_count(JSONObject param);
 }

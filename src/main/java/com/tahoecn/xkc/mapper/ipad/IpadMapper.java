@@ -82,7 +82,7 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @return
 	 */
 	List<Map<String,Object>> mLFCustomerNeedFPList_Select(@Param("pmap")Map<String,Object> pmap);
-	IPage<Map<String,Object>> mLFCustomerNeedFPList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String,Object> pmap);
+	Long mLFCustomerNeedFPList_Select_count(@Param("pmap")Map<String,Object> pmap);
 	
 	/**
 	 * 接待记录列表
