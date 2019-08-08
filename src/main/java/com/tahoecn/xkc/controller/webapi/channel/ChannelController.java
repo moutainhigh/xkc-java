@@ -612,4 +612,12 @@ public class ChannelController extends TahoeBaseController {
         }
         return Result.errormsg(99,"修改失败");
     }
+
+    @ApiOperation(value = "ChannelOrgRuleInfoDetail_Select", notes = "ChannelOrgRuleInfoDetail_Select")
+    @RequestMapping(value = "/ChannelOrgRuleInfoDetail_Select", method = {RequestMethod.POST})
+    public Result ChannelOrgRuleInfoDetail_Select(String projectId,String adviserGroupID){
+        Map<String,Object> result=channeluserService.ChannelOrgRuleInfoDetail_Select(projectId,adviserGroupID);
+        return Result.ok(result);
+    }
+
 }
