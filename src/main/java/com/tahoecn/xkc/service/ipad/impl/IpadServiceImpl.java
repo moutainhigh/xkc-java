@@ -1196,11 +1196,11 @@ public class IpadServiceImpl implements IIpadService {
 		Result re = new Result();
         CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
         StringBuilder whereSb = new StringBuilder();
-        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+        if (!StringUtils.isEmpty(model.getKeyWord())){
             whereSb.append(" AND (CustomerName LIKE '%"+model.getKeyWord()+"%' OR CustomerMobile LIKE '%"+model.getKeyWord()+"%')");
         }
         String sourceType = paramAry.getString("SourceType");
-        if (!StringUtils.isEmpty(sourceType.trim())){
+        if (!StringUtils.isEmpty(sourceType)){
             if ("1".equals(sourceType)) {//分销中介
                 whereSb.append(" AND SourceType = 'E4DFA1D5-95F9-4D89-B754-E7CC81D58196'");
             }

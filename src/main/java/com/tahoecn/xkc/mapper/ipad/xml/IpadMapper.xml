@@ -153,32 +153,10 @@
 		                                              AND cc.Status <= 2        
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
+		                    INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{pmap.UserID})
 		          WHERE     o.ProjectID = #{pmap.ProjectID}
 		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		                    AND ISNULL(o.SalePartnerID,'') = ''
-		          UNION ALL
-		          SELECT    c.IntentProjectID ProjectID ,
-		                    dbo.F_ChannelName(c.ID) AS ChannelName ,
-		                    c.CustomerPotentialID ,
-		                    cp.Name CustomerName ,
-		                    cp.Mobile CustomerMobile ,
-		                    cp.Gender ,
-		                    dbo.F_DictName(cp.Gender) AS CustomerGender ,
-		                    o.OpportunitySource ,
-		                    vc.ClueName OpportunitySourceName ,
-		                    c.CreateTime ReportTime,
-		                    ca.VisitTime,
-		                    c.SourceType
-		          FROM      dbo.B_CustomerPotential cp
-		                    LEFT JOIN dbo.B_Clue c ON c.CustomerPotentialID = cp.ID
-		                                              AND c.IsDel = 0
-		                                              AND c.Status <= 2
-		                    LEFT JOIN dbo.B_ClueRule cr ON cr.ID = c.RuleID 
-		                    LEFT JOIN dbo.B_Opportunity o ON c.ID = o.ClueID
-		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
-		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
-		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
-		                    AND c.IntentProjectID = #{pmap.ProjectID}
 		        ) n WHERE 1=1 ${pmap.WHERE}
 		        ) a WHERE   a.num > (#{pmap.PageIndex}-1) * #{pmap.PageSize}
         AND a.num <= #{pmap.PageIndex} * #{pmap.PageSize}
@@ -206,10 +184,13 @@
 		                                              AND cc.Status <= 2        
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
+		                    INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{pmap.UserID})
 		          WHERE     o.ProjectID = #{pmap.ProjectID}
 		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		                    AND ISNULL(o.SalePartnerID,'') = ''
-		          UNION ALL
+		          ) n WHERE 1=1 ${pmap.WHERE}
+		          ]]>
+		          <!-- UNION ALL
 		          SELECT    c.IntentProjectID ProjectID ,
 		                    dbo.F_ChannelName(c.ID) AS ChannelName ,
 		                    c.CustomerPotentialID ,
@@ -231,9 +212,8 @@
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
 		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
-		                    AND c.IntentProjectID = #{pmap.ProjectID}
-		        ) n WHERE 1=1 ${pmap.WHERE}
-	    ]]>
+		                    AND c.IntentProjectID = #{pmap.ProjectID} 
+		        ) n WHERE 1=1 ${pmap.WHERE}-->
 	</select>
 	
 	<select id="mLFReceptRecordList_Select_forSaleUser" parameterType="java.util.Map" resultType="java.util.HashMap">
@@ -356,6 +336,7 @@
 		            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
 		            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
 		            LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		            INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{FollwUpUserID})
 		    WHERE o.IsDel = 0
 		        AND o.Status > 0
 		        AND o.Status <> 6
