@@ -35,4 +35,9 @@ public class BSystemadServiceImpl extends ServiceImpl<BSystemadMapper, BSystemad
 		return bSystemadMapper.SystemAD_Detail_Find(map);
 	}
 
+	@Override
+	public void SystemAD_Insert(Map<String, Object> map) {
+		bSystemadMapper.SystemAD_Insert(map);
+	}
+
 }

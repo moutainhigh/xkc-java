@@ -4,10 +4,26 @@
 
 
     <select id="getMediaLargeList" resultType="java.util.HashMap" >
-        SELECT * FROM B_MediaLarge WHERE Status=1 AND IsDel=0 ORDER BY ListIndex
+        SELECT * FROM B_MediaLarge WHERE  IsDel=0 ORDER BY ListIndex
     </select>
 
     <select id="getMediaChildList" resultType="java.util.HashMap" parameterType="string">
-        SELECT * FROM B_MediaChild WHERE ProjectID=#{projectID}  AND Status=1 AND IsDel=0 ORDER BY ListIndex
+        SELECT * FROM B_MediaChild WHERE ProjectID=#{projectID}   AND IsDel=0 ORDER BY ListIndex
     </select>
+
+    <insert id="MediaLargeSave" parameterType="com.tahoecn.xkc.model.sys.BMedialarge">
+        INSERT INTO B_MediaLarge  ( id, Name, ShortName, [Desc], ListIndex,  CreateTime, Creator,  IsDel, Status )
+        VALUES  ( #{id}, #{Name}, #{ShortName}, #{Desc}, #{ListIndex},  #{CreateTime}, #{Creator},  #{IsDel}, #{Status} )
+    </insert>
+
+    <update id="MediaLargeUpdate" parameterType="com.tahoecn.xkc.model.sys.BMedialarge">
+        Update B_MediaLarge set
+        Name=#{Name},
+        ShortName=#{ShortName},
+        [Desc]=#{Desc},
+        ListIndex=#{ListIndex},
+        Editor=#{Editor},
+        EditTime=#{CreateTime}
+        where ID=#{id}
+    </update>
 </mapper>

@@ -150,4 +150,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     Result AgenInfo_UpdateN(BChanneluser channeluser);
 
     Map<String, Object> ChannelUser_Detail_FindByIdN(String id);
+
+
+    IPage<Map<String, Object>> mChannelStoreUserList_SelectN(Map<String, Object> paramMap);
+
+    Result mBrokerChannelUserDetail_UpdateN(Map<String, Object> paramMap);
+
 }

@@ -67,6 +67,7 @@ public class SJobsController extends TahoeBaseController {
     @RequestMapping(value = "/SystemJob_Insert", method = {RequestMethod.POST})
     public Result SystemJob_Insert(@RequestBody SJobs jobs){
         jobs.setCreator(ThreadLocalUtils.getUserName());
+        jobs.setStatus(1);
         jobs.setCreateTime(new Date());
         jobs.setIsDel(0);
         boolean save = jobsService.save(jobs);

@@ -19,4 +19,9 @@ public interface BMedialargeMapper extends BaseMapper<BMedialarge> {
     List<Map<String, Object>> getMediaLargeList();
 
     List<Map<String, Object>> getMediaChildList(String projectID);
+
+    void MediaLargeSave(BMedialarge bMedialarge);
+
+    void MediaLargeUpdate(BMedialarge bMedialarge);
+
 }

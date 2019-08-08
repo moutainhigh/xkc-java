@@ -211,22 +211,22 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
 	                break;
 	            case 2:
-	                msgType = new String[] {MessageType.分配待跟进.getTypeID(),MessageType.跟进即将逾期.getTypeID(),MessageType.跟进逾期.getTypeID(),MessageType.跟进逾期催办.getTypeID(),MessageType.今日待跟进.getTypeID()};
+	                msgType = new String[] {MessageType.分配待跟进.getTypeID(),MessageType.当日跟进逾期.getTypeID(),MessageType.跟进逾期.getTypeID(),MessageType.跟进逾期催办.getTypeID(),MessageType.当日待跟进.getTypeID()};
 	                strMessageType = String.join("' OR MessageType ='", msgType);
 	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
 	                break;
 	            case 3:
-	                msgType = new String[] {MessageType.待完善首访客户资料.getTypeID(),MessageType.分配待跟进.getTypeID(),MessageType.跟进即将逾期.getTypeID(),MessageType.跟进逾期.getTypeID(),MessageType.跟进逾期催办.getTypeID(),MessageType.今日待跟进.getTypeID(),MessageType.认购即将逾期.getTypeID(),MessageType.认购逾期.getTypeID(),MessageType.认购逾期催办.getTypeID()};
+	                msgType = new String[] {MessageType.待完善首访客户资料.getTypeID(),MessageType.分配待跟进.getTypeID(),MessageType.当日跟进逾期.getTypeID(),MessageType.跟进逾期.getTypeID(),MessageType.跟进逾期催办.getTypeID(),MessageType.当日待跟进.getTypeID(),MessageType.当日认购逾期.getTypeID(),MessageType.认购逾期.getTypeID(),MessageType.认购逾期催办.getTypeID()};
 	                strMessageType = String.join("' OR MessageType ='", msgType);
 	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
 	                break;
 	            case 4:
-	                msgType = new String[] {MessageType.签约即将逾期.getTypeID(),MessageType.签约逾期.getTypeID(),MessageType.签约逾期催办.getTypeID()};
+	                msgType = new String[] {MessageType.当日签约逾期.getTypeID(),MessageType.签约逾期.getTypeID(),MessageType.签约逾期催办.getTypeID()};
 	                strMessageType = String.join("' OR MessageType ='", msgType);
 	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
 	                break;
 	            case 5:
-	                msgType = new String[] {MessageType.回款即将逾期.getTypeID(),MessageType.回款逾期.getTypeID(),MessageType.回款逾期催办.getTypeID()};
+	                msgType = new String[] {MessageType.当日回款逾期.getTypeID(),MessageType.回款逾期.getTypeID(),MessageType.回款逾期催办.getTypeID()};
 	                strMessageType = String.join("' OR MessageType ='", msgType);
 	                Where += String.format(" AND ( MessageType='%s' )", strMessageType);
 	                break;

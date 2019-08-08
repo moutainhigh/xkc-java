@@ -473,6 +473,16 @@ public class H5Controller extends TahoeBaseController {
         }
     }
 
+    // 修改个人基本信息
+    // 在审核不通过的时候可以修改机构编码，其他状态不允许修改
+    @ApiOperation(value = "修改个人基本信息", notes = "修改个人基本信息")
+    @RequestMapping(value = "/mBrokerChannelUserDetail_UpdateN", method = {RequestMethod.POST})
+    public Result mBrokerChannelUserDetail_UpdateN(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mBrokerChannelUserDetail_UpdateN(paramMap);
+        return result;
+    }
+
     //已测
     @ApiOperation(value = "项目收藏", notes = "项目收藏")
     @RequestMapping(value = "/BrokerProjectCollection_Insert", method = {RequestMethod.POST})
@@ -593,6 +603,16 @@ public class H5Controller extends TahoeBaseController {
         return Result.errormsg(99,"修改密码失败");
 
     }
+
+    @ApiOperation(value = "门店成员列表", notes = "门店成员列表")
+    @RequestMapping(value = "/mChannelStoreUserList_SelectN", method = {RequestMethod.POST})
+    public Result mChannelStoreUserList_SelectN(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        IPage<Map<String,Object>> page=channeluserService.mChannelStoreUserList_SelectN(paramMap);
+       return Result.ok(page);
+    }
+
+
 
 
 }

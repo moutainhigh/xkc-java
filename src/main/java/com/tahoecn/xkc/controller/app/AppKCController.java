@@ -856,13 +856,15 @@ public class AppKCController extends TahoeBaseController {
     			
     			if(reportUserID != null && reportUserID.length() > 0) {
     				
-    				System.out.println(whereStr);
-    				System.out.println(JZCode);
+//    				System.out.println(whereStr);
+//    				System.out.println(JZCode);
     				int All = iBChanneltaskService.mChannelTaskList_SelectAllCount(map);
     				List<Map<String,Object>> objData = iBChanneltaskService.mChannelTaskList_Select(map);
     	    		if(All > 0) {
     	    			String Creator = (String) objData.get(0).get("Creator");//任务创建者
-    	    			if(Creator != reportUserID) {
+//    	    			System.out.println(Creator);
+//    	    			System.out.println(reportUserID);
+    	    			if(Creator.equals(reportUserID) != true) {
     	    				Map<String, Object> a = new HashMap<String, Object>();
     	    	    		a.put("List", "[]");
     	    	    		a.put("AllCount", 0);

@@ -20,7 +20,9 @@
 	          CreateTime ,
 	          IsEmployee ,
 	          isDel ,
-	          Status
+	          Status,
+	          SpareMobile,
+	          UseMobile
 	        )
 		VALUES  ( #{CustomerID} ,
 	          #{NickName} ,
@@ -37,7 +39,9 @@
 	          GETDATE() ,
 	          '' ,
 	          0 ,
-	          1
+	          1,
+	          '',
+	          #{Mobile}
 	        );
 	]]>
 	</insert>
@@ -111,7 +115,9 @@
 	          AllotTime ,
 	          IsCustomerFirstEdit ,
 	          CustomerFirstEditTime ,
-	          Status
+	          Status,
+	          SpareMobile,
+	          UseMobile
 	        )
 		VALUES  ( #{OpportunityID} ,
 	          #{ProjectID} ,
@@ -138,7 +144,9 @@
 	          GETDATE() ,
 	          1 ,
 	          GETDATE() ,
-	          #{Status}
+	          #{Status},
+	          '',
+	          #{Mobile}
 	        );
 	]]>
 	</insert>
@@ -252,7 +260,9 @@
 	          IsCustomerFirstEdit ,
 	          CustomerFirstEditTime ,
 	          AllotUserID ,
-	          AllotTime
+	          AllotTime,
+	          SpareMobile,
+	          UseMobile
 	        )
 		VALUES  ( #{OpportunityID} ,
 	          #{ProjectID} ,
@@ -279,7 +289,9 @@
 	          1 ,
 	          GETDATE() ,
 	          #{UserID} ,
-	          GETDATE()
+	          GETDATE(),
+	          '',
+	          #{Mobile}
 	        );
 	]]>	
 	</insert>

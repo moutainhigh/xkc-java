@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.sys.BMedialargeMapper;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -54,30 +52,55 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, int status) {
+    public Result Media_SaveOrUpdate(String projectID,String mediaLargeID, String name, String shortName, int listIndex, String ID,String Desc) {
         //媒体大类
         try {
             if ("-1".equals(mediaLargeID)){
                 BMedialarge bMedialarge=new BMedialarge();
+                if (StringUtils.isNotBlank(ID)){
+                    bMedialarge.setId(ID);
+                }
                 bMedialarge.setName(name);
                 bMedialarge.setShortName(shortName);
                 bMedialarge.setListIndex(listIndex);
-                bMedialarge.setStatus(status);
+                bMedialarge.setDesc(Desc);
                 bMedialarge.setIsDel(0);
-                bMedialarge.setCreateTime(new Date());
-                bMedialarge.setCreator(ThreadLocalUtils.getUserName());
-                this.saveOrUpdate(bMedialarge);
+                if (StringUtils.isNotBlank(ID)){
+                    bMedialarge.setEditTime(new Date());
+                    bMedialarge.setEditor(ThreadLocalUtils.getUserName());
+                    baseMapper.MediaLargeUpdate(bMedialarge);
+                }else {
+                    bMedialarge.setCreateTime(new Date());
+                    bMedialarge.setCreator(ThreadLocalUtils.getUserName());
+                    bMedialarge.setId(UUID.randomUUID().toString());
+                    bMedialarge.setStatus(1);
+                    baseMapper.MediaLargeSave(bMedialarge);
+                }
+//                this.saveOrUpdate(bMedialarge);
             }else {
                 BMediachild bMediachild=new BMediachild();
+                if (StringUtils.isNotBlank(ID)){
+                    bMediachild.setId(ID);
+                }
+
+                bMediachild.setMediaLargeID(mediaLargeID);
                 bMediachild.setName(name);
                 bMediachild.setShortName(shortName);
                 bMediachild.setListIndex(listIndex);
+                bMediachild.setDesc(Desc);
                 bMediachild.setIsDel(0);
-                bMediachild.setStatus(status);
                 bMediachild.setProjectID(projectID);
-                bMediachild.setCreateTime(new Date());
-                bMediachild.setCreator(ThreadLocalUtils.getUserName());
-                mediachildService.saveOrUpdate(bMediachild);
+                if (StringUtils.isNotBlank(ID)){
+                    bMediachild.setEditTime(new Date());
+                    bMediachild.setEditor(ThreadLocalUtils.getUserName());
+                    mediachildService.MediaChildUpdate(bMediachild);
+                }else {
+                    bMediachild.setCreateTime(new Date());
+                    bMediachild.setCreator(ThreadLocalUtils.getUserName());
+                    bMediachild.setId(UUID.randomUUID().toString());
+                    bMediachild.setStatus(1);
+                    mediachildService.MediaChildSave(bMediachild);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

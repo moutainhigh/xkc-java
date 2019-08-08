@@ -24,7 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 
-@Api(tags = "业绩看板接口", value = "置业顾问业绩看板接口")
+@Api(tags = "APP-业绩看板接口", value = "置业顾问业绩看板接口")
 @RestController
 @RequestMapping("/app/achievementBoard")
 public class AppAAchievementBoardController extends TahoeBaseController {
@@ -134,31 +134,29 @@ public class AppAAchievementBoardController extends TahoeBaseController {
         param.put("ORDERBY",orderBySb.toString());
         param.put("WHERE", "");
         IPage page = new Page(PageIndex, PageSize);
-        IPage<Map<String,Object>> objData = iAAchievementBoardService.mYJKBSaleUserRankList_Select(page, param);
+        Map<String,Object> objData = iAAchievementBoardService.mYJKBSaleUserRankList_Select(param);
         //根据UserID获取当前排名
         param.remove("WHERE");
-        param.put("WHERE", String.format(" AND SaleUserID = '{0}'", param.get("UserID")));
+        param.put("WHERE", String.format(" AND SaleUserID = '"+param.get("UserID")+"'"));
         //获取当前排名
-        IPage<Map<String,Object>> objRank = iAAchievementBoardService.mYJKBSaleUserRankList_Select(page, param);
+        Map<String,Object> objRank = iAAchievementBoardService.mYJKBSaleUserRankList_Select(param);
         int noPerRank = 0; //没有业绩，不在列表里时的排名
-        if (objData.getTotal() > 0){
-            noPerRank = (int) (objData.getTotal() + 1);
+        if ((int)objData.get("AllCount") > 0){
+            noPerRank = (int) objData.get("AllCount") + 1;
         }
-        int curRank = (objRank.getRecords() != null && objRank.getRecords().size() > 0) ? (int) objRank.getRecords().get(0).get("RankNum") : noPerRank;
-        objData.setCurrent(curRank);
+        long curRank = (objRank.get("List") != null && ((List)objRank.get("List")).size() > 0) ? (Long) ((Map)((List)objRank.get("List")).get(0)).get("RankNum") : noPerRank;
+        objData.put("Current",curRank);
         Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", objData.getTotal());
-        map.put("CurrentRank", objData.getCurrent());
-        map.put("List", objData.getRecords());
-        map.put("PageSize", objData.getSize());
+        map.put("AllCount", objData.get("AllCount"));
+        map.put("CurrentRank", objData.get("Current"));
+        map.put("List", objData.get("List"));
+        map.put("PageSize", objData.get("PageSize"));
 		return Result.ok(map);
 	}
 	@ApiOperation(value = "客储达成详情列表", notes = "置业顾问业绩看板-客储达成详情列表")
 	@RequestMapping(value = "/mYJKBCustomerRankDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBCustomerRankDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = param.getIntValue("PageSize");
-		int PageIndex = param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -186,16 +184,13 @@ public class AppAAchievementBoardController extends TahoeBaseController {
             strOrderBy.append(" ORDER BY BigPlanTime DESC");
         }
         param.put("ORDERBY", strOrderBy.toString());
-        IPage page = new Page(PageIndex, PageSize);
-        IPage<Map<String,Object>> objData = iAAchievementBoardService.mYJKBCustomerRankDetailList_Select(page, param);
+        Map<String,Object> objData = iAAchievementBoardService.mYJKBCustomerRankDetailList_Select(param);
 		return Result.ok(objData);
 	}
 	@ApiOperation(value = "认购详情列表", notes = "置业顾问业绩看板-销售业绩-认购详情列表")
 	@RequestMapping(value = "/mYJKBOrderDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBOrderDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = StringUtils.isEmpty(param.getString("PageSize")) ? 100 : param.getIntValue("PageSize");
-		int PageIndex = StringUtils.isEmpty(param.getString("PageIndex")) ? 100 : param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -208,20 +203,13 @@ public class AppAAchievementBoardController extends TahoeBaseController {
 		}else{
 			param.put("EndDate", sdf.format(param.getDate("EndDate")));
 		}
-		IPage page = new Page(PageIndex, PageSize);
-		IPage<Map<String,Object>> obj = iAAchievementBoardService.mYJKBOrderDetailList_Select(page, param);
-		Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", obj.getTotal());
-        map.put("List", obj.getRecords());
-        map.put("PageSize", obj.getSize());
-		return Result.ok(map);
+		Map<String,Object> obj = iAAchievementBoardService.mYJKBOrderDetailList_Select(param);
+		return Result.ok(obj);
 	}
 	@ApiOperation(value = "签约详情列表", notes = "置业顾问业绩看板-销售业绩-签约详情列表")
 	@RequestMapping(value = "/mYJKBContractDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBContractDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = StringUtils.isEmpty(param.getString("PageSize")) ? 100 : param.getIntValue("PageSize");
-		int PageIndex = StringUtils.isEmpty(param.getString("PageIndex")) ? 100 : param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -234,20 +222,13 @@ public class AppAAchievementBoardController extends TahoeBaseController {
 		}else{
 			param.put("EndDate", sdf.format(param.getDate("EndDate")));
 		}
-		IPage page = new Page(PageIndex, PageSize);
-		IPage<Map<String,Object>> obj = iAAchievementBoardService.mYJKBContractDetailList_Select(page, param);
-		Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", obj.getTotal());
-        map.put("List", obj.getRecords());
-        map.put("PageSize", obj.getSize());
-		return Result.ok(map);
+		Map<String,Object> obj = iAAchievementBoardService.mYJKBContractDetailList_Select(param);
+		return Result.ok(obj);
 	}
 	@ApiOperation(value = "逾期未签约详情列表", notes = "置业顾问业绩看板-销售业绩-逾期未签约详情列表")
 	@RequestMapping(value = "/mYJKBOverdueContractDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBOverdueContractDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = StringUtils.isEmpty(param.getString("PageSize")) ? 100 : param.getIntValue("PageSize");
-		int PageIndex = StringUtils.isEmpty(param.getString("PageIndex")) ? 100 : param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -260,20 +241,13 @@ public class AppAAchievementBoardController extends TahoeBaseController {
 		}else{
 			param.put("EndDate", sdf.format(param.getDate("EndDate")));
 		}
-		IPage page = new Page(PageIndex, PageSize);
-		IPage<Map<String,Object>> obj = iAAchievementBoardService.mYJKBOverdueContractDetailList_Select(page, param);
-		Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", obj.getTotal());
-        map.put("List", obj.getRecords());
-        map.put("PageSize", obj.getSize());
-		return Result.ok(map);
+		Map<String,Object> obj = iAAchievementBoardService.mYJKBOverdueContractDetailList_Select(param);
+		return Result.ok(obj);
 	}
 	@ApiOperation(value = "认筹详情列表", notes = "置业顾问业绩看板-销售业绩-认筹详情列表")
 	@RequestMapping(value = "/mYJKBBookingDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBBookingDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = StringUtils.isEmpty(param.getString("PageSize")) ? 100 : param.getIntValue("PageSize");
-		int PageIndex = StringUtils.isEmpty(param.getString("PageIndex")) ? 100 : param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -286,20 +260,13 @@ public class AppAAchievementBoardController extends TahoeBaseController {
 		}else{
 			param.put("EndDate", sdf.format(param.getDate("EndDate")));
 		}
-		IPage page = new Page(PageIndex, PageSize);
-		IPage<Map<String,Object>> obj = iAAchievementBoardService.mYJKBBookingDetailList_Select(page, param);
-		Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", obj.getTotal());
-        map.put("List", obj.getRecords());
-        map.put("PageSize", obj.getSize());
-		return Result.ok(map);
+		Map<String,Object> obj = iAAchievementBoardService.mYJKBBookingDetailList_Select(param);
+		return Result.ok(obj);
 	}
 	@ApiOperation(value = "回款详情列表", notes = "置业顾问业绩看板-销售业绩-回款详情列表")
 	@RequestMapping(value = "/mYJKBPaybackDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBPaybackDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = StringUtils.isEmpty(param.getString("PageSize")) ? 100 : param.getIntValue("PageSize");
-		int PageIndex = StringUtils.isEmpty(param.getString("PageIndex")) ? 100 : param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -312,20 +279,13 @@ public class AppAAchievementBoardController extends TahoeBaseController {
 		}else{
 			param.put("EndDate", sdf.format(param.getDate("EndDate")));
 		}
-		IPage page = new Page(PageIndex, PageSize);
-		IPage<Map<String,Object>> obj = iAAchievementBoardService.mYJKBPaybackDetailList_Select(page, param);
-		Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", obj.getTotal());
-        map.put("List", obj.getRecords());
-        map.put("PageSize", obj.getSize());
-		return Result.ok(map);
+		Map<String,Object> obj = iAAchievementBoardService.mYJKBPaybackDetailList_Select(param);
+		return Result.ok(obj);
 	}
 	@ApiOperation(value = "逾期款详情列表", notes = "置业顾问业绩看板-销售业绩-逾期款详情列表")
 	@RequestMapping(value = "/mYJKBOverduePayDetailList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mYJKBOverduePayDetailList_Select(@RequestBody JSONObject jsonParam) {
 		JSONObject param = jsonParam.getJSONObject("_param");
-		int PageSize = StringUtils.isEmpty(param.getString("PageSize")) ? 100 : param.getIntValue("PageSize");
-		int PageIndex = StringUtils.isEmpty(param.getString("PageIndex")) ? 100 : param.getIntValue("PageIndex");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 23:59:59");
 		if (StringUtils.isEmpty(param.get("ProjectID"))){
 			return Result.errormsg(1, "参数错误");
@@ -338,12 +298,7 @@ public class AppAAchievementBoardController extends TahoeBaseController {
 		}else{
 			param.put("EndDate", sdf.format(param.getDate("EndDate")));
 		}
-		IPage page = new Page(PageIndex, PageSize);
-		IPage<Map<String,Object>> obj = iAAchievementBoardService.mYJKBOverduePayDetailList_Select(page, param);
-		Map<String,Object> map = new HashMap<String,Object>(); 
-        map.put("AllCount", obj.getTotal());
-        map.put("List", obj.getRecords());
-        map.put("PageSize", obj.getSize());
-		return Result.ok(map);
+		Map<String,Object> obj = iAAchievementBoardService.mYJKBOverduePayDetailList_Select(param);
+		return Result.ok(obj);
 	}
 }

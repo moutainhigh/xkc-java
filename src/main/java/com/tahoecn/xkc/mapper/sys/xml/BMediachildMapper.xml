@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.sys.BMediachildMapper">
 
+
+    <insert id="MediaChildSave" parameterType="com.tahoecn.xkc.model.sys.BMediachild">
+        INSERT INTO B_MediaChild  ( id, Name, ShortName, [Desc], MediaLargeID,ListIndex,ProjectID,  CreateTime, Creator,  IsDel, Status )
+        VALUES  ( #{id}, #{Name}, #{ShortName}, #{Desc}, #{MediaLargeID},#{ListIndex},#{ProjectID},  #{CreateTime}, #{Creator},  #{IsDel}, #{Status} )
+    </insert>
+
+    <update id="MediaChildUpdate" parameterType="com.tahoecn.xkc.model.sys.BMediachild">
+        Update B_MediaChild set
+        Name=#{Name},
+        ShortName=#{ShortName},
+        [Desc]=#{Desc},
+        ProjectID=#{ProjectID},
+        ListIndex=#{ListIndex},
+        Editor=#{Editor},
+        EditTime=#{CreateTime}
+        where ID=#{id}
+    </update>
 </mapper>

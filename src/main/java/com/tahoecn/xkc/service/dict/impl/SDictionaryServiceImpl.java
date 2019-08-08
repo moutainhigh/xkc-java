@@ -163,11 +163,11 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             }
             result.add(map);
         }
-          Map<String,Object> map=new HashMap<>();
-          map.put("DictName","媒体类别管理");
-          map.put("Media","Media");
-          map.put("hasChild",true);
-          result.add(map);
+//          Map<String,Object> map=new HashMap<>();
+//          map.put("DictName","媒体类别管理");
+//          map.put("Media","Media");
+//          map.put("hasChild",true);
+//          result.add(map);
           return result;
          }
          //非第一层查询

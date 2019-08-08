@@ -13,4 +13,7 @@ import com.tahoecn.xkc.model.sys.BMediachild;
  */
 public interface BMediachildMapper extends BaseMapper<BMediachild> {
 
+    void MediaChildSave(BMediachild bMediachild);
+
+    void MediaChildUpdate(BMediachild bMediachild);
 }

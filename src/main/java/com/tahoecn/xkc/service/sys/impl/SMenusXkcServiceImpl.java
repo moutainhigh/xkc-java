@@ -110,10 +110,11 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
                     baseMapper.updateById(sMenus);
                 }
             }
+            //如果是一级菜单,修改其下所有菜单IsLast=0
             if (IsLast==1){
                 QueryWrapper<SMenusXkc> wrapper=new QueryWrapper<>();
                 wrapper.likeRight("FullPath",NewPath);
-                wrapper.eq("ID",ID);
+                wrapper.ne("ID",ID);
                 List<SMenusXkc> list = baseMapper.selectList(wrapper);
                 for (SMenusXkc sMenus : list) {
                     sMenus.setIsLast(0);

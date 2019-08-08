@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.project.BProject;
 
@@ -39,35 +38,35 @@ public interface IAAchievementBoardService extends IService<BProject> {
 	/**
 	 * 业绩排名列表
 	 */
-	IPage<Map<String, Object>> mYJKBSaleUserRankList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBSaleUserRankList_Select(JSONObject param);
 	/**
 	 * 客储达成详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBCustomerRankDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBCustomerRankDetailList_Select(JSONObject param);
 	/**
 	 * 认购详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBOrderDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBOrderDetailList_Select(JSONObject param);
 	/**
 	 * 签约详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBContractDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBContractDetailList_Select(JSONObject param);
 	/**
 	 * 逾期未签约详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBOverdueContractDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBOverdueContractDetailList_Select(JSONObject param);
 	/**
 	 * 认筹详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBBookingDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBBookingDetailList_Select(JSONObject param);
 	/**
 	 * 回款详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBPaybackDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBPaybackDetailList_Select(JSONObject param);
 	/**
 	 * 逾期款详情列表
 	 */
-	IPage<Map<String, Object>> mYJKBOverduePayDetailList_Select(IPage page, JSONObject param);
+	Map<String, Object> mYJKBOverduePayDetailList_Select(JSONObject param);
 
 
 }
