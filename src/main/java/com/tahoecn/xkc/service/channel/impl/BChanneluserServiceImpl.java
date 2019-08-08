@@ -587,7 +587,10 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         int PageSize= (int) paramMap.get("PageSize");
         String StoreID= (String) paramMap.get("StoreID");
         IPage page=new Page(PageIndex,PageSize);
-        String UserName= (String) paramMap.get("UserName");
+        String UserName= "";
+        if ( paramMap.get("UserName")!=null){
+            UserName= (String) paramMap.get("UserName");
+        }
         int ApprovalStatus= (int) paramMap.get("ApprovalStatus");
         StringBuilder sqlWhere=new StringBuilder();
         StringBuilder Parameter=new StringBuilder();
@@ -614,6 +617,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     public Result mBrokerChannelUserDetail_UpdateN(Map<String, Object> paramMap) {
         //首先根据ID获取信息，判断是否是审核不通过状态，不通过状态可以修改机构编码
         BChanneluser channeluser = this.getById((String) paramMap.get("UserID"));
+        String Name= (String) paramMap.get("Name");
+        String Gender= (String) paramMap.get("Gender");
+        String UserID= (String) paramMap.get("UserID");
         StringBuilder sqlUpdate=new StringBuilder();
         if (channeluser!=null){
             //是中介同行的，审核不通过的，才能修改机构编码和机构ID
@@ -626,8 +632,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                 if (list.size()==0){
                     return  Result.errormsg(1,"机构编码输入有误，请重新输入");
                 }
-                sqlUpdate.append(",ChannelOrgCode='" + paramMap.get("ChannelOrgCode") + "',ChannelOrgID=(SELECT TOP 1 ID FROM dbo.B_ChannelOrg WHERE OrgCode='" + paramMap.get("ChannelOrgCode") + "'),ApprovalStatus=0");
-
+                sqlUpdate.append(",ChannelOrgCode='").append(paramMap.get("ChannelOrgCode")).append("',ChannelOrgID=(SELECT TOP 1 ID FROM dbo.B_ChannelOrg WHERE OrgCode='").append(paramMap.get("ChannelOrgCode")).append("'),ApprovalStatus=0");
+                baseMapper.ChannelUserDetail_UpateN(Name,Gender,UserID,sqlUpdate.toString());
             }
         }else {
             return Result.errormsg(99,"修改失败");
@@ -635,6 +641,88 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
 
         return null;
+    }
+
+    @Override
+    public Result mBrokerChannelUserPassWord_Update(String userID, String password, String oldPassword) {
+	    QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
+	    wrapper.eq("ID",userID).eq("Password",SecureUtil.md5(oldPassword).toUpperCase());
+        BChanneluser one = this.getOne(wrapper);
+        if (one==null){
+            return Result.errormsg(99,"当前密码输入错误");
+        }
+        Map<String,Object> map=new HashMap<>();
+        map.put("UserID",userID);
+        map.put("Password",SecureUtil.md5(password).toUpperCase());
+        map.put("OldPassword",SecureUtil.md5(oldPassword).toUpperCase());
+        boolean b = this.ChannelUserPassWord_Update(map);
+        if (b){
+            return Result.okm("密码修改成功");
+        }
+        return Result.errormsg(1,"密码修改失败");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result mChannelUserUpdate_Delete(Map<String, Object> paramMap) {
+        try {
+            String ID= (String) paramMap.get("ID");
+            String UserID= (String) paramMap.get("UserID");
+            BChanneluser channeluser=new BChanneluser();
+            channeluser.setId(ID);
+            channeluser.setEditeTime(new Date());
+            channeluser.setIsDel(1);
+            channeluser.setEditor(UserID);
+            this.updateById(channeluser);
+            //判断是否有客户
+            int count=baseMapper.CustomerCount(ID);
+            if (count>0){
+                baseMapper.QuitUser_Update(ID,UserID);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.errormsg(1,"删除失败");
+        }
+        return Result.okm("成功");
+    }
+
+    @Override
+    public Result mCustomerTCList_SelectN(Map<String, Object> paramMap) {
+       int PageIndex= (int) paramMap.get("PageIndex");
+       int PageSize= (int) paramMap.get("PageSize");
+        String UserID=(String) paramMap.get("UserID");
+        String KeyWord=(String) paramMap.get("KeyWord");
+        //目前前端无这几项
+//        String Sort=(String) paramMap.get("Sort");
+//        String OrderBy=(String) paramMap.get("OrderBy");
+//        String Filter=(String) paramMap.get("Filter");
+        IPage page=new Page(PageIndex,PageSize);
+        IPage<Map<String,Object>> mapIPage=baseMapper.mCustomerTCList_SelectN(page,UserID,KeyWord);
+        return Result.ok(mapIPage);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result mCustomerTCTransfer_Update(Map<String, Object> paramMap) {
+        try {
+            String ids= (String) paramMap.get("CustomerIDs");
+            String TransferID= (String) paramMap.get("TransferID");
+            String UserID= (String) paramMap.get("UserID");
+            String[] split = ids.split(",");
+            StringBuilder sb=new StringBuilder();
+            for (String s : split) {
+                sb.append("'").append(s).append("'").append(",");
+            }
+            String substring = sb.toString().substring(0, sb.toString().length() - 1);
+            System.out.println("substring = " + substring);
+            baseMapper.mCustomerTCTransfer_Update(substring,TransferID,UserID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.errormsg(99,"分配失败");
+        }
+        return Result.okm("成功");
     }
 
 

@@ -138,5 +138,16 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 
     IPage<Map<String, Object>> mChannelStoreUserList_SelectN(IPage page, @Param("StoreID")String storeID, @Param("sqlWhere")String sqlWhere, @Param("Parameter")String Parameter);
 
+    void ChannelUserDetail_UpateN( @Param("name")String name, @Param("gender")String gender,
+                                   @Param("userID")String userID, @Param("sqlUpdate")String sqlUpdate);
+
+    int CustomerCount(@Param("id")String id);
+
+    void QuitUser_Update(@Param("id")String id, @Param("userID")String userID);
+
+    IPage<Map<String, Object>> mCustomerTCList_SelectN(IPage page, @Param("userID")String userID, @Param("keyWord")String keyWord);
+
+    void mCustomerTCTransfer_Update(@Param("ids")String ids, @Param("transferID")String transferID, @Param("userID")String userID);
+
     Map<String,Object> ChannelOrgRuleInfoDetail_Select(@Param("projectId")String projectId, @Param("adviserGroupID")String adviserGroupID);
 }

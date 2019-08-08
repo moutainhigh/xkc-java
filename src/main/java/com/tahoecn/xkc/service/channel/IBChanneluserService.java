@@ -156,5 +156,12 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
     Result mBrokerChannelUserDetail_UpdateN(Map<String, Object> paramMap);
 
+    Result mBrokerChannelUserPassWord_Update(String userID, String password, String oldPassword);
+
+    Result mChannelUserUpdate_Delete(Map<String, Object> paramMap);
+
+    Result mCustomerTCList_SelectN(Map<String, Object> paramMap);
+
+    Result mCustomerTCTransfer_Update(Map<String, Object> paramMap);
     Map<String,Object> ChannelOrgRuleInfoDetail_Select(String projectId, String adviserGroupID);
 }
