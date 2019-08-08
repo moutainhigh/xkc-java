@@ -13,6 +13,7 @@
 				PictureURL,
 				Title,
 				ShareContent,
+				ADType,
 				IsDel,
 				Status
 				)
@@ -22,6 +23,7 @@
 				#{PictureURL},
 				#{Title},
 				#{ShareContent},
+				2,
 				0,
 				1
 				)
