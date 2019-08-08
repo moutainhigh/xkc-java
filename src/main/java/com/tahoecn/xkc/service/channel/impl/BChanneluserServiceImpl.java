@@ -609,6 +609,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
+    public Map<String, Object> ChannelOrgRuleInfoDetail_Select(String projectId, String adviserGroupID) {
+        return baseMapper.ChannelOrgRuleInfoDetail_Select(projectId,adviserGroupID);
+    }
+
+    @Override
     public Result mBrokerChannelUserDetail_UpdateN(Map<String, Object> paramMap) {
         //首先根据ID获取信息，判断是否是审核不通过状态，不通过状态可以修改机构编码
         BChanneluser channeluser = this.getById((String) paramMap.get("UserID"));

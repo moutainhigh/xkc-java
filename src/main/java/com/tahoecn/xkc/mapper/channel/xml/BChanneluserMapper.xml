@@ -586,6 +586,28 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         ApprovalDate DESC
          ]]>
     </select>
+    <select id="ChannelOrgRuleInfoDetail_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ID AS ProjectID,Name AS ProjectName,
+            (SELECT TOP 1 b.ID
+            FROM B_ClueRule a
+            LEFT JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID AND b.IsDel=0
+            WHERE a.IsDel=0 AND a.Status=1
+            AND a.ProjectID=#{projectId} AND b.AdviserGroupID=#{adviserGroupID}) AS ID,
+            (SELECT TOP 1 B.ClueRuleID
+            FROM B_ClueRule a
+            LEFT JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID AND b.IsDel=0
+            WHERE a.IsDel=0 AND a.Status=1
+            AND a.ProjectID=#{projectId} AND b.AdviserGroupID=#{adviserGroupID}) AS ClueRuleID,
+            (SELECT TOP 1 b.AdviserGroupID
+            FROM B_ClueRule a
+            LEFT JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID AND b.IsDel=0
+            WHERE a.IsDel=0 AND a.Status=1
+            AND a.ProjectID=#{projectId} AND b.AdviserGroupID=#{adviserGroupID}) AS AdviserGroupID
+            FROM dbo.B_Project
+            WHERE ID=#{projectId}
+    ]]>
+    </select>
 
     <update id="ChannelUserDetail_UpateN" parameterType="string">
         UPDATE B_ChannelUser SET Name=#{name},Gender=#{gender}

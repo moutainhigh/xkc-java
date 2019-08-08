@@ -202,6 +202,7 @@ public class IpadServiceImpl implements IIpadService {
                     gwObj.put("SaleUserName",gwItem.get("Name"));
                     gwObj.put("HeadImg",gwItem.get("HeadImg"));
                     gwObj.put("GroupName",gwItem.get("GroupName"));
+                    gwObj.put("Mobile",gwItem.get("Mobile"));
                     gwObj.put("ReceptCount",gwItem.get("DayTotalCount"));
                     gwObj.put("IsSigned", 0);
                     gwJarry1.add(gwObj);
@@ -224,6 +225,7 @@ public class IpadServiceImpl implements IIpadService {
                         gwObj.put("SaleUserName",gwItem.get("Name")); //顾问姓名
                         gwObj.put("HeadImg",gwItem.get("HeadImg")); //顾问头像
                         gwObj.put("GroupName",gwItem.get("GroupName"));
+                        gwObj.put("Mobile",gwItem.get("Mobile"));
                         gwObj.put("ReceptCount",gwItem.get("DayTotalCount")); //接待数量
                         gwObj.put("IsSigned", 0);
                         gwJarry.add(gwObj);
@@ -1196,11 +1198,11 @@ public class IpadServiceImpl implements IIpadService {
 		Result re = new Result();
         CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
         StringBuilder whereSb = new StringBuilder();
-        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+        if (!StringUtils.isEmpty(model.getKeyWord())){
             whereSb.append(" AND (CustomerName LIKE '%"+model.getKeyWord()+"%' OR CustomerMobile LIKE '%"+model.getKeyWord()+"%')");
         }
         String sourceType = paramAry.getString("SourceType");
-        if (!StringUtils.isEmpty(sourceType.trim())){
+        if (!StringUtils.isEmpty(sourceType)){
             if ("1".equals(sourceType)) {//分销中介
                 whereSb.append(" AND SourceType = 'E4DFA1D5-95F9-4D89-B754-E7CC81D58196'");
             }

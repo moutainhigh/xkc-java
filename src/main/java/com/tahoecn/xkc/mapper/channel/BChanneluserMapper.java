@@ -148,4 +148,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     IPage<Map<String, Object>> mCustomerTCList_SelectN(IPage page, @Param("userID")String userID, @Param("keyWord")String keyWord);
 
     void mCustomerTCTransfer_Update(@Param("ids")String ids, @Param("transferID")String transferID, @Param("userID")String userID);
+
+    Map<String,Object> ChannelOrgRuleInfoDetail_Select(@Param("projectId")String projectId, @Param("adviserGroupID")String adviserGroupID);
 }

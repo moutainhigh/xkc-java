@@ -163,4 +163,5 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     Result mCustomerTCList_SelectN(Map<String, Object> paramMap);
 
     Result mCustomerTCTransfer_Update(Map<String, Object> paramMap);
+    Map<String,Object> ChannelOrgRuleInfoDetail_Select(String projectId, String adviserGroupID);
 }
