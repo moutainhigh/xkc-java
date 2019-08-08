@@ -181,6 +181,7 @@ public class IpadServiceImpl implements IIpadService {
             	if(item.get("GroupID")!=null){
             		String groupKey = item.get("GroupID").toString();
             		if(!groupKeys.contains(groupKey)){
+            			groupKeys.add(groupKey);
             			groupList.add(item);
             		}
             	}
