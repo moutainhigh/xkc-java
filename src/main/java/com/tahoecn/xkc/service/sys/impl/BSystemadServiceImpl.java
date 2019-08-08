@@ -35,9 +35,19 @@ public class BSystemadServiceImpl extends ServiceImpl<BSystemadMapper, BSystemad
 		return bSystemadMapper.SystemAD_Detail_Find(map);
 	}
 
+	/*
+	 * 插入新的广告数据
+	 */
 	@Override
 	public void SystemAD_Insert(Map<String, Object> map) {
 		bSystemadMapper.SystemAD_Insert(map);
+	}
+	/*
+	 * 修改原有的广告数据
+	 */
+	@Override
+	public void SystemAD_Update(Map<String, Object> map) {
+		bSystemadMapper.SystemAD_Update(map);
 	}
 
 }

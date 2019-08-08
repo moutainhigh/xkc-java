@@ -23,5 +23,12 @@ public interface BSystemadMapper extends BaseMapper<BSystemad> {
 	 */
 	List<BSystemad> SystemAD_Detail_Find(Map<String, Object> map);
 
+	/*
+	 * 插入新的广告数据
+	 */
 	void SystemAD_Insert(Map<String, Object> map);
+	/*
+	 * 修改原有的广告数据
+	 */
+	void SystemAD_Update(Map<String, Object> map);
 }

@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.sys;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +37,14 @@ public class SSystemADController extends TahoeBaseController {
     @RequestMapping(value = "/SystemAD_Insert", method = {RequestMethod.POST})
     public Result SystemAD_Insert(String Title, String ShareContent,@RequestParam String PictureURL,@RequestParam MultipartFile image) {
         try {
-        	Result re = new Result();
         	String ID = UUID.randomUUID().toString();
         	String exName = image.getOriginalFilename();
     		StringBuilder PicturePath = new StringBuilder(SystemADPath);
-    		Date times = new Date();
+    		//获取当前时间
+    		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+    		String times = formatter.format(new Date());
     		PicturePath.append(times+exName);
+    		//图片存放路径
     		File file = new File(PicturePath.toString());
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ID", ID);
@@ -54,7 +57,8 @@ public class SSystemADController extends TahoeBaseController {
     		}
     		image.transferTo(file);
     		System.out.println(PicturePath.toString());
-    		iBSystemadService.SystemAD_Insert(map);
+    		iBSystemadService.SystemAD_Update(map);//修改原有的广告数据
+    		iBSystemadService.SystemAD_Insert(map);//插入新的广告数据
     		return Result.ok("保存成功");
         }catch (Exception e) {
 			e.printStackTrace();
