@@ -109,7 +109,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         //获取客户信息
         ob = iBClueService.CaseFieCustomerDetail_Select(paramMap);
         //获取线索信息
-        int invalidType = ob.get(0).get("InvalidType")== null ? -1 : (int)ob.get(0).get("InvalidType");//无效类型
+        int invalidType = ob.get(0).get("InvalidType")== null ? -1 : (short)ob.get(0).get("InvalidType");//无效类型
         String InvalidReason = (String) ob.get(0).get("InvalidReason");//无效说明
         //获取无效信息
         Map<String,Object> RuleP = new HashMap<String,Object>();
@@ -650,7 +650,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         Map<String,Object> obj = new HashMap<String,Object>();
         obj.put("ClueID", clue.getId());
         Map<String,Object> data = iBClueService.IsOverdueCome_Select(obj);
-        return Integer.parseInt(data.get("IsOverdueCome").toString()) == 0 ? false : true;
+        return data == null || Integer.parseInt(data.get("IsOverdueCome").toString()) == 0 ? false : true;
 	}
 	
 }
