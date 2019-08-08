@@ -46,37 +46,37 @@ public interface BProjectMapper extends BaseMapper<BProject> {
 	List<Map<String, Object>> mYJKBSaleUserRankList_Select(JSONObject param);
 	int mYJKBSaleUserRankList_Select_count(JSONObject param);
 	/**
-	 * 客储达成详情列表
+	 * 业绩看板-客储达成详情列表
 	 */
 	List<Map<String, Object>> mYJKBCustomerRankDetailList_Select(JSONObject param);
 	int mYJKBCustomerRankDetailList_Select_count(JSONObject param);
 	/**
-	 * 认购详情列表
+	 * 业绩看板-认购详情列表
 	 */
 	List<Map<String, Object>> mYJKBOrderDetailList_Select(JSONObject param);
 	int mYJKBOrderDetailList_Select_count(JSONObject param);
 	/**
-	 * 签约详情列表
+	 * 业绩看板-签约详情列表
 	 */
 	List<Map<String, Object>> mYJKBContractDetailList_Select(JSONObject param);
 	int mYJKBContractDetailList_Select_count(JSONObject param);
 	/**
-	 * 逾期未签约详情列表
+	 * 业绩看板-逾期未签约详情列表
 	 */
 	List<Map<String, Object>> mYJKBOverdueContractDetailList_Select(JSONObject param);
 	int mYJKBOverdueContractDetailList_Select_count(JSONObject param);
 	/**
-	 * 认筹详情列表
+	 * 业绩看板-认筹详情列表
 	 */
 	List<Map<String, Object>> mYJKBBookingDetailList_Select(JSONObject param);
 	int mYJKBBookingDetailList_Select_count(JSONObject param);
 	/**
-	 * 回款详情列表
+	 * 业绩看板-回款详情列表
 	 */
 	List<Map<String, Object>> mYJKBPaybackDetailList_Select(JSONObject param);
 	int mYJKBPaybackDetailList_Select_count(JSONObject param);
 	/**
-	 * 逾期款详情列表
+	 * 业绩看板-逾期款详情列表
 	 */
 	List<Map<String, Object>> mYJKBOverduePayDetailList_Select(JSONObject param);
 	int mYJKBOverduePayDetailList_Select_count(JSONObject param);
