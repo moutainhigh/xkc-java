@@ -77,11 +77,15 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             }
             Integer ListIndex = menu.getListIndex();
             Integer IsLast = menu.getIsLast();
-            String Editor = ThreadLocalUtils.getUserName();
+//            String Editor = ThreadLocalUtils.getUserName();
             Integer Status = menu.getStatus();
             String OldPath=baseMapper.getOldPath(ID);
             String NewPath=baseMapper.getNewPath(ID);
-            NewPath=NewPath+"/"+MenuSysName;
+            if (NewPath!=null){
+                NewPath=NewPath+"/"+MenuSysName;
+            }else {
+                NewPath=MenuSysName;
+            }
             SMenusXkc menus=new SMenusXkc();
             menus.setId(ID);
             menus.setMenuSysName(MenuSysName);
@@ -94,7 +98,7 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             menus.setLevels(Levels);
             menus.setListIndex(ListIndex);
             menus.setIsLast(IsLast);
-            menus.setEditor(Editor);
+//            menus.setEditor(Editor);
             menus.setEditTime(new Date());
             menus.setStatus(Status);
             menus.setFullPath(NewPath);
