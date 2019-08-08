@@ -202,6 +202,7 @@ public class IpadServiceImpl implements IIpadService {
                     gwObj.put("SaleUserName",gwItem.get("Name"));
                     gwObj.put("HeadImg",gwItem.get("HeadImg"));
                     gwObj.put("GroupName",gwItem.get("GroupName"));
+                    gwObj.put("Mobile",gwItem.get("Mobile"));
                     gwObj.put("ReceptCount",gwItem.get("DayTotalCount"));
                     gwObj.put("IsSigned", 0);
                     gwJarry1.add(gwObj);
@@ -224,6 +225,7 @@ public class IpadServiceImpl implements IIpadService {
                         gwObj.put("SaleUserName",gwItem.get("Name")); //顾问姓名
                         gwObj.put("HeadImg",gwItem.get("HeadImg")); //顾问头像
                         gwObj.put("GroupName",gwItem.get("GroupName"));
+                        gwObj.put("Mobile",gwItem.get("Mobile"));
                         gwObj.put("ReceptCount",gwItem.get("DayTotalCount")); //接待数量
                         gwObj.put("IsSigned", 0);
                         gwJarry.add(gwObj);
