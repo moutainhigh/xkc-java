@@ -6,4 +6,26 @@
 		select top 1 * From B_SystemAD where IsDel= 0 and Status = 1 and ADType= #{ADType} 
 	</select>
 	
+	<insert id="SystemAD_Insert" parameterType="java.util.Map" >
+		INSERT INTO dbo.B_SystemAD(
+				ID,
+				PicturePath,
+				PictureURL,
+				Title,
+				ShareContent,
+				ADType,
+				IsDel,
+				Status
+				)
+		VALUES (
+				#{ID},
+				#{PicturePath},
+				#{PictureURL},
+				#{Title},
+				#{ShareContent},
+				2,
+				0,
+				1
+				)
+	</insert>
 </mapper>

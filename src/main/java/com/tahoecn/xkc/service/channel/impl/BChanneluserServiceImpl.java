@@ -561,7 +561,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             SDictionary dictionary = sDictionaryMapper.selectById(channeluser.getCertificatesType());
             channeluser.setCertificatesName(dictionary.getDictName());
             BChannelorg channelorg = channelorgService.getById(channeluser.getChannelOrgID());
-            channeluser.setChannelOrgCode(channelorg.getOrgCode());
+            if (channelorg != null)
+                channeluser.setChannelOrgCode(channelorg.getOrgCode());
             SDictionary sDictionary = sDictionaryMapper.selectById(channeluser.getChannelTypeID());
             channeluser.setChannelType(sDictionary.getDictName());
             channeluser.setEditor(ThreadLocalUtils.getUserName());

@@ -975,7 +975,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
           IsCustomerFirstEdit ,
           CustomerFirstEditTime ,
           Status,
-          UseMobile
+          UseMobile,
           SpareMobile
         )
 VALUES  ( #{OpportunityID},
