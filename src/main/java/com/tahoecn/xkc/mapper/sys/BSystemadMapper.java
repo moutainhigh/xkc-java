@@ -23,4 +23,5 @@ public interface BSystemadMapper extends BaseMapper<BSystemad> {
 	 */
 	List<BSystemad> SystemAD_Detail_Find(Map<String, Object> map);
 
+	void SystemAD_Insert(Map<String, Object> map);
 }
