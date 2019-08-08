@@ -448,7 +448,7 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
-    //未测
+    //未测  两个修改不知道哪个是
     @ApiOperation(value = "修改个人基本信息", notes = "修改个人基本信息")
     @RequestMapping(value = "/mBrokerChannelUserDetail_Upate", method = {RequestMethod.POST})
     public Result mBrokerChannelUserDetail_Upate(@RequestBody JSONObject jsonParam) {
@@ -604,6 +604,21 @@ public class H5Controller extends TahoeBaseController {
 
     }
 
+    //以下都已测
+    @ApiOperation(value = "修改密码", notes = "修改密码")
+    @RequestMapping(value = "/mBrokerChannelUserPassWord_Update", method = {RequestMethod.POST})
+    public Result mBrokerChannelUserPassWord_Update(@RequestBody JSONObject jsonParam) {
+
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        String password=(String) paramMap.get("Password");
+        String OldPassword=(String) paramMap.get("OldPassword");
+        Result result=channeluserService.mBrokerChannelUserPassWord_Update(UserID,password,OldPassword);
+        return result;
+    }
+
+
+
     @ApiOperation(value = "门店成员列表", notes = "门店成员列表")
     @RequestMapping(value = "/mChannelStoreUserList_SelectN", method = {RequestMethod.POST})
     public Result mChannelStoreUserList_SelectN(@RequestBody JSONObject jsonParam) {
@@ -612,7 +627,34 @@ public class H5Controller extends TahoeBaseController {
        return Result.ok(page);
     }
 
+    @ApiOperation(value = "门店成员删除", notes = "门店成员删除")
+    @RequestMapping(value = "/mChannelUserUpdate_Delete", method = {RequestMethod.POST})
+    public Result mChannelUserUpdate_Delete(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mChannelUserUpdate_Delete(paramMap);
+        return result;
+    }
 
+
+    @ApiOperation(value = "拓客客户列表", notes = "拓客客户列表")
+    @RequestMapping(value = "/mCustomerTCList_SelectN", method = {RequestMethod.POST})
+    public Result mCustomerTCList_SelectN(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mCustomerTCList_SelectN(paramMap);
+        return result;
+    }
+
+    /// 移动拓客-我的团队-成员(拓客)客户转移
+    /// CustomerIDs：要转移的多个客户ID用逗号分隔
+    /// TransferID：要转移到哪个拓客
+    /// UserID：操作人ID
+    @ApiOperation(value = "客户转移分配", notes = "客户转移分配")
+    @RequestMapping(value = "/mCustomerTCTransfer_Update", method = {RequestMethod.POST})
+    public Result mCustomerTCTransfer_Update(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mCustomerTCTransfer_Update(paramMap);
+        return result;
+    }
 
 
 }

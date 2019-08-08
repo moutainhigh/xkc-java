@@ -40,7 +40,6 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
         } else {
             where = " where ReportUserID='" + brokerID + "' and StatusText='" + filter + "'";
         }
-        System.out.println(where + "+++++++++++" + order);
         return baseMapper.mGetMyCustomers_Select(page, where, order, search);
     }
 }
