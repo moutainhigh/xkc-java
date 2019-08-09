@@ -41,7 +41,7 @@
 	<select id="OverdueSubList_Select" resultType="java.util.HashMap">
 	<![CDATA[
 		SELECT a.OpportunityID as BizID,a.UserID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
-		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,-ISNULL({Time},0),b.BgnDate))=convert(date,getdate())
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,-ISNULL(#{Time},0),b.BgnDate))=convert(date,getdate())
 		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
 		LEFT JOIN dbo.S_Message d ON d.BizID=c.ID AND d.Receiver=c.SaleUserID AND d.IsDel=0 AND d.Status=1 AND d.MessageType=#{MessageType}
 		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=8 AND d.ID IS NULL AND a.ProjectID=#{ProjectID} AND a.SalesStatus=8 AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=c.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
@@ -58,7 +58,7 @@
 		inner join s_Trade g on e.id=g.oppguid
 		inner join s_order f on g.[TradeGUID]=f.[TradeGUID]
 		where a.IsDel=0 and a.Status=4 and a.ProjectID=#{ProjectID} AND b.id IS NULL
-		and datediff(day,GETDATE(),f.JhqyDate)=ISNULL({Time},0)
+		and datediff(day,GETDATE(),f.JhqyDate)=ISNULL(#{Time},0)
 		AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=a.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
     ]]>
 	</select>
@@ -74,7 +74,7 @@
 			select FeeGUID,a.TradeGUID,a.lastDate as lastDate
 			from s_Fee a
 			inner join s_Trade b on a.TradeGUID=b.TradeGUID
-			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(-{Time},0),a.lastDate))=convert(date,getdate())
+			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(-#{Time},0),a.lastDate))=convert(date,getdate())
 		) e ON e.TradeGUID=b.TradeGUID
 		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=4 AND a.ProjectID=#{ProjectID} and d.ID is null
 		AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=c.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
@@ -97,7 +97,7 @@
 	<select id="OverdueSubMBeforeList_Select" resultType="java.util.HashMap">
 	<![CDATA[
         SELECT a.OpportunityID as BizID,d.MemberID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
-		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,ISNULL({Time},0),b.BgnDate))=convert(date,getdate())
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,ISNULL(#{Time},0),b.BgnDate))=convert(date,getdate())
 		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
 		INNER JOIN dbo.B_SalesGroupMember d ON d.ProjectID=#{ProjectID} AND d.IsDel=0 AND d.Status=1 AND d.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
 		LEFT JOIN dbo.S_Message e ON e.BizID=c.ID AND e.Receiver=d.MemberID AND e.IsDel=0 AND e.Status=1 AND e.MessageType=#{MessageType} and isnull(e.Ext2,'')<>'' AND CONVERT(DATE,e.Ext2)>convert(date,getdate())
@@ -109,7 +109,7 @@
 	<select id="OverdueSubMAfterList_Select" resultType="java.util.HashMap">
 	<![CDATA[
         SELECT a.OpportunityID as BizID,d.MemberID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
-		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,ISNULL({Time},0),b.BgnDate))=convert(date,getdate())
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,ISNULL(#{Time},0),b.BgnDate))=convert(date,getdate())
 		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
 		INNER JOIN dbo.B_SalesGroupMember d ON d.ProjectID=#{ProjectID} AND d.IsDel=0 AND d.Status=1 AND d.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
 		LEFT JOIN dbo.S_Message e ON e.BizID=c.ID AND e.Receiver=d.MemberID AND e.IsDel=0 AND e.Status=1 AND e.MessageType=#{MessageType} and isnull(e.Ext2,'')<>'' AND CONVERT(DATE,e.Ext2)<convert(date,getdate())
@@ -187,7 +187,7 @@
 		select FeeGUID,a.TradeGUID,a.lastDate as lastDate
 			from s_Fee a
 			inner join s_Trade b on a.TradeGUID=b.TradeGUID
-			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL({Time},0),a.lastDate))=CONVERT(date,GETDATE())
+			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(#{Time},0),a.lastDate))=CONVERT(date,GETDATE())
 		) d ON d.TradeGUID=b.TradeGUID
 		INNER JOIN dbo.B_SalesGroupMember e ON e.ProjectID=c.ProjectID AND e.IsDel=0 AND e.Status=1 AND e.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
 		LEFT JOIN dbo.S_Message f ON f.BizID=a.ID AND f.Receiver=e.MemberID AND f.IsDel=0 AND f.Status=1 AND f.MessageType=#{MessageType} and isnull(f.Ext2,'')<>'' and CONVERT(DATE,f.Ext2)>CONVERT(date,GETDATE())
@@ -205,7 +205,7 @@
 		select FeeGUID,a.TradeGUID,a.lastDate as lastDate
 			from s_Fee a
 			inner join s_Trade b on a.TradeGUID=b.TradeGUID
-			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL({Time},0),a.lastDate))=CONVERT(date,GETDATE())
+			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(#{Time},0),a.lastDate))=CONVERT(date,GETDATE())
 		) d ON d.TradeGUID=b.TradeGUID
 		INNER JOIN dbo.B_SalesGroupMember e ON e.ProjectID=c.ProjectID AND e.IsDel=0 AND e.Status=1 AND e.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
 		LEFT JOIN dbo.S_Message f ON f.BizID=a.ID AND f.Receiver=e.MemberID AND f.IsDel=0 AND f.Status=1 AND f.MessageType=#{MessageType} and isnull(f.Ext2,'')<>'' and CONVERT(DATE,f.Ext2)<CONVERT(date,GETDATE())
