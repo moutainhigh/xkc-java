@@ -33,6 +33,13 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	Long sCustomerGWListNew_Select_count(GWCustomerPageDto gWCustomerPageDto);
 	
 	/**
+	 * 设置子集信息时待选客户列表
+	 * @param gWCustomerPageDto
+	 * @return
+	 */
+	List<Map<String,Object>> sCustomerGWListNew_Select_forUpdateChild(GWCustomerPageDto gWCustomerPageDto);
+	Long sCustomerGWListNew_Select_forUpdateChild_count(GWCustomerPageDto gWCustomerPageDto);
+	/**
 	 * 设置机会的父ID
 	 * @param ParentID
 	 * @param list

@@ -28,9 +28,19 @@ public class GWCustomerPageDto implements Serializable {
 	private String deviceCode;
 	private String platform;
 	private String appName;
+	private String OpportunityID;
 	
 	public String where;
 	public String order;
+	
+	
+	public String getOpportunityID() {
+		return OpportunityID;
+	}
+
+	public void setOpportunityID(String opportunityID) {
+		OpportunityID = opportunityID;
+	}
 
 	public String getUserID() {
 		return userID;

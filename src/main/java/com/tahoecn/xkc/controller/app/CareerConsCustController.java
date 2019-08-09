@@ -47,6 +47,25 @@ public class CareerConsCustController extends TahoeBaseController {
 		return iVCustomergwlistSelectService.customerList(gWCustomerPageDto);
     }
 	
+	
+	@ResponseBody
+    @ApiOperation(value = "置业顾问设置子集信息时待选客户列表", notes = "职业顾问设置子集信息时待选客户列表")
+    @RequestMapping(value = "/mCustomerGWList_ForChild_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mCustomerGWList_ForChild_Select(@RequestBody JSONObject paramAry) {
+		GWCustomerPageDto gWCustomerPageDto = new GWCustomerPageDto();
+		JSONObject json = paramAry.getJSONObject("_param");
+		gWCustomerPageDto = JSON.parseObject(json.toJSONString(), GWCustomerPageDto.class);
+		return iVCustomergwlistSelectService.customerListForSetChild(gWCustomerPageDto);
+    }
+	
+	@ResponseBody
+    @ApiOperation(value = "置业顾问设置客户成员信息", notes = "置业顾问设置客户成员信息")
+    @RequestMapping(value = "/setCustomerChild_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result setCustomerChild_update(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iVCustomergwlistSelectService.updateParentID(json);
+    }
+	
 	@ResponseBody
     @ApiOperation(value = "置业顾问客户基本信息", notes = "职业顾问客户基本信息")
     @RequestMapping(value = "/mCustomerGWBase_Select", method = RequestMethod.POST)

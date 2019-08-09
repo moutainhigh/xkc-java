@@ -79,6 +79,88 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		]]>
 	</select>
 	
+	<select id="sCustomerGWListNew_Select_forUpdateChild" resultType="java.util.HashMap" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
+		<![CDATA[
+	SELECT
+		OpportunityID ,
+        CustomerID ,
+        CustomerName ,
+        CustomerMobile ,
+        dbo.F_DictName(t.TheLatestFollowUpWay) AS FollwUpWay ,
+        dbo.F_GetSaleCustomerTag(t.CustomerID, t.SaleUserID) AS CustomerTag  ,
+        dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate ,
+        TheLatestFollowUpContent ,
+        dbo.F_DictName(t.CustomerLevel) IntentionLevel ,
+        dbo.F_DictName(ISNULL(t.CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+        IsCare ,
+        dbo.F_GetStatusName(t.OpportunityStatusValue) AS OpportunityStatus ,
+        OpportunityStatusValue ,
+        IsCustomerFirstEdit ,
+        SaleUserName ,
+        IsCooperat
+FROM    ( SELECT m.*, ROW_NUMBER() OVER ( ${order} ) num FROM (SELECT    t.ID AS OpportunityID ,
+                    t.CustomerID ,
+                    t.CustomerName ,
+                    t.CustomerMobile ,
+                    t.CustomerLevel ,
+                    t.CustomerRank ,
+                    t.Status OpportunityStatusValue ,
+                    t.IsCustomerFirstEdit ,
+                    dbo.F_FormatDate(ISNULL(t.TheLatestFollowUpDate,
+                                            t.AllotTime)) AS TheLatestFollowUpDate ,
+                    CASE WHEN t.TheLatestFollowUpDate IS NULL THEN '无跟进信息'
+                         ELSE t.TheLatestFollowUpContent
+                    END TheLatestFollowUpContent ,
+                    t.TheLatestFollowUpWay ,
+                    t.SaleUserID ,
+                    t.SaleUserName ,
+                    dbo.F_GetSaleIsCare(t.ID, t.SaleUserID) IsCare,
+                    t.CreateTime,
+                    (CASE WHEN ISNULL(t.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
+          FROM      dbo.B_Opportunity t
+          			LEFT JOIN B_Opportunity b on t.ID = b.ParentID 
+          WHERE     t.IsDel = 0
+                    AND t.Status > 0
+                    AND t.Status <> 6
+                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
+                    AND ISNULL(t.SaleUserID,'') != '' 
+                    AND t.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899' 
+                    AND t.ProjectID = #{projectID}
+                    AND b.ID IS NULL
+                    AND t.ID != #{OpportunityID}
+					) m WHERE 1=1 ${where}
+        ) t
+WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
+        AND t.num <= #{pageIndex} * #{pageSize}
+
+    ]]>
+	</select>
+	
+	<select id="sCustomerGWListNew_Select_forUpdateChild_count" resultType="java.lang.Long" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
+		<![CDATA[
+		SELECT count(1) 
+		FROM ( SELECT    t.ID AS OpportunityID ,
+		                    t.CustomerID ,
+		                    t.CustomerName ,
+		                    t.CustomerMobile ,
+		                    t.CustomerLevel ,
+		                    t.CustomerRank ,
+		                    t.Status OpportunityStatusValue ,
+		                    dbo.F_GetSaleIsCare(t.ID, t.SaleUserID) IsCare
+		          FROM      dbo.B_Opportunity t
+		          			LEFT JOIN B_Opportunity b on t.ID = b.ParentID 
+		          WHERE     t.IsDel = 0
+		                    AND t.Status > 0
+		                    AND t.Status <> 6
+		                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
+		                    AND t.ProjectID = #{projectID}
+		                    AND b.ID IS NULL
+		                    AND t.ID != #{OpportunityID}
+		        ) t
+		WHERE 1 = 1 ${where}
+		]]>
+	</select>
+	
 	<update id="UpdateOpportunityParentID">
 		UPDATE B_Opportunity SET ParentID = #{ParentID}
 		WHERE ID IN 

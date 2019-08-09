@@ -19,6 +19,13 @@ public interface IVCustomergwlistSelectService extends IService<VCustomergwlistS
 	 public Result customerList(GWCustomerPageDto gWCustomerPageDto);
 	 
 	 /**
+	  * 设置子集信息时待选客户列表
+	  * @param gWCustomerPageDto
+	  * @return
+	  */
+	 public Result customerListForSetChild(GWCustomerPageDto gWCustomerPageDto);
+	 
+	 /**
 	  * 设置父级ID
 	  * @param paramAry
 	  * @return

@@ -34,7 +34,6 @@ import com.tahoecn.xkc.model.vo.CSearchModelVo;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
-import com.tahoecn.xkc.model.vo.GWCustomerPageVo;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IProjectService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
@@ -67,7 +66,87 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 	public Result customerList(GWCustomerPageDto model) {
 		Result entity = new Result();
         try {
-        	StringBuilder whereSb = new StringBuilder();
+        	setParamForCustomerList(model);
+        	//设置分页
+        	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
+        	List<String> OpportunityID_list = new ArrayList<String>();
+        	if(data!=null && data.size()>0){
+        		for(Map<String,Object> data_map : data){
+        			OpportunityID_list.add(data_map.get("OpportunityID").toString());
+        		}
+        	}
+        	Map<String,List<Map<String,Object>>> childs = new HashMap<>();
+        	List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
+        	if(data_child!=null && data_child.size()>0){
+        		for(Map<String,Object> data_child_map : data_child){
+        			String tkey = data_child_map.get("ParentID").toString();
+        			if(!childs.containsKey(tkey)){
+        				List<Map<String,Object>> list = new ArrayList<>();
+        				list.add(data_child_map);
+        				childs.put(tkey, list);
+        			}else{
+        				childs.get(tkey).add(data_child_map);
+        			}
+        		}
+        	}
+        	if(childs!=null && childs.size()>0){
+        		for(Map<String,Object> data_map : data){
+        			String tkey = data_map.get("OpportunityID").toString();
+        			if(childs.containsKey(tkey)){
+        				data_map.put("childItem", childs.get(tkey));
+        			}
+        		}
+        	}
+        	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_count(model);
+        	Map<String,Object> re = new HashMap<String, Object>();
+        	re.put("List", data);
+        	re.put("AllCount", allCount);
+        	re.put("PageSize", model.getPageSize());
+        	
+        	String dataStr = new JSONObject(re).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+        	entity.setData(data_re);
+        	entity.setErrmsg("成功");
+		} catch (Exception e) {
+			entity.setErrmsg("服务器异常");
+			entity.setErrcode(1);
+			e.printStackTrace();
+		}
+		return entity;
+	}
+	
+	@Override
+	public Result customerListForSetChild(GWCustomerPageDto model) {
+		Result entity = new Result();
+        try {
+        	if(model.getOpportunityID()==null || "".equals(model.getOpportunityID())){
+        		entity.setErrmsg("父ID不能为空");
+    			entity.setErrcode(1);
+    			return entity;
+        	}
+        	setParamForCustomerList(model);
+        	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_forUpdateChild(model);
+        	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_forUpdateChild_count(model);
+        	Map<String,Object> re = new HashMap<String, Object>();
+        	re.put("List", data);
+        	re.put("AllCount", allCount);
+        	re.put("PageSize", model.getPageSize());
+        	
+        	String dataStr = new JSONObject(re).toJSONString();
+            JSONObject data_re = JSONObject.parseObject(dataStr);
+        	entity.setData(data_re);
+        	entity.setErrmsg("成功");
+		} catch (Exception e) {
+			entity.setErrmsg("服务器异常");
+			entity.setErrcode(1);
+			e.printStackTrace();
+		}
+		return entity;
+	}
+	
+	private void setParamForCustomerList(GWCustomerPageDto model){
+		try {
+			StringBuilder whereSb = new StringBuilder();
         	StringBuilder orderSb = new StringBuilder();
         	if(!StringUtils.isEmpty(model.getKeyWord())){
         		whereSb.append(" and (CustomerName Like'"+model.getKeyWord()+"' or CustomerMobile Like'"+model.getKeyWord()+"') ");
@@ -164,55 +243,9 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	}
         	model.setWhere(whereSb.toString());
         	model.setOrder(orderSb.toString());
-        	//设置分页
-        	IPage<GWCustomerPageVo> page =new Page<GWCustomerPageVo>();
-        	page.setSize(model.getPageSize());
-        	page.setCurrent(model.getPageIndex());
-        	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
-        	List<String> OpportunityID_list = new ArrayList<String>();
-        	if(data!=null && data.size()>0){
-        		for(Map<String,Object> data_map : data){
-        			OpportunityID_list.add(data_map.get("OpportunityID").toString());
-        		}
-        	}
-        	Map<String,List<Map<String,Object>>> childs = new HashMap<>();
-        	List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
-        	if(data_child!=null && data_child.size()>0){
-        		for(Map<String,Object> data_child_map : data_child){
-        			String tkey = data_child_map.get("ParentID").toString();
-        			if(!childs.containsKey(tkey)){
-        				List<Map<String,Object>> list = new ArrayList<>();
-        				list.add(data_child_map);
-        				childs.put(tkey, list);
-        			}else{
-        				childs.get(tkey).add(data_child_map);
-        			}
-        		}
-        	}
-        	if(childs!=null && childs.size()>0){
-        		for(Map<String,Object> data_map : data){
-        			String tkey = data_map.get("OpportunityID").toString();
-        			if(childs.containsKey(tkey)){
-        				data_map.put("childItem", childs.get(tkey));
-        			}
-        		}
-        	}
-        	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_count(model);
-        	Map<String,Object> re = new HashMap<String, Object>();
-        	re.put("List", data);
-        	re.put("AllCount", allCount);
-        	re.put("PageSize", model.getPageSize());
-        	
-        	String dataStr = new JSONObject(re).toJSONString();
-            JSONObject data_re = JSONObject.parseObject(dataStr);
-        	entity.setData(data_re);
-        	entity.setErrmsg("成功");
 		} catch (Exception e) {
-			entity.setErrmsg("服务器异常");
-			entity.setErrcode(1);
 			e.printStackTrace();
 		}
-		return entity;
 	}
 	
 	@Override
