@@ -1,5 +1,7 @@
 package com.tahoecn.xkc.service.customer;
 
+import java.util.Map;
+
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
@@ -223,6 +225,19 @@ public interface IVCustomergwlistSelectService extends IService<VCustomergwlistS
 	 
 	 public Result CustomerFollowUp_Insert(CustomerActionVo customerActionVo);
 	 
+	 /**
+	  * 添加客户信息变更记录
+	  * @param customerID
+	  * @param pmap
+	  */
+	 public void addCustomerChangeInfo(Map<String,Object> pmap);
+	 
+	 /**
+	  * 根据机会ID获取变更记录
+	  * @param OpportunityID
+	  * @return
+	  */
+	 public Result getCustomerChangeList(String OpportunityID);
 	 
 	 
 	 

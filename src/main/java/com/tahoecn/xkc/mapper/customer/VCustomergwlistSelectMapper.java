@@ -639,5 +639,17 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	@DataSource(DataSourceEnum.DB2)
 	void MyOpportunityCustomerDetail_Insert(Map<String,Object> map);
 	
+	/**
+	 * 根据客户ID获取客户信息
+	 * @param CustomerID
+	 * @return
+	 */
+	Map<String,Object> selectCustomerByID(@Param("CustomerID")String CustomerID);
 	
+	/**
+	 * 根据机会ID获取机会信息
+	 * @param OpportunityID
+	 * @return
+	 */
+	Map<String,Object> selectOpportunityByID(@Param("OpportunityID")String OpportunityID);
 }

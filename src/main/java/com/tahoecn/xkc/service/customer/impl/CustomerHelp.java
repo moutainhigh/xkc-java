@@ -227,12 +227,17 @@ public class CustomerHelp implements ICustomerHelp {
 									childItem.setValueID(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
 								}
 							}
-							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 电话
+							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 主电话
 								if (IsNoMobileVerify == 1) {
 									childItem.setType("Text");
 								}
 								if (StringUtils.isEmpty(childItem.getValue().trim())) {
 									childItem.setValue(model.getMobile());
+								}
+							}
+							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42832")) {// 副电话
+								if (IsNoMobileVerify == 1) {
+									childItem.setType("Text");
 								}
 							}
 							if (childItem.getID().equals("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")) {// 客户级别
@@ -256,7 +261,10 @@ public class CustomerHelp implements ICustomerHelp {
 								if (childItem.getID().equals("149F778D-4244-46F6-908F-D33A363A5B58")) {// 姓名
 									childItem.setIsEdit(0);
 								}
-								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 手机
+								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 主手机
+									childItem.setIsEdit(0);
+								}
+								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42832")) {// 副手机
 									childItem.setIsEdit(0);
 								}
 								if (childItem.getID().equals("E72C340D-4092-467A-9B8F-5138DBDCA43B")) {// 性别

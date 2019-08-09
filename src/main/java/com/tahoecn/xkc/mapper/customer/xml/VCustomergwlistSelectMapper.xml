@@ -127,7 +127,12 @@ FROM    ( SELECT m.*, ROW_NUMBER() OVER ( ${order} ) num FROM (SELECT    t.ID AS
                     AND t.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899' 
                     AND t.ProjectID = #{projectID}
                     AND b.ID IS NULL
-                    AND t.ID != #{OpportunityID}
+                    AND t.ID NOT IN 
+                    ]]>
+                    <foreach collection="OpportunityIDList" item="item" separator="," open="(" close=")">
+						#{item}
+					</foreach>
+                    <![CDATA[
 					) m WHERE 1=1 ${where}
         ) t
 WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
@@ -155,7 +160,12 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		                    AND (t.SaleUserID = #{userID} OR t.SalePartnerID = #{userID})
 		                    AND t.ProjectID = #{projectID}
 		                    AND b.ID IS NULL
-		                    AND t.ID != #{OpportunityID}
+		                    AND t.ID NOT IN 
+		                    ]]>
+		                    <foreach collection="OpportunityIDList" item="item" separator="," open="(" close=")">
+								#{item}
+							</foreach>
+                    <![CDATA[
 		        ) t
 		WHERE 1 = 1 ${where}
 		]]>
@@ -2684,6 +2694,13 @@ VALUES  ( #{OpportunityID},
 		INSERT INTO [s_Opp2Cst ]( Opp2CstGUID, OppGUID, CstGUID, CstNum, _DataSource) VALUES( #{Opp2CstGUID}, #{OppGUID}, #{CstGUID}, #{CstNum}, 'YDYX')
 		 ]]>
 	</insert>
-
+	
+	<select id="selectCustomerByID" resultType="java.util.HashMap">
+		SELECT * FROM B_Customer WHERE ID=#{CustomerID}
+	</select>
+	
+	<select id="selectOpportunityByID" resultType="java.util.HashMap">
+		SELECT * FROM B_Opportunity WHERE ID=#{OpportunityID}
+	</select>
 
 </mapper>

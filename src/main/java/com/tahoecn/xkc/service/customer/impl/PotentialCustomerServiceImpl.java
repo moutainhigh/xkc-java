@@ -264,6 +264,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                 if (Parameter.size() > 0){
                 	Map<String,Object> pmap = JSONObject.parseObject(Parameter.toJSONString(), Map.class);
                 	pmap.put("Name", Parameter.getString("LastName")+Parameter.getString("FirstName"));
+                	//设置变更记录
+                	iVCustomergwlistSelectService.addCustomerChangeInfo(pmap);
                 	bCustomerpotentialMapper.mCustomerPotentialZQDetail_Update_step1(pmap);
                 	List<Map<String,Object>> valid1 = bCustomerpotentialMapper.mCustomerPotentialZQDetail_Update_valid_1(pmap);
                 	if(valid1!=null && valid1.size()>0){
