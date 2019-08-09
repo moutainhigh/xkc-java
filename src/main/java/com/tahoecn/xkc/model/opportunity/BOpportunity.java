@@ -171,6 +171,9 @@ public class BOpportunity implements Serializable {
     @TableField("CustomerFirstEditTime")
     private Date CustomerFirstEditTime;
 
+    @TableField("AuxiliaryMobile")
+    private String AuxiliaryMobile;
+
     public Integer getIsDel() {
         return IsDel;
     }
@@ -515,6 +518,14 @@ public class BOpportunity implements Serializable {
         this.CustomerFirstEditTime = CustomerFirstEditTime;
     }
 
+    public String getAuxiliaryMobile() {
+        return AuxiliaryMobile;
+    }
+
+    public void setAuxiliaryMobile(String auxiliaryMobile) {
+        AuxiliaryMobile = auxiliaryMobile;
+    }
+
     @Override
     public String toString() {
         return "BOpportunity{" +
@@ -565,6 +576,7 @@ public class BOpportunity implements Serializable {
         ", VisitingIntention=" + VisitingIntention +
         ", CustomerName=" + CustomerName +
         ", CustomerMobile=" + CustomerMobile +
+        ", AuxiliaryMobile=" + AuxiliaryMobile +
         ", EditeTime=" + EditeTime +
         ", CustomerFirstEditTime=" + CustomerFirstEditTime +
         "}";

@@ -3,6 +3,7 @@ package com.tahoecn.xkc.controller.webapi.customer;
 
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.log.Log;
@@ -11,10 +12,13 @@ import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerManagerMapper;
+import com.tahoecn.xkc.model.customer.BCustomer;
+import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.salegroup.BSalesgroup;
 import com.tahoecn.xkc.service.customer.IBCustomerManagerService;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
+import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
 import io.swagger.annotations.Api;
@@ -59,6 +63,10 @@ public class CustomerManagerController extends TahoeBaseController {
 
     @Autowired
     private BCustomerManagerMapper bCustomerManagerMapper;
+
+    @Autowired
+    private IUpdateCustinfoLogService iUpdateCustinfoLogService;
+
 
     @ApiOperation(value = "客户管理列表")
     @RequestMapping(value = "/CustomerManagePageList_Select", method = {RequestMethod.GET})
@@ -225,6 +233,11 @@ public class CustomerManagerController extends TahoeBaseController {
         List payInfoList = bCustomerManagerMapper.CustomerNEWPayInfo_Select(map);
         result.put("payInfoList",payInfoList);
 
+        QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
+        updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
+        List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
+        result.put("updateCustInfoLogList",updateCustInfoLogList);
+
         return Result.ok(result);
     }
 
@@ -238,4 +251,39 @@ public class CustomerManagerController extends TahoeBaseController {
         result.put("paymentList",paymentList);
         return Result.ok(result);
     }
+
+
+    @ApiOperation(value = "修改客户基本信息")
+    @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
+    public Result UpdateCustBaseInfo(String oppoId,String custId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
+        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg) {
+        UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
+        BOpportunity oppo = new BOpportunity();
+        oppo.setCustomerName(customerName);
+        oppo.setAuxiliaryMobile(auxiliaryMobile);
+        oppoUpWarapper.eq("ID",oppoId);
+        iBOpportunityService.update(oppo,oppoUpWarapper);
+
+        BCustomer cust = new BCustomer();
+        UpdateWrapper<BCustomer> custUpWarapper = new UpdateWrapper<>();
+        cust.setCardType(cardType);
+        cust.setCardID(cardId);
+        cust.setGender(gender);
+        custUpWarapper.eq("ID",custId);
+        customerService.update(cust,custUpWarapper);
+
+        //变更记录
+        UpdateCustinfoLog log = new UpdateCustinfoLog();
+
+        log.setOpportunityID(oppoId);
+        log.setGender(genderOrg + "->" + gender);
+        log.setCardID(cardIdOrg + "->" + cardId);
+        log.setCardType(cardTypeOrg + "->" + cardId);
+        log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
+        log.setCustomerName(customerNameOrg + "->" + customerName);
+        iUpdateCustinfoLogService.save(log);
+        return Result.ok("修改成功");
+    }
+
+
 }
