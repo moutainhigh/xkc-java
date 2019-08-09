@@ -10,6 +10,7 @@ import com.landray.sso.client.oracle.StringUtil;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerManagerMapper;
@@ -279,7 +280,8 @@ public class CustomerManagerController extends TahoeBaseController {
 
         log.setOpportunityID(oppoId);
         log.setCustomerID(custId);
-        log.setEditor(userId);
+        log.setEditorId(userId);
+        log.setEditorName(ThreadLocalUtils.getUserName());
         if(StringUtil.isNotNull(genderOrg) && StringUtil.isNotNull(gender))
             log.setGender(genderOrg + "->" + gender);
         if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId))

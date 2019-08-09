@@ -52,6 +52,12 @@ public class UpdateCustinfoLog implements Serializable {
     @TableField("CreateTime")
     private Date CreateTime;
 
+    @TableField("EditorId")
+    private String EditorId;
+
+    @TableField("EditorName")
+    private String EditorName;
+
     public String getId() {
         return id;
     }
@@ -124,6 +130,22 @@ public class UpdateCustinfoLog implements Serializable {
         CreateTime = createTime;
     }
 
+    public String getEditorId() {
+        return EditorId;
+    }
+
+    public void setEditorId(String editorId) {
+        EditorId = editorId;
+    }
+
+    public String getEditorName() {
+        return EditorName;
+    }
+
+    public void setEditorName(String editorName) {
+        EditorName = editorName;
+    }
+
     @Override
     public String toString() {
         return "UpdateCustinfoLog{" +
@@ -137,6 +159,8 @@ public class UpdateCustinfoLog implements Serializable {
         ", CardType=" + CardType +
         ", CardID=" + CardID +
         ", CreateTime=" + CreateTime +
+        ", EditorId=" + EditorId +
+        ", EditorName=" + EditorName +
         "}";
     }
 }
