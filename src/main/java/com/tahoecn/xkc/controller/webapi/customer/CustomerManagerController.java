@@ -257,7 +257,7 @@ public class CustomerManagerController extends TahoeBaseController {
 
     @ApiOperation(value = "修改客户基本信息")
     @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
-    public Result UpdateCustBaseInfo(String oppoId,String custId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
+    public Result UpdateCustBaseInfo(String oppoId,String custId,String userId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
         String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg) {
         UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
         BOpportunity oppo = new BOpportunity();
@@ -279,6 +279,7 @@ public class CustomerManagerController extends TahoeBaseController {
 
         log.setOpportunityID(oppoId);
         log.setCustomerID(custId);
+        log.setEditor(userId);
         if(StringUtil.isNotNull(genderOrg) && StringUtil.isNotNull(gender))
             log.setGender(genderOrg + "->" + gender);
         if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId))
