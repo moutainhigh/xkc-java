@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,6 +282,7 @@ public class CustomerManagerController extends TahoeBaseController {
         log.setCardType(cardTypeOrg + "->" + cardId);
         log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
         log.setCustomerName(customerNameOrg + "->" + customerName);
+        log.setCreateTime(new Date());
         iUpdateCustinfoLogService.save(log);
         return Result.ok("修改成功");
     }
