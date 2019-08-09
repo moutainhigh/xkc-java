@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.landray.sso.client.oracle.StringUtil;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
@@ -277,11 +278,16 @@ public class CustomerManagerController extends TahoeBaseController {
         UpdateCustinfoLog log = new UpdateCustinfoLog();
 
         log.setOpportunityID(oppoId);
-        log.setGender(genderOrg + "->" + gender);
-        log.setCardID(cardIdOrg + "->" + cardId);
-        log.setCardType(cardTypeOrg + "->" + cardId);
-        log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
-        log.setCustomerName(customerNameOrg + "->" + customerName);
+        if(StringUtil.isNotNull(genderOrg) && StringUtil.isNotNull(gender))
+            log.setGender(genderOrg + "->" + gender);
+        if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId))
+            log.setCardID(cardIdOrg + "->" + cardId);
+        if(StringUtil.isNotNull(cardTypeOrg) && StringUtil.isNotNull(cardType))
+            log.setCardType(cardTypeOrg + "->" + cardId);
+        if(StringUtil.isNotNull(auxiliaryMobileOrg) && StringUtil.isNotNull(auxiliaryMobile))
+            log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
+        if(StringUtil.isNotNull(customerNameOrg) && StringUtil.isNotNull(customerName))
+            log.setCustomerName(customerNameOrg + "->" + customerName);
         log.setCreateTime(new Date());
         iUpdateCustinfoLogService.save(log);
         return Result.ok("修改成功");
