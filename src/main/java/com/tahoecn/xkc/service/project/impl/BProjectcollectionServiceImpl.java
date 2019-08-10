@@ -27,7 +27,7 @@ public class BProjectcollectionServiceImpl extends ServiceImpl<BProjectcollectio
     }
 
     @Override
-    public List<Map<String, Object>> mBrokerProjectCollectionList_Select(IPage page, String userID) {
+    public IPage<Map<String, Object>> mBrokerProjectCollectionList_Select(IPage page, String userID) {
         return baseMapper.mBrokerProjectCollectionList_Select(page,userID);
     }
 

@@ -20,7 +20,7 @@ public interface BProjectcollectionMapper extends BaseMapper<BProjectcollection>
 
     int mBrokerProjectCollectionIsExist_Select(@Param("ProjectID") String projectID, @Param("UserID")String userID);
 
-    List<Map<String, Object>> mBrokerProjectCollectionList_Select(IPage page, @Param("UserID")String userID);
+    IPage<Map<String, Object>> mBrokerProjectCollectionList_Select(IPage page, @Param("UserID")String userID);
 
     int BrokerProjectCollection_Insert(@Param("UserID")String userID,@Param("ProjectID") String projectID);
 

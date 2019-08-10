@@ -552,7 +552,11 @@
         a.UserOrgID ,
         a.Address ,
         a.[Status],
-        a.AccountType,
+        (CASE WHEN  a.AccountType = 2
+        THEN 2
+        WHEN a.AccountType=3
+        THEN 2
+        ELSE 1  END) AS AccountType,
         a.CreateTime
         FROM
         [S_Account] a
@@ -584,7 +588,11 @@
         b.UserOrgID,
         b.Address,
         b.[Status],
-        b.AccountType,
+        (CASE WHEN  b.AccountType = 2
+        THEN 2
+        WHEN b.AccountType=3
+        THEN 2
+        ELSE 1  END) AS AccountType,
         b.CreateTime,
         '' AS OrgName
         FROM

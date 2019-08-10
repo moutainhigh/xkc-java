@@ -424,6 +424,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         boolean save = clueService.save(clue);
         if (save){
             //允许报备老客户模式下，报备的线索有效，刷新机会中线索信息
+            if ((boolean)ruleValidate.get("IsExsitOpp")){
+
+            }
 
         }
 
