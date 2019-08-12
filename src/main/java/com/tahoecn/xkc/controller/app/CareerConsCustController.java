@@ -267,6 +267,13 @@ public class CareerConsCustController extends TahoeBaseController {
 		return iVCustomergwlistSelectService.UserFollowList_Select(json);
     }
 	
+	@ResponseBody
+    @ApiOperation(value = "置业顾问获取客户信息变更记录", notes = "置业顾问获取关注列表")
+    @RequestMapping(value = "/getCustomerChangeList", method = RequestMethod.POST)
+    public Result getCustomerChangeList(String OpportunityID) {
+		return iVCustomergwlistSelectService.getCustomerChangeList(OpportunityID);
+    }
+	
 	
 	
 }
