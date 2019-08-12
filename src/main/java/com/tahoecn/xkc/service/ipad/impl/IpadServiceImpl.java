@@ -634,8 +634,10 @@ public class IpadServiceImpl implements IIpadService {
                             Map<String,Object> proParam = new HashMap<String, Object>();
                             proParam.put("ID", model.getProjectID());
                             Map<String,Object> objProject = ipadMapper.Project_Detail_FindById(proParam);
-                            int IsLocationValidate = (int) objProject.get("IsLocationValidate"); //是否开启地理位置验证 1.开启 0.不开启
-                            int IsOffSiteSale = (int) objProject.get("IsOffSiteSale"); //是否开启异地销售 1.开启 0.不开启
+                            Number numberIsLocationValidate =(Number)objProject.get("IsLocationValidate");
+                            int IsLocationValidate = numberIsLocationValidate.intValue(); //是否开启地理位置验证 1.开启 0.不开启
+                            Number numberIsOffSiteSale =(Number)objProject.get("IsOffSiteSale");
+                            int IsOffSiteSale = numberIsOffSiteSale.intValue(); //是否开启异地销售 1.开启 0.不开启
                             String SaleGroupName = CustomerObj.getString("SaleGroupName"); //顾问分组
                             String FirstVisitAddress = CustomerObj.getString("FirstVisitAddress");//首访地址
                             String VisitAddress = parameter.getString("VisitAddress");//本来来访地址
@@ -680,7 +682,7 @@ public class IpadServiceImpl implements IIpadService {
                         }
                         else{//新机会
                         	JSONObject re_j_1 = customerTemplate.CustomerExist(Mobile);
-                            if (re_j_1.getBooleanValue("status")){//新机会_新客户
+                            if (!re_j_1.getBooleanValue("status")){//新机会_新客户
                                 parameter.put("CustomerID",UUID.randomUUID().toString());
                                 //1.根据手机号码查询拓客客户信息 
                                 JSONObject re_j_2 = customerTemplate.CustomerPotentialExist(Mobile);
@@ -757,7 +759,8 @@ public class IpadServiceImpl implements IIpadService {
                                  	int IsIPad = parameter.getIntValue("IsIPad");
                                  	List<Integer> list = Arrays.asList(new Integer[]{1,2,3,4});
                                  	String tSaleUserID= step1_map.get("SaleUserID").toString();
-                                 	int tStatus = (int)step1_map.get("Status");
+                                 	Number numberStatus = (Number)step1_map.get("Status");
+                                 	int tStatus = numberStatus.intValue();
                                  	if(Status==2 && list.contains(tStatus) && (tSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899") || tSaleUserID.equals(""))){
                                  		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step2(pmap);
                                  	}
@@ -835,28 +838,30 @@ public class IpadServiceImpl implements IIpadService {
                                         //客户分配
                                         if(!StringUtils.isEmpty(ClueID)){
                                         	Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(ClueID);
-                                            String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
-                                            String projectID = parameter.getString("ProjectID");
-                                            Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
-                                            
-                                            String ReportUserID = "";
-                                            ClueID = "";
-                                            if((int)re_map_step2.get("AllotRemind")>0){
-                                            	if(re_map_step1.get("ReportUserID")!=null){
-                                            		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
-                                            	}
-                                            	if(re_map_step1.get("ClueID")!=null){
-                                            		ClueID = String.valueOf(re_map_step1.get("ClueID"));
-                                            	}
-                                            }
-                                            if (!"".equals(ClueID) && !"".equals(ReportUserID)){
-                                            	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
-                                            		String UserID = parameter.getString("UserID");
-                                                    String ProjectID = parameter.getString("ProjectID");
-                                                    String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
-                                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
-                                            	}
-                                            }
+                                        	if(re_map_step1!=null && re_map_step1.size()>0){
+                                        		String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
+                                                String projectID = parameter.getString("ProjectID");
+                                                Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                                
+                                                String ReportUserID = "";
+                                                ClueID = "";
+                                                if((int)re_map_step2.get("AllotRemind")>0){
+                                                	if(re_map_step1.get("ReportUserID")!=null){
+                                                		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                                	}
+                                                	if(re_map_step1.get("ClueID")!=null){
+                                                		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                                	}
+                                                }
+                                                if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
+                                                		String UserID = parameter.getString("UserID");
+                                                        String ProjectID = parameter.getString("ProjectID");
+                                                        String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
+                                                        iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                                	}
+                                                }
+                                        	}
                                         }
                                         //客户到访
                                         if ("售场接待".equals(FollwUpType)){//售场接待
@@ -927,7 +932,8 @@ public class IpadServiceImpl implements IIpadService {
                                             }
                                         }
                                         JSONObject obj1 = new JSONObject();
-                                        obj1.put("FollwUpType", ActionType.分配顾问.getValue());
+                                        obj1.put("FollwUpType", "分配顾问");
+                                        obj1.put("FollwUpTypeID", ActionType.分配顾问.getValue());
                                         obj1.put("SalesType", 1);
                                         obj1.put("NewSaleUserName", NewSaleUserName);
                                         obj1.put("OldSaleUserName", "");
@@ -947,6 +953,7 @@ public class IpadServiceImpl implements IIpadService {
                                     if (!StringUtils.isEmpty(FollwUpType)){
                                         JSONObject obj = new JSONObject();
                                         obj.put("FollwUpType", FollwUpType);
+                                        obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                                         obj.put("SalesType", 1);
                                         obj.put("NewSaleUserName", "");
                                         obj.put("OldSaleUserName", "");
@@ -1016,7 +1023,8 @@ public class IpadServiceImpl implements IIpadService {
                                                 }
                                             }
                                             JSONObject obj1 = new JSONObject();
-                                            obj1.put("FollwUpType", ActionType.分配顾问.getValue());
+                                            obj1.put("FollwUpType", "分配顾问");
+                                            obj1.put("FollwUpTypeID", ActionType.分配顾问.getValue());
                                             obj1.put("SalesType", 1);
                                             obj1.put("NewSaleUserName", NewSaleUserName);
                                             obj1.put("OldSaleUserName", "");
@@ -1072,6 +1080,7 @@ public class IpadServiceImpl implements IIpadService {
                                             if (!StringUtils.isEmpty(FollwUpType)){
                                             	JSONObject obj = new JSONObject();
                                                 obj.put("FollwUpType", FollwUpType);
+                                                obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
                                                 obj.put("SalesType", 1);
                                                 obj.put("NewSaleUserName", "");
                                                 obj.put("OldSaleUserName", "");

@@ -399,4 +399,34 @@ public interface TaskMapper {
 	 */
 	void RreclaimFollowup_Update(Map<String, Object> map);
 
+	/**
+	 * 服务-获取项目参数信息
+	 * 
+	 * @return
+	 */
+	List<Map<String, Object>> ShareServiceProjectParamerList_Select();
+
+	/**
+	 * 服务-获取项目下的所有置业顾问
+	 * 
+	 * @return
+	 */
+	List<Map<String, Object>> ShareServiceSalesUserList_Select();
+
+	/**
+	 * 服务-查询项目下的公共客户
+	 * 
+	 * @param projectID
+	 * @return
+	 */
+	List<Map<String, Object>> ShareServiceOppCustomerList_Select(@Param("projectID") Object projectID);
+
+	/**
+	 * 将客户分配给置业顾问
+	 * 
+	 * @param map
+	 * @return
+	 */
+	void ShareServiceCustomerGGCList_Insert(Map<String, Object> map);
+
 }

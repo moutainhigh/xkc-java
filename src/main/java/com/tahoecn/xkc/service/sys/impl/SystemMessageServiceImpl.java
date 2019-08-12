@@ -285,4 +285,115 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		}
         return re;
 	}
+	/**
+	 * 今日待跟进列表
+	 */
+	@Override
+	public List<Map<String, Object>> ListDRDGJ_Select(Map<String, Object> map) {
+		return systemMessageMapper.ListDRDGJ_Select(map);
+	}
+	/**
+	 * 今日待跟进列表-总数
+	 */
+	@Override
+	public int ListDRDGJ_SelectCount(Map<String, Object> map) {
+		return systemMessageMapper.ListDRDGJ_SelectCount(map);
+	}
+	/**
+	 * 当日认购逾期列表
+	 */
+	@Override
+	public List<Map<String, Object>> ListDRRGYQ_Select(Map<String, Object> map) {
+		return systemMessageMapper.ListDRRGYQ_Select(map);
+	}
+	/**
+	 * 当日认购逾期列表-总数
+	 */
+	@Override
+	public int ListDRRGYQ_SelectCount(Map<String, Object> map) {
+		return systemMessageMapper.ListDRRGYQ_SelectCount(map);
+	}
+	/**
+     * 当日签约逾期
+     */
+	@Override
+	public List<Map<String, Object>> ListDRQYYQ_Select(Map<String, Object> map) {
+		return systemMessageMapper.ListDRQYYQ_Select(map);
+	}
+	/**
+     * 当日签约逾期-总数
+     */
+	@Override
+	public int ListDRQYYQ_SelectCount(Map<String, Object> map) {
+		return systemMessageMapper.ListDRQYYQ_SelectCount(map);
+	}
+	/**
+     * 当日回款逾期
+     */
+	@Override
+	public List<Map<String, Object>> ListDRHKYQ_Select(Map<String, Object> map) {
+		return systemMessageMapper.ListDRHKYQ_Select(map);
+	}
+	/**
+     * 当日回款逾期-总数
+     */
+	@Override
+	public int ListDRHKYQ_SelectCount(Map<String, Object> map) {
+		return systemMessageMapper.ListDRHKYQ_SelectCount(map);
+	}
+	/**
+	 * 当日跟进逾期-销售团队负责人/营销负责人
+	 */
+	@Override
+	public List<Map<String, Object>> ListDRGJYQOpportunity_Select(Map<String, Object> map) {
+		return systemMessageMapper.ListDRGJYQOpportunity_Select(map);
+	}
+	/**
+	 * 当日跟进逾期-销售团队负责人/营销负责人-总数
+	 */
+	@Override
+	public int ListDRGJYQOpportunity_SelectCount(Map<String, Object> map) {
+		return systemMessageMapper.ListDRGJYQOpportunity_SelectCount(map);
+	}
+	/**
+	 * 当日跟进逾期-其他
+	 */
+	@Override
+	public List<Map<String, Object>> ListDRGJYQClue_Select(Map<String, Object> map) {
+		return systemMessageMapper.ListDRGJYQClue_Select(map);
+	}
+	/**
+	 * 当日跟进逾期-其他-总数
+	 */
+	@Override
+	public int ListDRGJYQClue_SelectCount(Map<String, Object> map) {
+		return systemMessageMapper.ListDRGJYQClue_SelectCount(map);
+	}
+	/**
+	 * 消息日历
+	 */
+	@Override
+	public Map<String,List<String>> mMessageCalendar_Select(Map<String, Object> paramMap) {
+		Map<String,List<String>> map = new HashMap<String,List<String>>();
+		map.put("487F2C39-779D-097B-455B-799AC0B3CBB4", systemMessageMapper.DRDGJCalendar(paramMap));
+		if("GW".equals(paramMap.get("JobCode"))){
+			map.put("12D36558-A8A1-20D4-58E5-612338026AE7", systemMessageMapper.DRGJYQOpportunityCalendar(paramMap));
+		}else{
+			String JobCode = (String) paramMap.get("JobCode");
+			String sqlWhere = "";
+			if(!"ZQFZR".equals(JobCode)){//ZQ
+				sqlWhere += " AND o.SaleUserID = '" + map.get("UserID") + "' ";
+			}else{//ZQFZR
+				sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+						+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+			}
+			paramMap.put("sqlWhere", sqlWhere);
+			map.put("12D36558-A8A1-20D4-58E5-612338026AE7", systemMessageMapper.DRGJYQClueCalendar(paramMap));
+		}
+		map.put("B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E", systemMessageMapper.DRRGYQCalendar(paramMap));
+		map.put("BE78B012-2536-DFDC-0D20-A5A86DD3470F", systemMessageMapper.DRQYYQCalendar(paramMap));
+		map.put("0F9709DD-A8FC-6106-99FC-688E10C760B1", systemMessageMapper.DRHKYQCalendar(paramMap));
+ 		return map;
+	}
 }

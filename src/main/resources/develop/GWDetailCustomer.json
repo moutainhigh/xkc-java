@@ -7,16 +7,16 @@
   "CustomerMobile":"",
   "Panel": [
     {
-      "Name": "瀹㈡埛淇℃伅",
+      "Name": "客户信息",
       "Type": "Normal",
       "ListIndex": 1,
       "Child": [
         {
           "ID": "61C9B9E1-B2DE-4112-B9B3-C87E23E581BC",
-          "Name": "瀹㈡埛绾у埆",
-          "Placeholder": "蹇呭～",
+          "Name": "客户级别",
+          "Placeholder": "必填",
           "Type": "Option",
-          "Value": "1绾�",
+          "Value": "1级",
           "ListIndex": 4,
           "IsMust": 1,
           "IsHide": 0,
@@ -38,10 +38,10 @@
         },
         {
           "ID": "E72C340D-4092-467A-9B8F-5138DBDCA43B",
-          "Name": "鎬у埆",
-          "Placeholder": "蹇呭～",
+          "Name": "性别",
+          "Placeholder": "必填",
           "Type": "OptionRadio",
-          "Value": "鐢�",
+          "Value": "男",
           "ListIndex": 4,
           "IsMust": 1,
           "IsHide": 0,
@@ -63,8 +63,8 @@
         },
         {
           "ID": "848EBE45-2C03-40C5-AE91-EC72533539BD",
-          "Name": "璇佷欢绫诲瀷",
-          "Placeholder": "蹇呭～",
+          "Name": "证件类型",
+          "Placeholder": "必填",
           "Type": "Option",
           "Value": "",
           "ListIndex": 3,
@@ -88,8 +88,8 @@
         },
         {
           "ID": "56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37",
-          "Name": "璇佷欢鍙风爜",
-          "Placeholder": "蹇呭～",
+          "Name": "证件号码",
+          "Placeholder": "必填",
           "Type": "Card",
           "Value": "",
           "ListIndex": 3,
@@ -112,9 +112,59 @@
           ]
         },
         {
+          "ID": "9036F3E4-2EB7-4E7A-849D-FFF39EEB093D",
+          "Name": "通讯地址",
+          "Placeholder": "必填",
+          "Type": "TextArea",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 100,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "A977C068-98A9-4184-AD39-5E645778CB5D",
+          "Name": "是否收小筹",
+          "Placeholder": "",
+          "Type": "OptionRadio",
+          "Value": "否",
+          "ListIndex": 4,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
           "ID": "475D020E-DEC6-413C-898E-BC1A52511067",
-          "Name": "骞撮緞娈�",
-          "Placeholder": "蹇呭～",
+          "Name": "年龄段",
+          "Placeholder": "必填",
           "Type": "Option",
           "Value": "",
           "ListIndex": 3,
@@ -137,34 +187,9 @@
           ]
         },
         {
-          "ID": "A977C068-98A9-4184-AD39-5E645778CB5D",
-          "Name": "鏄惁鏀跺皬绛�",
-          "Placeholder": "",
-          "Type": "OptionRadio",
-          "Value": "鍚�",
-          "ListIndex": 4,
-          "IsMust": 0,
-          "IsHide": 0,
-          "IsMustShow": 0,
-          "IsEdit": 1,
-          "IsMulti": 0,
-          "MaxLength": 50,
-          "MaxSelectedNum": 1,
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
-        {
           "ID": "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D",
-          "Name": "鎰忓悜椤圭洰",
-          "Placeholder": "蹇呭～",
+          "Name": "意向项目",
+          "Placeholder": "必填",
           "Type": "Text",
           "Value": "",
           "ListIndex": 3,
@@ -188,8 +213,8 @@
         },
         {
           "ID": "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602",
-          "Name": "娓犻亾鏉ユ簮",
-          "Placeholder": "蹇呭～",
+          "Name": "渠道来源",
+          "Placeholder": "必填",
           "Type": "Option",
           "Value": "",
           "ListIndex": 3,
@@ -213,7 +238,7 @@
         },
         {
           "ID": "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0",
-          "Name": "璁ょ煡濯掍綋",
+          "Name": "认知媒体",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -228,7 +253,7 @@
           "NormalColor": "#FFFFFF",
           "SelectedColor": "#FFFFFF",
           "Partner": "",
-          "SubPartner": "濯掍綋瀛愮被",
+          "SubPartner": "媒体子类",
           "Verify": [
 
           ],
@@ -238,7 +263,7 @@
         },
         {
           "ID": "0BFD0AEF-2C16-4A91-94D3-9CBF114DC78A",
-          "Name": "濯掍綋瀛愮被",
+          "Name": "媒体子类",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -252,7 +277,7 @@
           "MaxSelectedNum": 1,
           "NormalColor": "#FFFFFF",
           "SelectedColor": "#FFFFFF",
-          "Partner": "璁ょ煡濯掍綋",
+          "Partner": "认知媒体",
           "SubPartner": "",
           "Verify": [
 
@@ -263,10 +288,10 @@
         },
         {
           "ID": "7FFDA0F6-6DEA-4CA5-86B6-C76D400702E3",
-          "Name": "娉扮鍛樺伐鎴栧灞�",
-          "Placeholder": "蹇呭～",
+          "Name": "泰禾员工或家属",
+          "Placeholder": "必填",
           "Type": "OptionRadio",
-          "Value": "鍚�",
+          "Value": "否",
           "ListIndex": 4,
           "IsMust": 1,
           "IsHide": 0,
@@ -288,8 +313,8 @@
         },
         {
           "ID": "D9199E8F-D1E0-49C1-A9C6-EE11CA7D5ECD",
-          "Name": "鏈�璁ゅ彲鍥犵礌",
-          "Placeholder": "蹇呭～",
+          "Name": "最认可因素",
+          "Placeholder": "必填",
           "Type": "Option",
           "Value": "",
           "ListIndex": 3,
@@ -313,8 +338,8 @@
         },
         {
           "ID": "8741C05C-86DA-4952-8BC3-5C9CB669CCF9",
-          "Name": "鏈缃笟鐩殑",
-          "Placeholder": "蹇呭～",
+          "Name": "本次置业目的",
+          "Placeholder": "必填",
           "Type": "Option",
           "Value": "",
           "ListIndex": 3,
@@ -338,8 +363,8 @@
         },
         {
           "ID": "96F8FC2D-9AF2-413B-8628-85BC2040DC72",
-          "Name": "涓氭�侀渶姹�",
-          "Placeholder": "蹇呭～",
+          "Name": "业态需求",
+          "Placeholder": "必填",
           "Type": "Option",
           "Value": "",
           "ListIndex": 3,
@@ -363,7 +388,7 @@
         },
         {
           "ID": "4D35ABCF-E61C-4650-9F55-0D2D66548CF0",
-          "Name": "澶囨敞",
+          "Name": "备注",
           "Placeholder": "",
           "Type": "TextArea",
           "Value": "",
@@ -389,13 +414,13 @@
       ]
     },
     {
-      "Name": "瀹㈡埛鐗瑰緛",
+      "Name": "客户特征",
       "Type": "Normal",
       "ListIndex": 3,
       "Child": [
         {
           "ID": "C7B06191-E032-45F4-A990-DB73450588DE",
-          "Name": "鎴风睄鎵�鍦ㄥ湴",
+          "Name": "户籍所在地",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -419,58 +444,8 @@
           ]
         },
         {
-          "ID": "39410FA8-101E-40C9-AE48-3415849A96FB",
-          "Name": "灞呬綇鍖哄煙",
-          "Placeholder": "",
-          "Type": "Option",
-          "Value": "",
-          "ListIndex": 2,
-          "IsMust": 0,
-          "IsHide": 0,
-          "IsMustShow": 0,
-          "IsEdit": 1,
-          "IsMulti": 0,
-          "MaxLength": 0,
-          "MaxSelectedNum": 0,
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
-        {
-          "ID": "86D4BA4F-3F3C-4F2E-8FF3-5DDAE8D71921",
-          "Name": "宸ヤ綔鍖哄煙",
-          "Placeholder": "",
-          "Type": "Option",
-          "Value": "",
-          "ListIndex": 2,
-          "IsMust": 0,
-          "IsHide": 0,
-          "IsMustShow": 0,
-          "IsEdit": 1,
-          "IsMulti": 0,
-          "MaxLength": 0,
-          "MaxSelectedNum": 0,
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
-        {
           "ID": "62AC02D0-C4AB-4EB7-A85F-6E1D509C166B",
-          "Name": "濠氬Щ鐘跺喌",
+          "Name": "婚姻状况",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -495,7 +470,7 @@
         },
         {
           "ID": "6438B845-441C-4A53-AB17-96ECF291955F",
-          "Name": "瀹跺涵缁撴瀯",
+          "Name": "家庭结构",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -520,7 +495,7 @@
         },
         {
           "ID": "4124D302-0E37-47C7-A9CA-A7D5774A5361",
-          "Name": "鎵�灞炶涓�",
+          "Name": "所属行业",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -545,7 +520,7 @@
         },
         {
           "ID": "1A006C4D-B010-44CD-B09A-355E8A4328E3",
-          "Name": "缃笟娆℃暟",
+          "Name": "置业次数",
           "Placeholder": "",
           "Type": "Option",
           "Value": "",
@@ -570,8 +545,8 @@
         },
         {
           "ID": "5B3EA885-C8D6-4890-A75E-88904575D46C",
-          "Name": "鐢熸棩",
-          "Placeholder": "蹇呭～",
+          "Name": "生日",
+          "Placeholder": "必填",
           "Type": "Date",
           "Value": "",
           "ListIndex": 3,
@@ -584,31 +559,6 @@
           "MaxSelectedNum": 0,
           "MinDate": "",
           "MaxDate": "",
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
-        {
-          "ID": "9036F3E4-2EB7-4E7A-849D-FFF39EEB093D",
-          "Name": "閫氳鍦板潃",
-          "Placeholder": "蹇呭～",
-          "Type": "TextArea",
-          "Value": "",
-          "ListIndex": 3,
-          "IsMust": 1,
-          "IsHide": 0,
-          "IsMustShow": 0,
-          "IsEdit": 0,
-          "IsMulti": 0,
-          "MaxLength": 100,
-          "MaxSelectedNum": 0,
           "NormalColor": "#FFFFFF",
           "SelectedColor": "#FFFFFF",
           "Partner": "",

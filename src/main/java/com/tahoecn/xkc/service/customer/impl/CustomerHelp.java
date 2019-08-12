@@ -498,6 +498,7 @@ public class CustomerHelp implements ICustomerHelp {
 		String jsonStr = "";
 		if (redisTemplate.hasKey(jsonFile)) {
 			jsonStr = redisTemplate.opsForValue().get(jsonFile);
+			redisTemplate.delete(jsonFile);
 		} else {
 			jsonStr = JSONUtil.readJsonFile(jsonFile);
 			redisTemplate.opsForValue().set(jsonFile, jsonStr);

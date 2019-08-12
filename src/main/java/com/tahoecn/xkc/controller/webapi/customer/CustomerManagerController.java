@@ -96,7 +96,7 @@ public class CustomerManagerController extends TahoeBaseController {
                                                     String ZJDF_End,
                                                     String TheLatestFollowUpDate_Start,
                                                     String TheLatestFollowUpDate_End,
-                                                    String type) {
+                                                    String type,String uType) {
 
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -126,6 +126,7 @@ public class CustomerManagerController extends TahoeBaseController {
         map.put("TheLatestFollowUpDate_Start",TheLatestFollowUpDate_Start);
         map.put("TheLatestFollowUpDate_End",TheLatestFollowUpDate_End);
         map.put("type",type);
+        map.put("uType",uType);
 
         //获取团队
         QueryWrapper<BSalesgroup> salesgroupWrapper = new QueryWrapper<>();

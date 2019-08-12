@@ -120,4 +120,64 @@ public interface SystemMessageMapper {
 	 * 设置动态消息已读
 	 */
 	void mMessageDynamicReadList_Update(Map<String, Object> map);
+	/**
+	 * 今日待跟进列表
+	 */
+	List<Map<String, Object>> ListDRDGJ_Select(Map<String, Object> map);
+	/**
+	 * 今日待跟进列表-总数
+	 */
+	int ListDRDGJ_SelectCount(Map<String, Object> map);
+	/**
+	 * 当日认购逾期列表
+	 */
+	List<Map<String, Object>> ListDRRGYQ_Select(Map<String, Object> map);
+	/**
+	 * 当日认购逾期列表-总数
+	 */
+	int ListDRRGYQ_SelectCount(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-销售团队负责人/营销负责人
+	 */
+	List<Map<String, Object>> ListDRGJYQOpportunity_Select(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-销售团队负责人/营销负责人-总数
+	 */
+	int ListDRGJYQOpportunity_SelectCount(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-其他
+	 */
+	List<Map<String, Object>> ListDRGJYQClue_Select(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-其他-总数
+	 */
+	int ListDRGJYQClue_SelectCount(Map<String, Object> map);
+	/**
+     * 当日签约逾期
+     */
+	List<Map<String, Object>> ListDRQYYQ_Select(Map<String, Object> map);
+	/**
+     * 当日签约逾期-总数
+     */
+	int ListDRQYYQ_SelectCount(Map<String, Object> map);
+	/**
+     * 当日回款逾期
+     */
+	List<Map<String, Object>> ListDRHKYQ_Select(Map<String, Object> map);
+	/**
+     * 当日回款逾期-总数
+     */
+	int ListDRHKYQ_SelectCount(Map<String, Object> map);
+	//今日待跟进
+	List<String> DRDGJCalendar(Map<String, Object> paramMap);
+	//当日跟进逾期-机会
+	List<String> DRGJYQOpportunityCalendar(Map<String, Object> paramMap);
+	//当日跟进逾期-线索
+	List<String> DRGJYQClueCalendar(Map<String, Object> paramMap);
+	//当日认购逾期
+	List<String> DRRGYQCalendar(Map<String, Object> paramMap);
+    //当日签约逾期
+	List<String> DRQYYQCalendar(Map<String, Object> paramMap);
+    //当日回款逾期
+	List<String> DRHKYQCalendar(Map<String, Object> paramMap);
 }

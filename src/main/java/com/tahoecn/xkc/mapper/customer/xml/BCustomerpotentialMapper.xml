@@ -995,6 +995,7 @@ VALUES  ( #{ClueID},
 		        dbo.F_GetClueStatusName_xkc(t.ClueStatusValue, t.OpportunityStatusValue) AS ClueStatus ,
 		        IsCare ,
 		        Status ,
+		        SpareMobile,
 		        CASE WHEN OpportunityID IS NULL THEN 0
 		             ELSE 1
 		        END IsAlloc
@@ -1015,6 +1016,7 @@ VALUES  ( #{ClueID},
 		                                END TheLatestFollowUpContent ,
 		                                t.TheLatestFollowUpWay ,
 		                                tt.ID OpportunityID ,
+		                                tt.SpareMobile,
 		                                t.ReportUserID ,
 		                                t.ReportUserName ,
 		                                dbo.F_GetClueIsCare(t.ID, t.ReportUserID) IsCare ,

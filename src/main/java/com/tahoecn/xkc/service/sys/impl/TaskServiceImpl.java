@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -105,6 +106,9 @@ public class TaskServiceImpl implements ITaskService {
 			break;
 		case "ServiceAutoUCUserChange":
 			serviceAutoUCUserChange();
+			break;
+		case "ServiceAutoWechatShare":
+			serviceAutoWechatShare();
 			break;
 
 		default:
@@ -487,6 +491,46 @@ public class TaskServiceImpl implements ITaskService {
 	 */
 	private void serviceAutoUCUserChange() {
 		// TODO 未作
+	}
+
+	/**
+	 * 分享传播-自动进分享池，分享池自动分配自渠，公共池自动分配置业顾问
+	 */
+	private void serviceAutoWechatShare() {
+		// 获取项目列表
+		List<Map<String, Object>> pList = taskMapper.ShareServiceProjectParamerList_Select();
+		// 获取置业顾问列表
+		List<Map<String, Object>> uList = taskMapper.ShareServiceSalesUserList_Select();
+		for (int i = 0; i < pList.size(); i++) {
+			String projectID = String.valueOf(pList.get(i).get("ProjectID"));
+			// 首先判断分配模式 2=自动，自动才进行后续操作
+			if ("2".equals(pList.get(i).get("SnatchingMode")) && StringUtils.isNotBlank(projectID)) {
+				List<Map<String, Object>> sList = uList.stream().filter(m -> projectID.equals(m.get("ProjectID")))
+						.collect(Collectors.toList());
+				// 自动分配，找到该项目下的置业顾问
+				if (sList != null && sList.size() > 0) {
+					List<Map<String, Object>> cList = taskMapper.ShareServiceOppCustomerList_Select(projectID);
+					// 判断是否有公共客户，有的话 进行分配
+					if (cList != null && cList.size() > 0) {
+						Integer j = 0;
+						for (Map<String, Object> cust : cList) {
+							if (j == sList.size()) // 轮询 置业顾问
+								j = 0;
+							Map<String, Object> sale = sList.get(j);
+							Map<String, Object> param = new HashMap<>();
+							param.put("UserID", sale.get("MemberID"));
+							param.put("ProjectID", projectID);
+							param.put("OrgID", sale.get("GroupID"));
+							param.put("JobID", sale.get("JobID"));
+							param.put("PublicIDs", cust.get("PublicID"));
+							taskMapper.ShareServiceCustomerGGCList_Insert(param);
+							j++;
+						}
+					}
+				}
+			}
+		}
+
 	}
 
 }

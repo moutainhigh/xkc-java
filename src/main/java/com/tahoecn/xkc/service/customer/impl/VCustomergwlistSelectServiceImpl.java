@@ -292,7 +292,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 			entity.setErrcode(1);
 			e.printStackTrace();
 		}
-		return null;
+		return entity;
 	}
 
 	@Override
@@ -1944,6 +1944,11 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 	public Result getCustomerChangeList(String OpportunityID){
 		Result entity = new Result();
 		try {
+			if(OpportunityID==null || "".equals(OpportunityID)){
+				entity.setErrcode(1);
+				entity.setErrmsg("机会ID不能为空");
+				return entity;
+			}
 			QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
 		    updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
 		    List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
