@@ -68,7 +68,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	        //手机/或姓名
 	        String Mobile = paramAry.getString("Mobile");
 	        if(!StringUtils.isEmpty(Mobile)){
-	        	whereSb.append(" and (CustomerName Like'%"+Mobile+"%' or CustomerMobile Like'"+Mobile+"') ");
+	        	whereSb.append(" and (CustomerName Like '%"+Mobile+"%' or CustomerMobile Like '%"+Mobile+"%' or SpareMobile Like '%"+Mobile+"%') ");
 	        }
 	        //今日来访
 	        String Filter = paramAry.getString("Filter");

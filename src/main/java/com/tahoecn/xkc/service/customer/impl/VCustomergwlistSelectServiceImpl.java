@@ -164,7 +164,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 			StringBuilder whereSb = new StringBuilder();
         	StringBuilder orderSb = new StringBuilder();
         	if(!StringUtils.isEmpty(model.getKeyWord())){
-        		whereSb.append(" and (CustomerName Like'"+model.getKeyWord()+"' or CustomerMobile Like'"+model.getKeyWord()+"') ");
+        		whereSb.append(" and (CustomerName Like '%"+model.getKeyWord()+"%' or CustomerMobile Like '%"+model.getKeyWord()+"%' or SpareMobile Like '%"+model.getKeyWord()+"%') ");
         	}
         	if(model.getFilter() != null && model.getFilter().size()>0){
         		for(FilterItem filterItem:model.getFilter()){

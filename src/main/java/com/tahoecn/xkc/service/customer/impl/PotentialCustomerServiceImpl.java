@@ -965,7 +965,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        }
 	        //手机或姓名
 	        if (!StringUtils.isEmpty(model.getKeyWord())){
-	            whereinnerSb.append(" and (t.Name Like'%"+model.getKeyWord()+"%' or t.Mobile Like'%"+model.getKeyWord()+"%') ");
+	            whereinnerSb.append(" and (t.Name Like '%"+model.getKeyWord()+"%' or t.Mobile Like '%"+model.getKeyWord()+"%'  or t.SpareMobile Like '%"+model.getKeyWord()+"%') ");
 	        }
 	        if (model.getFilter() != null && model.getFilter().size() > 0){
 	            for (FilterItem filterItem : model.getFilter()){
