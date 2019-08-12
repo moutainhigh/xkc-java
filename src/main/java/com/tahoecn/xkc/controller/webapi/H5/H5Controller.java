@@ -250,7 +250,8 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
-    //未测,需完成上传
+
+    //已测
     @ApiOperation(value = "修改个人证件信息", notes = "修改个人证件信息")
     @RequestMapping(value = "/mBrokerChannelUserCardDetail_Update", method = {RequestMethod.POST})
     public Result mBrokerChannelUserCardDetail_Update(@RequestBody JSONObject jsonParam) {
@@ -262,14 +263,13 @@ public class H5Controller extends TahoeBaseController {
         String CertificatesPicFace=(String) paramMap.get("CertificatesPicFace");
         String CertificatesPicBack=(String) paramMap.get("CertificatesPicBack");
         int i = channeluserService.mBrokerChannelUserCardDetail_Update(UserID, CertificatesName, CertificatesType, CertificatesNo, CertificatesPicFace, CertificatesPicBack);
-        Result result = new Result();
-        result.setErrcode(0);
-        result.setErrmsg("成功");
-//        result.setData(list);
-        return result;
+       if(i==1){
+           return Result.ok("成功");
+       }
+        return Result.errormsg(1,"修改失败");
     }
 
-    //已测 但IsRead 值待确定
+    //已测
     @ApiOperation(value = "消息列表", notes = "消息列表")
     @RequestMapping(value = "/mMessageAllList_Select", method = {RequestMethod.POST})
     public Result mMessageAllList_Select(@RequestBody JSONObject jsonParam) {
@@ -293,18 +293,12 @@ public class H5Controller extends TahoeBaseController {
         String UserID=(String) paramMap.get("UserID");
         int PageIndex=(int) paramMap.get("PageIndex");
         int PageSize=(int) paramMap.get("PageSize");
-        Result result = new Result();
         if (StringUtils.isBlank(UserID)) {
-            result.setErrcode(1);
-            result.setErrmsg("用户ID不可以为空");
-            return result;
+            return Result.errormsg(1,"用户ID不可以为空");
         }
         IPage page = new Page(PageIndex, PageSize);
-        List<Map<String, Object>> list = projectcollectionService.mBrokerProjectCollectionList_Select(page, UserID);
-        result.setErrcode(1);
-        result.setErrmsg("成功");
-        result.setData(list);
-        return result;
+        IPage<Map<String, Object>> list = projectcollectionService.mBrokerProjectCollectionList_Select(page, UserID);
+        return Result.ok(list);
     }
 
     //未测

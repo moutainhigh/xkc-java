@@ -29,6 +29,7 @@ public class GWCustomerPageDto implements Serializable {
 	private String platform;
 	private String appName;
 	private String OpportunityID;
+	private List<String> OpportunityIDList;
 	
 	public String where;
 	public String order;
@@ -40,6 +41,14 @@ public class GWCustomerPageDto implements Serializable {
 
 	public void setOpportunityID(String opportunityID) {
 		OpportunityID = opportunityID;
+	}
+	
+	public List<String> getOpportunityIDList() {
+		return OpportunityIDList;
+	}
+
+	public void setOpportunityIDList(List<String> opportunityIDList) {
+		OpportunityIDList = opportunityIDList;
 	}
 
 	public String getUserID() {

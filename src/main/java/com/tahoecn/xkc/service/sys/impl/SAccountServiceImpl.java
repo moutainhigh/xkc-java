@@ -145,9 +145,6 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     public IPage<Map<String,Object>> SystemUserListByOrgID_SelectN(IPage page, String authCompanyID,String OrgID, String key,int Type) {
         SOrganization byId = organizationService.getById(OrgID);
 
-
-
-
         return baseMapper.SystemUserListByOrgID_SelectN(page,authCompanyID,byId.getFullPath(),key,Type);
     }
 

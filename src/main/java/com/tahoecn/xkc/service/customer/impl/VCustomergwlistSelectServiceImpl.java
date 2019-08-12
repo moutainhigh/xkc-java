@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,6 +29,7 @@ import com.tahoecn.xkc.common.enums.MessageType;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
+import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CGWDetailModel;
@@ -36,6 +39,7 @@ import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IProjectService;
+import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
@@ -61,6 +65,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 	private IProjectService iProjectService;
 	@Value("${SiteUrl}")
     private String SiteUrl;
+	@Autowired
+    private IUpdateCustinfoLogService iUpdateCustinfoLogService;
 	
 	@Override
 	public Result customerList(GWCustomerPageDto model) {
@@ -124,6 +130,15 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
     			entity.setErrcode(1);
     			return entity;
         	}
+        	List<String> OpportunityID_list = new ArrayList<String>();
+        	OpportunityID_list.add(model.getOpportunityID());
+        	List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
+        	if(data_child!=null && data_child.size()>0){
+        		for(Map<String,Object> data_child_map : data_child){
+        			OpportunityID_list.add(data_child_map.get("OpportunityID").toString());
+        		}
+        	}
+        	model.setOpportunityIDList(OpportunityID_list);
         	setParamForCustomerList(model);
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_forUpdateChild(model);
         	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_forUpdateChild_count(model);
@@ -149,7 +164,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 			StringBuilder whereSb = new StringBuilder();
         	StringBuilder orderSb = new StringBuilder();
         	if(!StringUtils.isEmpty(model.getKeyWord())){
-        		whereSb.append(" and (CustomerName Like'"+model.getKeyWord()+"' or CustomerMobile Like'"+model.getKeyWord()+"') ");
+        		whereSb.append(" and (CustomerName Like '%"+model.getKeyWord()+"%' or CustomerMobile Like '%"+model.getKeyWord()+"%' or SpareMobile Like '%"+model.getKeyWord()+"%') ");
         	}
         	if(model.getFilter() != null && model.getFilter().size()>0){
         		for(FilterItem filterItem:model.getFilter()){
@@ -277,7 +292,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 			entity.setErrcode(1);
 			e.printStackTrace();
 		}
-		return null;
+		return entity;
 	}
 
 	@Override
@@ -1395,7 +1410,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 Map<String,Object> objCus = vCustomergwlistSelectMapper.mCustomerGGUpdateChannelSource_Select(paramAry.getString("Mobile"), paramAry.getString("ProjectID"));
                 if (objCus!=null && objCus.size() > 0){
                 	entity.setErrcode(20);
-                	entity.setErrmsg("该客户已更新渠道，需案场销支完成分配");
+                	entity.setErrmsg("该客户已更新渠道，需案场销管完成分配");
                     return entity;
                 }
             }else{//新客户
@@ -1464,6 +1479,8 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 if (parameter!=null && parameter.size() > 0){
                 	Map<String,Object> pmap = JSONObject.parseObject(parameter.toJSONString(), Map.class);
                 	pmap.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
+                	//设置变更记录
+                	addCustomerChangeInfo(pmap);
                 	vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step1(pmap);
                 	List<Map<String,Object>> step2_map = vCustomergwlistSelectMapper.mCustomerGWDetail_Update_step2_valid(pmap);
                 	if(step2_map!=null && step2_map.size()>0){
@@ -1865,5 +1882,85 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         return entity;
 	}
 
+	@Override
+	public void addCustomerChangeInfo(Map<String,Object> pmap){
+		try {
+			String OpportunityID = pmap.get("OpportunityID").toString();
+			String CustomerID = pmap.get("CustomerID").toString();
+			
+			Map<String, Object> customerData = vCustomergwlistSelectMapper.selectCustomerByID(CustomerID);
+			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
+			if(customerData!=null && customerData.size()>0 && OpportunityData!=null && OpportunityData.size()>0){
+				//姓名  副手机号 证件类型  证件号码  性别 
+				String CustomerName = OpportunityData.get("CustomerName")!=null?OpportunityData.get("CustomerName").toString():"空值";
+				String SpareMobile =OpportunityData.get("SpareMobile")!=null?OpportunityData.get("SpareMobile").toString():"空值";
+				String CardType = customerData.get("CardType")!=null?customerData.get("CardType").toString():"空值";
+				String CardID = customerData.get("CardID")!=null?customerData.get("CardID").toString():"空值";
+				String Gender = customerData.get("Gender")!=null?customerData.get("Gender").toString():"空值";
+				
+				UpdateCustinfoLog log = new UpdateCustinfoLog();
+				
+		        log.setOpportunityID(OpportunityID);
+		        log.setCustomerID(CustomerID);
+				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
+				if(!"".equals(newCustomerName)){
+					if(!CustomerName.equals(newCustomerName)){
+						log.setCustomerName(CustomerName + "->" + newCustomerName);
+					}
+				}
+				String newSpareMobile =pmap.get("SpareMobile")!=null?pmap.get("SpareMobile").toString():"";
+				if(!"".equals(newSpareMobile)){
+					if(!SpareMobile.equals(newSpareMobile)){
+						log.setAuxiliaryMobile(SpareMobile + "->" + newSpareMobile);
+					}
+				}
+				String newCardType = pmap.get("CardType")!=null?pmap.get("CardType").toString():"";
+				if(!"".equals(newCardType)){
+					if(!CardType.equals(newCardType)){
+						log.setCardType(CardType + "->" + newCardType);
+					}
+				}
+				String newCardID = pmap.get("CardID")!=null?pmap.get("CardID").toString():"";
+				if(!"".equals(newCardID)){
+					if(!CardID.equals(newCardID)){
+						log.setCardID(CardID + "->" + newCardID);
+					}
+				}
+				String newGender = pmap.get("Gender")!=null?pmap.get("Gender").toString():"";
+				if(!"".equals(newGender)){
+					if(!Gender.equals(newGender)){
+						log.setGender(Gender + "->" + newGender);
+					}
+				}
+		        log.setCreateTime(new Date());
+		        iUpdateCustinfoLogService.save(log);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public Result getCustomerChangeList(String OpportunityID){
+		Result entity = new Result();
+		try {
+			if(OpportunityID==null || "".equals(OpportunityID)){
+				entity.setErrcode(1);
+				entity.setErrmsg("机会ID不能为空");
+				return entity;
+			}
+			QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
+		    updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
+		    List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
+		    entity.setErrcode(0);
+			entity.setErrmsg("成功");
+			entity.setData(updateCustInfoLogList);
+		} catch (Exception e) {
+			entity.setErrcode(1);
+			entity.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return entity;
+	}
 
 }

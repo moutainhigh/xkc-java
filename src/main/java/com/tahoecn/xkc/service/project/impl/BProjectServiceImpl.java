@@ -60,4 +60,9 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     	}
     }
 
+    @Override
+    public List<String> getProjectIDs() {
+        return baseMapper.getProjectIDs();
+    }
+
 }

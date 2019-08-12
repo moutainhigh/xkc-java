@@ -96,7 +96,7 @@ public class LoginIpadController extends TahoeBaseController {
         // 0.禁用 1.开启
         short accountStatus = (short) res.get("AccountStatus");
         if (isNoAllotRole == 1 && ("XSZC").equals(jobCode)){
-            return Result.errormsg(10,"请联系管理员开通销支角色");
+            return Result.errormsg(10,"请联系管理员开通销管角色");
         }
         if (allowDeviceType != 2 && allowDeviceType != 3)
         {

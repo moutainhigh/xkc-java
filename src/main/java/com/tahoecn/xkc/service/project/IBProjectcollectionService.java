@@ -19,7 +19,7 @@ public interface IBProjectcollectionService extends IService<BProjectcollection>
 
     int mBrokerProjectCollectionIsExist_Select(String projectID, String userID);
 
-    List<Map<String, Object>> mBrokerProjectCollectionList_Select(IPage page, String userID);
+    IPage<Map<String, Object>> mBrokerProjectCollectionList_Select(IPage page, String userID);
 
     int BrokerProjectCollection_Insert(String userID, String projectID);
 

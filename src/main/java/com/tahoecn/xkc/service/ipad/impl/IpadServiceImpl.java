@@ -1199,7 +1199,7 @@ public class IpadServiceImpl implements IIpadService {
         CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
         StringBuilder whereSb = new StringBuilder();
         if (!StringUtils.isEmpty(model.getKeyWord())){
-            whereSb.append(" AND (CustomerName LIKE '%"+model.getKeyWord()+"%' OR CustomerMobile LIKE '%"+model.getKeyWord()+"%')");
+            whereSb.append(" AND (CustomerName LIKE '%"+model.getKeyWord()+"%' OR CustomerMobile LIKE '%"+model.getKeyWord()+"%' OR SpareMobile Like '%"+model.getKeyWord()+"%')");
         }
         String sourceType = paramAry.getString("SourceType");
         if (!StringUtils.isEmpty(sourceType)){

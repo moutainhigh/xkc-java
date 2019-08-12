@@ -117,7 +117,7 @@ public class LoginAppController extends TahoeBaseController {
             return Result.errormsg(10, "无法登陆,此账号所属项目没有开通分接角色");
         }
         if (1 == IsNoAllotRole && JobCode.equals("XSZC")) {
-            return Result.errormsg(10, "无法登陆,此账号所属项目没有开通销支角色");
+            return Result.errormsg(10, "无法登陆,此账号所属项目没有开通销管角色");
         }
         if (JobCode.equals("XSZC") && 0 == IsNoAllotRole && !Objects.equals(ProjectID, "") && 1 != AllowDeviceType && 3 != AllowDeviceType) {
             return Result.errormsg(10, "无法登陆,此账号所属项目没有开通APP登录权限");

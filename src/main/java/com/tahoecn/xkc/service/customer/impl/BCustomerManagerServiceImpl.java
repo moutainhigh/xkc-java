@@ -33,6 +33,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         StringBuilder OppWhere = new StringBuilder();//机会搜索条件
         StringBuilder Where = new StringBuilder();
         StringBuilder WhereLast = new StringBuilder();
+        StringBuilder updateWhere = new StringBuilder();
 
         String ProjectID = (String)map.get("ProjectID");
         String SaleTeamID = (String)map.get("SaleTeamID");
@@ -55,6 +56,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         String TheLatestFollowUpDate_Start = (String)map.get("TheLatestFollowUpDate_Start");
         String TheLatestFollowUpDate_End = (String)map.get("TheLatestFollowUpDate_End");
         String IsExcel = (String)map.get("IsExcel");
+        String uType = (String)map.get("uType");
 
         if (StringUtil.isNotNull(ProjectID))
         {
@@ -208,12 +210,17 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         {
             sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+"' ");
         }
+        if (StringUtil.isNotNull(uType) && uType.equals("1")){
+            updateWhere.append(" AND b.Status IN (4,5)");
+        }
+
 
         map.put("Where",Where.toString());
         map.put("sqlWhere",sqlWhere.toString());
         map.put("ClueWhere",ClueWhere.toString());
         map.put("OppWhere",OppWhere.toString());
         map.put("WhereLast",WhereLast.toString());
+        map.put("updateWhere",updateWhere.toString());
 
         if (StringUtil.isNotNull(IsExcel) && IsExcel.equals("1"))
         {

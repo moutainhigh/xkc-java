@@ -203,7 +203,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 map.put("ProjectID",ProjectID);
                 SalesGroupMemberExistProjectVo salesGroupMemberExistProjectVo = bSaleGroupMemberMapper.SalesGroupMemberExistProject_Select(map);
                 if(salesGroupMemberExistProjectVo!=null){
-                    return ResponseMessage.error("操作失败，" + salesGroupMemberExistProjectVo.getUserName() + "已在其他项目“" + salesGroupMemberExistProjectVo.getProjectName() + "”的销支岗位");
+                    return ResponseMessage.error("操作失败，" + salesGroupMemberExistProjectVo.getUserName() + "已在其他项目“" + salesGroupMemberExistProjectVo.getProjectName() + "”的销管岗位");
                 }
             }
         }
