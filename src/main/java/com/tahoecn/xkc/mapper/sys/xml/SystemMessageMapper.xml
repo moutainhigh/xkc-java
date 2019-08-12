@@ -61,6 +61,7 @@
 		AND ISNULL(T.IsRead,0) = (CASE WHEN T.MessageType IN ('12D36558-A8A1-20D4-58E5-612338026AE7') AND ISNULL(T.IsRead,0) = 1 THEN 1 ELSE 0 END)
 		AND ISNULL(T.IsApprove,0) = 0
 		AND T.ProjectID = #{ProjectID}
+		and t.MessageType not in ('487F2C39-779D-097B-455B-799AC0B3CBB4','12D36558-A8A1-20D4-58E5-612338026AE7','B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E','BE78B012-2536-DFDC-0D20-A5A86DD3470F','0F9709DD-A8FC-6106-99FC-688E10C760B1')
 		${sqlWhere}
 		GROUP BY
 			ProjectID,MessageType,Receiver
@@ -395,5 +396,477 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					AND SendTime <= GETDATE()
 	    ]]>
     </update>
-  
+
+	<!-- 今日待跟进列表 -->
+    <select id="ListDRDGJ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT DISTINCT
+					c.ID as ID,
+					c.FollowUpContent as Content,
+					dbo.F_FormatDate(c.CreateTime) SendTime,
+					o.ID OpportunityID,
+					o.CustomerID,
+					o.CustomerName,
+					o.CustomerMobile,
+					dbo.F_DictName (o.CustomerLevel) IntentionLevel,
+					dbo.F_GetSaleCustomerTag ( o.CustomerID, o.SaleUserID ) CustomerTag,
+					o.TheLatestFollowUpDate,
+					o.TheLatestFollowUpContent,
+					dbo.F_GetStatusName ( o.Status ) OpportunityStatus,
+					ISNULL( o.Status, 0 ) OpportunityStatusValue,
+					dbo.F_GetSaleIsCare ( o.ID, o.SaleUserID ) IsCare,
+					o.SaleUserID AdviserID,
+					o.SaleUserName AdviserName,
+					dbo.F_GetSaleGroupName ( o.SaleUserID, o.ProjectID ) AdviserOrgName,
+					dbo.F_GetSaleMobile ( o.SaleUserID ) AdviserMobile,
+					'' YJTime,
+					'0' IsYJ,
+					'487F2C39-779D-097B-455B-799AC0B3CBB4' MessageType,
+					dbo.F_DictName ('487F2C39-779D-097B-455B-799AC0B3CBB4') MessageTypeName,
+					o.IsCustomerFirstEdit,
+					ROW_NUMBER() OVER ( ORDER BY c.CreateTime DESC ) num
+				FROM B_Opportunity o left join B_CustomerFollowUp c on c.OpportunityID = o.ID where o.ID in (
+					select distinct OpportunityID from B_CustomerFollowUp  WHERE
+					CONVERT (VARCHAR (10), NextFollowUpDate, 120) = #{CurDate} 
+					AND FollwUpUserID = #{UserID} 
+					AND ProjectID = #{ProjectID}
+					)    
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 今日待跟进列表-总数 -->
+    <select id="ListDRDGJ_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM B_Opportunity o left join B_CustomerFollowUp c on c.OpportunityID = o.ID 
+			where o.ID in (
+					select distinct OpportunityID from B_CustomerFollowUp  WHERE
+					CONVERT (VARCHAR (10), NextFollowUpDate, 120) = #{CurDate} 
+					AND FollwUpUserID = #{UserID} 
+					AND ProjectID = #{ProjectID}
+					) 
+		]]>		        
+    </select>
+	<!-- 当日认购逾期列表 -->
+    <select id="ListDRRGYQ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT DISTINCT
+					D.ID,
+					--c.FollowUpContent as Content,
+					dbo.F_FormatDate(o.AllotTime) SendTime,
+					o.ID OpportunityID,
+					o.CustomerID,
+					o.CustomerName,
+					o.CustomerMobile,
+					dbo.F_DictName (o.CustomerLevel) IntentionLevel,
+					dbo.F_GetSaleCustomerTag ( o.CustomerID, o.SaleUserID ) CustomerTag,
+					o.TheLatestFollowUpDate,
+					o.TheLatestFollowUpContent,
+					dbo.F_GetStatusName ( o.Status ) OpportunityStatus,
+					ISNULL( o.Status, 0 ) OpportunityStatusValue,
+					dbo.F_GetSaleIsCare ( o.ID, o.SaleUserID ) IsCare,
+					o.SaleUserID AdviserID,
+					o.SaleUserName AdviserName,
+					dbo.F_GetSaleGroupName ( o.SaleUserID, o.ProjectID ) AdviserOrgName,
+					dbo.F_GetSaleMobile ( o.SaleUserID ) AdviserMobile,
+					'距逾期还有' + dbo.F_FormatDateTimeForCount(GETDATE(), D.BgnDate) YJTime,
+					'1' IsYJ,
+					'B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E' MessageType,
+					dbo.F_DictName ('B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E') MessageTypeName,
+					o.IsCustomerFirstEdit,
+					ROW_NUMBER() OVER ( ORDER BY D.BgnDate  DESC ) num
+				FROM
+								dbo.B_Opportunity o
+								JOIN dbo.B_CustomerAttach B ON o.ID = B.OpportunityID
+								JOIN dbo.C_MYTrade C ON B.ID = C.OppGUID
+								JOIN C_MYBooking D ON C.TradeGUID = D.TradeGUID
+				WHERE
+					CONVERT (VARCHAR (10), D.BgnDate , 120) = #{CurDate} 
+					AND o.Status in ('1','2','3')
+					AND o.SaleUserID = #{UserID} 
+					AND o.ProjectID = #{ProjectID}  
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 当日认购逾期列表-总数 -->
+    <select id="ListDRRGYQ_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM
+								dbo.B_Opportunity o
+								JOIN dbo.B_CustomerAttach B ON o.ID = B.OpportunityID
+								JOIN dbo.C_MYTrade C ON B.ID = C.OppGUID
+								JOIN C_MYBooking D ON C.TradeGUID = D.TradeGUID
+				WHERE
+					CONVERT (VARCHAR (10), D.BgnDate , 120) = #{CurDate} 
+					AND o.Status in ('1','2','3')
+					AND o.SaleUserID = #{UserID} 
+					AND o.ProjectID = #{ProjectID}
+		]]>		        
+    </select>
+	<!-- 当日跟进逾期-销售团队负责人/营销负责人 -->
+    <select id="ListDRGJYQOpportunity_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT DISTINCT
+					o.ID,
+					'跟进逾期前' as Content,
+					dbo.F_FormatDate(o.AllotTime) SendTime,
+					o.ID OpportunityID,
+					o.CustomerID,
+					o.CustomerName,
+					o.CustomerMobile,
+					dbo.F_DictName (o.CustomerLevel) IntentionLevel,
+					dbo.F_GetSaleCustomerTag ( o.CustomerID, o.SaleUserID ) CustomerTag,
+					o.TheLatestFollowUpDate,
+					o.TheLatestFollowUpContent,
+					dbo.F_GetStatusName ( o.Status ) OpportunityStatus,
+					ISNULL( o.Status, 0 ) OpportunityStatusValue,
+					dbo.F_GetSaleIsCare ( o.ID, o.SaleUserID ) IsCare,
+					o.SaleUserID AdviserID,
+					o.SaleUserName AdviserName,
+					dbo.F_GetSaleGroupName ( o.SaleUserID, o.ProjectID ) AdviserOrgName,
+					dbo.F_GetSaleMobile ( o.SaleUserID ) AdviserMobile,
+					'距逾期还有' + dbo.F_FormatDateTimeForCount(GETDATE(), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate )) YJTime,
+					'1' IsYJ,
+					'12D36558-A8A1-20D4-58E5-612338026AE7' MessageType,
+					dbo.F_DictName ('12D36558-A8A1-20D4-58E5-612338026AE7') MessageTypeName,
+					o.IsCustomerFirstEdit,
+					ROW_NUMBER() OVER ( ORDER BY DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ) DESC ) num
+				FROM
+					dbo.B_Opportunity o
+					INNER JOIN B_SalesCenterRule c ON c.ProjectID= o.ProjectID 
+					AND c.IsDel= 0 
+					AND c.Status= 1 
+				WHERE
+					o.IsDel= 0 
+					AND o.Status < 3
+					And CONVERT (VARCHAR (10), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ) , 120) = #{CurDate} 
+					AND o.SaleUserID = #{UserID} 
+					AND o.ProjectID = #{ProjectID} 
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 当日跟进逾期-销售团队负责人/营销负责人-总数 -->
+    <select id="ListDRGJYQOpportunity_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM
+					dbo.B_Opportunity o
+					INNER JOIN B_SalesCenterRule c ON c.ProjectID= o.ProjectID 
+					AND c.IsDel= 0 
+					AND c.Status= 1 
+				WHERE
+					o.IsDel= 0 
+					AND o.Status < 3
+					And CONVERT (VARCHAR (10), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ) , 120) = #{CurDate} 
+					AND o.SaleUserID = #{UserID} 
+					AND o.ProjectID = #{ProjectID}
+		]]>		        
+    </select>
+	<!-- 当日跟进逾期列表 -->
+    <select id="ListDRGJYQClue_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT
+					A.ID,
+					'跟进逾期前' Content,
+					dbo.F_FormatDate(o.AllotTime) SendTime,
+					o.ProjectID,
+					o.SaleUserID Receiver,
+					'12D36558-A8A1-20D4-58E5-612338026AE7' MessageType,
+					o.ID OpportunityID,
+					a.ID ClueID,
+					a.CustomerPotentialID CustomerPotentialID,
+					a.Name CustomerName,
+					a.Mobile CustomerMobile,
+					a.CreateTime,
+					dbo.F_GetClueStatusName(a.Status, o.Status) ClueStatus,
+					o.SaleUserID,
+					o.SaleUserName,
+					CASE WHEN o.ID IS NULL THEN 0
+						ELSE 1
+				  END IsAlloc,
+					dbo.F_DictName ( a.CustomerLevel ) IntentionLevel,
+					dbo.F_DictName ( ISNULL( a.CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA' ) ) AS CustomerRank,
+					ROW_NUMBER ( ) OVER ( ORDER BY DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ) DESC ) num 
+				FROM
+					dbo.B_Clue a
+					INNER JOIN dbo.B_ClueRule c ON c.ID = a.RuleID 
+					AND c.IsDel= 0 
+					AND c.Status= 1 
+					left join B_Opportunity o on a.ID = o.ClueID
+				WHERE
+					a.IsDel= 0 
+					AND a.Status!= 3
+					And CONVERT (VARCHAR (10), DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ) , 120) = #{CurDate} 
+					AND o.ProjectID = #{ProjectID}
+					${sqlWhere} 
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 当日跟进逾期-总数 -->
+    <select id="ListDRGJYQClue_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM
+					dbo.B_Clue a
+					INNER JOIN dbo.B_ClueRule c ON c.ID = a.RuleID 
+					AND c.IsDel= 0 
+					AND c.Status= 1 
+					left join B_Opportunity o on a.ID = o.ClueID
+				WHERE
+					a.IsDel= 0 
+					AND a.Status!= 3
+					And CONVERT (VARCHAR (10), DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ) , 120) = #{CurDate} 
+					AND o.ProjectID = #{ProjectID}
+					${sqlWhere} 
+		]]>		        
+    </select>
+	<!-- 当日签约逾期列表 -->
+    <select id="ListDRQYYQ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT DISTINCT
+					D.OrderGUID AS ID,
+					'' AS Content,
+					dbo.F_FormatDate ( A.AllotTime ) SendTime,
+					A.ID OpportunityID,
+					A.CustomerID,
+					A.CustomerName,
+					A.CustomerMobile,
+					dbo.F_DictName ( A.CustomerLevel ) IntentionLevel,
+					dbo.F_GetSaleCustomerTag ( A.CustomerID, A.SaleUserID ) CustomerTag,
+					A.TheLatestFollowUpDate,
+					A.TheLatestFollowUpContent,
+					dbo.F_GetStatusName ( A.Status ) OpportunityStatus,
+					ISNULL( A.Status, 0 ) OpportunityStatusValue,
+					dbo.F_GetSaleIsCare ( A.ID, A.SaleUserID ) IsCare,
+					A.SaleUserID AdviserID,
+					A.SaleUserName AdviserName,
+					dbo.F_GetSaleGroupName ( A.SaleUserID, A.ProjectID ) AdviserOrgName,
+					dbo.F_GetSaleMobile ( A.SaleUserID ) AdviserMobile,
+					'距逾期还有' + dbo.F_FormatDateTimeForCount ( GETDATE( ), D.JhqyDate ) YJTime,
+					'1' IsYJ,
+					'BE78B012-2536-DFDC-0D20-A5A86DD3470F' MessageType,
+					dbo.F_DictName ( 'BE78B012-2536-DFDC-0D20-A5A86DD3470F' ) MessageTypeName,
+					A.IsCustomerFirstEdit,
+					ROW_NUMBER ( ) OVER ( ORDER BY D.JhqyDate DESC ) num 
+				FROM
+					dbo.s_order D
+					LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+					LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+					LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+					JOIN dbo.B_Room E ON E.ID = D.RoomGUID 
+				WHERE
+					CONVERT ( VARCHAR ( 10 ), D.JhqyDate  , 120 ) = #{ CurDate } 
+					AND A.Status IN ( '1', '2', '3', '4' ) 
+					AND A.SaleUserID = #{ UserID } 
+					AND A.ProjectID = #{ ProjectID }
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 当日签约逾期-总数 -->
+    <select id="ListDRQYYQ_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM
+					dbo.s_order D
+					LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+					LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+					LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+					JOIN dbo.B_Room E ON E.ID = D.RoomGUID 
+				WHERE
+					CONVERT ( VARCHAR ( 10 ), D.JhqyDate  , 120 ) = #{ CurDate } 
+					AND A.Status IN ( '1', '2', '3', '4' ) 
+					AND A.SaleUserID = #{ UserID } 
+					AND A.ProjectID = #{ ProjectID }
+		]]>		        
+    </select>
+    <!-- 当日回款逾期列表 -->
+    <select id="ListDRHKYQ_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  *
+		FROM    ( SELECT DISTINCT
+					B.FeeGUID AS ID,
+					'' AS Content,
+					dbo.F_FormatDate ( OP.AllotTime ) SendTime,
+					OP.ID OpportunityID,
+					OP.CustomerID,
+					OP.CustomerName,
+					OP.CustomerMobile,
+					dbo.F_DictName ( OP.CustomerLevel ) IntentionLevel,
+					dbo.F_GetSaleCustomerTag ( OP.CustomerID, OP.SaleUserID ) CustomerTag,
+					OP.TheLatestFollowUpDate,
+					OP.TheLatestFollowUpContent,
+					dbo.F_GetStatusName ( OP.Status ) OpportunityStatus,
+					ISNULL( OP.Status, 0 ) OpportunityStatusValue,
+					dbo.F_GetSaleIsCare ( OP.ID, OP.SaleUserID ) IsCare,
+					OP.SaleUserID AdviserID,
+					OP.SaleUserName AdviserName,
+					dbo.F_GetSaleGroupName ( OP.SaleUserID, OP.ProjectID ) AdviserOrgName,
+					dbo.F_GetSaleMobile ( OP.SaleUserID ) AdviserMobile,
+					'距逾期还有' + dbo.F_FormatDateTimeForCount ( GETDATE( ), B.lastDate ) YJTime,
+					'1' IsYJ,
+					'0F9709DD-A8FC-6106-99FC-688E10C760B1' MessageType,
+					dbo.F_DictName ( '0F9709DD-A8FC-6106-99FC-688E10C760B1' ) MessageTypeName,
+					OP.IsCustomerFirstEdit,
+					ROW_NUMBER ( ) OVER ( ORDER BY B.lastDate DESC ) num 
+				FROM
+					dbo.C_MYContract ( NOLOCK ) A
+					JOIN s_Fee ( NOLOCK ) B ON B.TradeGUID = A.TradeGUID
+					LEFT JOIN dbo.C_MYTrade ( NOLOCK ) TR ON tr.TradeGUID = A.TradeGUID
+					LEFT JOIN dbo.B_CustomerAttach ( NOLOCK ) CA ON CA.ID = TR.OppGUID
+					LEFT JOIN dbo.B_Opportunity ( NOLOCK ) OP ON CA.OpportunityID = OP.ID 
+				WHERE
+					CONVERT ( VARCHAR ( 10 ), B.lastDate  , 120 ) = #{ CurDate } 
+					AND  B.Ye != 0
+					AND OP.SaleUserID = #{ UserID } 
+					AND OP.ProjectID = #{ ProjectID }
+		        ) t
+		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+		        AND t.num <= ${PageIndex} * ${PageSize}
+		]]>		        
+    </select>
+    <!-- 当日回款逾期-总数 -->
+    <select id="ListDRHKYQ_SelectCount" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM
+					dbo.C_MYContract ( NOLOCK ) A
+					JOIN s_Fee ( NOLOCK ) B ON B.TradeGUID = A.TradeGUID
+					LEFT JOIN dbo.C_MYTrade ( NOLOCK ) TR ON tr.TradeGUID = A.TradeGUID
+					LEFT JOIN dbo.B_CustomerAttach ( NOLOCK ) CA ON CA.ID = TR.OppGUID
+					LEFT JOIN dbo.B_Opportunity ( NOLOCK ) OP ON CA.OpportunityID = OP.ID 
+				WHERE
+					CONVERT ( VARCHAR ( 10 ), B.lastDate  , 120 ) = #{ CurDate } 
+					AND  B.Ye != 0
+					AND OP.SaleUserID = #{ UserID } 
+					AND OP.ProjectID = #{ ProjectID }
+		]]>		        
+    </select>
+    <!-- 今日待跟进 -->
+    <select id="DRDGJCalendar" parameterType="java.util.Map" resultType="java.lang.String">
+    	<![CDATA[
+			SELECT CONVERT
+				( VARCHAR ( 10 ), NextFollowUpDate, 120 ) 
+			FROM
+				B_CustomerFollowUp 
+			WHERE
+				CONVERT ( VARCHAR ( 7 ), NextFollowUpDate, 120 ) = #{ month } 
+				AND FollwUpUserID = #{ UserID }
+				AND ProjectID = #{ ProjectID }
+			GROUP BY
+				CONVERT ( VARCHAR ( 10 ), NextFollowUpDate, 120 ) 
+			ORDER BY
+				CONVERT ( VARCHAR ( 10 ), NextFollowUpDate, 120 )
+		]]>		        
+    </select>
+    <!-- 当日跟进逾期-机会 -->
+    <select id="DRGJYQOpportunityCalendar" parameterType="java.util.Map" resultType="java.lang.String">
+    	<![CDATA[
+			SELECT CONVERT ( VARCHAR (10), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ), 120 )
+			FROM
+				dbo.B_Opportunity o
+				INNER JOIN B_SalesCenterRule c ON c.ProjectID= o.ProjectID 
+				AND c.IsDel= 0 
+				AND c.Status= 1 
+			WHERE
+				o.IsDel= 0 
+				AND o.Status < 3
+				And CONVERT (VARCHAR (10), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ) , 120) = #{month} 
+				AND o.SaleUserID = #{UserID} 
+				AND o.ProjectID = #{ProjectID}
+			GROUP BY CONVERT ( VARCHAR (10), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate )  , 120 )
+			ORDER BY CONVERT ( VARCHAR (10), DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ), 120 )
+		]]>		        
+    </select>
+    <!-- 当日跟进逾期-线索 -->
+    <select id="DRGJYQClueCalendar" parameterType="java.util.Map" resultType="java.lang.String">
+    	<![CDATA[
+			SELECT CONVERT ( VARCHAR (10), DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ), 120 )
+			FROM
+				dbo.B_Clue a
+				INNER JOIN dbo.B_ClueRule c ON c.ID = a.RuleID 
+				AND c.IsDel= 0 
+				AND c.Status= 1 
+				left join B_Opportunity o on a.ID = o.ClueID
+			WHERE
+				a.IsDel= 0 
+				AND a.Status!= 3
+				And CONVERT (VARCHAR (7), DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ) , 120) = #{month} 
+				AND o.ProjectID = #{ProjectID}
+				${sqlWhere}
+				GROUP BY CONVERT ( VARCHAR (10), DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate )  , 120 )
+				ORDER BY CONVERT ( VARCHAR (10), DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ), 120 )
+		]]>		        
+    </select>
+    <!-- 当日认购逾期 -->
+    <select id="DRRGYQCalendar" parameterType="java.util.Map" resultType="java.lang.String">
+    	<![CDATA[
+			SELECT CONVERT ( VARCHAR (10), D.BgnDate, 120 )
+			FROM
+				dbo.B_Opportunity o
+				JOIN dbo.B_CustomerAttach B ON o.ID = B.OpportunityID
+				JOIN dbo.C_MYTrade C ON B.ID = C.OppGUID
+				JOIN C_MYBooking D ON C.TradeGUID = D.TradeGUID
+			WHERE
+				CONVERT (VARCHAR (7), D.BgnDate , 120) = #{month} 
+				AND o.Status in ('1','2','3')
+				AND o.SaleUserID = #{UserID} 
+				AND o.ProjectID = #{ProjectID}
+				GROUP BY CONVERT ( VARCHAR (10), D.BgnDate  , 120 )
+				ORDER BY CONVERT ( VARCHAR (10), D.BgnDate  , 120 )
+		]]>		        
+    </select>
+    <!-- 当日签约逾期 -->
+    <select id="DRQYYQCalendar" parameterType="java.util.Map" resultType="java.lang.String">
+    	<![CDATA[
+			SELECT CONVERT ( VARCHAR (10), D.JhqyDate, 120 )
+			FROM
+				dbo.s_order D
+				LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+				LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+				LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+				JOIN dbo.B_Room E ON E.ID = D.RoomGUID 
+			WHERE
+				CONVERT ( VARCHAR (7), D.JhqyDate  , 120 ) = #{month}
+				AND A.Status IN ( '1', '2', '3', '4' ) 
+				AND A.SaleUserID = #{ UserID } 
+				AND A.ProjectID = #{ ProjectID }
+				GROUP BY CONVERT ( VARCHAR (10), D.JhqyDate  , 120 )
+				ORDER BY CONVERT ( VARCHAR (10), D.JhqyDate  , 120 )
+		]]>		        
+    </select>
+    <!-- 当日回款逾期 -->
+    <select id="DRHKYQCalendar" parameterType="java.util.Map" resultType="java.lang.String">
+    	<![CDATA[
+			SELECT CONVERT ( VARCHAR (10), B.lastDate, 120 )
+			FROM
+					dbo.C_MYContract ( NOLOCK ) A
+					JOIN s_Fee ( NOLOCK ) B ON B.TradeGUID = A.TradeGUID
+					LEFT JOIN dbo.C_MYTrade ( NOLOCK ) TR ON tr.TradeGUID = A.TradeGUID
+					LEFT JOIN dbo.B_CustomerAttach ( NOLOCK ) CA ON CA.ID = TR.OppGUID
+					LEFT JOIN dbo.B_Opportunity ( NOLOCK ) OP ON CA.OpportunityID = OP.ID 
+				WHERE
+					CONVERT ( VARCHAR (7), B.lastDate  , 120 ) = #{ month } 
+					AND  B.Ye != 0
+					AND OP.SaleUserID = #{ UserID } 
+					AND OP.ProjectID = #{ ProjectID }
+				GROUP BY CONVERT ( VARCHAR (10), B.lastDate  , 120 )
+				ORDER BY CONVERT ( VARCHAR (10), B.lastDate  , 120 )
+		]]>		        
+    </select>
 </mapper>

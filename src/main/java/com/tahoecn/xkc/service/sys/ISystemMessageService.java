@@ -148,5 +148,57 @@ public interface ISystemMessageService {
      * @return
      */
     public Result Detail_Insert(String UserID, String ProjectID, String BizID, String BizType, String Subject, String Content, String Receiver, String msgType, Boolean IsNeedPush);
+    /**
+	 * 今日待跟进列表
+	 */
+    List<Map<String,Object>> ListDRDGJ_Select(Map<String, Object> map);
+    /**
+	 * 今日待跟进列表-总数
+	 */
+	int ListDRDGJ_SelectCount(Map<String, Object> map);
+	/**
+	 * 当日认购逾期列表
+	 */
+	List<Map<String,Object>> ListDRRGYQ_Select(Map<String, Object> map);
+	/**
+	 * 当日认购逾期列表-总数
+	 */
+	int ListDRRGYQ_SelectCount(Map<String, Object> map);
+	/**
+     * 当日签约逾期
+     */
+	List<Map<String,Object>> ListDRQYYQ_Select(Map<String, Object> map);
+	/**
+     * 当日签约逾期-总数
+     */
+	int ListDRQYYQ_SelectCount(Map<String, Object> map);
+	/**
+     * 当日回款逾期
+     */
+	List<Map<String,Object>> ListDRHKYQ_Select(Map<String, Object> map);
+	/**
+     * 当日回款逾期-总数
+     */
+	int ListDRHKYQ_SelectCount(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-销售团队负责人/营销负责人
+	 */
+	List<Map<String,Object>> ListDRGJYQOpportunity_Select(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-销售团队负责人/营销负责人-总数
+	 */
+	int ListDRGJYQOpportunity_SelectCount(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-其他
+	 */
+	List<Map<String,Object>> ListDRGJYQClue_Select(Map<String, Object> map);
+	/**
+	 * 当日跟进逾期-其他-总数
+	 */
+	int ListDRGJYQClue_SelectCount(Map<String, Object> map);
+	/**
+	 * 消息日历
+	 */
+	Map<String,List<String>> mMessageCalendar_Select(Map<String, Object> paramMap);
 	
 }
