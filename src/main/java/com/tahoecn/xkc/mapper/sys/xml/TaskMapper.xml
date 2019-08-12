@@ -1182,4 +1182,61 @@
 	]]>
 	</update>
 	
+	<!-- 服务-获取项目参数信息 -->
+	<select id="ShareServiceProjectParamerList_Select" resultType="java.util.HashMap">
+		SELECT
+			ID,
+			SnatchingMode, <!-- 0 抢单模式 0.手动分配模式 1.客储抢单模式 2.自动分配模式 -->
+			ShareSnatchingMode, <!-- 0 分享传播抢单模式(分享传播客户池分配设置) 0.手动分配模式 1.客储抢单模式 2.自动分配模式 -->
+			ShareSnatchingAutoModeType, <!-- 0 分享传播自动模式下类别 0.随机自动分配所有公共客户池资源 1. 顺序自动分配所有公共客户池资源 2. 每日自动随机分配[5个]客户资源3. 每日自动顺序分配[5个]客户资源 -->
+			SaleCustomerNotReportNum, <!-- 3 置业顾问沉淀非自有项目的客户几天 -->
+			HaveCustomerNotReportNum, <!-- 3 自有渠道沉淀非自有项目的客户几天 -->
+			MediumrCustomerNotReportNum, <!-- 3 中介同行沉淀非自有项目的客户几天 -->
+			AdminCustomerNotReportNum, <!-- 3 案场管理人员沉淀的客户几天 -->
+			DistributionCustomerNotReportNum, <!-- 3 分销渠道管理人员沉淀的客户几天 -->
+			PlainCustomerNotReportNum <!-- 3 普通用户沉淀的客户几天 -->
+		FROM dbo.B_Project WHERE Category=1 AND IsDel=0 AND Status=1 AND ID IN (SELECT ProjectID FROM A_ShareProject WHERE Status=1 AND IsDel=0)
+	</select>
+	
+	<!-- 服务-获取项目下的所有置业顾问 -->
+	<select id="ShareServiceSalesUserList_Select" resultType="java.util.HashMap">
+		WITH ProjectList AS
+		( SELECT * FROM dbo.B_Project WHERE Category=1 AND IsDel=0 AND Status=1 AND ID IN (SELECT ProjectID FROM A_ShareProject WHERE Status=1 AND IsDel=0))
+		SELECT A.MemberID,C.EmployeeName,C.Mobile,A.ProjectID,'0269F35E-B32D-4D12-8496-4E6E4CE597B7' AdviserGroupID,D.ID GroupID,
+		'0269F35E-B32D-4D12-8496-4E6E4CE597B7' JobID
+		FROM dbo.B_SalesGroupMember A
+		INNER JOIN ProjectList B ON A.ProjectID=B.ID
+		INNER JOIN B_SalesGroup D ON A.ReceptionGroupID=D.ID
+		INNER JOIN dbo.S_Account C ON A.MemberID=C.ID
+		WHERE A.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND A.IsDel=0 AND A.Status=1
+		ORDER BY A.ProjectID
+	</select>
+	
+	<!-- 服务-查询项目下的公共客户 -->
+	<select id="ShareServiceOppCustomerList_Select" resultType="java.util.HashMap">
+		SELECT
+			B.ID PublicID 
+		FROM
+			dbo.B_CustomerPublicPool B
+			LEFT JOIN dbo.B_Opportunity A ON A.ID = B.OpportunityID AND B.IsDel = 0
+			LEFT JOIN dbo.B_Clue C ON C.ID= A.ClueID AND A.IsDel= 0 
+		WHERE
+			A.ProjectID = #{projectID} AND ISNULL( A.SaleUserID, '' ) = ''
+	</select>
+	
+	<!-- 将客户分配给置业顾问 -->
+	<insert id="ShareServiceCustomerGGCList_Insert" resultType="java.lang.String">
+	<![CDATA[
+		DECLARE @MessageInfo NVARCHAR(500)
+			EXEC [P_CustomerAllotOneSelf_Update] 
+			@UserID = N#{UserID},
+			@ProjectID = N#{ProjectID},
+			@OrgID = N#{OrgID},
+			@JobID = N#{JobID},
+			@PublicIDs = N#{PublicIDs},
+			@str1=@MessageInfo output 
+		SELECT @MessageInfo Msg
+	]]>
+	</insert>
+	
 </mapper>

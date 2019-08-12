@@ -37,7 +37,8 @@ public enum TaskInfoType {
 	ServiceAutoOrder("cron","0 0/5 * * * ?"),
 	ServiceAutoOwnerChannelProtectedJob("cron","0 0/5 * * * ?"),
 	ServiceAutoBizParamOption("cron","0 0/5 * * * ?"),
-	ServiceAutoUCUserChange("","");
+	ServiceAutoUCUserChange("",""),
+	ServiceAutoWechatShare("cron","0 0 1 * * ?");
 	
 	private String type;
 	private String value;
