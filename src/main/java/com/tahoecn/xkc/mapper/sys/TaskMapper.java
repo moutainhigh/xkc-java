@@ -427,6 +427,6 @@ public interface TaskMapper {
 	 * @param map
 	 * @return
 	 */
-	String ShareServiceCustomerGGCList_Insert(Map<String, Object> map);
+	void ShareServiceCustomerGGCList_Insert(Map<String, Object> map);
 
 }

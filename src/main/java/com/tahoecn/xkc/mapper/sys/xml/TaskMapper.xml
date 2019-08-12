@@ -1225,7 +1225,7 @@
 	</select>
 	
 	<!-- 将客户分配给置业顾问 -->
-	<insert id="ShareServiceCustomerGGCList_Insert" resultType="java.lang.String">
+	<insert id="ShareServiceCustomerGGCList_Insert">
 	<![CDATA[
 		DECLARE @MessageInfo NVARCHAR(500)
 			EXEC [P_CustomerAllotOneSelf_Update] 
