@@ -1410,7 +1410,7 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 Map<String,Object> objCus = vCustomergwlistSelectMapper.mCustomerGGUpdateChannelSource_Select(paramAry.getString("Mobile"), paramAry.getString("ProjectID"));
                 if (objCus!=null && objCus.size() > 0){
                 	entity.setErrcode(20);
-                	entity.setErrmsg("该客户已更新渠道，需案场销支完成分配");
+                	entity.setErrmsg("该客户已更新渠道，需案场销管完成分配");
                     return entity;
                 }
             }else{//新客户
