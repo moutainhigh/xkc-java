@@ -10,6 +10,7 @@ import com.tahoecn.xkc.model.job.BProjectjobrel;
 import com.tahoecn.xkc.model.job.SJobs;
 import com.tahoecn.xkc.model.job.SJobsmenurel;
 import com.tahoecn.xkc.model.job.SJobsuserrel;
+import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.model.sys.*;
 import com.tahoecn.xkc.service.job.IBProjectjobrelService;
@@ -17,6 +18,7 @@ import com.tahoecn.xkc.service.job.ISJobsService;
 import com.tahoecn.xkc.service.job.ISJobsmenurelService;
 import com.tahoecn.xkc.service.job.ISJobsuserrelService;
 import com.tahoecn.xkc.service.org.ISOrganizationService;
+import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISCommonjobsfunctionsrelService;
@@ -59,6 +61,9 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private ISCommonjobsmenurelService commonjobsmenurelService;
     @Autowired
     private ISCommonjobsfunctionsrelService commonjobsfunctionsrelService;
+
+    @Autowired
+    private IBProjectService ibProjectService;
 
     @Override
     public IPage<Map<String,Object>> SystemJobList_Select(IPage page,String authCompanyID, String productID, String orgID) {
@@ -206,6 +211,14 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
         boolean save=false;
         try {
             String[] split = orgIDS.split(",");
+            List<String> IDs=new ArrayList<>();
+            //去除非项目选项 如泰禾集团 地产板块
+            List<String> projects = ibProjectService.getProjectIDs();
+            for (String s : split) {
+                if (projects.contains(s)){
+                    IDs.add(s);
+                }
+            }
             QueryWrapper<BProjectjobrel> wrapper=new QueryWrapper<>();
             wrapper.eq("JobID",jobID);
             List<BProjectjobrel> list = projectjobrelService.list(wrapper);
@@ -213,7 +226,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
                 projectjobrel.setIsDel(1);
                 projectjobrelService.updateById(projectjobrel);
             }
-            for (String s : split) {
+            for (String s : IDs) {
                 BProjectjobrel projectjobrel=new BProjectjobrel();
                 projectjobrel.setCreator(ThreadLocalUtils.getUserName());
                 projectjobrel.setJobID(jobID);
@@ -256,7 +269,10 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
 
     @Override
     public List<Map<String, Object>> SystemJobAuthOrg_Select(String pid, String jobID) {
-        List<Map<String, Object>> list = organizationService.SystemOrganizationChec_Select(pid);
+        //原数据授权,显示全部组织
+//        List<Map<String, Object>> list = organizationService.SystemOrganizationChec_Select(pid);
+        //数据授权只显示项目相关
+        List<Map<String, Object>> list = organizationService.SystemProject_Select(pid);
         List<Map<String, Object>> result=new ArrayList<>();
         for (Map<String, Object> map : list) {
             QueryWrapper<BProjectjobrel> wrapper=new QueryWrapper<>();

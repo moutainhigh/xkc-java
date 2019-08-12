@@ -109,6 +109,11 @@ public class SCommonjobsController extends TahoeBaseController {
     	})
    @RequestMapping(value = "/SystemCommonJob_Insert", method = {RequestMethod.POST})
    public Result SystemCommonJob_Insert(@RequestBody SCommonjobs commonjobs){
+        commonjobs.setJobCode(commonjobs.getJobName());
+       //todo 补字段
+       //泰禾和移动营销字段Product表和AuthCompany表
+        commonjobs.setAuthCompanyID("17BA4307-D05A-4A57-8729-FC1BD45302B6");
+        commonjobs.setProductID("9E0FADFF-31F0-4EC5-B35D-EE5BC5F4E622");
         commonjobs.setCreator(ThreadLocalUtils.getUserName());
         commonjobs.setCreateTime(new Date());
 	   	commonjobs.setIsDel(0);

@@ -1457,4 +1457,9 @@
     ]]>
     </select>
     <!-- 业绩看板end -->
+
+
+    <select id="getProjectIDs" resultType="string">
+        SELECT ID FROM B_Project WHERE IsDel=0 AND Status=1 AND Level=1
+    </select>
 </mapper>

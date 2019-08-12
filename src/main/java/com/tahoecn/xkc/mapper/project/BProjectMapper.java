@@ -80,4 +80,7 @@ public interface BProjectMapper extends BaseMapper<BProject> {
 	 */
 	List<Map<String, Object>> mYJKBOverduePayDetailList_Select(JSONObject param);
 	int mYJKBOverduePayDetailList_Select_count(JSONObject param);
+
+    List<String> getProjectIDs();
+
 }

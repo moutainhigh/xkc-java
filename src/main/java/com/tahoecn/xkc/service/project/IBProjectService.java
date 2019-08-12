@@ -25,4 +25,5 @@ public interface IBProjectService extends IService<BProject> {
 
     int ProjectIsNoAllot_Select(String projectID);
 
+    List<String> getProjectIDs();
 }
