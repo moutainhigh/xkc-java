@@ -145,7 +145,8 @@
 		                    vc.ClueName OpportunitySourceName ,
 		                    cc.CreateTime ReportTime,
 		                    ca.VisitTime,
-		                    cc.SourceType
+		                    cc.SourceType,
+		                    o.SpareMobile
 		          FROM      dbo.B_Opportunity AS o
 		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
 		                    INNER JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
@@ -176,7 +177,8 @@
 		                    vc.ClueName OpportunitySourceName ,
 		                    cc.CreateTime ReportTime,
 		                    ca.VisitTime,
-		                    cc.SourceType
+		                    cc.SourceType,
+		                    o.SpareMobile
 		          FROM      dbo.B_Opportunity AS o
 		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
 		                    INNER JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
