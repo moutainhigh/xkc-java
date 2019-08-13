@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.core.json.JSONResult;
+import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
@@ -17,16 +19,17 @@ import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.clue.BCustomerpotentialfollowup;
 import com.tahoecn.xkc.model.clue.CStatus;
 import com.tahoecn.xkc.model.customer.BClue;
+import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
-import com.tahoecn.xkc.model.vo.Customer;
-import com.tahoecn.xkc.model.vo.CustomerStatus;
+import com.tahoecn.xkc.model.vo.*;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
+import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 
@@ -34,6 +37,9 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.StringUtils;
 
 import javax.security.auth.login.Configuration;
 
@@ -60,19 +66,19 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
 	@Autowired
 	private BClueMapper clueMapper;
-	
+
 	@Autowired
 	private BChanneluserMapper channeluserMapper;
-	
+
 	@Autowired
 	private BCustomerMapper customerMapper;
-	
+
 	@Autowired
 	private BCustomerpotentialMapper customerpotentialMapper;
-	
+
 	@Autowired
 	private BClueruleMapper clueruleMapper;
-	
+
 	@Autowired
 	private BCustomerpotentialfollowupMapper customerpotentialfollowupMapper;
 
@@ -93,27 +99,31 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
 	@Autowired
 	private VABrokerMycustomersMapper vABrokerMycustomersMapper;
-	
+
 	@Autowired
 	private BProjectMapper projectMapper;
-	
+
+	@Autowired
+    private IVCustomergwlistSelectService iVCustomergwlistSelectService;
+
+
 	@Value("${mobilesale.projectid}")
 	private String intentProjectId;
-	
+
 	@Value("${mobilesale.projectname}")
 	private String intentProjectName;
-	
+
 	@Value("${mobilesale.ruleid}")
 	private String ruleId;
-	
+
 	@Value("${mobilesale.sourcetype}")
 	private String sourceType;
-	
+
 	@Value("${mobilesale.advisergroupid}")
 	private String adviserGroupId;
-	
+
 	static private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+
     @Override
     public Map<String, Object> mBrokerCustomerDetail_Select(String clueID) {
 
@@ -138,7 +148,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     @Override
     public Map<String, Object> ValidateForReport(String userID, String mobile, String projectId, Map<String, Object> map) {
         //验证渠道人员是否在做重复报备
-        Map returnMap = new HashMap<String, Object>();
+        Map<String, Object> returnMap = new HashMap<String, Object>();
         QueryWrapper<BClue> wrapper = new QueryWrapper<>();
         wrapper.eq("Mobile", mobile).eq("IntentProjectID", projectId)
                 .eq("ReportUserID", userID).in("Status", 1, 2);
@@ -230,8 +240,114 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
                 }
 
             }
+            //允许报备满足条件的老客户（新客户+不在渠道保护期和案场保护期的老客户）
+            else {
+            //老业主限制，0.不允许报备老业主 1.仅允许报备其它项目老业主
+            if ((int) map.get("OldOwnerLimit") == 0){
+                //验证是否集团老业主
+            QueryWrapper<BCustomer> queryWrapper=new QueryWrapper<>();
+            queryWrapper.eq("Status",1).eq("IsOwner",1).eq("Mobile",mobile);
+            Integer integer = customerMapper.selectCount(queryWrapper);
+            if (integer>0){
+                returnMap.put("Tag", false);
+                returnMap.put("InvalidType", 1);
+                return returnMap;
+            }
+            }
+            else {
+                //验证是否是本项目老业主
+                List<Map<String,Object>> list=baseMapper.IsProjectOwner_Select(projectId,mobile);
+                if (list.size()>0){
+                    returnMap.put("Tag", false);
+                    returnMap.put("InvalidType", 11);
+                    return returnMap;
+                }
+            }
+                // 其他条件满足的情况下，验证报备的线索是否有效
+                ChannelRegisterModel channelRegisterModel=new ChannelRegisterModel();
+            channelRegisterModel.setChannelUserId(userID);
+            channelRegisterModel.setUserRule((RegisterRuleBaseModel) map.get("RuleType"));
+                returnMap=this.validateClue(mobile,projectId,userID,map);
+                if (!((Boolean) returnMap.get("Tag"))){
+                    return returnMap;
+                }
+                return this.validateOpp(mobile,projectId);
+            }
         }
         return returnMap;
+    }
+    /**
+     * 验证是否满足不存在机会或机会没有置业顾问
+     */
+    private Map<String, Object> validateOpp(String phone, String projectId) {
+        Map<String, Object> msg = new HashMap<String, Object>();
+        Map<String, Object> obj = new HashMap<String, Object>();
+        obj.put("ProjectID", projectId);
+        obj.put("CustomerMobile", phone);
+        Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+        //不存在销售机会
+        if(opp==null||opp.size()==0){
+            msg.put("Tag", true);
+            msg.put("InvalidType", 0);
+        }else{//存在销售机会
+            if(StringUtils.isEmpty(opp.get("SaleUserID").toString()))
+            {
+                msg.put("Tag", true);
+                msg.put("InvalidType", 0);
+                msg.put("IsExsitOpp", true);
+                msg.put("OppID", opp.get("ID").toString());
+            }else{
+                msg.put("Tag", false);
+                msg.put("InvalidType", 6);
+            }
+        }
+        return msg;
+    }
+    /**
+     * 其他条件满足的情况下，验证报备的线索是否有效
+     */
+    private Map<String, Object> validateClue(String phone, String projectId,String userID,Map<String,Object> map) {
+        Map<String, Object> msg = new HashMap<String, Object>();
+        //查询项目下存在该手机号的有效线索
+        List<Map<String,Object>> clues = clueMapper.RuleClueList_Select(phone, projectId,userID);
+        //该项目已经存在已确认线索
+        for(Map<String,Object> c : clues){
+            if((int)c.get("Status") == 2){
+                //报备保护
+                if ((int)map.get("RuleType") == 0){
+                    msg.put("InvalidType", 4);
+                }else{
+                    msg.put("InvalidType", 5);
+                }
+                msg.put("Tag", false);
+                return msg;
+            }
+        }
+        if (clues.size() == 0){//该手机号为新客户（在允许报备老客户时，此段无意义，仅存在于报备新客户）
+            msg.put("Tag", true);
+            msg.put("InvalidType", 0);
+            return msg;
+        }
+        if (clues.size() == 1){//该手机号线索已存在，此条件下需要进一步证明规则类型
+            int ruleType = (int) clues.get(0).get("RuleType");
+            if ((int)map.get("RuleType") == ruleType && ruleType == 1){//线索为竞争带看，并且当前渠道用户规则也为竞争带看
+                msg.put("Tag", true);
+                msg.put("InvalidType", 0);
+            }else{//线索为报备保护
+                msg.put("Tag", false);
+                msg.put("InvalidType", 4);
+            }
+        }else{//该手机号存在多条线索，说明报备模式为竞争带看
+            int ruleType = (int) clues.get(0).get("RuleType");
+            if ((int)map.get("RuleType") == ruleType){//当前渠道的报备规则也为竞争带看
+                msg.put("Tag", true);
+                msg.put("InvalidType", 0);
+            }else{//当前渠道的报备规则为报备保护，报备规则模式不同则互斥
+                msg.put("Tag", false);
+                msg.put("InvalidType", 4);
+            }
+        }
+        return msg;
     }
 
     // 验证是否存在一条有效线索模式为报备保护
@@ -425,12 +541,59 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         if (save){
             //允许报备老客户模式下，报备的线索有效，刷新机会中线索信息
             if ((boolean)ruleValidate.get("IsExsitOpp")){
-
+                String oppID = (String) ruleValidate.get("OppID");
+                //刷新已存
+                save=this.UpdateOppByNewClue_Update(clue.getId(),oppID);
             }
+
+            JSONObject obj1 = new JSONObject();
+            obj1.put("FollwUpType", (boolean)ruleValidate.get("Tag")? ActionType.渠道报备.getValue():ActionType.报备无效.getValue());
+            obj1.put("SalesType", 4);
+//            obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
+            obj1.put("NewSaleUserName", "");
+            obj1.put("OldSaleUserName", "");
+            obj1.put("FollwUpUserID", map.get("UserID"));
+            obj1.put("FollwUpWay", "");
+            obj1.put("FollowUpContent", "");
+            obj1.put("IntentionLevel", "");
+            obj1.put("OrgID", paramMap.get("ReportUserOrg"));
+            obj1.put("FollwUpUserRole", map.get("JobID"));//todo 如果为空 742B2791-FED2-4ED3-9F8B-F337CE2D696A
+            obj1.put("OpportunityID", "");
+            obj1.put("ClueID", clue.getId());
+            obj1.put("NextFollowUpDate", "");
+            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(),CustomerActionVo.class);
+            iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
 
         }
 
         return false;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean UpdateOppByNewClue_Update(String ClueID, String oppID) {
+        try {
+            //更新机会绑定的线索
+            BOpportunity opportunity=new BOpportunity();
+            opportunity.setId(oppID);
+            opportunity.setClueID(ClueID);
+            opportunity.setEditeTime(new Date());
+            opportunity.setEditor("99");
+            opportunityService.updateById(opportunity);
+            //记录销售轨迹（重新报备）
+            Map<String, Object> CustomerIDMap=this.getCustomerID(oppID);
+            String CustomerID= (String) CustomerIDMap.get("ID");
+            baseMapper.CustomerTrack_Insert(oppID,CustomerID,ClueID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+
+        }
+        return true;
+    }
+
+    private Map<String, Object> getCustomerID(String oppID) {
+        return baseMapper.getCustomerID(oppID);
     }
 
     /**
@@ -461,7 +624,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	public Map<String, Object> IsOverdueCome_Select(Map<String, Object> obj) {
 		return baseMapper.IsOverdueCome_Select(obj);
 	}
-	
+
 	/**
 	 * 扫码确认线索无效后，更新线索信息
 	 */
@@ -501,7 +664,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	public IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, String ProjectID, String sqlWhere) {
 		return baseMapper.CaseFielInquiriesList_Select(page,ProjectID,sqlWhere);
 	}
-	
+
 	/*
 	 * 客户详情
 	 */
@@ -521,7 +684,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customer.setStatusText(clue.getStatusText());
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
-		
+
 		List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
 		List<CustomerStatus> customerStatuses = new ArrayList<>();
 		for (CStatus cs : statuses) {
@@ -531,7 +694,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 			customerStatuses.add(customerStatus);
 		}
 		customer.setCs(customerStatuses);
-		
+
 		return customer;
 	}
 
@@ -539,7 +702,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		return "{\"TokerUserID\":\"" + tokerUserId + "\",\"ClueMobile\":\"" + mobile + "\",\"ClueID\":\"" + clueId
 				+ "\",\"SourceType\":\"" + sourceType + "\"}";
 	}
-	
+
 	/*
 	 * 我的客户列表
 	 */
@@ -549,7 +712,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		if (reportUserId == null) {
 			return null;
 		}
-		
+
 		String projectName;
 		if(projectId != null && !"".equals(projectId)) {
 			BProject project = projectMapper.selectById(projectId);
@@ -559,8 +722,8 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 				projectId = this.intentProjectId;
 				projectName = this.intentProjectName;
 			}
-			
-			
+
+
 		}else {
 			projectId = this.intentProjectId;
 			projectName = this.intentProjectName;
@@ -571,7 +734,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		List<Customer> customers = new ArrayList<Customer>();
 		if (cusList == null || cusList.isEmpty()) {
 			return null;
-			
+
 		} else {
 			for (VABrokerMycustomers cus : cusList) {
 				Customer customer = new Customer();
@@ -588,7 +751,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		}
 		return customers;
 	}
-	
+
 	/*
 	 * 报备
 	 */

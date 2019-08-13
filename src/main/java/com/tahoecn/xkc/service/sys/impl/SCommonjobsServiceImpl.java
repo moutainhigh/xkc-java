@@ -106,7 +106,7 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 //            String[] oldMenusSplit = oldMenus.split("|");
 //            String[] oldFunctionsSplit = oldFunctions.split("|");
                     String[] menusSplit = menus.split(",");
-                    String[] functionsSplit = functions.split("|");
+//                    String[] functionsSplit = functions.split("|");
 
                     //删除原功能
                     QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
@@ -138,14 +138,14 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
                     commonjobsmenurelService.save(commonjobsmenurel);
                 }
             }
-            if (functionsSplit.length!=0){
-                for (String s : functionsSplit) {
-                    SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
-                    commonjobsfunctionsrel.setJobID(jobID);
-                    commonjobsfunctionsrel.setFuncID(s);
-                    commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
-                }
-            }
+//            if (functionsSplit.length!=0){
+//                for (String s : functionsSplit) {
+//                    SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
+//                    commonjobsfunctionsrel.setJobID(jobID);
+//                    commonjobsfunctionsrel.setFuncID(s);
+//                    commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
+//                }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

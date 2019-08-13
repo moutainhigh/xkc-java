@@ -72,4 +72,10 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	String isRepeatedReg(@Param("mobile") String mobile, @Param("projectId") String projectId, @Param("reportUserId") String reportUserId);
 	//验证是否已经被他人报备
 	String isProtected(@Param("mobile") String mobile, @Param("projectId") String projectId, @Param("reportUserId") String reportUserId);
+
+    List<Map<String, Object>> IsProjectOwner_Select(@Param("projectId")String projectId, @Param("mobile") String mobile);
+
+    Map<String, Object> getCustomerID(@Param("oppID")String oppID);
+
+    void CustomerTrack_Insert(@Param("oppID")String oppID,@Param("customerID") String customerID, @Param("clueID")String clueID);
 }

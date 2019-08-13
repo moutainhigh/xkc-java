@@ -154,7 +154,7 @@ public class SCommonjobsController extends TahoeBaseController {
     @ApiOperation(value = "通用岗位功能列表查询", notes = "通用岗位功能列表查询")
     @RequestMapping(value = "/SystemCommonJobAuth_Select", method = {RequestMethod.POST})
     public Result SystemCommonJobAuth_Select(String UserID,String AuthCompanyID,String ProductID,
-                                             String JobID,String PID){
+                                             String JobID){
 
         Map<String, Object>  list=menusService.SystemCommonJobAuth_Select(UserID,AuthCompanyID,ProductID,JobID);
         if (list!=null){
