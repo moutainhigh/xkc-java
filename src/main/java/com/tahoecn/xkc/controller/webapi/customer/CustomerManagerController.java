@@ -283,15 +283,15 @@ public class CustomerManagerController extends TahoeBaseController {
         log.setCustomerID(custId);
         log.setEditorId(userId);
         log.setEditorName(ThreadLocalUtils.getRealName());
-        if(StringUtil.isNotNull(genderOrg) && StringUtil.isNotNull(gender) && !genderOrg.equals(gender))
+        if(StringUtil.isNotNull(genderOrg) && StringUtil.isNotNull(gender))
             log.setGender(genderOrg + "->" + gender);
-        if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId)&& !cardIdOrg.equals(cardId))
+        if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId))
             log.setCardID(cardIdOrg + "->" + cardId);
-        if(StringUtil.isNotNull(cardTypeOrg) && StringUtil.isNotNull(cardType)&& !cardTypeOrg.equals(cardType))
+        if(StringUtil.isNotNull(cardTypeOrg) && StringUtil.isNotNull(cardType))
             log.setCardType(cardTypeOrg + "->" + cardId);
-        if(StringUtil.isNotNull(auxiliaryMobileOrg) && StringUtil.isNotNull(auxiliaryMobile)&& !auxiliaryMobileOrg.equals(auxiliaryMobile))
+        if(StringUtil.isNotNull(auxiliaryMobileOrg) && StringUtil.isNotNull(auxiliaryMobile))
             log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
-        if(StringUtil.isNotNull(customerNameOrg) && StringUtil.isNotNull(customerName)&& !customerNameOrg.equals(customerName))
+        if(StringUtil.isNotNull(customerNameOrg) && StringUtil.isNotNull(customerName))
             log.setCustomerName(customerNameOrg + "->" + customerName);
         log.setCreateTime(new Date());
         iUpdateCustinfoLogService.save(log);
