@@ -360,7 +360,7 @@
         <![CDATA[
             select C.Name                                          CustomerName,
             STUFF(C.Mobile, 4, 4, '****')                   CustomerMobile,
-            dbo.F_DictName(O.CustomerRank)                  CustomerRank,
+            CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,
             dbo.F_GetMediaLargeName(Cl.CognitiveChannel)    CognitiveChannel,
             dbo.F_GetMediaChildName(Cl.CognitiveChannelSub) CognitiveChannelSub,
             dbo.F_DictName(O.OpportunitySource)             OpportunitySource,
@@ -411,7 +411,7 @@
         <![CDATA[
             select C.Name                                         CustomerName,
             STUFF(C.Mobile, 4, 4, '****')                  CustomerMobile,
-            dbo.F_DictName(O.CustomerRank)                 CustomerRank,
+            CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,
             dbo.F_GetMediaLargeName(O.CognitiveChannel)    CognitiveChannel,
             dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,
             dbo.F_DictName(O.SourceType)                   OpportunitySource,
