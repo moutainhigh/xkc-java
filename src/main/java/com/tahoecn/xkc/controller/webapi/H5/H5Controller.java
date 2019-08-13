@@ -25,6 +25,7 @@ import com.tahoecn.xkc.service.rule.IBClueruleService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
+import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,11 @@ public class H5Controller extends TahoeBaseController {
     private ISFormsessionService formsessionService;
     @Autowired
     private IBClueruleService clueruleService;
+
+    @Autowired
+    private IBVerificationcodeService iBVerificationcodeService;
+    @Autowired
+    private CsSendSmsLogService csSendSmsLogService;
 
     //已测  AppID=5D4D7079-D294-4204-BD51-C3AB420C6C2F
     @ApiOperation(value = "获取城市", notes = "获取城市")
@@ -554,21 +560,25 @@ public class H5Controller extends TahoeBaseController {
         }
     }
 
-    //未完成,还差发送短信
     @ApiOperation(value = "获取验证码", notes = "获取验证码")
     @RequestMapping(value = "/mVerificationCode_Select", method = {RequestMethod.POST})
     public Result mVerificationCode_Select(@RequestBody JSONObject jsonParam) {
-        Map paramMap = (HashMap)jsonParam.get("_param");
-        String Mobile=(String) paramMap.get("Mobile");
-
-        //存入数据库记录,并发送短信
-        String msg="【泰禾集团】验证码：";
-        verificationcodeService.getCodeAndSendsmg(Mobile,msg);
-        Result result = new Result();
-        result.setErrcode(0);
-        result.setErrmsg("成功");
-//        result.setData(list);
-        return result;
+        try{
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String Mobile = (String)paramMap.get("Mobile").toString();
+            Random ran = new Random();
+            int verificationCode = ran.nextInt(899999)+100000;
+            //写入数据,并调取短信接口
+            Map<String,Object> parameter = new HashMap<String,Object>();
+            parameter.put("Mobile", Mobile);//string
+            parameter.put("VerificationCode", String.valueOf(verificationCode));//string
+            iBVerificationcodeService.Detail_Add(parameter);
+            csSendSmsLogService.sendSms(Mobile,"【泰禾集团】验证码："+String.valueOf(verificationCode)+"，5分钟内有效","");
+            return Result.ok(String.valueOf(verificationCode));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return Result.errormsg(1,"系统异常，请联系管理员");
+        }
     }
 
     //未测
