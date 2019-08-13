@@ -766,6 +766,126 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "默认项",
+      "Type": "Normal",
+      "ListIndex": 4,
+      "Child": [
+        {
+          "ID": "480B60B2-1EE1-4A31-A810-072184A1E9D7",
+          "Name": "跟进方式",
+          "Placeholder": "必填",
+          "Type": "OptionTag",
+          "Value": "",
+          "ListIndex": 1,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#9B9B9B",
+          "SelectedColor": "#FF3C50",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+            {
+              "ID": "A79A1057-D4DC-497C-8C81-8F93E422C819",
+              "Name": "来电"
+            },
+            {
+              "ID": "E30825AA-B894-4A5F-AF55-24CAC34C8F1F",
+              "Name": "售场接待"
+            },
+            {
+              "ID": "EEB32C04-5B7C-4676-A5DC-5F95E56370EB",
+              "Name": "外展接待"
+            }
+          ]
+        },
+        {
+          "ID": "08289FD5-999A-4A9F-94D5-B85507575404",
+          "Name": "意向级别",
+          "Placeholder": "必填",
+          "Type": "OptionTag",
+          "Value": "",
+          "ListIndex": 2,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#9B9B9B",
+          "SelectedColor": "#FF3C50",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "600DEB36-F5E0-4BA3-B7FA-1A244F0773AB",
+          "Name": "跟进内容",
+          "Placeholder": "必填",
+          "Type": "OptionTextArea",
+          "Value": "",
+          "ListIndex": 2,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 1,
+          "MaxLength": 500,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#9B9B9B",
+          "SelectedColor": "#FF3C50",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10",
+          "Name": "下次跟进",
+          "Placeholder": "必填",
+          "Type": "Date",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "MinDate": "Tomorrow",
+          "MaxDate": "",
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        }
+      ]
     }
   ]
 }

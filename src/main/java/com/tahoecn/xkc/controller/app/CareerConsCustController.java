@@ -4,11 +4,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -31,7 +34,10 @@ public class CareerConsCustController extends TahoeBaseController {
 
     @Autowired
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
-
+    @Value("${SiteUrl}")
+    private String SiteUrl;
+    @Value("${UPLOAD}")
+    private String UPLOAD;
     /**
      * 职业顾问客户列表
      * @param gWCustomerPageDto
@@ -274,6 +280,22 @@ public class CareerConsCustController extends TahoeBaseController {
 		return iVCustomergwlistSelectService.getCustomerChangeList(OpportunityID);
     }
 	
-	
-	
+	@ResponseBody
+    @ApiOperation(value = "置业顾问上传头像", notes = "置业顾问上传头像")
+    @RequestMapping(value = "/mSystemUploader_Insert", method = {RequestMethod.POST},headers="content-type=multipart/form-data")
+    public Result mSystemUploader_Insert(@RequestParam("file") MultipartFile file) {
+		Result re = new Result();
+		try {
+			MultipartFile[] files = {file};
+			String filePath = this.uploadFiles(files);
+			re.setData(filePath);
+			re.setErrcode(0);
+			re.setErrmsg("成功");
+		} catch (Exception e) {
+			re.setErrcode(1);
+			re.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return re;
+    }
 }
