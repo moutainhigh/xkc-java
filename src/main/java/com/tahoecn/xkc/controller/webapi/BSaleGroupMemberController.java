@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
+@RequestMapping("/saleGroup")
 public class BSaleGroupMemberController extends TahoeBaseController {
 
     @Autowired
@@ -41,11 +42,12 @@ public class BSaleGroupMemberController extends TahoeBaseController {
     @ApiImplicitParams({ @ApiImplicitParam(name = "ProjectID", value = "ProjectID", required = true, dataType = "String")})
     @ApiOperation(value = "人员管理", notes = "人员管理")
     @RequestMapping(value = "/SalesGroupMemberList_Select", method = { RequestMethod.GET })
-    public Result SalesGroupMemberList_Select(@RequestParam(required = true) String ProjectID) {
+    public Result SalesGroupMemberList_Select(String ProjectID) {
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ProjectID",ProjectID);
-        result.put("List",iSaleGroupMemberService.SalesGroupMemberList_Select(map));
+        List<Map<String, Object>> list = iSaleGroupMemberService.SalesGroupMemberList_Select(map);
+        result.put("List",list);
         QueryWrapper<SDictionary> dictWrapper = new QueryWrapper<>();
         
         //获取渠道类型

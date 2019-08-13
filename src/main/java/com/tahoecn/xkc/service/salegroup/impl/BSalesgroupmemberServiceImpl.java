@@ -34,9 +34,11 @@ import com.tahoecn.xkc.model.vo.SalesGroupMemberExistProjectVo;
 import com.tahoecn.xkc.service.salegroup.IBSalesgroupmemberService;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -89,7 +91,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
     private SJobsMapper sJobsMapper;
 
     @Override
-    public IPage<Map<String, Object>> SalesGroupMemberList_Select(Map<String, Object> map) {
+    public List<Map<String, Object>> SalesGroupMemberList_Select(Map<String, Object> map) {
         return bSaleGroupMemberMapper.SalesGroupMemberList_Select(map);
     }
 
@@ -155,6 +157,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResponseMessage SalesGroupMembers_Insert(Map<String, Object> map) {
         String Ids = (String)map.get("Ids");
         String UserID = (String)map.get("UserID");
