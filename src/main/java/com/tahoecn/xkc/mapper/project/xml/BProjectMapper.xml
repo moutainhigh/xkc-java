@@ -580,10 +580,12 @@
 			        ) n
 			 ) t WHERE 1=1 ${WHERE}
 			)
-		SELECT
-		    *
-		FROM
-		    selectTemp
+		 SELECT
+      		s.*,
+   			sg.Name + ' ' + sgm.RoleName AS SaleGroupRole
+  		FROM
+      		selectTemp s LEFT JOIN B_SalesGroupMember sgm ON s.SaleUserID = sgm.MemberID
+   			LEFT JOIN B_SalesGroup sg ON sg.ID = sgm.ReceptionGroupID
 		WHERE
 		    RankNum BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
 		ORDER BY
