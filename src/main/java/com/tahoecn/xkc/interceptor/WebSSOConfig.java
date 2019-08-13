@@ -74,7 +74,7 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/H5/**", corsConfig());
+		source.registerCorsConfiguration("/**", corsConfig());
 		return new CorsFilter(source);
 	}
 }
