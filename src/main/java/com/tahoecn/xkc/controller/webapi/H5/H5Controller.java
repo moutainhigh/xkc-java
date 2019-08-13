@@ -604,7 +604,7 @@ public class H5Controller extends TahoeBaseController {
         String authCode=(String) paramMap.get("AuthCode");
         String password=(String) paramMap.get("Password");
         String rePassword=(String) paramMap.get("RePassword");
-       if (StringUtils.equals(password,rePassword)){
+       if (!StringUtils.equals(password,rePassword)){
            return Result.errormsg(2,"密码不一致");
        }
         BVerificationcode vc = verificationcodeService.checkAuthCode(mobile);
