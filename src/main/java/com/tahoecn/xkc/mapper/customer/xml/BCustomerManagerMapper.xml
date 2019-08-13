@@ -36,7 +36,10 @@
 														INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID=ca.ID WHERE o.ID=tr.OpportunityID)
         AND r.ProjectID in (select ID from B_Project where PID=#{paramMap.ProjectID}) FOR XML PATH('') )
 		, 1, 1, '') Room,
-        tr.SourceType SourceTypeID
+        tr.SourceType SourceTypeID,
+        tr.CardID,
+        tr.CardType,
+        tr.AuxiliaryMobile
           FROM      ( SELECT    b.ID OpportunityID ,
                                 b.CustomerID ,
                                 b.CustomerName ,
@@ -62,7 +65,10 @@
                                 SM.ReceptionGroupID SaleTeamID,
                                 CO.OrgName ChannelName,
                                 d.ReportUserOrg,
-                                G.CreateTime  ZJDF
+                                G.CreateTime  ZJDF,
+                                a.CardID CardID,
+                                a.CardType CardType,
+                                b.AuxiliaryMobile AuxiliaryMobile
                       FROM      B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
@@ -134,7 +140,10 @@
                                 '' SaleTeamID,
                                 CO.OrgName ChannelName,
                                 b.ReportUserOrg,
-                                '' ZJDF
+                                '' ZJDF,
+                                '' CardID,
+                                '' CardType,
+                                '' AuxiliaryMobile
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
