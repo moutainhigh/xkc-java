@@ -259,7 +259,7 @@
 				dbo.F_GetSaleUserName(AdviserID) AdviserName ,
 				AdviserOrgID ,
 				dbo.F_GetSaleGroupName(AdviserID, ProjectID) AS AdviserOrgName ,
-				dbo.F_GetStatusName(OpportunityStatusValue) OpportunityStatus ,
+				dbo.F_GetStatusName_xkc(OpportunityStatusValue) OpportunityStatus ,
 				IsYJ ,
 				YJTime ,
 				IsCooperat

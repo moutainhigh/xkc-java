@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.salegroup;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -43,7 +44,7 @@ public class BSalesgroup implements Serializable {
     @TableField("ProjectID")
     private String ProjectID;
 
-    @TableId("ID")
+    @TableId(value = "ID",type = IdType.UUID)
     private String id;
 
     @TableField("CreateTime")

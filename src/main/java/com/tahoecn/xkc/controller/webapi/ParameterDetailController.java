@@ -7,9 +7,11 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dto.ParameterDto;
 import com.tahoecn.xkc.model.project.BProject;
+import com.tahoecn.xkc.model.project.BProjectparameters;
 import com.tahoecn.xkc.model.rule.BRemindrule;
 import com.tahoecn.xkc.model.rule.BSalescenterrule;
 import com.tahoecn.xkc.service.project.IBProjectService;
+import com.tahoecn.xkc.service.project.IBProjectparametersService;
 import com.tahoecn.xkc.service.rule.IBRemindruleService;
 import com.tahoecn.xkc.service.rule.IBSalescenterruleService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,6 +50,9 @@ public class ParameterDetailController extends TahoeBaseController {
     @Autowired
     private IBRemindruleService iBRemindruleService;
 
+    @Autowired
+    private IBProjectparametersService iBProjectparametersService;
+
     @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String") })
     @ApiOperation(value = "项目参数设置接口", notes = "项目参数设置接口")
     @RequestMapping(value = "/parameterSelect", method = { RequestMethod.GET })
@@ -57,6 +62,11 @@ public class ParameterDetailController extends TahoeBaseController {
 
         QueryWrapper<BProject> queryWrapper = new QueryWrapper<BProject>();
         queryWrapper.eq(StringUtils.isNotBlank(projectId), "ID", projectId);
+        //SnatchingMode
+        //0 手动分配模式（营销经理手动分配公共客户池）
+        //2 自动分配模式
+        //1 客储抢单模式
+        //EveryDayApplyCustomerNum 每天可申领客户
         BProject project = (BProject)iBProjectService.getObj(queryWrapper);
 
         result.put("project",project);
@@ -78,6 +88,12 @@ public class ParameterDetailController extends TahoeBaseController {
         List<BRemindrule> remindRuleList = iBRemindruleService.list(remindRuleWrapper);
         result.put("remindRuleList",remindRuleList);
 
+        //公共客户池分配设置
+        QueryWrapper<BProjectparameters> proParameQuery = new QueryWrapper<>();
+        proParameQuery.eq("ProjectID",projectId);
+        proParameQuery.eq("Category",1);
+        BProjectparameters projectParameter = (BProjectparameters)iBProjectparametersService.getObj(proParameQuery);
+        result.put("projectParameter",projectParameter);
         return Result.ok(result);
     }
 
@@ -93,6 +109,8 @@ public class ParameterDetailController extends TahoeBaseController {
         BRemindrule bRemindrule = parameterDto.getbRemindrule();
 
         BSalescenterrule bSalescenterrule = parameterDto.getbSalescenterrule();
+
+        BProjectparameters param = parameterDto.getbProjectparameters();
 
         iBProjectService.updateById(bProject);
 
@@ -123,6 +141,18 @@ public class ParameterDetailController extends TahoeBaseController {
         bRemindrule.setCreator(UserId);
         bRemindrule.setVersionStartTime(new Date());
         iBRemindruleService.save(bRemindrule);
+
+
+        //修改公共客户池开放给
+        BProjectparameters projectparameters = new BProjectparameters();
+        UpdateWrapper<BProjectparameters> updateParamWrapper = new UpdateWrapper<>();
+        updateParamWrapper.set("ProjectID",bProject.getId());
+        updateParamWrapper.set("Category",1);
+        projectparameters.setSale(param.getSale());
+        projectparameters.setSelfDrains(param.getSelfDrains());
+        iBProjectparametersService.update(projectparameters,updateParamWrapper);
+
+
         return Result.ok("更新成功");
     }
 

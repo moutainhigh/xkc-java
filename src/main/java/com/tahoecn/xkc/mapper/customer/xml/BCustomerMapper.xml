@@ -395,7 +395,7 @@
             Cl.ReportUserName,
             Ch.OrgName,
 
-            dbo.F_GetStatusName(O.Status)                   Status
+            dbo.F_GetStatusName_xkc(O.Status)                   Status
 
             from B_Customer C
             left join B_CustomerAttribute A on A.CustomerID = C.ID and A.IsDel = 0
@@ -728,7 +728,7 @@
             m.CustomerName,
             STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
             dbo.F_DictName(m.CustomerRank)                CustomerRank,
-            dbo.F_GetStatusName(m.Status)                 [Status],
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
             m.SaleUserID,
             m.SaleUserName,
             m.SalePartnerName,
@@ -785,7 +785,7 @@
             m.CustomerName,
             STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
             dbo.F_DictName(m.CustomerRank)                CustomerRank,
-            dbo.F_GetStatusName(m.Status)                 [Status],
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
             m.SaleUserName,
             m.SalePartnerName,
             m.TheFirstVisitDate,
@@ -837,7 +837,7 @@
             m.CustomerName,
             STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
             dbo.F_DictName(m.CustomerRank)                CustomerRank,
-            dbo.F_GetStatusName(m.Status)                 [Status],
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
             m.SaleUserName,
             m.SalePartnerName,
             m.TheFirstVisitDate,
@@ -931,7 +931,7 @@
                Cl.ReportUserName,
                Ch.OrgName,
 
-               dbo.F_GetStatusName(O.Status)                  Status
+               dbo.F_GetStatusName_xkc(O.Status)                  Status
 
              from B_Customer C
                  left join B_CustomerAttribute A on A.CustomerID = C.ID and A.IsDel = 0
