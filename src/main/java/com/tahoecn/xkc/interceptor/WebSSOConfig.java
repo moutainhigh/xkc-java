@@ -71,11 +71,10 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		corsConfiguration.setMaxAge(3600L);
 		return corsConfiguration;
 	}
-
 	@Bean
 	public CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", corsConfig());
+		source.registerCorsConfiguration("/H5/**", corsConfig());
 		return new CorsFilter(source);
 	}
 }
