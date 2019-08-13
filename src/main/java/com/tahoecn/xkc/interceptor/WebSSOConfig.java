@@ -53,6 +53,6 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/app/**").allowedOrigins("*");
-		registry.addMapping("/H5/**").allowedOrigins("*");
+		registry.addMapping("/H5/**").allowedOrigins("*").allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE").allowedHeaders("*");
 	}
 }
