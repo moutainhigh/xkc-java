@@ -68,7 +68,7 @@
             m.ClueID,
             m.CustomerID,
             m.CustomerName,
-            m.CustomerMobile,
+            STUFF(m.CustomerMobile,4,4,'****') CustomerMobile ,
             CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
             dbo.F_GetClueStatusName_xkc(m.Status, 0)                                                             Status,
             m.InvalidReason,
@@ -227,8 +227,7 @@
 					m.ClueID,
 					m.CustomerID,
 					m.CustomerName,
-					m.CustomerMobile,
-
+                    STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
 					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,
@@ -360,7 +359,7 @@
         <![CDATA[
             select C.Name                                          CustomerName,
             STUFF(C.Mobile, 4, 4, '****')                   CustomerMobile,
-            dbo.F_DictName(O.CustomerRank)                  CustomerRank,
+            CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,
             dbo.F_GetMediaLargeName(Cl.CognitiveChannel)    CognitiveChannel,
             dbo.F_GetMediaChildName(Cl.CognitiveChannelSub) CognitiveChannelSub,
             dbo.F_DictName(O.OpportunitySource)             OpportunitySource,
@@ -395,7 +394,7 @@
             Cl.ReportUserName,
             Ch.OrgName,
 
-            dbo.F_GetStatusName(O.Status)                   Status
+            dbo.F_GetStatusName_xkc(O.Status)                   Status
 
             from B_Customer C
             left join B_CustomerAttribute A on A.CustomerID = C.ID and A.IsDel = 0
@@ -411,7 +410,7 @@
         <![CDATA[
             select C.Name                                         CustomerName,
             STUFF(C.Mobile, 4, 4, '****')                  CustomerMobile,
-            dbo.F_DictName(O.CustomerRank)                 CustomerRank,
+            CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,
             dbo.F_GetMediaLargeName(O.CognitiveChannel)    CognitiveChannel,
             dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,
             dbo.F_DictName(O.SourceType)                   OpportunitySource,
@@ -728,7 +727,7 @@
             m.CustomerName,
             STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
             dbo.F_DictName(m.CustomerRank)                CustomerRank,
-            dbo.F_GetStatusName(m.Status)                 [Status],
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
             m.SaleUserID,
             m.SaleUserName,
             m.SalePartnerName,
@@ -785,7 +784,7 @@
             m.CustomerName,
             STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
             dbo.F_DictName(m.CustomerRank)                CustomerRank,
-            dbo.F_GetStatusName(m.Status)                 [Status],
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
             m.SaleUserName,
             m.SalePartnerName,
             m.TheFirstVisitDate,
@@ -837,7 +836,7 @@
             m.CustomerName,
             STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
             dbo.F_DictName(m.CustomerRank)                CustomerRank,
-            dbo.F_GetStatusName(m.Status)                 [Status],
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
             m.SaleUserName,
             m.SalePartnerName,
             m.TheFirstVisitDate,
@@ -931,7 +930,7 @@
                Cl.ReportUserName,
                Ch.OrgName,
 
-               dbo.F_GetStatusName(O.Status)                  Status
+               dbo.F_GetStatusName_xkc(O.Status)                  Status
 
              from B_Customer C
                  left join B_CustomerAttribute A on A.CustomerID = C.ID and A.IsDel = 0

@@ -472,7 +472,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         cu.Name,d3.DictName as Gender,cu.CertificatesNo,cu.CertificatesPicFace,cu.CertificatesPicBack,
         cu.BankCardPerson,cu.BankCardCreate,cu.BankCard,cu.BankCardPic,cu.ChannelOrgID,cu.CreateTime,cu.[Status],
         case cu.[Status] when 0 then '禁用' when 1 then '启用' else '' end as StatusName,cu.ApprovalDate,
-        o.OrgName as ChannelOrgName,o.OrgCode as ChannelOrgCode,cu.ChannelTypeID,d.DictName,
+        o.OrgName as ChannelOrgName,o.OrgShortName as ChannelOrgShortName,o.OrgCode as ChannelOrgCode,cu.ChannelTypeID,d.DictName,
         d2.DictName as CertificatesTypeName,a1.[EmployeeName] as InviterName,
         case cu.ApprovalStatus  when '0' then '待审核' when '1' then '通过' when '2' then '不通过' else '待审核' end as ApprovalStatuss
         ,a.[EmployeeName] as ApproverName

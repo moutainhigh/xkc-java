@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dict.SDictionary;
+import com.tahoecn.xkc.model.salegroup.BSalesgroup;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
+import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
 import com.tahoecn.xkc.service.salegroup.IBSalesgroupmemberService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -30,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
-@RequestMapping("/saleGroup")
+@RequestMapping("/saleGroupMember")
 public class BSaleGroupMemberController extends TahoeBaseController {
 
     @Autowired
@@ -38,6 +40,9 @@ public class BSaleGroupMemberController extends TahoeBaseController {
 
     @Autowired
     private ISDictionaryService iSDictionaryService;
+
+    @Autowired
+    private IBSalesgroupService iBSalesgroupService;
 
     @ApiImplicitParams({ @ApiImplicitParam(name = "ProjectID", value = "ProjectID", required = true, dataType = "String")})
     @ApiOperation(value = "人员管理", notes = "人员管理")
@@ -49,13 +54,21 @@ public class BSaleGroupMemberController extends TahoeBaseController {
         List<Map<String, Object>> list = iSaleGroupMemberService.SalesGroupMemberList_Select(map);
         result.put("List",list);
         QueryWrapper<SDictionary> dictWrapper = new QueryWrapper<>();
+
+
+        QueryWrapper<BSalesgroup> salesgroupWrapper = new QueryWrapper<>();
+        salesgroupWrapper.eq("ProjectID",ProjectID);
+        salesgroupWrapper.eq("IsDel",0);
+        salesgroupWrapper.orderByAsc("CreateTime");
+        List salesgroupList = iBSalesgroupService.list(salesgroupWrapper);
+
+        result.put("salesgroupList",salesgroupList);
         
         //获取渠道类型
         dictWrapper.eq("PID","0770B012-897B-49DF-A11F-A36B94D0178A");
         dictWrapper.eq("IsDel",0);
         dictWrapper.eq("Status",1);
         List channelTypeList = iSDictionaryService.list(dictWrapper);
-        
         result.put("channelTypeList",channelTypeList);
 
         return Result.ok(result);
