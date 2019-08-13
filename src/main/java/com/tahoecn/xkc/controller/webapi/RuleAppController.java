@@ -2,6 +2,7 @@ package com.tahoecn.xkc.controller.webapi;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.landray.sso.client.oracle.StringUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -337,33 +338,34 @@ public class RuleAppController extends TahoeBaseController {
             String changeProtectDays =  bClueruleVo.getChangeProtectDays();
             String userId = bClueruleVo.getUserId();
 
-            List<BClueruleGourpVo> clueruleGourpVoList = new ArrayList<>();
+            if(StringUtil.isNotNull(oriProtectDays) && StringUtil.isNotNull(changeProtectDays) && !oriProtectDays.equals(changeProtectDays)) {
+                List<BClueruleGourpVo> clueruleGourpVoList = new ArrayList<>();
+                if (protectSource == 2) {//2.分销
+                    clueruleGourpVoList = iRuleAppService.getFenxiao(projectId, protectSource, bCluerule.getId());
+                } else {//0.推荐 1.自有
+                    clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId, protectSource, bCluerule.getId());
+                }
 
-            if(protectSource==2) {//2.分销
-                clueruleGourpVoList = iRuleAppService.getFenxiao(projectId,protectSource,bCluerule.getId());
-            }else{//0.推荐 1.自有
-                clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId,protectSource,bCluerule.getId());
-            }
-
-            for(int i=0;i<clueruleGourpVoList.size();i++){
-                BClueruleGourpVo tempGroupVo = clueruleGourpVoList.get(i);
-                ProtectConfLog log = new ProtectConfLog();
-                log.setProjectId(projectId);
-                log.setProjectName(projectName);
-                log.setProtectSource(protectSource);
-                log.setClueRuleId(bCluerule.getId());
-                log.setClueruleAdvisergroupId(tempGroupVo.getId());
-                log.setGroupDictId(tempGroupVo.getDictID());
-                log.setGroupDictName(tempGroupVo.getDictName());
-                log.setRuleType(ruleType);
-                log.setRuleName(ruleName);
-                log.setIsSelect(isSelect);
-                log.setOriProtectDays(oriProtectDays);
-                log.setChangeProtectDays(changeProtectDays);
-                log.setEditorId(userId);
-                log.setEditorName(ThreadLocalUtils.getUserName());
-                log.setCreateTime(new Date());
-                iProtectConfLogService.save(log);
+                for (int i = 0; i < clueruleGourpVoList.size(); i++) {
+                    BClueruleGourpVo tempGroupVo = clueruleGourpVoList.get(i);
+                    ProtectConfLog log = new ProtectConfLog();
+                    log.setProjectId(projectId);
+                    log.setProjectName(projectName);
+                    log.setProtectSource(protectSource);
+                    log.setClueRuleId(bCluerule.getId());
+                    log.setClueruleAdvisergroupId(tempGroupVo.getId());
+                    log.setGroupDictId(tempGroupVo.getDictID());
+                    log.setGroupDictName(tempGroupVo.getDictName());
+                    log.setRuleType(ruleType);
+                    log.setRuleName(ruleName);
+                    log.setIsSelect(isSelect);
+                    log.setOriProtectDays(oriProtectDays);
+                    log.setChangeProtectDays(changeProtectDays);
+                    log.setEditorId(userId);
+                    log.setEditorName(ThreadLocalUtils.getUserName());
+                    log.setCreateTime(new Date());
+                    iProtectConfLogService.save(log);
+                }
             }
 
 
