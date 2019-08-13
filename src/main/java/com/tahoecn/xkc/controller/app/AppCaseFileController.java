@@ -55,7 +55,6 @@ public class AppCaseFileController extends TahoeBaseController {
     	try{
             @SuppressWarnings("rawtypes")
 			Map paramMap = (HashMap)jsonParam.get("_param");
-            System.out.println("=================================="+paramMap);
             //查询
             Map<String,Object> ob = iBClueService.CaseFieDetail_Select(paramMap);
             Map<String,Object> pa = new HashMap<String,Object>();
