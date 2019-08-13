@@ -122,6 +122,35 @@ public class BCluerule implements Serializable {
     @TableField("IsProtectVisit")
     private Integer IsProtectVisit;
 
+    @TableField("extendProDays")
+    private Integer extendProDays;
+
+    @TableField("extendProEndDate")
+    private Date extendProEndDate;
+
+
+
+    @TableField("extendFollowupProDays")
+    private Integer extendFollowupProDays;
+
+    @TableField("extendFollowupProEndDate")
+    private Date extendFollowupProEndDate;
+
+
+    @TableField("extendArriveProDays")
+    private Integer extendArriveProDays;
+
+    @TableField("extendArriveProEndDate")
+    private Date extendArriveProEndDate;
+
+
+    @TableField("extendSigningProDays")
+    private Integer extendSigningProDays;
+
+    @TableField("extendSigningProEndDate")
+    private Date extendSigningProEndDate;
+
+
     @TableField(exist = false)
     private List<BClueruleGourpVo> clueruleGourpVoList;
 
@@ -353,6 +382,70 @@ public class BCluerule implements Serializable {
 
     public void setUserID(String userID) {
         UserID = userID;
+    }
+
+    public Integer getExtendProDays() {
+        return extendProDays;
+    }
+
+    public void setExtendProDays(Integer extendProDays) {
+        this.extendProDays = extendProDays;
+    }
+
+    public Date getExtendProEndDate() {
+        return extendProEndDate;
+    }
+
+    public void setExtendProEndDate(Date extendProEndDate) {
+        this.extendProEndDate = extendProEndDate;
+    }
+
+    public Integer getExtendFollowupProDays() {
+        return extendFollowupProDays;
+    }
+
+    public void setExtendFollowupProDays(Integer extendFollowupProDays) {
+        this.extendFollowupProDays = extendFollowupProDays;
+    }
+
+    public Date getExtendFollowupProEndDate() {
+        return extendFollowupProEndDate;
+    }
+
+    public void setExtendFollowupProEndDate(Date extendFollowupProEndDate) {
+        this.extendFollowupProEndDate = extendFollowupProEndDate;
+    }
+
+    public Integer getExtendArriveProDays() {
+        return extendArriveProDays;
+    }
+
+    public void setExtendArriveProDays(Integer extendArriveProDays) {
+        this.extendArriveProDays = extendArriveProDays;
+    }
+
+    public Date getExtendArriveProEndDate() {
+        return extendArriveProEndDate;
+    }
+
+    public void setExtendArriveProEndDate(Date extendArriveProEndDate) {
+        this.extendArriveProEndDate = extendArriveProEndDate;
+    }
+
+    public Integer getExtendSigningProDays() {
+        return extendSigningProDays;
+    }
+
+    public void setExtendSigningProDays(Integer extendSigningProDays) {
+        this.extendSigningProDays = extendSigningProDays;
+    }
+
+    public Date getExtendSigningProEndDate() {
+        return extendSigningProEndDate;
+    }
+
+    public void setExtendSigningProEndDate(Date extendSigningProEndDate) {
+        this.extendSigningProEndDate = extendSigningProEndDate;
     }
 
     @Override

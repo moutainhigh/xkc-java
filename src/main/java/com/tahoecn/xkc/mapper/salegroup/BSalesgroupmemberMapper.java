@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.salegroup.BSalesgroupmember;
 import com.tahoecn.xkc.model.vo.SalesGroupMemberExistProjectVo;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Map;
  * @since 2019-06-26
  */
 public interface BSalesgroupmemberMapper extends BaseMapper<BSalesgroupmember> {
-    IPage<Map<String,Object>> SalesGroupMemberList_Select(Map<String, Object> map);
+    List<Map<String,Object>> SalesGroupMemberList_Select(Map<String, Object> map);
 
     IPage<Map<String,Object>> SalesGroupTeamNoAddedList_Select(IPage page, Map<String, Object> map);
 
