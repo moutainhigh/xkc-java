@@ -59,12 +59,12 @@ public class AppCaseFileController extends TahoeBaseController {
             Map<String,Object> ob = iBClueService.CaseFieDetail_Select(paramMap);
             Map<String,Object> pa = new HashMap<String,Object>();
             pa.put("PageSize", "1");
-            pa.put("ProjectID", jsonParam.get("ProjectID"));
+            pa.put("ProjectID", paramMap.get("ProjectID"));
             pa.put("PageIndex", "1");
             pa.put("Mobile", "");
-            pa.put("OrgID", jsonParam.get("OrgID"));
+            pa.put("OrgID", paramMap.get("OrgID"));
             pa.put("Filter", "");
-            pa.put("UserID", jsonParam.get("UserID"));
+            pa.put("UserID", paramMap.get("UserID"));
             pa.put("Sort", "");
             List<VCustomerfjlistSelect> full = iVCustomerfjlistSelectService.CustomerList(pa);
             ob.put("Visit", full.size());

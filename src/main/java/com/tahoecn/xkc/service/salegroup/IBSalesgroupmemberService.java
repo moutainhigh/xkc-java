@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.ResponseMessage;
 import com.tahoecn.xkc.model.salegroup.BSalesgroupmember;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Map;
  * @since 2019-06-26
  */
 public interface IBSalesgroupmemberService extends IService<BSalesgroupmember> {
-    IPage<Map<String, Object>> SalesGroupMemberList_Select(Map<String, Object> map);
+    List<Map<String, Object>> SalesGroupMemberList_Select(Map<String, Object> map);
 
     Map<String,Object> SalesGroupTeamList_Select(IPage page,Map<String, Object> map);
 

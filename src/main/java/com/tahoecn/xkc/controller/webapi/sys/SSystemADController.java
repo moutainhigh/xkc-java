@@ -4,10 +4,12 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.sys.BAppupgrade;
+import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -31,6 +37,8 @@ public class SSystemADController extends TahoeBaseController {
 
 	@Autowired
     private IBSystemadService iBSystemadService;
+	@Autowired
+    private IBAppupgradeService iBAppupgradeService;
 	
 	@ResponseBody
     @ApiOperation(value = "广告配置", notes = "广告配置")
@@ -65,4 +73,31 @@ public class SSystemADController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
         }
     }
+	@ResponseBody
+	@ApiOperation(value = "APP版本获取", notes = "获取APP版本信息")
+	@RequestMapping(value = "/mSystemAppVersion_Select", method = {RequestMethod.GET})
+	public Result mSystemAppVersion_Select() {
+		try {
+			List<Map<String,Object>> bAppupgrade = iBAppupgradeService.SystemAppVersionList_Select();
+    		return Result.ok(bAppupgrade);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	@ResponseBody
+	@ApiOperation(value = "APP版本修改", notes = "APP版本信息修改")
+	@ApiImplicitParams({@ApiImplicitParam(name = "VersionID" , value = "APP版本ID" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "AppVersionCode" , value = "APP版本号" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "Url" , value = "下载地址" , required = true , dataType = "String")})
+	@RequestMapping(value = "/mSystemAppVersion_Update", method = {RequestMethod.POST})
+	public Result mSystemAppVersion_Update(String VersionID,String AppVersionCode,String Url) {
+		try {
+			iBAppupgradeService.SystemAppVersion_Update(VersionID,AppVersionCode,Url);
+			return Result.ok("保存成功");
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

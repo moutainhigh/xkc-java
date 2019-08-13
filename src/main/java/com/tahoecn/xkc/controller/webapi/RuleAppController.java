@@ -2,22 +2,26 @@ package com.tahoecn.xkc.controller.webapi;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
+import com.tahoecn.xkc.model.rule.ProtectConfLog;
 import com.tahoecn.xkc.model.vo.BClueruleGourpVo;
 import com.tahoecn.xkc.model.vo.BClueruleVo;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
+import com.tahoecn.xkc.service.rule.IProtectConfLogService;
 import com.tahoecn.xkc.service.rule.IRuleAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +60,9 @@ public class RuleAppController extends TahoeBaseController {
 
     @Autowired
     private IRuleAppService iRuleAppService;
+
+    @Autowired
+    private IProtectConfLogService iProtectConfLogService;
 
     //规则设置：自有渠道，分销中介，推荐渠道
     @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
@@ -319,6 +326,47 @@ public class RuleAppController extends TahoeBaseController {
 
         if(IsUpdateGroup!=null && !"".equals(IsUpdateGroup)) {
             iBClueruleService.saveOrUpdate(bCluerule);
+            //添加修改日志
+            String projectId = bCluerule.getProjectID();
+            String projectName = bClueruleVo.getProjectName();
+            Integer protectSource = bCluerule.getProtectSource();
+            Integer ruleType = bCluerule.getRuleType();
+            String ruleName = bCluerule.getRuleName();
+            Integer isSelect = bClueruleVo.getIsSelect();//0.一段式 1.两段式
+            String oriProtectDays = bClueruleVo.getOriProtectDays();
+            String changeProtectDays =  bClueruleVo.getChangeProtectDays();
+            String userId = bClueruleVo.getUserId();
+
+            List<BClueruleGourpVo> clueruleGourpVoList = new ArrayList<>();
+
+            if(protectSource==2) {//2.分销
+                clueruleGourpVoList = iRuleAppService.getFenxiao(projectId,protectSource,bCluerule.getId());
+            }else{//0.推荐 1.自有
+                clueruleGourpVoList = iRuleAppService.getZiyouOrTuijian(projectId,protectSource,bCluerule.getId());
+            }
+
+            for(int i=0;i<clueruleGourpVoList.size();i++){
+                BClueruleGourpVo tempGroupVo = clueruleGourpVoList.get(i);
+                ProtectConfLog log = new ProtectConfLog();
+                log.setProjectId(projectId);
+                log.setProjectName(projectName);
+                log.setProtectSource(protectSource);
+                log.setClueRuleId(bCluerule.getId());
+                log.setClueruleAdvisergroupId(tempGroupVo.getId());
+                log.setGroupDictId(tempGroupVo.getDictID());
+                log.setGroupDictName(tempGroupVo.getDictName());
+                log.setRuleType(ruleType);
+                log.setRuleName(ruleName);
+                log.setIsSelect(isSelect);
+                log.setOriProtectDays(oriProtectDays);
+                log.setChangeProtectDays(changeProtectDays);
+                log.setEditorId(userId);
+                log.setEditorName(ThreadLocalUtils.getUserName());
+                log.setCreateTime(new Date());
+                iProtectConfLogService.save(log);
+            }
+
+
         }else{
             iBClueruleAdvisergroupService.RuleClue_Update(bCluerule,grouplist);
         }

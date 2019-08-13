@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
 import com.tahoecn.xkc.model.customer.BCustomer;
+import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
+import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,6 +26,8 @@ import java.util.*;
 @Service
 public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer> implements IBCustomerService {
 
+    @Autowired
+    private IUpdateCustinfoLogService iUpdateCustinfoLogService;
 
     @Override
     public IPage<Map<String, Object>> customerChangePageList_Select(IPage page, String projectID, String sqlWhere) {
@@ -82,6 +87,14 @@ public class BCustomerServiceImpl extends ServiceImpl<BCustomerMapper, BCustomer
         List<Map<String, Object>> CustomerSetInvalid = baseMapper.CustomerSetInvalid_Select(projectId, customerID);
         //认知媒体记录
         List<Map<String, Object>> CustomerCognitiveChannel = baseMapper.CustomerCognitiveChannel_Select(projectId, customerID);
+
+
+
+        QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
+        updateCustInfoLogQuery.eq("CustomerID",customerID);
+        List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
+
+        result.put("updateCustInfoLogList",updateCustInfoLogList);
 
         result.put("CustomerChangeDetail",customerChangeDetail);
         result.put("CustomerFollowUp",customerFollowUp);

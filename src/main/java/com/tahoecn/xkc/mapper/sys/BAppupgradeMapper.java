@@ -20,5 +20,9 @@ public interface BAppupgradeMapper extends BaseMapper<BAppupgrade> {
 	 * 获取版本信息-默认第一条
 	 */
 	List<BAppupgrade> SystemAppVersion_Select(Map<String, Object> map);
+	/**
+	 * APP版本信息
+	 */
+	List<Map<String, Object>> SystemAppVersionList_Select();
 
 }
