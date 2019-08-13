@@ -63,10 +63,10 @@ public class ProtectConfLogController extends TahoeBaseController {
             wrapper.ge("ProtectSource",ProtectSource);
         }
         if (Start!=null){
-            wrapper.ge("CreateTime",ProjectName);
+            wrapper.ge("CreateTime",Start);
         }
         if (End!=null){
-            wrapper.le("CreateTime",ProjectName);
+            wrapper.le("CreateTime",End);
         }
         if (StringUtils.isNotBlank(IsExcel)){
             SetExcelN(ProjectName,  GroupDictName, ProtectSource,  RuleName,  EditorName,  Start, End);
