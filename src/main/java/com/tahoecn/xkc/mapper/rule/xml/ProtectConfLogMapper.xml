@@ -2,4 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.rule.ProtectConfLogMapper">
 
+
+    <select id="getProtectConfLogList" resultType="java.util.HashMap" >
+        SELECT
+        dbo.Protect_Conf_log.ProjectName,
+        CASE dbo.Protect_Conf_log.ProtectSource
+        WHEN 0 THEN '推荐渠道'
+        WHEN 1 THEN '自有渠道'
+        WHEN 2 THEN '分销中介'
+        END AS ProtectSource,
+        dbo.Protect_Conf_log.GroupDictName,
+        dbo.Protect_Conf_log.RuleName,
+
+        CASE dbo.Protect_Conf_log.IsSelect
+        WHEN 0 THEN '一段式'
+        WHEN 1 THEN '两段式'
+        ELSE ''
+        END AS IsSelect,
+        dbo.Protect_Conf_log.OriProtectDays,
+        dbo.Protect_Conf_log.ChangeProtectDays,
+        dbo.Protect_Conf_log.EditorName,
+        dbo.Protect_Conf_log.CreateTime
+
+        FROM
+        dbo.Protect_Conf_log
+        <where>
+            <if test="projectName!=null and projectName!=''">
+                ProjectName like  concat('%',#{projectName},'%')
+            </if>
+            <if test="groupDictName!=null and groupDictName!=''">
+                groupDictName like  concat('%',#{groupDictName},'%')
+            </if>
+            <if test="protectSource!=null and protectSource!=''">
+                protectSource =#{protectSource}
+            </if>
+            <if test="ruleName!=null and ruleName!=''">
+                ruleName =#{ruleName}
+            </if>
+            <if test="editorName!=null and editorName!=''">
+                editorName =#{editorName}
+            </if>
+            <if test="start!=null and start!=''">
+                CreateTime >=#{start}
+            </if>
+            <if test="end!=null and end!=''">
+                CreateTime &lt;=#{end}
+            </if>
+        </where>
+    </select>
 </mapper>

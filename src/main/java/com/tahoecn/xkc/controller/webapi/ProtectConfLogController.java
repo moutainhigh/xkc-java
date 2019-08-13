@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.controller.webapi;
 
 
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.ipad.IpadMapper;
 import com.tahoecn.xkc.model.rule.ProtectConfLog;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +42,9 @@ public class ProtectConfLogController extends TahoeBaseController {
     @Autowired
     private IProtectConfLogService protectConfLogService;
 
-    @ApiOperation(value = "获取服务列表", notes = "获取服务列表")
+    @ApiOperation(value = "变更保护期记录", notes = "变更保护期记录")
     @RequestMapping(value = "/protectConfLogSelect", method = {RequestMethod.GET})
-    public Result protectConfLogSelect(String ProjectName, String GroupDictName,Integer ProtectSource, String RuleName, String EditorName, Date Start,Date End,@RequestParam(defaultValue = "1")int Pageindex, @RequestParam(defaultValue = "10")int Pagesize) {
+    public Result protectConfLogSelect(String IsExcel,String ProjectName, String GroupDictName,Integer ProtectSource, String RuleName, String EditorName, Date Start,Date End,@RequestParam(defaultValue = "1")int Pageindex, @RequestParam(defaultValue = "10")int Pagesize) {
         IPage page=new Page(Pageindex,Pagesize);
         QueryWrapper<ProtectConfLog> wrapper=new QueryWrapper<>();
         if (StringUtils.isNotBlank(ProjectName)){
@@ -63,8 +68,40 @@ public class ProtectConfLogController extends TahoeBaseController {
         if (End!=null){
             wrapper.le("CreateTime",ProjectName);
         }
+        if (StringUtils.isNotBlank(IsExcel)){
+            SetExcelN(ProjectName,  GroupDictName, ProtectSource,  RuleName,  EditorName,  Start, End);
+            return null;
+        }
         IPage iPage = protectConfLogService.page(page, wrapper);
         return Result.ok(iPage);
+    }
+
+    private void SetExcelN(String ProjectName, String GroupDictName,Integer ProtectSource, String RuleName, String EditorName, Date Start,Date End) {
+        List<Map<String,Object>> list=protectConfLogService.getProtectConfLogList(ProjectName,GroupDictName,ProtectSource,RuleName,EditorName,Start,End);
+        String ExcelName;
+        List<ExcelExportEntity> entity;
+
+            //推荐渠道
+            ExcelName = "项目保护期变更记录";
+            entity = new ArrayList<ExcelExportEntity>();
+            entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
+            entity.add(new ExcelExportEntity("所属渠道", "ProtectSource"));
+            entity.add(new ExcelExportEntity("所属团队/机构", "GroupDictName"));
+            entity.add(new ExcelExportEntity("保护期规则", "RuleName"));
+            entity.add(new ExcelExportEntity("保护期方式", "IsSelect"));
+            entity.add(new ExcelExportEntity("原保护期时长", "OriProtectDays"));
+            entity.add(new ExcelExportEntity("变更保护期时长", "ChangeProtectDays"));
+            entity.add(new ExcelExportEntity("变更人", "EditorName"));
+            entity.add(new ExcelExportEntity("变更日期", "CreateTime"));
+
+        try {
+            LocalDateTime time= LocalDateTime.now();
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
+            String name = dtf2.format(time) + ".xls";
+            ExcelUtil.exportExcel(entity,list,name,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
