@@ -31,5 +31,24 @@ public class BAppupgradeServiceImpl extends ServiceImpl<BAppupgradeMapper, BAppu
 	public List<BAppupgrade> SystemAppVersion_Select(Map<String, Object> map) {
 		return bAppupgradeMapper.SystemAppVersion_Select(map);
 	}
+	/**
+	 * APP版本信息
+	 */
+	@Override
+	public List<Map<String,Object>> SystemAppVersionList_Select() {
+		return bAppupgradeMapper.SystemAppVersionList_Select();
+	}
+	/**
+	 * APP版本信息修改
+	 */
+	@Override
+	public void SystemAppVersion_Update(String versionID,String AppVersionCode,String Url) {
+		BAppupgrade ba = new BAppupgrade();
+		ba.setId(versionID);
+		ba.setAppVersionCode(AppVersionCode);
+		ba.setAppVersionName(AppVersionCode + "版本");
+		ba.setUrl(Url);
+		bAppupgradeMapper.updateById(ba);
+	}
 
 }
