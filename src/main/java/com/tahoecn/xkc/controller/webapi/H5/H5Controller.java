@@ -391,7 +391,8 @@ public class H5Controller extends TahoeBaseController {
         //获取报备用户所适用的规则
         //未测 目前map无值
         Map<String,Object> userRule=clueruleService.getRegisterRule(projectId,adviserGroupID);
-        if (userRule.get("RuleID")==null){
+//        if (userRule.get("RuleID")==null){
+        if (userRule==null){
             Result.errormsg(1,"未找到该渠道的报备规则");
         }
         //验证报备客户是否有效

@@ -191,16 +191,7 @@
     ]]>
     </select>
 
-    <select id="RuleClueList_Select" resultType="java.util.HashMap" parameterType="string">
-        <![CDATA[
-select a.*,b.RuleType from B_Clue a
-inner join B_ClueRule b
-on a.RuleID = b.ID
-where
-a.Status in (1,2) and b.Status=1
-and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID<>'{ReportUserID}'
-    ]]>
-    </select>
+
         <!-- 案场助手统计 -->
     <select id="CaseFieDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
     <![CDATA[
@@ -572,4 +563,27 @@ and IntentProjectID = '{IntentProjectID}' and Mobile='{Mobile}' and ReportUserID
 		select ID from B_Clue where Status in(1,2) 
 		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID &lt;&gt; #{reportUserId}
 	</select>
+
+    <select id="IsProjectOwner_Select" resultType="java.util.HashMap" parameterType="string">
+        select a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+        and a.IsOwner=1 and b.ProjectID=#{projectId} and  Mobile=#{mobile}
+    </select>
+
+    <select id="getCustomerID" parameterType="string" resultType="java.util.HashMap">
+        select b.ID from B_Opportunity a
+        inner join B_Customer b on a.CustomerID = b.ID
+        where a.id=#{oppID};
+    </select>
+
+    <insert id="CustomerTrack_Insert">
+        INSERT INTO [B_CustomerTrack]
+        (
+        [ID],[CustomerID],[CustomerMobile] ,[CustomerName],[OpportunityID]
+        ,[TrackTime],[TrackUserID],[TrackUserName],[TrackUserMobile],[TrackType],[Creator]
+        ,[CreateTime],[IsDel],[Status]
+        )
+        select newid(),#{customerID},Mobile,[Name],#{oppID},GETDATE(),ReportUserID,ReportUserName
+        ,ReportUserMobile,'CA60462F-8767-4AC0-B2EC-5BCB092CE014',ReportUserID,GETDATE(),0,1
+        from b_clue where ID=#{clueID};
+    </insert>
 </mapper>
