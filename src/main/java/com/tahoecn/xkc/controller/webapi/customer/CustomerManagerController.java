@@ -282,7 +282,7 @@ public class CustomerManagerController extends TahoeBaseController {
         log.setOpportunityID(oppoId);
         log.setCustomerID(custId);
         log.setEditorId(userId);
-        log.setEditorName(ThreadLocalUtils.getUserName());
+        log.setEditorName(ThreadLocalUtils.getRealName());
         if(StringUtil.isNotNull(genderOrg) && StringUtil.isNotNull(gender))
             log.setGender(genderOrg + "->" + gender);
         if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId))

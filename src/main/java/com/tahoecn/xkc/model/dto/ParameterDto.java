@@ -2,6 +2,7 @@ package com.tahoecn.xkc.model.dto;
 
 
 import com.tahoecn.xkc.model.project.BProject;
+import com.tahoecn.xkc.model.project.BProjectparameters;
 import com.tahoecn.xkc.model.rule.BRemindrule;
 import com.tahoecn.xkc.model.rule.BSalescenterrule;
 import java.io.Serializable;
@@ -16,6 +17,8 @@ public class ParameterDto implements Serializable {
     private BRemindrule bRemindrule;
 
     private BSalescenterrule bSalescenterrule;
+
+    private BProjectparameters bProjectparameters;
 
     public String getUserId() {
         return UserId;
@@ -47,5 +50,13 @@ public class ParameterDto implements Serializable {
 
     public void setbSalescenterrule(BSalescenterrule bSalescenterrule) {
         this.bSalescenterrule = bSalescenterrule;
+    }
+
+    public BProjectparameters getbProjectparameters() {
+        return bProjectparameters;
+    }
+
+    public void setbProjectparameters(BProjectparameters bProjectparameters) {
+        this.bProjectparameters = bProjectparameters;
     }
 }

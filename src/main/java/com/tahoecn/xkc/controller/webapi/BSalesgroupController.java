@@ -25,14 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-07-04
  */
 @RestController
-@RequestMapping("/bSalesgroup")
+@RequestMapping("/salesgroup")
 public class BSalesgroupController extends TahoeBaseController {
 
     @Autowired
     private IBSalesgroupService iBSalesgroupService;
 
     @ApiOperation(value = "新增或编辑团队接口", notes = "新增或编辑团队接口")
-    @RequestMapping(value = "/SalesGroupTeam_UpdateNew", method = { RequestMethod.GET })
+    @RequestMapping(value = "/SalesGroupTeam_UpdateNew", method = { RequestMethod.POST })
     public ResponseMessage SalesGroupTeam_UpdateNew(@RequestParam(required = true) String ID,
                                                     @RequestParam(required = true) String ProjectID,
                                                     @RequestParam(required = true) String UserID,
