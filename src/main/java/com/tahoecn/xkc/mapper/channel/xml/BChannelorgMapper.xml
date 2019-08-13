@@ -5,7 +5,7 @@
     <select id="getList" resultType="com.tahoecn.xkc.model.dto.ChannelDto" parameterType="hashmap">
 
 SELECT (SELECT UPPER(STUFF((SELECT ','+ProjectID from dbo.B_PojectChannelOrgRel where OrgID=t.ID AND IsDel=0 AND Status=1 for XML PATH('')),1,1,''))) ProjectIDs,t.* FROM (
-SELECT ROW_NUMBER() OVER ( ORDER BY a.CreateTime DESC ) ID1516, a.ID,a.OrgCode,a.OrgName,a.OrgShortName,a.BizLicense,a.[Status],a.CreateTime,a.ProjectID,
+SELECT ROW_NUMBER() OVER ( ORDER BY a.CreateTime DESC ) ID1516, a.ID,a.NewPID,a.OrgCode,a.OrgName,a.OrgShortName,a.BizLicense,a.[Status],a.CreateTime,a.ProjectID,
 case a.[Status] when 0 then '禁用' when 1 then '启用' else '' end as StatuName,
 sa.EmployeeName AS CreatorName,
 	b.ID AS LeaderID,b.UserName,b.[Password],b.Name AS OrgLeaderName,STUFF(b.Mobile ,4,4,'****') AS OrgLeaderMobileSt,
@@ -38,7 +38,7 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
     <insert id="ChannelDetail_InsertN" parameterType="com.tahoecn.xkc.model.dto.ChannelInsertDto">
         INSERT INTO [dbo].[B_ChannelOrg] (
         ID,
-        PID,
+        NewPID,
         OrgCode,
         OrgName,
         OrgShortName,

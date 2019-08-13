@@ -60,6 +60,16 @@ public class ChannelDto implements Serializable {
 
     private Integer RecordCount;
 
+    private String NewPID;
+
+    public String getNewPID() {
+        return NewPID;
+    }
+
+    public void setNewPID(String newPID) {
+        NewPID = newPID;
+    }
+
     public Integer getRecordCount() {
         return RecordCount;
     }
