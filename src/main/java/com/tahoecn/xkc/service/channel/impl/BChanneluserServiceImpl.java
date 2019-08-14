@@ -693,12 +693,14 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             channeluser.setEditeTime(new Date());
             channeluser.setIsDel(1);
             channeluser.setEditor(UserID);
-            this.updateById(channeluser);
-            //判断是否有客户
             int count=baseMapper.CustomerCount(ID);
+            //判断是否有客户
             if (count>0){
+                Result.errormsg(1,"请将名下客户分配给其他经纪人!");
+            }else {
                 baseMapper.QuitUser_Update(ID,UserID);
             }
+            this.updateById(channeluser);
         } catch (Exception e) {
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
