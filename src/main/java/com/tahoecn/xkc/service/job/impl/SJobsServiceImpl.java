@@ -211,18 +211,27 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
         boolean save=false;
         try {
             String[] split = orgIDS.split(",");
+            //查询出所有带子集的组织,如果传入的orgIDS为父集ID 则遍历其子集
+            List<String> list=baseMapper.getOrgPID();
+            List<String> orgIDSList=new ArrayList<>();
+            for (String orgID : split) {
+                if (list.contains(orgID)){
+                    List<String> child= getOrgChild(list,orgID);
+                    orgIDSList.addAll(child);
+                }
+            }
             List<String> IDs=new ArrayList<>();
             //去除非项目选项 如泰禾集团 地产板块
             List<String> projects = ibProjectService.getProjectIDs();
-            for (String s : split) {
+            for (String s : orgIDSList) {
                 if (projects.contains(s)){
                     IDs.add(s);
                 }
             }
             QueryWrapper<BProjectjobrel> wrapper=new QueryWrapper<>();
             wrapper.eq("JobID",jobID);
-            List<BProjectjobrel> list = projectjobrelService.list(wrapper);
-            for (BProjectjobrel projectjobrel : list) {
+            List<BProjectjobrel> ProjectjobrelList = projectjobrelService.list(wrapper);
+            for (BProjectjobrel projectjobrel : ProjectjobrelList) {
                 projectjobrel.setIsDel(1);
                 projectjobrelService.updateById(projectjobrel);
             }
@@ -242,6 +251,29 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
         }
 
         return save;
+    }
+
+    /**
+     * 获取父集下所有子集id
+     * @param list PID集合
+     * @param orgID
+     * @return
+     */
+    private List<String> getOrgChild(List<String> list, String orgID) {
+        List<Map<String,Object>> childList=organizationService.SystemProject_Select(orgID);
+        List<String> result=new ArrayList<>();
+        if (childList.size()>0){
+            for (Map<String, Object> map : childList) {
+                result.add((String) map.get("ID"));
+            }
+        }
+        for (Map<String,Object> map : childList) {
+            if (list.contains( map.get("ID"))){
+                List<String> orgChild = getOrgChild(list, (String) map.get("ID"));
+                result.addAll(orgChild);
+            }
+        }
+        return result;
     }
 
     @Override

@@ -210,4 +210,14 @@
     <select id="getFuncList" resultType="java.util.HashMap">
         SELECT ID,  FuncName ,MenuID FROM S_Functions
     </select>
+
+    <select id="getOrgPID" resultType="string" >
+        SELECT DISTINCT PID FROM S_Organization WHERE IsDel=0 AND Status=1
+    </select>
+
+    <select id="getChildrenByOrgID" resultType="string" parameterType="string">
+        SELECT ID FROM S_Organization WHERE IsDel=0 AND Status=1 AND PID=#{orgID}
+        UNION
+        SELECT ID FROM B_Project WHERE IsDel=0 AND Status=1 AND PID =#{orgID}
+    </select>
 </mapper>
