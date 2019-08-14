@@ -1470,7 +1470,6 @@ public class MessageAppController extends TahoeBaseController {
 	public Result mMessageCalendar_Select(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			iSystemMessageService.mMessageCalendar_Select(paramMap);
 			return Result.ok(iSystemMessageService.mMessageCalendar_Select(paramMap));
 		}catch(Exception e){
 			e.printStackTrace();

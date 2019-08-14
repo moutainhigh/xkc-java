@@ -85,13 +85,23 @@ public class SSystemADController extends TahoeBaseController {
 	}
 	@ResponseBody
 	@ApiOperation(value = "APP版本修改", notes = "APP版本信息修改")
-	@ApiImplicitParams({@ApiImplicitParam(name = "VersionID" , value = "APP版本ID" , required = true , dataType = "String"),
-		@ApiImplicitParam(name = "AppVersionCode" , value = "APP版本号" , required = true , dataType = "String"),
-		@ApiImplicitParam(name = "Url" , value = "下载地址" , required = true , dataType = "String")})
+	@ApiImplicitParams({@ApiImplicitParam(name = "VersionID_ANDROID" , value = "APP版本ID_ANDROID" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "AppVersionCode_ANDROID" , value = "APP版本号_ANDROID" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "Url_ANDROID" , value = "下载地址_ANDROID" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "VersionID_IOS" , value = "APP版本ID_IOS" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "AppVersionCode_IOS" , value = "APP版本号_IOS" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "Url_IOS" , value = "下载地址_IOS" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "VersionID_IPAD" , value = "APP版本ID_IPAD" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "AppVersionCode_IPAD" , value = "APP版本号_IPAD" , required = true , dataType = "String"),
+		@ApiImplicitParam(name = "Url_IPAD" , value = "下载地址_IPAD" , required = true , dataType = "String")})
 	@RequestMapping(value = "/mSystemAppVersion_Update", method = {RequestMethod.POST})
-	public Result mSystemAppVersion_Update(String VersionID,String AppVersionCode,String Url) {
+	public Result mSystemAppVersion_Update(String VersionID_ANDROID,String AppVersionCode_ANDROID,String Url_ANDROID,
+			String VersionID_IOS,String AppVersionCode_IOS,String Url_IOS,
+			String VersionID_IPAD,String AppVersionCode_IPAD,String Url_IPAD) {
 		try {
-			iBAppupgradeService.SystemAppVersion_Update(VersionID,AppVersionCode,Url);
+			iBAppupgradeService.SystemAppVersion_Update(VersionID_ANDROID,AppVersionCode_ANDROID,Url_ANDROID,
+					VersionID_IOS,AppVersionCode_IOS,Url_IOS,
+					VersionID_IPAD,AppVersionCode_IPAD,Url_IPAD);
 			return Result.ok("保存成功");
 		}catch (Exception e) {
 			e.printStackTrace();
