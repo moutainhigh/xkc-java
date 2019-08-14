@@ -20,6 +20,34 @@
 	    ]]>
 	</select>
 	
+	<select id="sCustomerFJAdviserList_Select_Sort" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator  FROM CustomerFJAdviserList_Select c
+		LEFT JOIN Sale_User_Sign s ON s.SaleUserID = c.ID
+	    WHERE c.RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and c.ProjectID=#{ProjectID} 
+	    ${WHERE}
+	    <if test="SourceRange=='all'">
+	    	 <if test="Order=='sgin'">
+		    	ORDER BY s.SortDateTime ASC
+		    </if>
+		    <if test="Order=='sortCode'">
+		    	ORDER BY s.SortCode ASC
+		    </if>
+	    </if>
+	    <if test="sourceRange=='notAll'">
+	    	 <if test="Order=='sgin'">
+		    	AND s.ID IS NOT NULL
+		    	ORDER BY s.SortDateTime ASC
+		    </if>
+		    <if test="Order=='notSgin'">
+		    	AND s.ID IS NULL
+		    </if>
+		    <if test="Order=='sortCode'">
+		    	AND s.ID IS NOT NULL
+		    	ORDER BY s.SortCode ASC
+		    </if>
+	    </if>
+	</select>
+	
 	<select id="mSystemFormSessionStatus_Select_step1" parameterType="java.util.Map" resultType="java.lang.Long"> 
 		<![CDATA[
 			SELECT COUNT(1) FROM S_FormSession WHERE Status = 0 AND ID = #{FormSessionID}

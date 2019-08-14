@@ -2708,5 +2708,9 @@ VALUES  ( #{OpportunityID},
 	<select id="selectOpportunityByID" resultType="java.util.HashMap">
 		SELECT * FROM B_Opportunity WHERE ID=#{OpportunityID}
 	</select>
+	
+	<select id="verifyOpportunityMobile" resultType="java.util.HashMap">
+		SELECT * FROM B_Opportunity WHERE CustomerMobile=#{SpareMobile} OR SpareMobile=#{SpareMobile}
+	</select>
 
 </mapper>

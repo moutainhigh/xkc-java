@@ -350,4 +350,50 @@
 	    ]]>
 	</select>
 	
+	<insert id="addSaleUserSign" parameterType="java.util.Map">
+		INSERT INTO Sale_User_Sign
+			(
+				ID,
+				SalesSupervisorID,
+				SaleUserID,
+				SignInDateTime,
+				SignInDate,
+				SortDateTime,
+				SortCode
+			)
+		VALUES(
+				#{ID},
+				#{SalesSupervisorID},
+				#{SaleUserID},
+				GETDATE(),
+				GETDATE(),
+				GETDATE(),
+				#{SortCode}
+		)
+	</insert>
+	
+	<select id="getMaxSortByDate" resultType="java.lang.Long">
+		SELECT ISNULL(MAX(SortCode),0) from Sale_User_Sign
+		WHERE SignInDate = #{SignInDate}
+	</select>
+	
+	<update id="updateSortCodeAndTime" parameterType="java.util.Map">
+		UPDATE Sale_User_Sign SET
+			SortDateTime = GETDATE(),
+			SortCode = #{SortCode}
+		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
+	</update>
+	
+	<update id="updateSortCode" parameterType="java.util.Map">
+		UPDATE Sale_User_Sign SET
+			SortCode = #{SortCode}
+		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
+	</update>
+	
+	<select id="selectByDateAndSaleUserID" resultType="java.util.HashMap" parameterType="java.util.Map">
+		SELECT * FROM Sale_User_Sign
+		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
+	</select>
+	
+	
 </mapper>
