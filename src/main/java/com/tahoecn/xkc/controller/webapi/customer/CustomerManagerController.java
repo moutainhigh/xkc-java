@@ -288,7 +288,7 @@ public class CustomerManagerController extends TahoeBaseController {
         if(StringUtil.isNotNull(cardIdOrg) && StringUtil.isNotNull(cardId))
             log.setCardID(cardIdOrg + "->" + cardId);
         if(StringUtil.isNotNull(cardTypeOrg) && StringUtil.isNotNull(cardType))
-            log.setCardType(cardTypeOrg + "->" + cardId);
+            log.setCardType(cardTypeOrg + "->" + cardType);
         if(StringUtil.isNotNull(auxiliaryMobileOrg) && StringUtil.isNotNull(auxiliaryMobile))
             log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
         if(StringUtil.isNotNull(customerNameOrg) && StringUtil.isNotNull(customerName))

@@ -170,6 +170,7 @@ public class H5Controller extends TahoeBaseController {
         if (StringUtils.equals(time, Password)) {
             map = channeluserService.ChannelUserCurrency_Find(UserName);
         } else {
+            //channelTypeID是写死的
             map =channeluserService.ChannelUser_Find(UserName,SecureUtil.md5(Password));
         }
         if (map==null){
@@ -604,7 +605,7 @@ public class H5Controller extends TahoeBaseController {
         String authCode=(String) paramMap.get("AuthCode");
         String password=(String) paramMap.get("Password");
         String rePassword=(String) paramMap.get("RePassword");
-       if (StringUtils.equals(password,rePassword)){
+       if (!StringUtils.equals(password,rePassword)){
            return Result.errormsg(2,"密码不一致");
        }
         BVerificationcode vc = verificationcodeService.checkAuthCode(mobile);
@@ -617,7 +618,7 @@ public class H5Controller extends TahoeBaseController {
         BChanneluser one = channeluserService.getOne(wrapper);
         one.setPassword(SecureUtil.md5(rePassword));
         if (channeluserService.updateById(one)){
-            return Result.ok(null);
+            return Result.okm("成功");
         }
         return Result.errormsg(99,"修改密码失败");
 

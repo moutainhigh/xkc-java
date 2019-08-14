@@ -369,7 +369,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             Map<String,Object> one = new HashMap<>();
             for (Map<String, Object> map : dictArray) {
                 String PDictCode = (String) map.get("PDictCode");
-                int Levels = (int) map.get("Levels");
+                Short Levels = (Short) map.get("Levels");
                 if (Levels == 2)
                 {
                     if (StringUtils.equals("KHGJFS",PDictCode)&& (StringUtils.equals("ZQ",(String)param.get("JobCode")) ||StringUtils.equals("ZQJL",(String)param.get("JobCode"))||StringUtils.equals("ZQFZR",(String)param.get("JobCode")) ||StringUtils.equals("JZ",(String)param.get("JobCode"))) && StringUtils.equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F",(String)map.get("ID")))
@@ -409,7 +409,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             }
             for (Map<String, Object> map : dictArray) {
                 String PDictCode = (String) map.get("PDictCode");
-                int Levels = (int) map.get("Levels");
+                Short Levels = (Short) map.get("Levels");
                 if (Levels == 2)
                 {
                     String DictCode = (String) map.get("DictCode");
