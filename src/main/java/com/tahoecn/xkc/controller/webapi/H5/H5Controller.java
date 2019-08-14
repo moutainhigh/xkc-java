@@ -232,7 +232,7 @@ public class H5Controller extends TahoeBaseController {
         result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(map);
-        return result;
+        return Result.ok("");
     }
 
 
