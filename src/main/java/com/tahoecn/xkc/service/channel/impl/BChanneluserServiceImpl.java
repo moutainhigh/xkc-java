@@ -17,6 +17,7 @@ import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
@@ -611,6 +612,25 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     @Override
     public Map<String, Object> ChannelOrgRuleInfoDetail_Select(String projectId, String adviserGroupID) {
         return baseMapper.ChannelOrgRuleInfoDetail_Select(projectId,adviserGroupID);
+    }
+
+    @Override
+    public Result mChannelStoreUserApproval_Update(Map<String, Object> paramMap) {
+        try {
+            String UserID= (String) paramMap.get("UserID");
+            int ApprovalStatus= (int) paramMap.get("ApprovalStatus");
+            String Approval= (String) paramMap.get("Approval");
+            BChanneluser channeluser=new BChanneluser();
+            channeluser.setId(Approval);
+            channeluser.setApprovalStatus(ApprovalStatus);
+            channeluser.setApprovalDate(new Date());
+            channeluser.setApprover(UserID);
+            baseMapper.updateById(channeluser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.errormsg(1,"失败");
+        }
+        return Result.okm("成功");
     }
 
     @Override

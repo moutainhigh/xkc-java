@@ -676,5 +676,13 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @ApiOperation(value = "审核", notes = "审核")
+    @RequestMapping(value = "/mChannelStoreUserApproval_Update", method = {RequestMethod.POST})
+    public Result mChannelStoreUserApproval_Update(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mChannelStoreUserApproval_Update(paramMap);
+        return result;
+    }
+
 
 }
