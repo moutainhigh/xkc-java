@@ -27,6 +27,13 @@ public interface IIpadService {
 	public Result mLFCustomerGWList_Select(JSONObject paramAry);
 	
 	/**
+	 * 置业顾问列表排序
+	 * @param paramAry
+	 * @return
+	 */
+	public Result mLFCustomerGWList_Select_Sort(JSONObject paramAry);
+	
+	/**
 	 * 查询客户详情
 	 * @param paramAry
 	 * @return
@@ -67,4 +74,25 @@ public interface IIpadService {
 	 * @return
 	 */
 	public Result mLFReceptRecordList_Select_forSaleUser(JSONObject paramAry);
+	
+	/**
+	 * 添加签到
+	 * @param paramAry
+	 * @return
+	 */
+	public Result addSaleUserSign(JSONObject paramAry);
+	
+	/**
+	 * 报备成功更新排序顺序
+	 * @param SalesSupervisorID
+	 * @param SaleUserID
+	 */
+	public void updateSortCodeAndTime(String SalesSupervisorID,String SaleUserID);
+	
+	/**
+	 * 置业顾问列表自定义排序
+	 * @param saleUserIDs
+	 * @return
+	 */
+	public Result sortSaleUser(String saleUserIDs,String userID);
 }

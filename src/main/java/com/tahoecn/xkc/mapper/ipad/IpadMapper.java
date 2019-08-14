@@ -107,4 +107,36 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @return
 	 */
 	List<Map<String,Object>> mLFReceptRecordList_Select_forSaleUser(@Param("pmap")Map<String,Object> pmap);
+	
+	/**
+	 * 添加签到
+	 * @param pmap
+	 */
+	void addSaleUserSign(Map<String,Object> pmap);
+	
+	/**
+	 * 获取当天最大的排序编码
+	 * @param SignInDate
+	 * @return
+	 */
+	Long getMaxSortByDate(@Param("SignInDate")String SignInDate);
+	
+	/**
+	 * 更新排序编码和排序时间
+	 * @param pmap
+	 */
+	void updateSortCodeAndTime(Map<String,Object> pmap);
+	
+	/**
+	 * 更新排序编码
+	 * @param pmap
+	 */
+	void updateSortCode(Map<String,Object> pmap);
+	
+	/**
+	 * 获取当天签到的客户信息
+	 * @param pmap
+	 * @return
+	 */
+	Map<String,Object> selectByDateAndSaleUserID(Map<String,Object> pmap);
 }

@@ -1963,4 +1963,24 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 		return entity;
 	}
 
+	@Override
+	public Result verifySpareMobile(String SpareMobile) {
+		Result entity = new Result();
+		try {
+			List<Map<String, Object>> data = vCustomergwlistSelectMapper.verifyOpportunityMobile(SpareMobile);
+			if(data!=null && data.size()>0){
+				entity.setErrcode(1);
+				entity.setErrmsg("手机号不可使用");
+			}else{
+				entity.setErrcode(0);
+				entity.setErrmsg("副手机号可以使用");
+			}
+		} catch (Exception e) {
+			entity.setErrcode(1);
+			entity.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return entity;
+	}
+
 }

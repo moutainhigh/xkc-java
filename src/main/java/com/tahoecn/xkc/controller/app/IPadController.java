@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,6 +51,14 @@ public class IPadController extends TahoeBaseController{
     }
 	
 	@ResponseBody
+    @ApiOperation(value = "置业顾问列表排序", notes = "置业顾问列表排序")
+    @RequestMapping(value = "/mLFCustomerGWList_Select_Sort", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mLFCustomerGWList_Select_Sort(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iIpadService.mLFCustomerGWList_Select_Sort(json);
+    }
+	
+	@ResponseBody
     @ApiOperation(value = "客户详情", notes = "客户详情")
     @RequestMapping(value = "/mLFCustomerDetailByMobile_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mLFCustomerDetailByMobile_Select(@RequestBody JSONObject paramAry) {
@@ -65,7 +74,10 @@ public class IPadController extends TahoeBaseController{
 		Result re = new Result();
 		try {
 			for(int i=0;i<JA.size();i++){
-				re = iIpadService.mLFCustomerDetail_Insert(JA.getJSONObject(i));
+				JSONObject param = JA.getJSONObject(i);
+				re = iIpadService.mLFCustomerDetail_Insert(param);
+				//更新置业过问列表顺序
+				iIpadService.updateSortCodeAndTime(param.getString("UserID"),param.getString("SalesUserID"));
 			}
 		} catch (Exception e) {
 			re.setErrcode(1);
@@ -105,6 +117,21 @@ public class IPadController extends TahoeBaseController{
     public Result mLFReceptRecordList_Select_forSaleUser(@RequestBody JSONObject paramAry) {
 		JSONObject json = paramAry.getJSONObject("_param");
 		return iIpadService.mLFReceptRecordList_Select_forSaleUser(json);
+    }
+	
+	@ResponseBody
+    @ApiOperation(value = "置业顾问签到", notes = "置业顾问签到")
+    @RequestMapping(value = "/addSaleUserSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result addSaleUserSign(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iIpadService.addSaleUserSign(json);
+    }
+	
+	@ResponseBody
+    @ApiOperation(value = "置业顾问列表自定义排序", notes = "置业顾问列表自定义排序")
+    @RequestMapping(value = "/sortSaleUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result sortSaleUser(@RequestParam("saleUserIDs")String saleUserIDs,@RequestParam("userID")String userID) {
+		return iIpadService.sortSaleUser(saleUserIDs,userID);
     }
 	
 }

@@ -1368,6 +1368,122 @@ public class IpadServiceImpl implements IIpadService {
         re.setErrmsg("暂无数据");
         return re;
 	}
+
+	@Override
+	public Result addSaleUserSign(JSONObject paramAry) {
+		Result re = new Result();
+		try {
+			Map<String,Object> pmap = new HashMap<>();
+			pmap.put("ID", UUID.randomUUID().toString());
+			pmap.put("SalesSupervisorID", paramAry.getString("UserID"));
+			pmap.put("SaleUserID", paramAry.getString("SaleUserID"));
+			String SignInDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+			pmap.put("SignInDate", SignInDate);
+			Map<String, Object> data = ipadMapper.selectByDateAndSaleUserID(pmap);
+			if(data!=null && data.size()>0){
+				re.setErrcode(1);
+		        re.setErrmsg("不可重复签到");
+		        return re;
+			}
+			Long maxSortCode = ipadMapper.getMaxSortByDate(SignInDate);
+			pmap.put("SortCode", maxSortCode.intValue()+1);
+			ipadMapper.addSaleUserSign(pmap);
+			re.setErrcode(0);
+            re.setErrmsg("成功");
+		} catch (Exception e) {
+			re.setErrcode(1);
+	        re.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return re;
+	}
+
+	@Override
+	public Result mLFCustomerGWList_Select_Sort(JSONObject paramAry) {
+		Result entity = new Result();
+        if (paramAry==null || paramAry.size() == 0){
+            entity.setErrcode(1);
+            entity.setErrmsg("参数错误");
+            return entity;
+        }try{
+            CPageModel model = JSONObject.parseObject(paramAry.toJSONString(), CPageModel.class);
+            StringBuilder whereSb = new StringBuilder();
+            if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%')");
+            }
+            paramAry.put("WHERE", whereSb.toString());
+            paramAry.put("SiteUrl", SiteUrl);
+            //顾问列表
+            Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+            List<Map<String, Object>> allGwJArray = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select_Sort(pmap);
+          
+            entity.setData(allGwJArray);
+            entity.setErrcode(0);
+            entity.setErrmsg("成功");
+        }catch (Exception e){
+            entity.setErrcode(1);
+            entity.setErrmsg("服务器异常");
+            e.printStackTrace();
+        }
+        return entity;
+	}
+	
+	/**
+	 * 报备成功更新排序顺序
+	 * @param SalesSupervisorID
+	 * @param SaleUserID
+	 */
+	@Override
+	public void updateSortCodeAndTime(String SalesSupervisorID,String SaleUserID){
+		Map<String,Object> pmap = new HashMap<>();
+		pmap.put("SalesSupervisorID", SalesSupervisorID);
+		pmap.put("SaleUserID", SaleUserID);
+		String SignInDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+		pmap.put("SignInDate", SignInDate);
+		Map<String, Object> data = ipadMapper.selectByDateAndSaleUserID(pmap);
+		if(data!=null && data.size()>0){
+			Long maxSortCode = ipadMapper.getMaxSortByDate(SignInDate);
+			pmap.put("SortCode", maxSortCode.intValue()+1);
+			ipadMapper.updateSortCodeAndTime(pmap);
+		}
+	}
+
+	@Override
+	public Result sortSaleUser(String saleUserIDs,String userID) {
+		Result re = new Result();
+		try {
+			if(StringUtils.isEmpty(userID)){
+				re.setErrcode(1);
+	            re.setErrmsg("用户ID为空");
+	            return re;
+			}
+			if(StringUtils.isEmpty(saleUserIDs)){
+				re.setErrcode(1);
+	            re.setErrmsg("置业顾问ID为空");
+	            return re;
+			}
+			Map<String,Object> pmap = new HashMap<>();
+			pmap.put("SalesSupervisorID", userID);
+			String SignInDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+			pmap.put("SignInDate", SignInDate);
+			String[] saleUserIDGroup = saleUserIDs.split(",");
+			int index = 1;
+			for(String saleUserID : saleUserIDGroup){
+				pmap.put("SaleUserID", saleUserID);
+				pmap.put("SortCode", index);
+				ipadMapper.updateSortCode(pmap);
+				index++;
+			}
+			re.setErrcode(0);
+            re.setErrmsg("成功");
+		} catch (Exception e) {
+			re.setErrcode(1);
+            re.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return re;
+	}
+	
 	
 
 }
