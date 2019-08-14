@@ -614,7 +614,6 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 
     <update id="ChannelUserDetail_UpateN" parameterType="string">
         UPDATE B_ChannelUser SET Name=#{name},Gender=#{gender}
-        ${sqlUpdate}
         WHERE ID=#{userID} ;
     </update>
 

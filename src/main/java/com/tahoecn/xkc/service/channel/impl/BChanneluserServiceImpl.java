@@ -636,31 +636,37 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     @Override
     public Result mBrokerChannelUserDetail_UpdateN(Map<String, Object> paramMap) {
         //首先根据ID获取信息，判断是否是审核不通过状态，不通过状态可以修改机构编码
-        BChanneluser channeluser = this.getById((String) paramMap.get("UserID"));
+//        BChanneluser channeluser = this.getById((String) paramMap.get("UserID"));
         String Name= (String) paramMap.get("Name");
         String Gender= (String) paramMap.get("Gender");
         String UserID= (String) paramMap.get("UserID");
-        StringBuilder sqlUpdate=new StringBuilder();
-        if (channeluser!=null){
-            //是中介同行的，审核不通过的，才能修改机构编码和机构ID
-            if ("32C92DA0-DA13-4C21-A55E-A1D16955882C".equals(channeluser.getChannelTypeID())&&channeluser.getApprovalStatus()==2){
-                //检查输入的机构编码是否存在
-               String OrgCode= (String) paramMap.get("ChannelOrgCode");
-               QueryWrapper<BChannelorg> wrapper=new QueryWrapper<>();
-               wrapper.eq("OrgCode",OrgCode).eq("IsDel",0).eq("Status",1);
-                List<BChannelorg> list = channelorgService.list(wrapper);
-                if (list.size()==0){
-                    return  Result.errormsg(1,"机构编码输入有误，请重新输入");
-                }
-                sqlUpdate.append(",ChannelOrgCode='").append(paramMap.get("ChannelOrgCode")).append("',ChannelOrgID=(SELECT TOP 1 ID FROM dbo.B_ChannelOrg WHERE OrgCode='").append(paramMap.get("ChannelOrgCode")).append("'),ApprovalStatus=0");
-                baseMapper.ChannelUserDetail_UpateN(Name,Gender,UserID,sqlUpdate.toString());
-            }
-        }else {
-            return Result.errormsg(99,"修改失败");
+//        StringBuilder sqlUpdate=new StringBuilder();
+//        if (channeluser!=null){
+//            //是中介同行的，审核不通过的，才能修改机构编码和机构ID
+//            if ("32C92DA0-DA13-4C21-A55E-A1D16955882C".equals(channeluser.getChannelTypeID())&&channeluser.getApprovalStatus()==2){
+//                //检查输入的机构编码是否存在
+//               String OrgCode= (String) paramMap.get("ChannelOrgCode");
+//               QueryWrapper<BChannelorg> wrapper=new QueryWrapper<>();
+//               wrapper.eq("OrgCode",OrgCode).eq("IsDel",0).eq("Status",1);
+//                List<BChannelorg> list = channelorgService.list(wrapper);
+//                if (list.size()==0){
+//                    return  Result.errormsg(1,"机构编码输入有误，请重新输入");
+//                }
+//                sqlUpdate.append(",ChannelOrgCode='").append(paramMap.get("ChannelOrgCode")).append("',ChannelOrgID=(SELECT TOP 1 ID FROM dbo.B_ChannelOrg WHERE OrgCode='").append(paramMap.get("ChannelOrgCode")).append("'),ApprovalStatus=0");
+//                baseMapper.ChannelUserDetail_UpateN(Name,Gender,UserID,sqlUpdate.toString());
+//            }
+//        }else {
+//            return Result.errormsg(99,"修改失败");
+//        }
+        BChanneluser channeluser=new BChanneluser();
+        channeluser.setId(UserID);
+        channeluser.setName(Name);
+        channeluser.setGender(Gender);
+        boolean b = this.updateById(channeluser);
+        if (b){
+            return Result.okm("成功");
         }
-
-
-        return null;
+        return Result.errormsg(1,"修改失败");
     }
 
     @Override
