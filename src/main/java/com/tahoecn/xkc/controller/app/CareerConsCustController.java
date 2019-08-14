@@ -297,7 +297,9 @@ public class CareerConsCustController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "置业顾问校验副手机号", notes = "置业顾问校验副手机号")
     @RequestMapping(value = "/verifySpareMobile", method = RequestMethod.POST)
-    public Result verifySpareMobile(@RequestParam(value="SpareMobile",required=true)String SpareMobile) {
+    public Result verifySpareMobile(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		String SpareMobile = json.getString("SpareMobile");
 		return iVCustomergwlistSelectService.verifySpareMobile(SpareMobile);
     }
 }
