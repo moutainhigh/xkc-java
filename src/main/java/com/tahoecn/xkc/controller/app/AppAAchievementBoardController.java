@@ -68,14 +68,14 @@ public class AppAAchievementBoardController extends TahoeBaseController {
         	obj.put("OverdueContractAmount", "0.00");
         }else{
         	obj.put("OverdueContractCount", objOC.get("OverdueContractCount")!= null ? objOC.get("OverdueContractCount") : 0);
-        	obj.put("OverdueContractAmount", objOC.get("OverdueContractAmount")!=null && (int)objOC.get("OverdueContractAmount") != 0 ? objOC.get("OverdueContractAmount") : "0.00");
+        	obj.put("OverdueContractAmount", objOC.get("OverdueContractAmount")!=null ? objOC.get("OverdueContractAmount").toString() : "0.00");
         }
         if(objOP == null){
         	obj.put("OverduePaymentCount", 0);
         	obj.put("OverduePaymentAmount", "0.00"); 
         }else{
         	obj.put("OverduePaymentCount",  objOP.get("OverduePaymentCount")!= null ? objOP.get("OverduePaymentCount") : 0);
-        	obj.put("OverduePaymentAmount", objOP.get("OverduePaymentAmount")!=null && (int)objOP.get("OverduePaymentAmount") != 0 ? objOP.get("OverduePaymentAmount") : "0.00"); 
+        	obj.put("OverduePaymentAmount", objOP.get("OverduePaymentAmount")!=null ? objOP.get("OverduePaymentAmount").toString() : "0.00"); 
         }
         return Result.ok(obj);
 	}
