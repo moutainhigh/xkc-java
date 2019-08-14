@@ -215,6 +215,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             List<String> list=baseMapper.getOrgPID();
             List<String> orgIDSList=new ArrayList<>();
             for (String orgID : split) {
+                orgIDSList.add(orgID);
                 if (list.contains(orgID)){
                     List<String> child= getOrgChild(list,orgID);
                     orgIDSList.addAll(child);
@@ -230,6 +231,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             }
             QueryWrapper<BProjectjobrel> wrapper=new QueryWrapper<>();
             wrapper.eq("JobID",jobID);
+            wrapper.eq("IsDel",0);
             List<BProjectjobrel> ProjectjobrelList = projectjobrelService.list(wrapper);
             for (BProjectjobrel projectjobrel : ProjectjobrelList) {
                 projectjobrel.setIsDel(1);

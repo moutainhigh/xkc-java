@@ -477,7 +477,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
             cp.setMobile((String) paramMap.get("Mobile"));
-            cp.setCreator((String) paramMap.get("99"));
+            cp.setCreator("99");
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
@@ -488,7 +488,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
             cp.setMobile((String) paramMap.get("Mobile"));
-            cp.setCreator((String) paramMap.get("99"));
+            cp.setCreator("99");
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
@@ -547,7 +547,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             }
 
             JSONObject obj1 = new JSONObject();
-            obj1.put("FollwUpType", (boolean)ruleValidate.get("Tag")? ActionType.渠道报备.getValue():ActionType.报备无效.getValue());
+            obj1.put("FollwUpTypeID", (boolean)ruleValidate.get("Tag")? ActionType.渠道报备.getValue():ActionType.报备无效.getValue());
             obj1.put("SalesType", 4);
 //            obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
             obj1.put("NewSaleUserName", "");
@@ -566,7 +566,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
         }
 
-        return false;
+        return save;
     }
 
     @Transactional(rollbackFor = Exception.class)
