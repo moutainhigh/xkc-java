@@ -29,10 +29,8 @@ import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -497,6 +495,13 @@ public class H5Controller extends TahoeBaseController {
         Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
         Result result=channeluserService.mBrokerChannelUserDetail_UpdateN(paramMap);
         return result;
+    }
+
+    @ApiOperation(value = "上传")
+    @RequestMapping(value = "/uploadFile", method = {RequestMethod.POST},headers="content-type=multipart/form-data")
+    public Result uploadFile(@RequestParam("file") MultipartFile[] file){
+        String path = uploadFiles(file);
+        return Result.ok(path);
     }
 
     //已测
