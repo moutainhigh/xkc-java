@@ -198,17 +198,14 @@ public class CustomerController extends TahoeBaseController {
         StringBuilder sqlWhere = new StringBuilder();
 
 
-        if (StringUtils.isNotEmpty(CustomerName)) {
-            sqlWhere.append(" AND t.CustomerName like '%").append(CustomerName).append("%'");
-        }
-        
+
         //客户姓名
         if (StringUtils.isNotEmpty(CustomerName)) {
             sqlWhere.append(" AND t.CustomerName like '%").append(CustomerName).append("%'");
         }
         //客户手机号
         if (StringUtils.isNotEmpty(CustomerMobile)) {
-            sqlWhere.append(" AND t.CustomerMobile like '%").append(CustomerName).append("%'");
+            sqlWhere.append(" AND (t.CustomerMobile like '%").append(CustomerMobile).append("%'").append(" or t.SpareMobile like '%").append(CustomerMobile).append("%')");
         }
         //客户状态
         if (Status != null) {

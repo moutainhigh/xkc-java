@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.hutool.core.date.DateUtil;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -34,9 +35,11 @@ import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
+import com.tahoecn.xkc.model.vo.ChildItem;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
+import com.tahoecn.xkc.model.vo.PanelItem;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IProjectService;
 import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
@@ -272,19 +275,33 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 				entity.setErrcode(1);
 				return entity;
 			}
-			if(!paramAry.containsKey("ChildID") || "".equals(paramAry.getString("ChildID"))){
+			if(!paramAry.containsKey("Child")){
 				entity.setErrmsg("子集ID不能为空");
 				entity.setErrcode(1);
 				return entity;
 			}
 			String OpportunityID = paramAry.getString("OpportunityID");
-			String ChildID = paramAry.getString("ChildID");
-			String[] ChildIDs = ChildID.split(",");
-			List<String> child_list = new ArrayList<String>();
-			for(String cId : ChildIDs){
-				child_list.add(cId);
+			JSONArray childs = paramAry.getJSONArray("Child");
+			for(int i=0;i<childs.size();i++){
+				JSONObject child = childs.getJSONObject(i);
+				vCustomergwlistSelectMapper.UpdateOpportunityParentID(OpportunityID, child.getString("Relation"),child.getString("ChildID"));
 			}
-			vCustomergwlistSelectMapper.UpdateOpportunityParentID(OpportunityID, child_list);
+			entity.setErrmsg("成功");
+			entity.setErrcode(0);
+		} catch (Exception e) {
+			entity.setErrmsg("服务器异常");
+			entity.setErrcode(1);
+			e.printStackTrace();
+		}
+		return entity;
+	}
+	
+	@Override
+	public Result deleteParentID(JSONObject paramAry) {
+		Result entity = new Result();
+		try {
+			String childID = paramAry.getString("ChildID");
+			vCustomergwlistSelectMapper.DeleteOpportunityParentID(childID);
 			entity.setErrmsg("成功");
 			entity.setErrcode(0);
 		} catch (Exception e) {
@@ -842,6 +859,33 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             JSONObject CustomerObj = customerTemplate.OpportunityInfo(opportunityID);
             if (!CustomerObj.isEmpty()){
                 customerModel = customerTemplate.InitCustomerModeData(model, "GWDetailCustomer.json", CustomerObj, CustomerModeType.顾问_客户_详情.getTypeID());
+                List<PanelItem> PanelItems = customerModel.getPanel();
+                for(PanelItem PanelItem : PanelItems){
+                	if("成员信息".equals(PanelItem.getName())){
+                		List<String> parentID = new ArrayList<>();
+                		parentID.add(opportunityID);
+                		List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(parentID);
+                		if(childs!=null && childs.size()>0){
+                			JSONArray J_DATA = new JSONArray();
+                			for(Map<String, Object> map : childs){
+                				String ChildID = map.get("OpportunityID").toString();
+                				String ParentRelation ="";
+                				if(map.get("ParentRelation")!=null){
+                					ParentRelation = map.get("ParentRelation").toString();
+                				}
+                				String CustomerName = map.get("CustomerName").toString();
+                				String CustomerMobile = map.get("CustomerMobile").toString();
+                				JSONObject json = new JSONObject();
+                				json.put("ChildID", ChildID);
+                				json.put("ParentRelation", ParentRelation);
+                				json.put("CustomerName", CustomerName);
+                				json.put("CustomerMobile", CustomerMobile);
+                				J_DATA.add(json);
+                			}
+                			PanelItem.getChild().get(0).setChild(J_DATA);
+                		}
+                	}
+                }
                 entity.setData(customerModel);
                 entity.setErrmsg("成功");
                 entity.setErrcode(0);

@@ -452,7 +452,7 @@
 	<insert id="RemindMessage_Insert">
 		INSERT INTO S_Message( ID, ProjectID,BizID,BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, Creator, CreateTime,Ext1,Ext2) VALUES
 		<foreach collection="list" item="item" index="index" separator=",">
-			(#{item.ID},
+			(NEWID(),
 			#{item.ProjectID},
 			#{item.BizID},
 			#{item.BizType},

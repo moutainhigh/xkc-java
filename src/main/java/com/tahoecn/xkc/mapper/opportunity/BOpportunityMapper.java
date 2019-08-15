@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -16,7 +17,7 @@ import com.tahoecn.xkc.model.opportunity.BOpportunity;
  */
 public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 
-    int getCustomerCount(String projectId, String memberId);
+    int getCustomerCount(@Param("projectId") String projectId, @Param("memberId")String memberId);
 
     /**
      * 客户确认归属

@@ -68,6 +68,14 @@ public class CareerConsCustController extends TahoeBaseController {
     }
 	
 	@ResponseBody
+    @ApiOperation(value = "置业顾问删除客户成员信息", notes = "置业顾问设置客户成员信息")
+    @RequestMapping(value = "/setCustomerChild_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result setCustomerChild_delete(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iVCustomergwlistSelectService.deleteParentID(json);
+    }
+	
+	@ResponseBody
     @ApiOperation(value = "置业顾问客户基本信息", notes = "职业顾问客户基本信息")
     @RequestMapping(value = "/mCustomerGWBase_Select", method = RequestMethod.POST)
     public Result mCustomerGWBase_Select(@RequestBody JSONObject paramAry) {
@@ -297,7 +305,9 @@ public class CareerConsCustController extends TahoeBaseController {
 	@ResponseBody
     @ApiOperation(value = "置业顾问校验副手机号", notes = "置业顾问校验副手机号")
     @RequestMapping(value = "/verifySpareMobile", method = RequestMethod.POST)
-    public Result verifySpareMobile(@RequestParam(value="SpareMobile",required=true)String SpareMobile) {
+    public Result verifySpareMobile(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		String SpareMobile = json.getString("SpareMobile");
 		return iVCustomergwlistSelectService.verifySpareMobile(SpareMobile);
     }
 }

@@ -60,8 +60,8 @@
             and a.id not in (
             select memberid
             from B_SalesGroupMember
-            where isdel=0 and status=1 and ProjectID=# #{whereOne})
-            #{where} order by EmployeeName
+            where isdel=0 and status=1 and ProjectID= #{paramMap.ProjectID} ${paramMap.whereOne})
+            ${paramMap.where}
         ]]>
     </select>
 
@@ -72,7 +72,6 @@
             WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN '0'
             WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN '1'
             WHEN '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' THEN '0'
-            --WHEN 'E417A997-9A91-4D22-8428-9C2C2C560656' THEN '0'
             WHEN '97F5E202-2D3B-4935-BA91-4AFD5C5578FC' THEN '0'
             WHEN 'B0BF5636-94AD-4814-BB67-9C1873566F29' THEN '1'
             WHEN '48FC928F-6EB5-4735-BF2B-29B1F591A582' THEN '0'
@@ -83,24 +82,9 @@
             INNER JOIN S_Account b ON b.ID=a.MemberID AND b.IsDel=0 and b.Status=1
             left join B_SalesGroup c on c.ID=a.ReceptionGroupID
             INNER JOIN dbo.S_Dictionary d ON d.ID=a.RoleID AND d.IsDel=0 AND d.PID='54E311BD-943C-41E6-BF09-42191198C229'
-            --left JOIN dbo.S_JobsUserRel jur ON a.IsDel = 0 AND b.ID = jur.AccountID
-            --left JOIN dbo.S_Jobs j ON jur.JobID = j.ID AND j.IsDel = 0
-            --left JOIN S_Organization o ON j.JobOrgID = o.ID AND o.IsDel = 0
             left JOIN S_Organization o ON b.UserOrgID = o.ID AND o.IsDel = 0
             INNER JOIN dbo.B_SalesUser z ON z.ID=a.MemberID AND z.IsDel=0 AND z.Status=1
-            WHERE a.IsDel=0 AND ISNULL(c.IsDel,0)<>1 {where} and a.RoleID!='E417A997-9A91-4D22-8428-9C2C2C560656'
-            order by CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN '0'
-            WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN '0'
-            WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN '1'
-            WHEN '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' THEN '0'
-            --WHEN 'E417A997-9A91-4D22-8428-9C2C2C560656' THEN '0'
-            WHEN '97F5E202-2D3B-4935-BA91-4AFD5C5578FC' THEN '0'
-            WHEN 'B0BF5636-94AD-4814-BB67-9C1873566F29' THEN '1'
-            WHEN '48FC928F-6EB5-4735-BF2B-29B1F591A582' THEN '0'
-            WHEN '938935B7-4131-4E61-A811-4323A7F193A2' THEN '0'
-            WHEN '0269F35E-B32D-4D12-8496-4E6E4CE597B7' THEN '0'
-            END DESC,
-            EmployeeName
+            WHERE a.IsDel=0 AND ISNULL(c.IsDel,0)<>1 ${paramMap.where} and a.RoleID!='E417A997-9A91-4D22-8428-9C2C2C560656'
         ]]>
     </select>
 
