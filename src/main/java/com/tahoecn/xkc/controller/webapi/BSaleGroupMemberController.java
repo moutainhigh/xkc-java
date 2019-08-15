@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
-@RequestMapping("/saleGroupMember")
+@RequestMapping("/webapi/saleGroupMember")
 public class BSaleGroupMemberController extends TahoeBaseController {
 
     @Autowired
