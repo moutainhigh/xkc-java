@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-06-25
  */
 @RestController
-@RequestMapping("/saleGroupMember")
+@RequestMapping("/webapi/saleGroupMember")
 public class BSaleGroupMemberController extends TahoeBaseController {
 
     @Autowired
@@ -82,7 +82,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
             @ApiImplicitParam(name = "Tp", value = "Tp", required = true, dataType = "String"),
             @ApiImplicitParam(name = "PageIndex", value = "PageIndex", required = true, dataType = "String"),
             @ApiImplicitParam(name = "PageSize", value = "PageSize", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "Kw", value = "Kw", required = true, dataType = "String")})
+            @ApiImplicitParam(name = "Kw", value = "Kw", dataType = "String")})
     @ApiOperation(value = "查询团队人员列表接口", notes = "查询团队人员列表接口")
     @RequestMapping(value = "/SalesGroupTeamList_Select", method = { RequestMethod.GET })
     public Result SalesGroupTeamList_Select(@RequestParam(required = true) String ProjectID,
@@ -92,7 +92,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
                 @RequestParam(required = true) String Tp,
                 @RequestParam(required = true) String PageIndex,
                 @RequestParam(required = true) String PageSize,
-                @RequestParam(required = true) String Kw) {
+                String Kw) {
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ProjectID",ProjectID);
@@ -124,14 +124,15 @@ public class BSaleGroupMemberController extends TahoeBaseController {
             @ApiImplicitParam(name = "RoleName", value = "RoleName", required = true, dataType = "String")
             })
     @ApiOperation(value = "添加移除成员接口", notes = "添加移除成员接口")
-    @RequestMapping(value = "/SalesGroupMembers_Insert", method = { RequestMethod.GET })
+    @RequestMapping(value = "/SalesGroupMembers_Insert", method = { RequestMethod.POST })
     public Result SalesGroupMembers_Insert(@RequestParam(required = true) String Ids,
                                                      @RequestParam(required = true) String ProjectID,
                                                      @RequestParam(required = true) String RoleID,
                                                      @RequestParam(required = true) String PersonId,
                                                      @RequestParam(required = true) String RemoveIds,
                                                      @RequestParam(required = true) String UserID,
-                                                     @RequestParam(required = true) String RoleName) {
+                                                     @RequestParam(required = true) String RoleName,
+                                           String ReceptionGroupID) {
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("Ids",Ids);
@@ -141,6 +142,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
         map.put("RemoveIds",RemoveIds);
         map.put("UserID",UserID);
         map.put("RoleName",RoleName);
+        map.put("ReceptionGroupID",ReceptionGroupID);
 
         iSaleGroupMemberService.SalesGroupMembers_Insert(map);
         return Result.ok("成功");

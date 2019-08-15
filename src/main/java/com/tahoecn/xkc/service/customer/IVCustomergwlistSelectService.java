@@ -239,6 +239,11 @@ public interface IVCustomergwlistSelectService extends IService<VCustomergwlistS
 	  */
 	 public Result getCustomerChangeList(String OpportunityID);
 	 
-	 
+	 /**
+	  * 校验副手机号
+	  * @param OpportunityID
+	  * @return
+	  */
+	 public Result verifySpareMobile(String SpareMobile);
 	 
 }

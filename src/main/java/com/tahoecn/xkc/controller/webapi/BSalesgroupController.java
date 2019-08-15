@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-07-04
  */
 @RestController
-@RequestMapping("/salesgroup")
+@RequestMapping("/webapi/salesgroup")
 public class BSalesgroupController extends TahoeBaseController {
 
     @Autowired

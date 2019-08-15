@@ -29,10 +29,8 @@ import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -499,6 +497,13 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @ApiOperation(value = "上传")
+    @RequestMapping(value = "/uploadFile", method = {RequestMethod.POST},headers="content-type=multipart/form-data")
+    public Result uploadFile(@RequestParam("file") MultipartFile[] file){
+        String path = uploadFiles(file);
+        return Result.ok(path);
+    }
+
     //已测
     @ApiOperation(value = "项目收藏", notes = "项目收藏")
     @RequestMapping(value = "/BrokerProjectCollection_Insert", method = {RequestMethod.POST})
@@ -673,6 +678,14 @@ public class H5Controller extends TahoeBaseController {
     public Result mCustomerTCTransfer_Update(@RequestBody JSONObject jsonParam) {
         Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
         Result result=channeluserService.mCustomerTCTransfer_Update(paramMap);
+        return result;
+    }
+
+    @ApiOperation(value = "审核", notes = "审核")
+    @RequestMapping(value = "/mChannelStoreUserApproval_Update", method = {RequestMethod.POST})
+    public Result mChannelStoreUserApproval_Update(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mChannelStoreUserApproval_Update(paramMap);
         return result;
     }
 

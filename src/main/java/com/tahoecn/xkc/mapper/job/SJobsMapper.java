@@ -45,4 +45,7 @@ public interface SJobsMapper extends BaseMapper<SJobs> {
 
     List<Map<String, Object>> getFuncList();
 
+    List<String> getOrgPID();
+
+    List<String> getChildrenByOrgID(@Param("orgID")String orgID);
 }

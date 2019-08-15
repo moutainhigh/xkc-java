@@ -264,7 +264,7 @@ public class CustomerManagerController extends TahoeBaseController {
         UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
         BOpportunity oppo = new BOpportunity();
         oppo.setCustomerName(customerName);
-        oppo.setAuxiliaryMobile(auxiliaryMobile);
+        oppo.setSpareMobile(auxiliaryMobile);
         oppoUpWarapper.eq("ID",oppoId);
         iBOpportunityService.update(oppo,oppoUpWarapper);
 
