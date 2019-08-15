@@ -128,6 +128,7 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @CrossOrigin
     //已测 ProjectID     UserID
     @ApiOperation(value = "当前项目是否被收藏", notes = "当前项目是否被收藏")
     @RequestMapping(value = "/mBrokerProjectCollectionIsExist_Select", method = {RequestMethod.POST})
@@ -156,6 +157,7 @@ public class H5Controller extends TahoeBaseController {
     }
 
 
+    @CrossOrigin
     @ApiOperation(value = "登录账号", notes = "登录账号")
     @RequestMapping(value = "/mLoginTK_SelectN", method = {RequestMethod.POST})
     public Result mLoginTK_SelectN(@RequestBody JSONObject jsonParam) {
