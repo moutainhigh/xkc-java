@@ -447,7 +447,7 @@
 				WHEN 0 THEN
 				NULL ELSE #{EndSaleDate} 
 			END,
-			#{ProjInfo},
+			#{ProjInfo,jdbcType=CLOB},
 			#{PlanUrl},
 			#{CwztGUID},
 			CASE
@@ -473,8 +473,8 @@
 			#{DevelopUnitName},
 			#{BuildUnitName},
 			#{InspectUnitName},
-			#{ProjIntro},
-			#{ProjProgress},
+			#{ProjIntro,jdbcType=CLOB},
+			#{ProjProgress,jdbcType=CLOB},
 			CASE
 				LEN( #{PublishTime} ) 
 				WHEN 0 THEN
@@ -531,7 +531,7 @@
 			#{SaleGain},
 			#{IRR},
 			#{InvestmentBack},
-			#{TargetEffigy},
+			#{TargetEffigy,jdbcType=CLOB},
 			#{ApproveState},
 			CASE
 				LEN( #{LastRecensionDate} ) 
@@ -588,7 +588,7 @@
 			END,
 			#{BlockCoding},
 			#{LandPrice},
-			#{PlotAddress},
+			#{PlotAddress,jdbcType=CLOB},
 			#{ProjUseArea},
 			#{RedlineUseArea},
 			#{LandUseYear},
@@ -814,6 +814,100 @@
 	
 	<!-- 插入销售变更数据 -->
 	<insert id="TaskSaleModiApplyDetail_Insert">
+		INSERT INTO C_MYSaleModiApply SELECT
+			A.SaleModiApplyGUID,
+			A.SaleGUID,
+			A.SaleType,
+			A.ApplyType,
+			A.ReasonSort,
+			A.Reason,
+			A.ApplyBy,
+			A.ApplyDate,
+			A.BUGUID,
+			A.ProjGUID,
+			A.ExecBy,
+			A.ExecDate,
+			A.RoomGUID,
+			A.CstName,
+			A.CstGUID,
+			A.ApplyByGUID,
+			A.ApplyByStationGUID,
+			A.IsApproved,
+			A.ApproveBy,
+			A.ApproveDate,
+			A.Opinion,
+			A.RoomInfo,
+			A.NewRoomGUID,
+			A.NewRoomInfo,
+			A.NewObligee,
+			A.NewObligeeGUID,
+			A.Ywy,
+			A.IsQdHfSqb,
+			A.IsQdTfSqb,
+			A.IsQdBgSqb,
+			A.Pay,
+			A.FellBackAmount,
+			A.HandCharge,
+			A.JjArea,
+			A.CjPrice,
+			A.Cjtotal,
+			A.QsDate,
+			A.NewJjArea,
+			A.NewPrice,
+			A.NewTotal,
+			A.IsCstBg,
+			A.IsPayformBg,
+			A.IsYhBg,
+			A.PayformName,
+			A.NewPayFormName,
+			A.DiscntValue,
+			A.NewDiscntValue,
+			A.DiscntRemark,
+			A.NewDiscntRemark,
+			A.NewCjPrice,
+			A.NewCjtotal,
+			A.Ajtotal,
+			A.NewAjtotal,
+			A.AjYear,
+			A.NewAjYear,
+			A.ApproveStatus,
+			A.NewRoomTotal,
+			A.NewBldCjPrice,
+			A.NewTnCjPrice,
+			A.NewRmbHtTotal,
+			A.NewEarnest,
+			A.NewAjBank,
+			A.NewGjjTotal,
+			A.NewGjjBank,
+			A.NewGjjYear,
+			A.BldCjPrice,
+			A.TnCjPrice,
+			A.RoomTotal,
+			A.Earnest,
+			A.AjBank,
+			A.GjjTotal,
+			A.GjjBank,
+			A.GjjYear,
+			A.RmbHtTotal,
+			A.Refundment,
+			A.IsCjtotalBg,
+			A.DisCountPlanGUID,
+			A.IsExcutive,
+			A.IsAfreshAdju,
+			A._DataSource,
+			A.YsFellBackAmount,
+			A.ReliefReason,
+			A.HaveCertificate,
+			GETDATE() CreateTime,
+			0 [Version],
+			0 IsHandle,
+			NULL HandleTime 
+		FROM
+			MY.dotnet_erp250919.dbo.s_SaleModiApply A 
+		WHERE
+			NOT EXISTS ( SELECT SaleModiApplyGUID FROM C_MYSaleModiApply B WHERE A.SaleModiApplyGUID = B.SaleModiApplyGUID );
+	</insert>
+	<insert id="TaskSaleModiApplyDetail_Insert1">
 		INSERT INTO C_MYSaleModiApply SELECT A.*, GETDATE() CreateTime, 0 [Version], 0 IsHandle, NULL HandleTime FROM MY.dotnet_erp250919.dbo.s_SaleModiApply A WHERE NOT EXISTS( SELECT SaleModiApplyGUID FROM C_MYSaleModiApply B WHERE A.SaleModiApplyGUID = B.SaleModiApplyGUID);
 	</insert>
 	
