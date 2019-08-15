@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.MessageCate;
@@ -53,7 +54,7 @@ public class MessageAppController extends TahoeBaseController {
     public Result mMessageUnreadCount_Select(@RequestBody JSONObject jsonParam) {
     	try{
     		Map paramMap = (HashMap)jsonParam.get("_param");
-    		System.out.println("================================="+paramMap);
+    		System.out.println("================================="+jsonParam);
     		String ProjectID = (String)paramMap.get("ProjectID");//项目id
     		String UserID = (String)paramMap.get("UserID");//用户id
     		String JobCode = (String)paramMap.get("JobCode");//岗位代码
@@ -535,7 +536,7 @@ public class MessageAppController extends TahoeBaseController {
 		}
 		if (resJo.get(TypeIDTemp) != null){
             String ContentTemp = (String) resJo.get(TypeIDTemp).get("Content");
-            resJo.get(TypeIDTemp).put("Content", ContentTemp.isEmpty() ? "" : ContentTemp.substring(0, ContentTemp.length() - 1));
+            resJo.get(TypeIDTemp).put("Content", StringUtils.isEmpty(ContentTemp) ? "" : ContentTemp.substring(0, ContentTemp.length() - 1));
         }
         for(Map<String, Object> item : resJo.values()){
             list.add(item);
@@ -565,7 +566,6 @@ public class MessageAppController extends TahoeBaseController {
 		map.put("sqlWhere", sqlWhere);
 		list = iSystemMessageService.UnreadCountListByMessageType_Select(map);*/
 		/*app改造-未读消息数，今日待跟进，当日跟进逾期，当日认购逾期，当日 签约逾期，当日回款逾期-start*/
-    	System.out.println("++++++++++++++++++++++++++++++++"+msgTypeTemp);
     	List<UnreadCountVo> list = new ArrayList<UnreadCountVo>();
     	String JobCode = (String) map.get("JobCode");
     	String sqlWhere = "";
@@ -590,7 +590,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			|| MessageType.签约通知.getTypeID().equals(item)
 	    			|| MessageType.退房通知.getTypeID().equals(item)
 	    			|| MessageType.无效通知.getTypeID().equals(item)){
-	    		map.put("IsRead", 0);
+	    		map.put("IsRead", "0");
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeOpportunityZQ_Select_Count(map));
@@ -616,7 +616,7 @@ public class MessageAppController extends TahoeBaseController {
 		    			|| MessageType.到访提醒.getTypeID().equals(item)){
 		    		map.put("IsApprove", "");
 		    	}else{
-		    		map.put("IsApprove", 0);
+		    		map.put("IsApprove", "0");
 		    	}
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
@@ -629,7 +629,7 @@ public class MessageAppController extends TahoeBaseController {
 	    					MessageType.签约逾期催办.getTypeID(),
 	    					MessageType.回款逾期催办.getTypeID()};
 	    		map.put("MessageType", String.join("' OR MessageType ='", msgType));
-		    	map.put("IsApprove", 0);
+		    	map.put("IsApprove", "0");
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeOpportunity_Select_Count(map));
@@ -648,7 +648,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			|| MessageType.客户失效通知.getTypeID().equals(item)
 	    			|| MessageType.到访即将逾期.getTypeID().equals(item)
 	    			|| MessageType.成交即将逾期.getTypeID().equals(item)){
-	    		map.put("IsRead", 0);
+	    		map.put("IsRead", "0");
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeClue_Select_Count(map));
@@ -721,7 +721,6 @@ public class MessageAppController extends TahoeBaseController {
 				list.add(v);
 			}
     	}
-    	System.out.println("-----------------------------------"+JSON.toJSONString(list));
 		/*app改造-未读消息数，今日待跟进，当日跟进逾期，当日认购逾期，当日 签约逾期，当日回款逾期-end*/
 		return list;
 	}
@@ -813,6 +812,7 @@ public class MessageAppController extends TahoeBaseController {
     public Result mMessageList_Select(@RequestBody JSONObject jsonParam) {
     	try{
 	    	Map paramMap = (HashMap)jsonParam.get("_param");
+	    	System.out.println("================================="+jsonParam);
 	    	String UserID = (String)paramMap.get("UserID");
 	    	String ProjectID = (String)paramMap.get("ProjectID");
 	    	String TypeID = (String)paramMap.get("TypeID");//消息类型ID
