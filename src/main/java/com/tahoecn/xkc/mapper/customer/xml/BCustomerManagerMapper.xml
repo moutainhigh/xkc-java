@@ -39,7 +39,7 @@
         tr.SourceType SourceTypeID,
         tr.CardID,
         tr.CardType,
-        tr.AuxiliaryMobile
+        tr.SpareMobile
           FROM      ( SELECT    b.ID OpportunityID ,
                                 b.CustomerID ,
                                 b.CustomerName ,
@@ -68,7 +68,7 @@
                                 G.CreateTime  ZJDF,
                                 a.CardID CardID,
                                 a.CardType CardType,
-                                b.AuxiliaryMobile AuxiliaryMobile
+                                b.SpareMobile SpareMobile
                       FROM      B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
@@ -143,7 +143,7 @@
                                 '' ZJDF,
                                 '' CardID,
                                 '' CardType,
-                                '' AuxiliaryMobile
+                                '' SpareMobile
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID

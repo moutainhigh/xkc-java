@@ -576,6 +576,15 @@ public class MessageAppController extends TahoeBaseController {
 			if("GW".equals(JobCode)){
     			v.setMessageCount(iSystemMessageService.ListDRGJYQOpportunity_SelectCount(map));
     		}else{
+    			sqlWhere = "";
+    			if(!"ZQFZR".equals(JobCode)){//ZQ
+    				sqlWhere += " AND o.SaleUserID = '" + map.get("UserID") + "' ";
+    			}else{//ZQFZR
+    				sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+    						+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+    						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+    			}
+    			map.put("sqlWhere", sqlWhere);
     			v.setMessageCount(iSystemMessageService.ListDRGJYQClue_SelectCount(map));
     		}
 			v.setContent("");
@@ -1461,7 +1470,6 @@ public class MessageAppController extends TahoeBaseController {
 	public Result mMessageCalendar_Select(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			iSystemMessageService.mMessageCalendar_Select(paramMap);
 			return Result.ok(iSystemMessageService.mMessageCalendar_Select(paramMap));
 		}catch(Exception e){
 			e.printStackTrace();

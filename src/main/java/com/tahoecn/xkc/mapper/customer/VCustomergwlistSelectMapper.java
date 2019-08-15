@@ -652,4 +652,11 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @return
 	 */
 	Map<String,Object> selectOpportunityByID(@Param("OpportunityID")String OpportunityID);
+	
+	/**
+	 * 校验副手机号
+	 * @param SpareMobile
+	 * @return
+	 */
+	List<Map<String,Object>> verifyOpportunityMobile(@Param("SpareMobile")String SpareMobile);
 }

@@ -29,10 +29,8 @@ import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -170,6 +168,7 @@ public class H5Controller extends TahoeBaseController {
         if (StringUtils.equals(time, Password)) {
             map = channeluserService.ChannelUserCurrency_Find(UserName);
         } else {
+            //channelTypeID是写死的
             map =channeluserService.ChannelUser_Find(UserName,SecureUtil.md5(Password));
         }
         if (map==null){
@@ -232,7 +231,7 @@ public class H5Controller extends TahoeBaseController {
         result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(map);
-        return result;
+        return Result.ok("");
     }
 
 
@@ -498,6 +497,13 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @ApiOperation(value = "上传")
+    @RequestMapping(value = "/uploadFile", method = {RequestMethod.POST},headers="content-type=multipart/form-data")
+    public Result uploadFile(@RequestParam("file") MultipartFile[] file){
+        String path = uploadFiles(file);
+        return Result.ok(path);
+    }
+
     //已测
     @ApiOperation(value = "项目收藏", notes = "项目收藏")
     @RequestMapping(value = "/BrokerProjectCollection_Insert", method = {RequestMethod.POST})
@@ -604,7 +610,7 @@ public class H5Controller extends TahoeBaseController {
         String authCode=(String) paramMap.get("AuthCode");
         String password=(String) paramMap.get("Password");
         String rePassword=(String) paramMap.get("RePassword");
-       if (StringUtils.equals(password,rePassword)){
+       if (!StringUtils.equals(password,rePassword)){
            return Result.errormsg(2,"密码不一致");
        }
         BVerificationcode vc = verificationcodeService.checkAuthCode(mobile);
@@ -617,7 +623,7 @@ public class H5Controller extends TahoeBaseController {
         BChanneluser one = channeluserService.getOne(wrapper);
         one.setPassword(SecureUtil.md5(rePassword));
         if (channeluserService.updateById(one)){
-            return Result.ok(null);
+            return Result.okm("成功");
         }
         return Result.errormsg(99,"修改密码失败");
 
@@ -672,6 +678,14 @@ public class H5Controller extends TahoeBaseController {
     public Result mCustomerTCTransfer_Update(@RequestBody JSONObject jsonParam) {
         Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
         Result result=channeluserService.mCustomerTCTransfer_Update(paramMap);
+        return result;
+    }
+
+    @ApiOperation(value = "审核", notes = "审核")
+    @RequestMapping(value = "/mChannelStoreUserApproval_Update", method = {RequestMethod.POST})
+    public Result mChannelStoreUserApproval_Update(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.mChannelStoreUserApproval_Update(paramMap);
         return result;
     }
 

@@ -30,6 +30,8 @@ public interface VCustomerfjlistSelectMapper extends BaseMapper<VCustomerfjlistS
 	
 	IPage<Map<String,Object>> sCustomerFJAdviserList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String, Object> pmap);
 	
+	List<Map<String,Object>> sCustomerFJAdviserList_Select_Sort(Map<String, Object> pmap);
+	
 	Long mSystemFormSessionStatus_Select_step1(Map<String, Object> pmap);
 
 	void mSystemFormSessionStatus_Select_step2(Map<String, Object> pmap);

@@ -581,13 +581,12 @@
 			 ) t WHERE 1=1 ${WHERE}
 			)
 		 SELECT
-      		s.*,
-   			sg.Name + ' ' + sgm.RoleName AS SaleGroupRole
+      		*
   		FROM
-      		selectTemp s LEFT JOIN B_SalesGroupMember sgm ON s.SaleUserID = sgm.MemberID
-   			LEFT JOIN B_SalesGroup sg ON sg.ID = sgm.ReceptionGroupID
+      		selectTemp
 		WHERE
-		    RankNum BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			RankNum > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND RankNum <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    RankNum
     ]]>
@@ -657,7 +656,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>
@@ -761,7 +761,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>
@@ -902,7 +903,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>
@@ -1041,7 +1043,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>
@@ -1137,7 +1140,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>
@@ -1255,7 +1259,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>
@@ -1400,7 +1405,8 @@
 		FROM
 		    selectTemp
 		WHERE
-		    ID1516 BETWEEN ( ${PageIndex} - 1 ) * ${PageSize} AND ${PageIndex} * ${PageSize}
+			ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+	       	AND ID1516 <= ${PageIndex} * ${PageSize}
 		ORDER BY
 		    ID1516
     ]]>

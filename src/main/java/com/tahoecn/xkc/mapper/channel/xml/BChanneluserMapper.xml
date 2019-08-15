@@ -181,7 +181,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
     </update>
 
     <select id="ChannelUser_Find" resultType="java.util.Map" parameterType="string">
-        SELECT
+       SELECT
         *,
         dbo.F_DictName ( ChannelTypeID ) 'ChannelType'
         FROM
@@ -191,6 +191,9 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         AND PASSWORD = upper(#{Password})
         AND IsDel = 0
         AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
+
+        <!-- SELECT *
+        FROM B_ChannelUser where (Mobile=#{Mobile} or UserName=#{Mobile}) and Password=#{Password}-->
     </select>
     
     <select id="ChannelUser_Detail_FindById" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.channel.BChanneluser">
@@ -611,7 +614,6 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 
     <update id="ChannelUserDetail_UpateN" parameterType="string">
         UPDATE B_ChannelUser SET Name=#{name},Gender=#{gender}
-        ${sqlUpdate}
         WHERE ID=#{userID} ;
     </update>
 

@@ -27,6 +27,8 @@ public interface IBAppupgradeService extends IService<BAppupgrade> {
 	/**
 	 * APP版本信息修改
 	 */
-	void SystemAppVersion_Update(String versionID,String AppVersionCode,String Url);
+	void SystemAppVersion_Update(String versionID_ANDROID,String AppVersionCode_ANDROID,String Url_ANDROID,
+			String versionID_IOS,String AppVersionCode_IOS,String Url_IOS,
+			String versionID_IPAD,String AppVersionCode_IPAD,String Url_IPAD);
 
 }

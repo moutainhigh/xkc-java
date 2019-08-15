@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -42,13 +43,28 @@ public class BAppupgradeServiceImpl extends ServiceImpl<BAppupgradeMapper, BAppu
 	 * APP版本信息修改
 	 */
 	@Override
-	public void SystemAppVersion_Update(String versionID,String AppVersionCode,String Url) {
-		BAppupgrade ba = new BAppupgrade();
-		ba.setId(versionID);
-		ba.setAppVersionCode(AppVersionCode);
-		ba.setAppVersionName(AppVersionCode + "版本");
-		ba.setUrl(Url);
-		bAppupgradeMapper.updateById(ba);
+	@Transactional(rollbackFor = Exception.class)
+	public void SystemAppVersion_Update(String versionID_ANDROID,String AppVersionCode_ANDROID,String Url_ANDROID,
+			String versionID_IOS,String AppVersionCode_IOS,String Url_IOS,
+			String versionID_IPAD,String AppVersionCode_IPAD,String Url_IPAD) {
+		BAppupgrade ba_ANDROID = new BAppupgrade();
+		ba_ANDROID.setId(versionID_ANDROID);
+		ba_ANDROID.setAppVersionCode(AppVersionCode_ANDROID);
+		ba_ANDROID.setAppVersionName(AppVersionCode_ANDROID + "版本");
+		ba_ANDROID.setUrl(Url_ANDROID);
+		bAppupgradeMapper.updateById(ba_ANDROID);
+		BAppupgrade ba_IOS = new BAppupgrade();
+		ba_IOS.setId(versionID_IOS);
+		ba_IOS.setAppVersionCode(AppVersionCode_IOS);
+		ba_IOS.setAppVersionName(AppVersionCode_IOS + "版本");
+		ba_IOS.setUrl(Url_IOS);
+		bAppupgradeMapper.updateById(ba_IOS);
+		BAppupgrade ba_IPAD = new BAppupgrade();
+		ba_IPAD.setId(versionID_IPAD);
+		ba_IPAD.setAppVersionCode(AppVersionCode_IPAD);
+		ba_IPAD.setAppVersionName(AppVersionCode_IPAD + "版本");
+		ba_IPAD.setUrl(Url_IPAD);
+		bAppupgradeMapper.updateById(ba_IPAD);
 	}
 
 }

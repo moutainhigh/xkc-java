@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -70,6 +71,7 @@ public class BSalesgroupServiceImpl extends ServiceImpl<BSalesgroupMapper, BSale
     private BQuituserMapper bQuituserMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void UserTeam_DeleteNew(Map<String, Object> map) {
         UpdateWrapper<BSalesgroup> updateSalesGroupWrapper = new UpdateWrapper<>();
         String UserID = (String)map.get("UserID");
@@ -99,25 +101,25 @@ public class BSalesgroupServiceImpl extends ServiceImpl<BSalesgroupMapper, BSale
             sjobsQueryWrapper.eq("CommonJobID",roleId);
             sjobsQueryWrapper.eq("JobOrgID",projectId);
             SJobs sJobs = iSJobsService.getOne(sjobsQueryWrapper);
-            String jobId = sJobs.getId();
-            iSJobsService.remove(sjobsQueryWrapper);
+            if(sJobs!=null) {
+                String jobId = sJobs.getId();
+                iSJobsService.remove(sjobsQueryWrapper);
+                QueryWrapper<SJobsuserrel> sjobsusrrelQueryWrapper = new QueryWrapper<>();
+                sjobsusrrelQueryWrapper.eq("AccountID",memberId);
+                sjobsusrrelQueryWrapper.eq("JobID",jobId);
+                //SJobsuserrel sJobsuserrel = iSJobsuserrelService.getOne(sjobsusrrelQueryWrapper);
+                iSJobsuserrelService.remove(sjobsusrrelQueryWrapper);
 
-            QueryWrapper<SJobsuserrel> sjobsusrrelQueryWrapper = new QueryWrapper<>();
-            sjobsusrrelQueryWrapper.eq("AccountID",memberId);
-            sjobsusrrelQueryWrapper.eq("JobID",jobId);
-            //SJobsuserrel sJobsuserrel = iSJobsuserrelService.getOne(sjobsusrrelQueryWrapper);
-            iSJobsuserrelService.remove(sjobsusrrelQueryWrapper);
-
-            QueryWrapper<BProjectjobrel> bprojectjobrelQueryWrapper = new QueryWrapper<>();
-            bprojectjobrelQueryWrapper.eq("JobID",jobId);
-            bprojectjobrelQueryWrapper.eq("ProjectID",projectId);
-            //BProjectjobrel bProjectjobrel = iBProjectjobrelService.getOne(bprojectjobrelQueryWrapper);
-            iBProjectjobrelService.remove(bprojectjobrelQueryWrapper);
-
+                QueryWrapper<BProjectjobrel> bprojectjobrelQueryWrapper = new QueryWrapper<>();
+                bprojectjobrelQueryWrapper.eq("JobID",jobId);
+                bprojectjobrelQueryWrapper.eq("ProjectID",projectId);
+                //BProjectjobrel bProjectjobrel = iBProjectjobrelService.getOne(bprojectjobrelQueryWrapper);
+                iBProjectjobrelService.remove(bprojectjobrelQueryWrapper);
+            }
             //更新渠道团队人员ChannelOrgID
             QueryWrapper<BChanneluser> selchanneluserWrapper = new QueryWrapper<BChanneluser>();
             selchanneluserWrapper.eq("ID",memberId);
-            BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectObjs(selchanneluserWrapper);
+            BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectOne(selchanneluserWrapper);
             if(channeluser!=null  && (roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))){
                 map.put("memberId",memberId);
                 String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId(map);
