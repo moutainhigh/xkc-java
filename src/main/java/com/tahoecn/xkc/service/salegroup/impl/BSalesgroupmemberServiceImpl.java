@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.landray.sso.client.oracle.StringUtil;
-import com.tahoecn.xkc.converter.ResponseMessage;
+import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.clue.ClueListSelectMapper;
 import com.tahoecn.xkc.mapper.job.BProjectjobrelMapper;
@@ -98,10 +98,10 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
     @Override
     public Map<String,Object> SalesGroupTeamList_Select(IPage page,Map<String, Object> map) {
 
-        int tp = (int)map.get("Tp");
+        int tp = Integer.valueOf((String)map.get("Tp"));
         String RoleID = (String)map.get("RoleID");
         String ReceptionGroupID = (String)map.get("ReceptionGroupID");
-        String kw = (String)map.get("kw");
+        String kw = (String)map.get("Kw");
         String ProjectID = (String)map.get("ProjectID");
         StringBuffer sqlWhere = new StringBuffer();
         Map<String,Object> result = new HashMap<String,Object>();
@@ -110,7 +110,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
 
         if (StringUtil.isNotNull(kw))
         {
-            sqlWhere.append("AND (UserName LIKE "+kw.trim()+" OR EmployeeName LIKE '%{0}%')");
+            sqlWhere.append("AND (UserName LIKE  '%"+kw.trim()+"%' OR EmployeeName LIKE '%"+kw.trim()+"%')");
         }
 
         if (tp == 0)
@@ -132,23 +132,22 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 }
                 else
                 {
-                    whereOne = " and RoleId in("+RoleID+",'48FC928F-6EB5-4735-BF2B-29B1F591A582','B0BF5636-94AD-4814-BB67-9C1873566F29','9584A4B7-F105-44BA-928D-F2FBA2F3B4A4')";
+                    whereOne = " and RoleId in('"+RoleID+"','48FC928F-6EB5-4735-BF2B-29B1F591A582','B0BF5636-94AD-4814-BB67-9C1873566F29','9584A4B7-F105-44BA-928D-F2FBA2F3B4A4')";
                 }
             }
             map.put("whereOne", whereOne);
             result.put("NoAddedList",bSaleGroupMemberMapper.SalesGroupTeamNoAddedList_Select(page,map));
 
         }else{
-
             if (StringUtil.isNotNull(ReceptionGroupID))
             {
-                sqlWhere.append("and a.ReceptionGroupID="+ReceptionGroupID.trim()+" ");
+                sqlWhere.append("and a.ReceptionGroupID='"+ReceptionGroupID.trim()+"' ");//团队ID
             }
             else
             {
-                sqlWhere.append(" and a.RoleID="+RoleID+"");
+                sqlWhere.append(" and a.RoleID= '"+RoleID+"'");
             }
-            sqlWhere.append(" and a.ProjectID="+ProjectID+" ");
+            sqlWhere.append(" and a.ProjectID='"+ProjectID+"' ");
 
             map.put("where",sqlWhere.toString());
             result.put("AreadyAddedList",bSaleGroupMemberMapper.SalesGroupTeamAlreadyAddedList_Select(page,map));
@@ -158,7 +157,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseMessage SalesGroupMembers_Insert(Map<String, Object> map) {
+    public Result SalesGroupMembers_Insert(Map<String, Object> map) {
         String Ids = (String)map.get("Ids");
         String UserID = (String)map.get("UserID");
         String ProjectID = (String)map.get("ProjectID");
@@ -181,7 +180,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             queryWrapper.eq("ID", ReceptionGroupID);
             BSalesgroup bSalesgroup = (BSalesgroup)bSalesgroupMapper.selectOne(queryWrapper);
             if(bSalesgroup==null){
-                return ResponseMessage.error("无效的团队ID");
+                return Result.errormsg(9527,"无效的团队ID");
             }
 
             Nature = (int)map.get("Nature");
@@ -206,7 +205,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 map.put("ProjectID",ProjectID);
                 SalesGroupMemberExistProjectVo salesGroupMemberExistProjectVo = bSaleGroupMemberMapper.SalesGroupMemberExistProject_Select(map);
                 if(salesGroupMemberExistProjectVo!=null){
-                    return ResponseMessage.error("操作失败，" + salesGroupMemberExistProjectVo.getUserName() + "已在其他项目“" + salesGroupMemberExistProjectVo.getProjectName() + "”的销管岗位");
+                    return Result.errormsg(9527,"操作失败，" + salesGroupMemberExistProjectVo.getUserName() + "已在其他项目“" + salesGroupMemberExistProjectVo.getProjectName() + "”的销管岗位");
                 }
             }
         }
@@ -239,6 +238,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                     bSalesgroupmember.setRoleID(RoleID);
                     bSalesgroupmember.setRoleName(RoleName);
                     bSalesgroupmember.setCreateTime(new Date());
+                    bSalesgroupmember.setCreator(UserID);
                     bSalesgroupmember.setIsDel(0);
                     bSalesgroupmember.setStatus(1);
                     bSaleGroupMemberMapper.insert(bSalesgroupmember);
@@ -256,9 +256,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                         BSalesuser bSalesuser = new BSalesuser();
                         bSalesuser.setId(sAccount.getId());
                         bSalesuser.setName(sAccount.getEmployeeName());
-                        bSalesuser.setTelPhone(sAccount.getMobile());
-                        bSalesuser.setId(sAccount.getId());
-                        bSalesuser.setId(sAccount.getId());
+                        bSalesuser.setTelPhone(sAccount.getMobile()==null?"":sAccount.getMobile());
                         bSalesuser.setUserName(sAccount.getUserName());
                         bSalesuser.setHeadImg("/Skin/Green/images/headimg.png");
                         bSalesuser.setCreator(UserID);
@@ -402,9 +400,14 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             String[] removeIdStrs = RemoveIds.split(",");
             for(int i=0;i<removeIdStrs.length;i++)
             {
+                int ifHaveCustCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
+                if(ifHaveCustCount>0){
+                    return Result.errormsg(9527,"该成员下有客户数"+ifHaveCustCount + "个,请处理客户后再移除!");
+                }
+
                 //删除人员
                 BSalesgroupmember salesgroupmember = new BSalesgroupmember();
-                salesgroupmember.setId(removeIdStrs.toString());
+                salesgroupmember.setId(removeIdStrs[i]);
                 BSalesgroupmember salesgroupmemberdel = bSaleGroupMemberMapper.selectById(salesgroupmember);
                 salesgroupmemberdel.setIsDel(1);
                 salesgroupmemberdel.setEditor(UserID);
@@ -441,7 +444,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 //更新渠道团队人员ChannelOrgID
                 QueryWrapper<BChanneluser> selchanneluserWrapper = new QueryWrapper<BChanneluser>();
                 selchanneluserWrapper.eq("ID",memberId);
-                BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectObjs(selchanneluserWrapper);
+                BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectOne(selchanneluserWrapper);
                 if(channeluser!=null  && (roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))){
                     map.put("memberId",memberId);
                     String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId(map);
@@ -501,6 +504,45 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 }
             }
         }
+        if (StringUtil.isNotNull(ReceptionGroupID)){
+            String leaderRoleId = "";
+            String leaderRoleName = "";
+            if (Nature == 3 || Nature == 4 || Nature == 5||Nature==6||Nature==7)
+            {
+                leaderRoleId = "B0BF5636-94AD-4814-BB67-9C1873566F29";
+                leaderRoleName = "自有渠道团队负责人";
+            }
+            else
+            {
+                leaderRoleId = "3BC23001-BC31-4594-8463-C7DA89C0FB36";
+                leaderRoleName = "案场销售团队负责人";
+            }
+
+            BSalesgroupmember temp1 = new BSalesgroupmember();
+            UpdateWrapper<BSalesgroupmember> updateWrapper1 = new UpdateWrapper<>();
+            temp1.setRoleID(RoleID);
+            temp1.setRoleName(RoleName);
+            updateWrapper1.eq("RoleID",leaderRoleId);
+            updateWrapper1.eq("ReceptionGroupID",ReceptionGroupID);
+            this.update(temp1,updateWrapper1);
+
+            BSalesgroupmember temp2 = new BSalesgroupmember();
+            UpdateWrapper<BSalesgroupmember> updateWrapper2 = new UpdateWrapper<>();
+            temp2.setRoleID(leaderRoleId);
+            temp2.setRoleName(leaderRoleName);
+            updateWrapper2.eq("ID",PersonId);
+            this.update(temp2,updateWrapper2);
+
+            BSalesgroupmember temp3 = new BSalesgroupmember();
+            UpdateWrapper<BSalesgroupmember> updateWrapper3 = new UpdateWrapper<>();
+            temp3.setRoleID(leaderRoleId);
+            temp3.setRoleName(leaderRoleName);
+            updateWrapper3.eq("MemberID",PersonId);
+            updateWrapper3.eq("ReceptionGroupID",ReceptionGroupID);
+            this.update(temp3,updateWrapper3);
+        }
+
+
         return null;
     }
 }
