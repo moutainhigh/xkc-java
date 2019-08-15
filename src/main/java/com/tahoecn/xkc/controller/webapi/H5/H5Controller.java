@@ -223,17 +223,14 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @CrossOrigin(methods = RequestMethod.POST,allowCredentials = "true")
     @ApiOperation(value = "获取个人中心的统计数据2", notes = "获取个人中心的统计数据")
     @RequestMapping(value = "/mBrokerMyCenter_SelectNew", method = {RequestMethod.POST})
     public Result mBrokerMyCenter_SelectNew(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String BrokerID=(String) paramMap.get("BrokerID");
         Map<String, Object> map = channeluserService.BrokerMyCenter_Select(BrokerID);
-        Result result = new Result();
-        result.setErrcode(0);
-        result.setErrmsg("成功");
-        result.setData(map);
-        return Result.ok("");
+        return Result.ok(map);
     }
 
 
