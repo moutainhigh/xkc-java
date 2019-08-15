@@ -44,7 +44,13 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 * @param ParentID
 	 * @param list
 	 */
-	void UpdateOpportunityParentID(@Param("ParentID")String ParentID,@Param("list")List<String> list);
+	void UpdateOpportunityParentID(@Param("ParentID")String ParentID,@Param("ParentRelation")String ParentRelation,@Param("ChildID")String ChildID);
+	
+	/**
+	 * 删除成员
+	 * @param ChildID
+	 */
+	void DeleteOpportunityParentID(@Param("ChildID")String ChildID);
 	
 	/**
 	 * 获取机会子集信息

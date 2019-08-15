@@ -3,6 +3,7 @@ package com.tahoecn.xkc.model.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChildItem implements Serializable {
@@ -54,6 +55,8 @@ public class ChildItem implements Serializable {
     private List<VerifyItem> Verify;
 	
     private List<OptionItem> Option;
+    
+    private JSONArray Child;
     
     @JsonProperty("ID")
     public String getID() {
@@ -260,6 +263,14 @@ public class ChildItem implements Serializable {
 
 	public void setOption(List<OptionItem> option) {
 		Option = option;
+	}
+
+	public JSONArray getChild() {
+		return Child;
+	}
+
+	public void setChild(JSONArray child) {
+		Child = child;
 	}
 
 	public ChildItem()
