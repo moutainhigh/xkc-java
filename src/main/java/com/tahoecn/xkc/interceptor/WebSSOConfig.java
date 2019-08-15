@@ -53,11 +53,11 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 	/**
 	 * 跨域拦截
 	 * //使用此方法配置之后再使用自定义拦截器时跨域相关配置就会失效,所以用下面的corsConfig
-	 */
+
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/app/**").allowedOrigins("*");
-	}
+	}*/
 
 	private CorsConfiguration corsConfig() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();

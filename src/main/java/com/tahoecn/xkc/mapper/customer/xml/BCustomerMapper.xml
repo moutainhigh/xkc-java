@@ -252,6 +252,7 @@
                                 b.CustomerPotentialID CustomerID ,
                                 b.Name CustomerName ,
                                 b.Mobile CustomerMobile ,
+                                b.SpareMobile SpareMobile ,
 
 
 
