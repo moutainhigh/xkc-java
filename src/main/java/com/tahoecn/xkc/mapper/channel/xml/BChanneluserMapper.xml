@@ -88,13 +88,13 @@ WHERE bc.IsDel=0 AND bc.Status=1 AND bc.Approver IS NOT NULL AND bc.Approver<>''
         ,
         case when DJAmount is null then 0 else cast(DJAmount as decimal(15,2)) end as DJAmount
         ,
-        case when BBCount is null then 0 else cast(BBCount as decimal(15,2)) end as '报备'
+        case when BBCount is null then 0 else cast(BBCount as decimal(15,2)) end as BBCount
         ,
-        case when DFCount is null then 0 else cast(DFCount as decimal(15,2)) end as '来访'
+        case when DFCount is null then 0 else cast(DFCount as decimal(15,2)) end as DFCount
         ,
-        case when RGCount is null then 0 else cast(RGCount as decimal(15,2)) end as '认购'
+        case when RGCount is null then 0 else cast(RGCount as decimal(15,2)) end as RGCount
         ,
-        case when QYCount is null then 0 else cast(QYCount as decimal(15,2)) end as '签约'
+        case when QYCount is null then 0 else cast(QYCount as decimal(15,2)) end as QYCount
         ,(select count(*) from S_Message where Receiver = #{BrokerID} and IsRead<>1) as NoReadMesCnt
         from (select id as BrokerID from B_ChannelUser
         where id=#{BrokerID}) t

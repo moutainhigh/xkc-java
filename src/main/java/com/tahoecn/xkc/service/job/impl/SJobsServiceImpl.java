@@ -304,7 +304,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     @Override
     public List<Map<String, Object>> SystemJobAuthOrg_Select(String pid, String jobID) {
         //原数据授权,显示全部组织
-//        List<Map<String, Object>> list = organizationService.SystemOrganizationChec_Select(pid);
+//        List<Map<String, Object>> list = organizationService.(pid);
         //数据授权只显示项目相关
         List<Map<String, Object>> list = organizationService.SystemProject_Select(pid);
         List<Map<String, Object>> result=new ArrayList<>();
@@ -323,6 +323,17 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
 
         return result;
     }
+
+    /**
+     * 全部展示组织项目 树形
+     * @param jobID
+     * @return
+     */
+    public List<Map<String, Object>> SystemJobAuthOrg_Select(String jobID) {
+
+        return null;
+    }
+
 
     @Override
     public List<Map<String, Object>> CommonJobList_Select() {

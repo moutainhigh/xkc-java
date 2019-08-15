@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -166,4 +167,6 @@ public interface IBChanneluserService extends IService<BChanneluser> {
     Map<String,Object> ChannelOrgRuleInfoDetail_Select(String projectId, String adviserGroupID);
 
     Result mChannelStoreUserApproval_Update(Map<String, Object> paramMap);
+
+    Result getRqCode(Map<String, Object> paramMap);
 }

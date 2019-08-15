@@ -467,6 +467,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, Map<String, Object> userRule, int status, Map paramMap) {
         QueryWrapper<BCustomerpotential> wrapper=new QueryWrapper<>();
         wrapper.eq("Mobile",paramMap.get("Mobile"));
@@ -563,7 +564,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             obj1.put("NextFollowUpDate", "");
             CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(),CustomerActionVo.class);
             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
-
         }
 
         return save;

@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microsoft.schemas.office.visio.x2012.main.PageType;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.xkc.common.utils.RqCodeUtils;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
@@ -17,7 +17,6 @@ import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -629,6 +629,17 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         } catch (Exception e) {
             e.printStackTrace();
             return Result.errormsg(1,"失败");
+        }
+        return Result.okm("成功");
+    }
+
+    @Override
+    public Result getRqCode(Map<String, Object> paramMap) {
+	    int width= (int) paramMap.get("width");
+        String accessToken = RqCodeUtils.getToken();
+        String twoCodeUrl = RqCodeUtils.getminiqrQr(accessToken,width);//todo:根据活动id生成路径
+        if (twoCodeUrl==null){
+            return Result.errormsg(1,"生成失败");
         }
         return Result.okm("成功");
     }
