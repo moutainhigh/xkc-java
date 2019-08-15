@@ -422,7 +422,7 @@
                     "ID": "C7B06191-E032-45F4-A990-DB7345012345",
                     "Name": "客户成员信息",
                     "Placeholder": "",
-                    "Type": "Text",
+                    "Type": "Label",
                     "Value": "",
                     "ListIndex": 1,
                     "IsMust": 0,
