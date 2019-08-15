@@ -455,8 +455,8 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
     	<![CDATA[
     	SELECT  *
 		FROM    ( SELECT DISTINCT
-					D.ID,
-					--c.FollowUpContent as Content,
+					D.BookingGUID as ID,
+					'' as Content,
 					dbo.F_FormatDate(o.AllotTime) SendTime,
 					o.ID OpportunityID,
 					o.CustomerID,
@@ -577,7 +577,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
     	<![CDATA[
     	SELECT  *
 		FROM    ( SELECT
-					A.ID,
+					a.ID,
 					'跟进逾期前' Content,
 					dbo.F_FormatDate(o.AllotTime) SendTime,
 					o.ProjectID,
