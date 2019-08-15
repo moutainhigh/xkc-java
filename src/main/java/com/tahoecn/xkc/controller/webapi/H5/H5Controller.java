@@ -2,7 +2,6 @@ package com.tahoecn.xkc.controller.webapi.H5;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.common.utils.NetUtil;
+import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
@@ -29,9 +29,11 @@ import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -63,7 +65,7 @@ public class H5Controller extends TahoeBaseController {
     @Autowired
     private IBVerificationcodeService verificationcodeService;
     @Autowired
-    private ISFormsessionService formsessionService;
+    private ISFormsessionService iSFormsessionService;
     @Autowired
     private IBClueruleService clueruleService;
 
@@ -71,6 +73,9 @@ public class H5Controller extends TahoeBaseController {
     private IBVerificationcodeService iBVerificationcodeService;
     @Autowired
     private CsSendSmsLogService csSendSmsLogService;
+
+    @Value("${tahoe.application.physicalPath}")
+    private  String physicalPath;
 
     //已测  AppID=5D4D7079-D294-4204-BD51-C3AB420C6C2F
     @ApiOperation(value = "获取城市", notes = "获取城市")
@@ -369,6 +374,26 @@ public class H5Controller extends TahoeBaseController {
 //        return Result.errormsg(99,"生成FormSession失败");
 //    }
 
+    @ApiOperation(value = "生成FormSessionID", notes = "生成FormSessionID")
+    @RequestMapping(value = "/mSystemFormSession_Insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mSystemFormSession_Insert(@RequestBody JSONObject paramAry) {
+        try{
+            Map paramMap = (HashMap)paramAry.get("_param");
+            SFormsession sess = new SFormsession();
+            sess.setIp(NetUtil.getRemoteAddr(request));
+            sess.setData(JSONObject.toJSONString(paramMap));
+            sess.setCreateTime(new Date());
+            sess.setStatus(1);
+            iSFormsessionService.save(sess);
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("FormSessionID", sess.getId());
+            return Result.ok(map);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return Result.errormsg(1,"系统异常，请联系管理员");
+        }
+    }
+
     //未完成
     @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
@@ -379,13 +404,12 @@ public class H5Controller extends TahoeBaseController {
         String projectId =(String) paramMap.get("IntentProjectID");
         String formSessionID =(String) paramMap.get("FormSessionID");
         String adviserGroupID =(String) paramMap.get("AdviserGroupID");
-        Result result = new Result();
         //验证是否重复请求
         if (StringUtils.isBlank(formSessionID)){
             return Result.errormsg(1,"FormSessionID不可为null");
         }
         //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
-        int RowCount =formsessionService.checkFormSessionID(formSessionID);
+        int RowCount =iSFormsessionService.checkFormSessionID(formSessionID);
         if (RowCount==1){
             Result.errormsg(1,"不能重复请求！");
         }
@@ -439,7 +463,10 @@ public class H5Controller extends TahoeBaseController {
         }
         //线索报备验证后，创建线索信息
             boolean b=clueService.createClue(channelOrgId,ruleValidate,userRule,status,paramMap);
-        return result;
+        if (b){
+            return Result.ok("成功");
+        }
+        return Result.errormsg(1,errMsg);
     }
 
     //已测
@@ -689,5 +716,36 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @ApiOperation(value = "获取小程序码", notes = "获取小程序码")
+    @RequestMapping(value = "/getRqCode", method = {RequestMethod.POST})
+    public Result getRqCode(@RequestBody JSONObject jsonParam) {
+        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
+        Result result=channeluserService.getRqCode(paramMap);
+        return result;
+    }
+
+    @ApiOperation(value = "获取小程序码路径", notes = "获取小程序码路径")
+    @RequestMapping(value = "/getRqCodeUrl", method = {RequestMethod.POST})
+    public Result getRqCodeUrl() {
+        StringBuilder sb=new StringBuilder();
+        sb.append(physicalPath).append("rqcodeImg").append(File.separator).append("twoCode.png");
+        return Result.okm(sb.toString());
+    }
+
+
+
+    //{"_datatype":"text","_param":{"UserID":"72bc40ae-4ed7-498c-8e42-dad2e1f102e0","OrgID":"a4271087-60a4-4976-bc54-ea74a46bf11f","Name":"","CityID":"","PageIndex":1,"PageSize":100}}:
+    @ApiOperation(value = "生成二维码", notes = "生成二维码")
+    @RequestMapping(value = "/getTwoCode1", method = {RequestMethod.POST})
+    public Result getTwoCode1(@RequestBody JSONObject jsonParam) {
+        String UserID = (String) jsonParam.get("UserID");
+        String OrgID = (String) jsonParam.get("OrgID");
+        //
+        String url = QRCodeUtil.zxingCodeCreate(jsonParam.toString(),physicalPath, 500, null);
+        if (url==null){
+            return Result.errormsg(1,"生成失败");
+        }
+        return Result.ok(url);
+    }
 
 }

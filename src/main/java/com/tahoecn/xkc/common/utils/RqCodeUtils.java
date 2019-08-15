@@ -39,6 +39,9 @@ public class RqCodeUtils {
         RqCodeUtils.appSecret = appSecret;
     }
 
+    @Value("${tahoe.application.physicalPath}")
+    private static String physicalPath;
+
     /**
      * 获取 token
      * 普通的 get 可获 token
@@ -70,11 +73,11 @@ public class RqCodeUtils {
      * 获取 二维码图片
 　　 *
      */
-    public static String getminiqrQr(String accessToken, HttpServletRequest request,int width,String activityId) {
-        String p = request.getSession().getServletContext().getRealPath("/");
-        String codeUrl = p + "rqcodeImg" + File.separator+ activityId;
-        String codeFile = p + "rqcodeImg" + File.separator+ activityId + File.separator + "twoCode.png";
-        String twoCodeUrl = activityId + "/twoCode.png";
+    public static String getminiqrQr(String accessToken, int width) {
+//        String p = request.getSession().getServletContext().getRealPath("/");
+        String codeUrl = physicalPath + "rqcodeImg" + File.separator;
+        String codeFile = physicalPath + "rqcodeImg" + File.separator + "twoCode.png";
+        String twoCodeUrl = "/twoCode.png";
         try {
             URL url = new URL("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" + accessToken);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -88,8 +91,8 @@ public class RqCodeUtils {
             PrintWriter printWriter = new PrintWriter(httpURLConnection.getOutputStream());
             // 发送请求参数
             JSONObject paramJson = new JSONObject();
-            paramJson.put("scene", "1234567890");//todo
-            paramJson.put("path", activityId);
+            paramJson.put("scene", "1234567890");//todo 参数
+//            paramJson.put("path", activityId);
             paramJson.put("width", width);
             paramJson.put("is_hyaline", true);
             paramJson.put("auto_color", true);
@@ -122,6 +125,7 @@ public class RqCodeUtils {
             os.close();
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return twoCodeUrl;
     }
