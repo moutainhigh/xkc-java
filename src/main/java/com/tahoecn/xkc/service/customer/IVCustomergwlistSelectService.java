@@ -35,6 +35,13 @@ public interface IVCustomergwlistSelectService extends IService<VCustomergwlistS
 	 public Result updateParentID(JSONObject paramAry);
 	 
 	 /**
+	  * 删除组员关系
+	  * @param paramAry
+	  * @return
+	  */
+	 public Result deleteParentID(JSONObject paramAry);
+	 
+	 /**
 	  * 置业顾问客户基本信息
 	  * @param paramAry
 	  * @return
