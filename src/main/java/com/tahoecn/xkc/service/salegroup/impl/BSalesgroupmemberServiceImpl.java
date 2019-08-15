@@ -183,7 +183,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 return Result.errormsg(9527,"无效的团队ID");
             }
 
-            Nature = (int)map.get("Nature");
+            Nature = map.get("Nature")==null?1:(int)map.get("Nature");
             if (Nature == 3 || Nature == 4 || Nature == 5||Nature==6||Nature==7)
             {
                 RoleID = "48FC928F-6EB5-4735-BF2B-29B1F591A582";

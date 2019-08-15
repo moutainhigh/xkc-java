@@ -17,7 +17,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 
-    int getCustomerCount(@Param("projectId") String projectId, @Param("memberId")String memberId);
+    int getCustomerCount(@Param("projectId") String projectId, @Param("MemberID")String memberId);
 
     /**
      * 客户确认归属
