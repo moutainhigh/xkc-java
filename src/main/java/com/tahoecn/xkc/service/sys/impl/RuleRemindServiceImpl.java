@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,10 @@ import com.tahoecn.xkc.service.sys.IRuleRemindService;
 
 /**
  * TODO 消息推送服务类
- * @ClassName:  RuleRemindServiceImpl
+ * 
+ * @ClassName: RuleRemindServiceImpl
  * @author: wq_qycc
- * @date:   2019年8月2日
+ * @date: 2019年8月2日
  */
 @Service
 public class RuleRemindServiceImpl implements IRuleRemindService {
@@ -42,20 +42,20 @@ public class RuleRemindServiceImpl implements IRuleRemindService {
 				if (StringUtils.isNotBlank(projectId) && !ps.contains(projectId)) {
 					ps += projectId + ",";
 					// 置业顾问消息
-					Integer WaitForVisit = Integer.parseInt(map.get("WaitForVisit").toString());
+					Integer WaitForVisit = objToInt(map.get("WaitForVisit"));
 					// Integer OverdueUnFollowup =
-					// Integer.parseInt(map.get("OverdueUnFollowup").toString());//跟进逾期提醒
-					Integer OverdueFollowupAgo = Integer.parseInt(map.get("OverdueFollowupAgo").toString());// 跟进逾期前提醒
-					Integer OverdueFollowupAgoTime = Integer.parseInt(map.get("OverdueFollowupAgoTime").toString());// 跟进逾期前多少天提醒
-					Integer OverdueUnSub = Integer.parseInt(map.get("OverdueUnSub").toString());// 认购逾期
-					Integer OverdueSubAgo = Integer.parseInt(map.get("OverdueSubAgo").toString());// 认购逾期前是否选中
-					Integer OverdueSubAgoTime = Integer.parseInt(map.get("OverdueSubAgoTime").toString());// 认购逾期前多少天提醒
-					Integer OverdueUnSign = Integer.parseInt(map.get("OverdueUnSign").toString());// 签约逾期
-					Integer OverdueSignAgo = Integer.parseInt(map.get("OverdueSignAgo").toString());// 签约逾期前是否选中
-					Integer OverdueSignAgoTime = Integer.parseInt(map.get("OverdueSignAgoTime").toString());// 签约逾期前多少天
-					Integer OverdueUnPayment = Integer.parseInt(map.get("OverdueUnPayment").toString());// 逾期未回款
-					Integer OverduePaymentAgo = Integer.parseInt(map.get("OverduePaymentAgo").toString());// 回款逾期前是否选中
-					Integer OverduePaymentAgoTime = Integer.parseInt(map.get("OverduePaymentAgoTime").toString());// 回款逾期前多少天
+					// objToInt(map.get("OverdueUnFollowup"));//跟进逾期提醒
+					Integer OverdueFollowupAgo = objToInt(map.get("OverdueFollowupAgo"));// 跟进逾期前提醒
+					Integer OverdueFollowupAgoTime = objToInt(map.get("OverdueFollowupAgoTime"));// 跟进逾期前多少天提醒
+					Integer OverdueUnSub = objToInt(map.get("OverdueUnSub"));// 认购逾期
+					Integer OverdueSubAgo = objToInt(map.get("OverdueSubAgo"));// 认购逾期前是否选中
+					Integer OverdueSubAgoTime = objToInt(map.get("OverdueSubAgoTime"));// 认购逾期前多少天提醒
+					Integer OverdueUnSign = objToInt(map.get("OverdueUnSign"));// 签约逾期
+					Integer OverdueSignAgo = objToInt(map.get("OverdueSignAgo"));// 签约逾期前是否选中
+					Integer OverdueSignAgoTime = objToInt(map.get("OverdueSignAgoTime"));// 签约逾期前多少天
+					Integer OverdueUnPayment = objToInt(map.get("OverdueUnPayment"));// 逾期未回款
+					Integer OverduePaymentAgo = objToInt(map.get("OverduePaymentAgo"));// 回款逾期前是否选中
+					Integer OverduePaymentAgoTime = objToInt(map.get("OverduePaymentAgoTime"));// 回款逾期前多少天
 
 					if (WaitForVisit == 1) {
 						sendMessage("WaitingForTodayList_Select", "今日待跟进", "487F2C39-779D-097B-455B-799AC0B3CBB4",
@@ -67,51 +67,51 @@ public class RuleRemindServiceImpl implements IRuleRemindService {
 					}
 					if (OverdueUnSub == 1) {
 						sendMessage("OverdueSubList_Select", "逾期未认购", "0848126B-E21C-40DD-82C0-1ACFF0A39552", projectId,
-								0, "", "0");
+								0, "", 0);
 					}
 					if (OverdueSubAgo == 1 && OverdueSubAgoTime > 0) {
 						sendMessage("OverdueSubList_Select", "认购即将逾期", "B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E",
-								projectId, 0, "", String.valueOf(OverdueSubAgoTime));
+								projectId, 0, "", OverdueSubAgoTime);
 					}
 					if (OverdueUnSign == 1) {
 						sendMessage("OverdueSignList_Select", "逾期未签约", "D138B44C-932D-43A4-8735-4A36AA1784A2",
-								projectId, 0, "", "0");
+								projectId, 0, "", 0);
 					}
 					if (OverdueSignAgo == 1 && OverdueSignAgoTime > 0) {
 						sendMessage("OverdueSignList_Select", "逾期即将签约", "BE78B012-2536-DFDC-0D20-A5A86DD3470F",
-								projectId, 0, "", String.valueOf(OverdueSignAgoTime));
+								projectId, 0, "", OverdueSignAgoTime);
 					}
 					if (OverdueUnPayment == 1) {
 						sendMessage("OverduePaymentList_Select", "回款逾期", "87BE4B55-8920-4204-8FD6-77AF5130BCD2",
-								projectId, 0, "", "0");
+								projectId, 0, "", 0);
 					}
 					if (OverduePaymentAgo == 1 && OverduePaymentAgoTime > 0) {
 						sendMessage("OverduePaymentList_Select", "回款即将逾期", "0F9709DD-A8FC-6106-99FC-688E10C760B1",
-								projectId, 0, "", String.valueOf(OverduePaymentAgoTime));
+								projectId, 0, "", OverduePaymentAgoTime);
 					}
 
 					// 销售团队负责人/营销负责人
 					// Integer OverdueFollowupM =
-					// Integer.parseInt(map.get("OverdueFollowupM").toString());//跟进逾期提醒
+					// objToInt(map.get("OverdueFollowupM"));//跟进逾期提醒
 					// Integer OverdueFollowupAgoM=
-					// Integer.parseInt(map.get("OverdueFollowupAgoM").toString());//跟进逾期前提醒
+					// objToInt(map.get("OverdueFollowupAgoM"));//跟进逾期前提醒
 					// Integer OverdueFollowupAgoTimeM =
-					// Integer.parseInt(map.get("OverdueFollowupAgoTimeM").toString());//跟进逾期前多少天提醒
-					Integer OverdueUnSubM = Integer.parseInt(map.get("OverdueUnSubM").toString());// 认购逾期提醒
-					Integer OverdueSubAgoM = Integer.parseInt(map.get("OverdueSubAgoM").toString());// 认购逾期前提醒
-					Integer OverdueSubAgoTimeM = Integer.parseInt(map.get("OverdueSubAgoTimeM").toString());// 认购逾期前多少天提醒
-					Integer OverdueSubM = Integer.parseInt(map.get("OverdueSubM").toString());// 认购逾期后是否选中
-					Integer OverdueSubTimeM = Integer.parseInt(map.get("OverdueSubTimeM").toString());// 认购逾期后多少天提醒
-					Integer OverdueUnSignM = Integer.parseInt(map.get("OverdueUnSignM").toString());// 签约逾期
-					Integer OverdueSignAgoM = Integer.parseInt(map.get("OverdueSignAgoM").toString());// 签约逾期前是否选中
-					Integer OverdueSignAgoTimeM = Integer.parseInt(map.get("OverdueSignAgoTimeM").toString());// 签约逾期前多少天
-					Integer OverdueSignM = Integer.parseInt(map.get("OverdueSignM").toString());// 签约逾期后
-					Integer OverdueSignMTime = Integer.parseInt(map.get("OverdueSignMTime").toString());// 签约逾期后多少天
-					Integer OverdueUnPaymentM = Integer.parseInt(map.get("OverdueUnPaymentM").toString());// 回款逾期
-					Integer OverduePaymentAgoM = Integer.parseInt(map.get("OverduePaymentAgoM").toString());// 回款逾期前
-					Integer OverduePaymentAgoTimeM = Integer.parseInt(map.get("OverduePaymentAgoTimeM").toString());// 回款逾期前多少天
-					Integer OverduePaymentM = Integer.parseInt(map.get("OverduePaymentM").toString());// 回款逾期后是否选中
-					Integer OverduePaymentMTime = Integer.parseInt(map.get("OverduePaymentMTime").toString());// 回款逾期后多少天
+					// objToInt(map.get("OverdueFollowupAgoTimeM"));//跟进逾期前多少天提醒
+					Integer OverdueUnSubM = objToInt(map.get("OverdueUnSubM"));// 认购逾期提醒
+					Integer OverdueSubAgoM = objToInt(map.get("OverdueSubAgoM"));// 认购逾期前提醒
+					Integer OverdueSubAgoTimeM = objToInt(map.get("OverdueSubAgoTimeM"));// 认购逾期前多少天提醒
+					Integer OverdueSubM = objToInt(map.get("OverdueSubM"));// 认购逾期后是否选中
+					Integer OverdueSubTimeM = objToInt(map.get("OverdueSubTimeM"));// 认购逾期后多少天提醒
+					Integer OverdueUnSignM = objToInt(map.get("OverdueUnSignM"));// 签约逾期
+					Integer OverdueSignAgoM = objToInt(map.get("OverdueSignAgoM"));// 签约逾期前是否选中
+					Integer OverdueSignAgoTimeM = objToInt(map.get("OverdueSignAgoTimeM"));// 签约逾期前多少天
+					Integer OverdueSignM = objToInt(map.get("OverdueSignM"));// 签约逾期后
+					Integer OverdueSignMTime = objToInt(map.get("OverdueSignMTime"));// 签约逾期后多少天
+					Integer OverdueUnPaymentM = objToInt(map.get("OverdueUnPaymentM"));// 回款逾期
+					Integer OverduePaymentAgoM = objToInt(map.get("OverduePaymentAgoM"));// 回款逾期前
+					Integer OverduePaymentAgoTimeM = objToInt(map.get("OverduePaymentAgoTimeM"));// 回款逾期前多少天
+					Integer OverduePaymentM = objToInt(map.get("OverduePaymentM"));// 回款逾期后是否选中
+					Integer OverduePaymentMTime = objToInt(map.get("OverduePaymentMTime"));// 回款逾期后多少天
 
 					// if (OverdueFollowupAgoM==1&&OverdueFollowupAgoTimeM>0) {
 					// sendMessage("FollowUpOverdueMList_Select", "跟进逾期前",
@@ -120,41 +120,39 @@ public class RuleRemindServiceImpl implements IRuleRemindService {
 					// }
 					if (OverdueUnSubM == 1) {
 						sendMessage("OverdueSubMList_Select", "逾期未认购", "0848126B-E21C-40DD-82C0-1ACFF0A39552",
-								projectId, 0, "", "0");
+								projectId, 0, "", 0);
 					}
 					if (OverdueSubAgoM == 1 && OverdueSubAgoTimeM > 0) {
 						sendMessage("OverdueSubMBeforeList_Select", "认购即将逾期", "B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E",
-								projectId, 0, "", String.valueOf(-OverdueSubAgoTimeM));
+								projectId, 0, "", -OverdueSubAgoTimeM);
 					}
 					if (OverdueSubM == 1 && OverdueSubTimeM > 0) {
 						sendMessage("OverdueSubMAfterList_Select", "认购逾期后", "0848126B-E21C-40DD-82C0-1ACFF0A39552",
-								projectId, 0, "", String.valueOf(OverdueSubTimeM));
+								projectId, 0, "", OverdueSubTimeM);
 					}
 					if (OverdueUnSignM == 1) {
 						sendMessage("OverdueSignMList_Select", "逾期未签约", "D138B44C-932D-43A4-8735-4A36AA1784A2",
-								projectId, 0, "", "0");
+								projectId, 0, "", 0);
 					}
 					if (OverdueSignAgoM == 1 && OverdueSignAgoTimeM > 0) {
 						sendMessage("OverdueSignMBeforeList_Select", "签约即将逾期", "BE78B012-2536-DFDC-0D20-A5A86DD3470F",
-								projectId, 0, "", String.valueOf(OverdueSignAgoTimeM));
+								projectId, 0, "", OverdueSignAgoTimeM);
 					}
 					if (OverdueSignM == 1 && OverdueSignMTime > 0) {
 						sendMessage("OverdueSignMAfterList_Select", "签约逾期后", "D138B44C-932D-43A4-8735-4A36AA1784A2",
-								projectId, 0, "", String.valueOf(-OverdueSignMTime));
+								projectId, 0, "", -OverdueSignMTime);
 					}
 					if (OverdueUnPaymentM == 1) {
 						sendMessage("OverdueUnPaymentMList_Select", "回款逾期", "87BE4B55-8920-4204-8FD6-77AF5130BCD2",
-								projectId, 0, "", "0");
+								projectId, 0, "", 0);
 					}
 					if (OverduePaymentAgoM == 1 && OverduePaymentAgoTimeM > 0) {
 						sendMessage("OverdueUnPaymentMBeforeList_Select", "回款逾期前",
-								"0F9709DD-A8FC-6106-99FC-688E10C760B1", projectId, 0, "",
-								String.valueOf(-OverduePaymentAgoTimeM));
+								"0F9709DD-A8FC-6106-99FC-688E10C760B1", projectId, 0, "", -OverduePaymentAgoTimeM);
 					}
 					if (OverduePaymentM == 1 && OverduePaymentMTime > 0) {
 						sendMessage("OverdueUnPaymentMAfterList_Select", "回款逾期后",
-								"87BE4B55-8920-4204-8FD6-77AF5130BCD2", projectId, 0, "",
-								String.valueOf(OverduePaymentMTime));
+								"87BE4B55-8920-4204-8FD6-77AF5130BCD2", projectId, 0, "", OverduePaymentMTime);
 					}
 
 				}
@@ -174,16 +172,16 @@ public class RuleRemindServiceImpl implements IRuleRemindService {
 		List<Map<String, Object>> list = remindMapper.ChannelMessageList_Select();
 		for (Map<String, Object> map : list) {
 			String projectId = String.valueOf(map.get("ProjectID"));
-			Integer ChannelSource = Integer.parseInt(map.get("ChannelSource").toString());
+			Integer ChannelSource = objToInt(map.get("ChannelSource"));
 			// Integer CustomerVisitsRemind =
-			// Integer.parseInt(map.get("CustomerVisitsRemind").toString());// 客户到访提醒
-			// Integer AllotRemind = Integer.parseInt(map.get("AllotRemind").toString());//
+			// objToInt(map.get("CustomerVisitsRemind"));// 客户到访提醒
+			// Integer AllotRemind = objToInt(map.get("AllotRemind"));//
 			// 客户分配提醒
-			Integer RecognizeRemind = Integer.parseInt(map.get("RecognizeRemind").toString());// 客户认筹提醒
-			Integer OverdueSubRemind = Integer.parseInt(map.get("OverdueSubRemind").toString());// 客户认购提醒
-			Integer OverdueSignRemind = Integer.parseInt(map.get("OverdueSignRemind").toString());// 客户签约提醒
-			Integer CheckOutRemind = Integer.parseInt(map.get("CheckOutRemind").toString());// 客户退房提醒
-			Integer CustomerInvalidRemind = Integer.parseInt(map.get("CustomerInvalidRemind").toString());// 客户无效提醒
+			Integer RecognizeRemind = objToInt(map.get("RecognizeRemind"));// 客户认筹提醒
+			Integer OverdueSubRemind = objToInt(map.get("OverdueSubRemind"));// 客户认购提醒
+			Integer OverdueSignRemind = objToInt(map.get("OverdueSignRemind"));// 客户签约提醒
+			Integer CheckOutRemind = objToInt(map.get("CheckOutRemind"));// 客户退房提醒
+			Integer CustomerInvalidRemind = objToInt(map.get("CustomerInvalidRemind"));// 客户无效提醒
 			if (ChannelSource == 0)// 推荐渠道
 			{
 				if (RecognizeRemind == 1)// 客户认筹提醒
@@ -243,8 +241,14 @@ public class RuleRemindServiceImpl implements IRuleRemindService {
 
 	}
 
+	private Integer objToInt(Object obj) {
+		if (obj != null)
+			return Integer.valueOf(String.valueOf(obj));
+		return 0;
+	}
+
 	private void sendMessage(String dataID, String subject, String messageType, String projectID, Integer overdueTime,
-			String Unit, String Time) {
+			String Unit, Integer Time) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("ProjectID", projectID);
 		map.put("OverdueTime", overdueTime);
@@ -292,7 +296,6 @@ public class RuleRemindServiceImpl implements IRuleRemindService {
 			if (map.get("Receiver") != null && "".equals(map.get("Receiver")))
 				continue;
 			Map<String, Object> jo = new HashMap<>();
-			jo.put("ID", UUID.randomUUID());
 			jo.put("ProjectID", StringUtils.isBlank(projectID) ? map.get("ProjectID") : projectID);
 			jo.put("BizID", map.get("BizID"));
 			jo.put("BizType", BizType);
