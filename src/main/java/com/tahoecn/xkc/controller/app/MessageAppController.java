@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.MessageCate;
@@ -53,11 +54,12 @@ public class MessageAppController extends TahoeBaseController {
     public Result mMessageUnreadCount_Select(@RequestBody JSONObject jsonParam) {
     	try{
     		Map paramMap = (HashMap)jsonParam.get("_param");
+    		System.out.println("================================="+jsonParam);
     		String ProjectID = (String)paramMap.get("ProjectID");//项目id
     		String UserID = (String)paramMap.get("UserID");//用户id
     		String JobCode = (String)paramMap.get("JobCode");//岗位代码
     		String TypeCode = (String)paramMap.get("TypeCode");//页签代码
-    		String CurrentDate = (String)paramMap.get("CurrentDate");//当日
+    		String CurDate = (String)paramMap.get("CurDate");//当日
     		/*GJ(置业顾问--跟进):当日待跟进,到访提醒,跟进将逾期
     		YQ(置业顾问--逾期):当日跟进逾期,当日认购逾期,当日签约逾期,当日回款逾期
     		XX(置业顾问--消息):丢失审批通知,客户被回收通知,系统通知,到访通知
@@ -71,7 +73,7 @@ public class MessageAppController extends TahoeBaseController {
 	    	map.put("UserID", UserID);
 	    	map.put("JobCode", JobCode);
 	    	map.put("TypeCode", TypeCode);
-	    	map.put("CurrentDate", CurrentDate);
+	    	map.put("CurDate", CurDate);
 	    	//1.该项目是否有分享项目信息
     		int isCount = iSystemMessageService.IsExistsShareProject(map);
     		//2.统计消息类型id
@@ -534,7 +536,7 @@ public class MessageAppController extends TahoeBaseController {
 		}
 		if (resJo.get(TypeIDTemp) != null){
             String ContentTemp = (String) resJo.get(TypeIDTemp).get("Content");
-            resJo.get(TypeIDTemp).put("Content", ContentTemp.isEmpty() ? "" : ContentTemp.substring(0, ContentTemp.length() - 1));
+            resJo.get(TypeIDTemp).put("Content", StringUtils.isEmpty(ContentTemp) ? "" : ContentTemp.substring(0, ContentTemp.length() - 1));
         }
         for(Map<String, Object> item : resJo.values()){
             list.add(item);
@@ -547,7 +549,8 @@ public class MessageAppController extends TahoeBaseController {
      * 未读消息数
      */
     private List<UnreadCountVo> UnreadCountListByMessageType_Select(String[] msgTypeTemp, Map<String, Object> map) {
-    	List<UnreadCountVo> list = new ArrayList<UnreadCountVo>();
+    	//原逻辑
+    	/*List<UnreadCountVo> list = new ArrayList<UnreadCountVo>();
     	String strMessageType = "AND ( MessageType = "+String.join("' OR MessageType ='", msgTypeTemp)+" )";
 		map.put("MessageType", strMessageType);
 		String JobCode = (String) map.get("JobCode");
@@ -561,66 +564,255 @@ public class MessageAppController extends TahoeBaseController {
 					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
 		}
 		map.put("sqlWhere", sqlWhere);
-		list = iSystemMessageService.UnreadCountListByMessageType_Select(map);
+		list = iSystemMessageService.UnreadCountListByMessageType_Select(map);*/
 		/*app改造-未读消息数，今日待跟进，当日跟进逾期，当日认购逾期，当日 签约逾期，当日回款逾期-start*/
-		if(Arrays.asList(msgTypeTemp).contains(MessageType.当日待跟进.getTypeID())){
-			UnreadCountVo v = new UnreadCountVo();
-			v.setMessageType("487F2C39-779D-097B-455B-799AC0B3CBB4");
-			v.setMessageCount(iSystemMessageService.ListDRDGJ_SelectCount(map));
-			v.setContent("");
-			list.add(v);
-		}
-		if(Arrays.asList(msgTypeTemp).contains(MessageType.当日跟进逾期.getTypeID())){
-			UnreadCountVo v = new UnreadCountVo();
-			v.setMessageType("12D36558-A8A1-20D4-58E5-612338026AE7");
-			if("GW".equals(JobCode)){
-    			v.setMessageCount(iSystemMessageService.ListDRGJYQOpportunity_SelectCount(map));
-    		}else{
-    			sqlWhere = "";
-    			if(!"ZQFZR".equals(JobCode)){//ZQ
-    				sqlWhere += " AND o.SaleUserID = '" + map.get("UserID") + "' ";
-    			}else{//ZQFZR
-    				sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
-    						+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
-    						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
-    			}
-    			map.put("sqlWhere", sqlWhere);
-    			v.setMessageCount(iSystemMessageService.ListDRGJYQClue_SelectCount(map));
-    		}
-			v.setContent("");
-			list.add(v);
-		}
-		if(Arrays.asList(msgTypeTemp).contains(MessageType.当日认购逾期.getTypeID())){
-			UnreadCountVo v = new UnreadCountVo();
-			v.setMessageType("B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E");
-			v.setMessageCount(iSystemMessageService.ListDRRGYQ_SelectCount(map));
-			v.setContent("");
-			list.add(v);
-		}
-		if(Arrays.asList(msgTypeTemp).contains(MessageType.当日签约逾期.getTypeID())){
-			UnreadCountVo v = new UnreadCountVo();
-			v.setMessageType("BE78B012-2536-DFDC-0D20-A5A86DD3470F");
-			v.setMessageCount(iSystemMessageService.ListDRQYYQ_SelectCount(map));
-			v.setContent("");
-			list.add(v);
-		}
-		if(Arrays.asList(msgTypeTemp).contains(MessageType.当日回款逾期.getTypeID())){
-			UnreadCountVo v = new UnreadCountVo();
-			v.setMessageType("0F9709DD-A8FC-6106-99FC-688E10C760B1");
-			v.setMessageCount(iSystemMessageService.ListDRHKYQ_SelectCount(map));
-			v.setContent("");
-			list.add(v);
-		}
+    	List<UnreadCountVo> list = new ArrayList<UnreadCountVo>();
+    	String JobCode = (String) map.get("JobCode");
+    	String sqlWhere = "";
+    	for(String item : msgTypeTemp){
+    		if(MessageType.系统通知.getTypeID().equals(item)){
+    			map.put("MessageType", item);
+    			UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageType_Select_Count(map));
+				list.add(v);
+	    	}
+	    	if(MessageType.渠道任务通知.getTypeID().equals(item)){
+	    		map.put("sqlWhere", "AND A.MessageType = '"+item+"' AND A.IsRead = '0'");
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(iSystemMessageService.ListByMessageTypeChannelTask_SelectCount(map));
+				list.add(v);
+	    	}
+	    	if(MessageType.带看通知.getTypeID().equals(item)
+	    			|| MessageType.认筹通知.getTypeID().equals(item)
+	    			|| MessageType.认购通知.getTypeID().equals(item)
+	    			|| MessageType.签约通知.getTypeID().equals(item)
+	    			|| MessageType.退房通知.getTypeID().equals(item)
+	    			|| MessageType.无效通知.getTypeID().equals(item)){
+	    		map.put("IsRead", "0");
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageTypeOpportunityZQ_Select_Count(map));
+				list.add(v);
+	    	}
+	    	if(MessageType.客户丢失通知.getTypeID().equals(item)){
+	    		map.put("sqlWhere", "AND A.MessageType = '"+item+"' AND A.IsRead = '0'");
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(iSystemMessageService.ListByMessageTypeKHDS_SelectCount(map));
+				list.add(v);
+	    	}
+	    	if(MessageType.待完善首访客户资料.getTypeID().equals(item)
+	    			|| MessageType.首访信息录入逾期.getTypeID().equals(item)
+	    			|| MessageType.回收提醒.getTypeID().equals(item)
+	    			|| MessageType.到访提醒.getTypeID().equals(item)
+	    			|| MessageType.跟进逾期.getTypeID().equals(item)
+	    			|| MessageType.认购逾期.getTypeID().equals(item)
+	    			|| MessageType.签约逾期.getTypeID().equals(item)
+	    			|| MessageType.回款逾期.getTypeID().equals(item)
+	    			|| MessageType.分配待跟进.getTypeID().equals(item)){
+		    	if(MessageType.回收提醒.getTypeID().equals(item)
+		    			|| MessageType.到访提醒.getTypeID().equals(item)){
+		    		map.put("IsApprove", "");
+		    	}else{
+		    		map.put("IsApprove", "0");
+		    	}
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageTypeOpportunity_Select_Count(map));
+				list.add(v);
+	    	}
+	    	if(MessageType.催办.getTypeID().equals(item)){
+	    		String[] msgType = new String[]{MessageType.跟进逾期催办.getTypeID(),
+	    					MessageType.认购逾期催办.getTypeID(),
+	    					MessageType.签约逾期催办.getTypeID(),
+	    					MessageType.回款逾期催办.getTypeID()};
+	    		map.put("MessageType", String.join("' OR MessageType ='", msgType));
+		    	map.put("IsApprove", "0");
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageTypeOpportunity_Select_Count(map));
+				list.add(v);
+	    	}
+	    	int isCount = iSystemMessageService.IsExistsShareProject(map);
+	    	if(isCount == 1){
+	    		if(MessageType.预约客户.getTypeID().equals(item)){
+	    			UnreadCountVo v = new UnreadCountVo();
+					v.setMessageType(item);
+					v.setMessageCount(ListByMessageTypeOpportunity_Select_Count(map));
+					list.add(v);
+	    		}
+	    	}
+	    	if(MessageType.客户即将失效.getTypeID().equals(item)
+	    			|| MessageType.客户失效通知.getTypeID().equals(item)
+	    			|| MessageType.到访即将逾期.getTypeID().equals(item)
+	    			|| MessageType.成交即将逾期.getTypeID().equals(item)){
+	    		map.put("IsRead", "0");
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageTypeClue_Select_Count(map));
+				list.add(v);
+	    	}
+	    	if(MessageType.四类消息通知.getTypeID().equals(item)){
+	    		String[] msgType = null;
+	    		if("GW".equals(JobCode)){
+	    			msgType = new String[]{MessageType.到访提醒.getTypeID(),
+	    					MessageType.客户丢失通知.getTypeID(),
+	    					MessageType.回收提醒.getTypeID(),
+	    					MessageType.系统通知.getTypeID()};
+	    		}else{
+	    			msgType = new String[]{MessageType.回收提醒.getTypeID(),
+	    					MessageType.系统通知.getTypeID()};
+	    		}
+	    		map.put("MessageType", String.join("' OR MessageType ='", msgType));
+	    		UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageType_Select_Count(map));
+				list.add(v);
+	    	}
+    		
+			if(MessageType.当日待跟进.getTypeID().equals(item)){
+				UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(iSystemMessageService.ListDRDGJ_SelectCount(map));
+				v.setContent("");
+				list.add(v);
+			}
+			if(MessageType.当日跟进逾期.getTypeID().equals(item)){
+				UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				if("GW".equals(JobCode)){
+	    			v.setMessageCount(iSystemMessageService.ListDRGJYQOpportunity_SelectCount(map));
+	    		}else{
+	    			sqlWhere = "";
+	    			if(!"ZQFZR".equals(JobCode)){//ZQ
+	    				sqlWhere += " AND o.SaleUserID = '" + map.get("UserID") + "' ";
+	    			}else{//ZQFZR
+	    				sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+	    						+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+	    						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+	    			}
+	    			map.put("sqlWhere", sqlWhere);
+	    			v.setMessageCount(iSystemMessageService.ListDRGJYQClue_SelectCount(map));
+	    		}
+				v.setContent("");
+				list.add(v);
+			}
+			if(MessageType.当日认购逾期.getTypeID().equals(item)){
+				UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(iSystemMessageService.ListDRRGYQ_SelectCount(map));
+				v.setContent("");
+				list.add(v);
+			}
+			if(MessageType.当日签约逾期.getTypeID().equals(item)){
+				UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(iSystemMessageService.ListDRQYYQ_SelectCount(map));
+				v.setContent("");
+				list.add(v);
+			}
+			if(MessageType.当日回款逾期.getTypeID().equals(item)){
+				UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(iSystemMessageService.ListDRHKYQ_SelectCount(map));
+				v.setContent("");
+				list.add(v);
+			}
+    	}
 		/*app改造-未读消息数，今日待跟进，当日跟进逾期，当日认购逾期，当日 签约逾期，当日回款逾期-end*/
 		return list;
 	}
-
+    /**
+     * 消息列表-普通消息-总数
+     */
+    private int ListByMessageType_Select_Count(Map<String, Object> map) {
+    	String sqlWhere = "";
+    	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
+    	map.put("sqlWhere", sqlWhere);
+    	//总数
+    	return iSystemMessageService.SystemMessageListByMessageType_SelectCount(map);
+	}
+    /**
+     * 消息列表-机会消息-自渠-总数
+     */
+	private int ListByMessageTypeOpportunityZQ_Select_Count(Map<String, Object> map) {
+		String JobCode = (String) map.get("JobCode");
+		String IsApprove = (String) map.get("IsApprove");
+		String IsRead = (String) map.get("IsRead");
+		String sqlWhere = "";
+		if(IsApprove != null && !"".equals(IsApprove)){
+			sqlWhere = " AND ISNULL(IsApprove,0) = '0' ";
+		}
+		if(IsRead != null && !"".equals(IsRead)){
+			sqlWhere = " AND ISNULL(IsRead,0) = '0' ";
+		}
+		sqlWhere += " AND ( MessageType = '" + map.get("MessageType") + "'  )";
+		if(!"ZQFZR".equals(JobCode)){
+			sqlWhere += " AND Receiver = '" + map.get("UserID") + "' ";
+		}else{
+			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+					+ "WHERE ProjectID = '" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+		}
+		
+		map.put("sqlWhere", sqlWhere);
+		//总数
+		return iSystemMessageService.SystemMessageListByMessageTypeOpportunityZQ_SelectCount(map);
+	}
+	/**
+     * 消息列表-机会消息-总数
+     */
+    private int ListByMessageTypeOpportunity_Select_Count(Map<String, Object> map) {
+    	String IsApprove = (String) map.get("IsApprove");
+		String IsRead = (String) map.get("IsRead");
+		String sqlWhere = "";
+		if(IsApprove != null && !"".equals(IsApprove)){
+			sqlWhere = " AND ISNULL(IsApprove,0) = '0' ";
+		}
+		if(IsRead != null && !"".equals(IsRead)){
+			sqlWhere = " AND ISNULL(IsRead,0) = '0' ";
+		}
+		sqlWhere += " AND ( MessageType = '" + map.get("MessageType") + "'  )";
+		map.put("sqlWhere", sqlWhere);
+		//总数
+		return iSystemMessageService.SystemMessageListByMessageTypeOpportunity_SelectCount(map);
+	}
+    /**
+     * 消息列表-线索消息-总数
+     */
+    private int ListByMessageTypeClue_Select_Count(Map<String, Object> map) {
+    	String IsApprove = (String) map.get("IsApprove");
+		String IsRead = (String) map.get("IsRead");
+		String JobCode = (String) map.get("JobCode");
+		
+		String sqlWhere = "";
+		if(IsApprove != null && !"".equals(IsApprove)){
+			sqlWhere = " AND ISNULL(IsApprove,0) = '0' ";
+		}
+		if(IsRead != null && !"".equals(IsRead)){
+			sqlWhere = " AND ISNULL(IsRead,0) = '0' ";
+		}
+		sqlWhere += " AND ( MessageType = '" + map.get("MessageType") + "'  )";
+		if(!"ZQFZR".equals(JobCode)){
+			sqlWhere += " AND Receiver = '" + map.get("UserID") + "' ";
+		}else{
+			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+		}
+		map.put("sqlWhere", sqlWhere);
+		//总数
+		return iSystemMessageService.SystemMessageListByMessageTypeClue_SelectCount(map);
+	}
 	@ResponseBody
     @ApiOperation(value = "消息列表", notes = "消息列表")
     @RequestMapping(value = "/mMessageList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mMessageList_Select(@RequestBody JSONObject jsonParam) {
     	try{
 	    	Map paramMap = (HashMap)jsonParam.get("_param");
+	    	System.out.println("================================="+jsonParam);
 	    	String UserID = (String)paramMap.get("UserID");
 	    	String ProjectID = (String)paramMap.get("ProjectID");
 	    	String TypeID = (String)paramMap.get("TypeID");//消息类型ID
@@ -656,7 +848,7 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyHandleIconType", 0);
 	    		result.put("EmptyUnHandleMsg", "暂无通知");
 	    		result.put("EmptyUnHandleIconType", 0);
-	    		map.put("sqlWhere", "AND A.MessageType = #{MessageType} AND A.IsRead =  #{IsRead}");
+	    		map.put("sqlWhere", "AND A.MessageType = '"+TypeID+"' AND A.IsRead =  '"+IsRead+"'");
 	    		//列表
 	    		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.ListByMessageTypeChannelTask_Select(map))));
 	    		//总数
@@ -681,7 +873,7 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyHandleIconType", 2);
 	    		result.put("EmptyUnHandleMsg", "请及时关注丢失申请，提高客户转换率。");
 	    		result.put("EmptyUnHandleIconType", 2);
-	    		map.put("sqlWhere", "AND A.MessageType = #{MessageType} AND A.IsRead =  #{IsRead}");
+	    		map.put("sqlWhere", "AND A.MessageType = '"+TypeID+"' AND A.IsRead =  '"+IsRead+"'");
 	    		//列表
 	    		result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.ListByMessageTypeKHDS_Select(map))));
 	    		//总数

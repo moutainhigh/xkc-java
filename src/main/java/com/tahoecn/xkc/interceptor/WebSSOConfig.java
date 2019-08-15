@@ -56,14 +56,14 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/app/**").allowedOrigins("*");
+		registry.addMapping("/H5/**").allowedOrigins("*");
 	}
 
-	private CorsConfiguration corsConfig() {
+	/*private CorsConfiguration corsConfig() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		/*
-    	* 请求常用的三种配置，*代表允许所有，当时你也可以自定义属性（比如header只能带什么，只能是post方式等等）
-    	*/
+		*//*
+    		* 请求常用的三种配置，*代表允许所有，当时你也可以自定义属性（比如header只能带什么，只能是post方式等等）
+    	*//*
 		corsConfiguration.addAllowedOrigin("*");
 		corsConfiguration.addAllowedHeader("*");
 		corsConfiguration.addAllowedMethod("*");
@@ -76,5 +76,5 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfig());
 		return new CorsFilter(source);
-	}
+	}*/
 }
