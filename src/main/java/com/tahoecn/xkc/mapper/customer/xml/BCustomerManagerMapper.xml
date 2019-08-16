@@ -317,7 +317,7 @@
 			CustomerRank FROM dbo.B_CustomerPotentialFollowUp WHERE  ProjectID=#{paramMap.ProjectID}
       AND (CustomerPotentialID = #{paramMap.CustomerID}
       OR CustomerPotentialMobile = ( SELECT TOP 1 CustomerMobile FROM  dbo.B_Opportunity WHERE  ID = #{paramMap.OpportunityID} ))
-			) t ORDER BY t.CreateTime
+			) t ORDER BY t.CreateTime DESC
     </select>
 
     <select id="CustomerNEWSignInfo_Select" parameterType="java.util.Map" resultType="java.util.Map">

@@ -288,7 +288,9 @@ public class TaskServiceImpl implements ITaskService {
 	 */
 	private void serviceAutoRoom() {
 		Long lastTime = taskMapper.TaskMYRoomDetailLast_Select();
+		System.out.println("获取明源房间列表信息============"+lastTime);
 		List<Map<String, Object>> list = taskMapper.MYRoomList_Select(lastTime);
+		System.out.println("获取明源房间列表信息============"+list.size());
 		if (list != null && list.size() > 0) {
 			for (Map<String, Object> map : list) {
 				try {
@@ -311,7 +313,9 @@ public class TaskServiceImpl implements ITaskService {
 	 */
 	private void serviceAutoBuilding() {
 		Long lastTime = taskMapper.TaskMYBuildingDetailLast_Select();
+		System.out.println("获取明源楼栋列表信息============"+lastTime);
 		List<Map<String, Object>> list = taskMapper.MYBuildingList_Select(lastTime);
+		System.out.println("获取明源楼栋列表信息============"+list.size());
 		if (list != null && list.size() > 0) {
 			for (Map<String, Object> map : list) {
 				try {
