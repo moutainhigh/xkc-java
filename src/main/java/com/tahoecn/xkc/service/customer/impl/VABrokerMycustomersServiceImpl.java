@@ -23,7 +23,7 @@ import java.util.Map;
 public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustomersMapper, VABrokerMycustomers> implements IVABrokerMycustomersService {
 
     @Override
-    public List<Map<String, Object>> mGetMyCustomers_Select(IPage page, int sort, String filter, String customerInfo, String brokerID) {
+    public IPage<Map<String, Object>> mGetMyCustomers_Select(IPage page, int sort, String filter, String customerInfo, String brokerID) {
         String order;
         String where;
         String search="";
@@ -41,5 +41,10 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
             where = " where ReportUserID='" + brokerID + "' and StatusText='" + filter + "'";
         }
         return baseMapper.mGetMyCustomers_Select(page, where, order, search);
+    }
+
+    @Override
+    public int getWuXiao(String brokerID) {
+        return baseMapper.getWuXiao(brokerID);
     }
 }

@@ -31,4 +31,8 @@
   		</otherwise>
   		</choose>
 	</select>
+
+    <select id="getWuXiao" resultType="int" parameterType="string">
+        select COUNT(1) from V_A_Broker_MyCustomers where ReportUserID=#{brokerID} and StatusText='无效'
+    </select>
 </mapper>

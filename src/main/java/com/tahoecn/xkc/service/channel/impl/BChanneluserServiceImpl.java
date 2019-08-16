@@ -17,6 +17,7 @@ import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 
+import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
@@ -58,6 +59,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     private ISDictionaryService dictionaryService;
     @Autowired
     private SDictionaryMapper sDictionaryMapper;
+
+    @Autowired
+    private IVABrokerMycustomersService mycustomersService;
     @Override
     public List<Map<String, String>> AgenApproverList() {
         return baseMapper.AgenApproverList();
@@ -80,7 +84,10 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public Map<String, Object> BrokerMyCenter_Select(String brokerID) {
-        return baseMapper.BrokerMyCenter_Select(brokerID);
+        Map<String, Object> map = baseMapper.BrokerMyCenter_Select(brokerID);
+        int count=mycustomersService.getWuXiao(brokerID);
+        map.put("WXcount",count);
+        return map;
     }
 
     @Override

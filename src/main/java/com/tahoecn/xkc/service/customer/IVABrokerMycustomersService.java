@@ -17,5 +17,7 @@ import java.util.Map;
  */
 public interface IVABrokerMycustomersService extends IService<VABrokerMycustomers> {
 
-    List<Map<String, Object>> mGetMyCustomers_Select(IPage page, int sort, String filter, String customerInfo, String brokerID);
+    IPage<Map<String, Object>> mGetMyCustomers_Select(IPage page, int sort, String filter, String customerInfo, String brokerID);
+
+    int getWuXiao(String brokerID);
 }

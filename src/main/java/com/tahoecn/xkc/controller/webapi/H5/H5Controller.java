@@ -251,12 +251,9 @@ public class H5Controller extends TahoeBaseController {
         int PageIndex=(int) paramMap.get("PageIndex");
         int PageSize=(int) paramMap.get("PageSize");
         IPage page = new Page(PageIndex, PageSize);
-        List<Map<String, Object>> list = mycustomersService.mGetMyCustomers_Select(page, Sort, Filter, CustomerInfo, BrokerID);
-        Result result = new Result();
-        result.setErrcode(0);
-        result.setErrmsg("成功");
-        result.setData(list);
-        return result;
+        IPage<Map<String, Object>> list = mycustomersService.mGetMyCustomers_Select(page, Sort, Filter, CustomerInfo, BrokerID);
+
+        return Result.ok(list);
     }
 
     //已测
