@@ -3,9 +3,7 @@ package com.tahoecn.xkc.service.customer;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
-import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 
@@ -13,7 +11,7 @@ import com.tahoecn.xkc.model.vo.CustomerActionVo;
  * 
  *客户
  */
-public interface IVCustomergwlistSelectService extends IService<VCustomergwlistSelect> {
+public interface IVCustomergwlistSelectService {
 	/**
 	 * 置业顾问客户列表
 	 * @return

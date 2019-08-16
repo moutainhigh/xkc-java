@@ -6,11 +6,9 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.common.annotation.DataSource;
 import com.tahoecn.xkc.common.enums.DataSourceEnum;
-import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 
@@ -22,7 +20,7 @@ import com.tahoecn.xkc.model.vo.CustomerActionVo;
  * @author YYY
  * @since 2019-07-01
  */
-public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistSelect> {
+public interface VCustomergwlistSelectMapper {
 	/**
 	 * 置业顾问客户列表
 	 * @param gWCustomerPageDto
@@ -587,10 +585,13 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 */
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYUserDetail_Insert_valid_1(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYUserDetail_Insert_valid_2(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYUserDetail_Insert_step1(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYUserDetail_Insert_step2(Map<String,Object> map);
 	
@@ -600,12 +601,16 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	 */
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_1(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_2(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_insert_1(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_insert_2(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_update(Map<String,Object> map);
 	
@@ -626,16 +631,22 @@ public interface VCustomergwlistSelectMapper extends BaseMapper<VCustomergwlistS
 	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_1(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_2(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_3(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYOpportunityDetail_Insert_valid_4(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYOpportunityDetail_Insert_insert_1(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYOpportunityDetail_Insert_insert_2(Map<String,Object> map);
+	
 	@DataSource(DataSourceEnum.DB2)
 	void MYOpportunityDetail_Insert_update(Map<String,Object> map);
 	

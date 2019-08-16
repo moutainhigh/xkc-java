@@ -2339,14 +2339,10 @@ VALUES  ( #{OpportunityID},
 	</insert>
 	
 	<select id="MYCustomerDetail_Insert_vaild_1" parameterType="java.util.Map" resultType="java.util.HashMap">
-		<![CDATA[
 		SELECT TOP 1
-		                        TradeGUID
-		                FROM    s_Trade A
-		                WHERE   A.TradeGUID IN ( SELECT TradeGUID
-		                                         FROM   s_Trade2Cst
-		                                         WHERE  CstGUID = #{CstGUID})
-		 ]]>
+                A.TradeGUID
+        FROM    s_Trade A
+        WHERE   A.TradeGUID IN ( SELECT s.TradeGUID FROM s_Trade2Cst s WHERE  s.CstGUID = #{CstGUID} )
 	</select>
 	<select id="MYCustomerDetail_Insert_vaild_2" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[

@@ -19,7 +19,9 @@ import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.tahoecn.xkc.common.annotation.DataSource;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
+import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;

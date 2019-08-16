@@ -1,5 +1,22 @@
 package com.tahoecn.xkc.service.channel.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONUtil;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,23 +38,6 @@ import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.impl.VCustomergwlistSelectServiceImpl;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
-
-import cn.hutool.core.date.DateTime;
-import cn.hutool.json.JSONUtil;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -341,44 +341,76 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
     }
 	private RegisterRuleBaseModel loadModel(Map<String, Object> obj) {
 		ImmissionRule imm = new ImmissionRule();
-		Number IsOnlyAllowNew = (Number) obj.get("IsOnlyAllowNew");
-		imm.setIsOnlyAllowNew(IsOnlyAllowNew.intValue());
-		Number OverdueTime = (Number) obj.get("OverdueTime");
-        imm.setOverdueTime(OverdueTime.intValue());
-        Number ProtectTypeID = (Number) obj.get("ProtectTypeID");
-        imm.setProtectTypeID(ProtectTypeID.intValue());
-        Number ValidationMode = (Number) obj.get("ValidationMode");
-        imm.setValidationMode(ValidationMode.intValue());
-        Number OldOwnerLimit = (Number) obj.get("OldOwnerLimit");
-        imm.setOldOwnerLimit(OldOwnerLimit.intValue());
+		if(obj.get("IsOnlyAllowNew")!=null){
+			Number IsOnlyAllowNew = (Number) obj.get("IsOnlyAllowNew");
+			imm.setIsOnlyAllowNew(IsOnlyAllowNew.intValue());
+		}
+		if(obj.get("OverdueTime")!=null){
+			Number OverdueTime = (Number) obj.get("OverdueTime");
+	        imm.setOverdueTime(OverdueTime.intValue());
+		}
+		if(obj.get("ProtectTypeID")!=null){
+			Number ProtectTypeID = (Number) obj.get("ProtectTypeID");
+	        imm.setProtectTypeID(ProtectTypeID.intValue());
+		}
+		if(obj.get("ValidationMode")!=null){
+			Number ValidationMode = (Number) obj.get("ValidationMode");
+	        imm.setValidationMode(ValidationMode.intValue());
+		}
+		if(obj.get("OldOwnerLimit")!=null){
+			Number OldOwnerLimit = (Number) obj.get("OldOwnerLimit");
+	        imm.setOldOwnerLimit(OldOwnerLimit.intValue());
+		}
 
         ProtectRule pro = new ProtectRule();
-        Number IsPreIntercept = (Number) obj.get("IsPreIntercept");
-        pro.setIsPreIntercept(IsPreIntercept.intValue());
-        Number PreInterceptTime = (Number) obj.get("PreInterceptTime");
-        pro.setPreInterceptTime(PreInterceptTime.intValue());
-        Number IsProtect = (Number) obj.get("IsProtect");
-        pro.setIsProtect(IsProtect.intValue());
-        Number IsProtectVisit = (Number) obj.get("IsProtectVisit");
-        pro.setIsProtectVisit(IsProtectVisit.intValue());
-        Number IsSelect = (Number) obj.get("IsSelect");
-        pro.setIsSelect(IsSelect.intValue());
-        Number ProtectTime = (Number) obj.get("ProtectTime");
-        pro.setProtectTime(ProtectTime.intValue());
-        Number ProtectVisitTime = (Number) obj.get("ProtectVisitTime");
-        pro.setProtectVisitTime(ProtectVisitTime.intValue());
-        pro.setUserBehaviorID(obj.get("UserBehaviorID")==null|| "".equals(obj.get("UserBehaviorID")) ?0:Integer.parseInt(obj.get("UserBehaviorID").toString()));
-        Number IsPermanent = (Number) obj.get("IsPermanent");
-        pro.setIsPermanent(IsPermanent.intValue());
         
+        if(obj.get("IsPreIntercept")!=null){
+        	Number IsPreIntercept = (Number) obj.get("IsPreIntercept");
+            pro.setIsPreIntercept(IsPreIntercept.intValue());
+        }
+        if(obj.get("PreInterceptTime")!=null){
+        	Number PreInterceptTime = (Number) obj.get("PreInterceptTime");
+            pro.setPreInterceptTime(PreInterceptTime.intValue());
+        }
+        if(obj.get("IsProtect")!=null){
+        	Number IsProtect = (Number) obj.get("IsProtect");
+            pro.setIsProtect(IsProtect.intValue());
+        }
+        if(obj.get("IsProtectVisit")!=null){
+        	Number IsProtectVisit = (Number) obj.get("IsProtectVisit");
+            pro.setIsProtectVisit(IsProtectVisit.intValue());
+        }
+        if(obj.get("IsSelect")!=null){
+        	Number IsSelect = (Number) obj.get("IsSelect");
+            pro.setIsSelect(IsSelect.intValue());
+        }
+        if(obj.get("ProtectTime")!=null){
+        	Number ProtectTime = (Number) obj.get("ProtectTime");
+            pro.setProtectTime(ProtectTime.intValue());
+        }
+        if(obj.get("ProtectVisitTime")!=null){
+        	 Number ProtectVisitTime = (Number) obj.get("ProtectVisitTime");
+             pro.setProtectVisitTime(ProtectVisitTime.intValue());	
+        }
+        pro.setUserBehaviorID(obj.get("UserBehaviorID")==null|| "".equals(obj.get("UserBehaviorID")) ?0:Integer.parseInt(obj.get("UserBehaviorID").toString()));
+        if(obj.get("IsPermanent")!=null){
+        	Number IsPermanent = (Number) obj.get("IsPermanent");
+            pro.setIsPermanent(IsPermanent.intValue());
+        }
         RegisterRuleBaseModel UserRule = new RegisterRuleBaseModel();
         UserRule.setRuleID(obj.get("ID").toString());
-        Number CalMode = (Number) obj.get("CalMode");
-        UserRule.setCalMode(CalMode.intValue());
-        Number RuleType = (Number) obj.get("RuleType");
-        UserRule.setRuleType(RuleType.intValue());
-        Number ProtectSource = (Number) obj.get("ProtectSource");
-        UserRule.setProtectSource(ProtectSource.intValue());
+        if(obj.get("CalMode")!=null){
+        	Number CalMode = (Number) obj.get("CalMode");
+            UserRule.setCalMode(CalMode.intValue());
+        }
+        if(obj.get("RuleType")!=null){
+        	Number RuleType = (Number) obj.get("RuleType");
+            UserRule.setRuleType(RuleType.intValue());
+        }
+        if(obj.get("ProtectSource")!=null){
+        	Number ProtectSource = (Number) obj.get("ProtectSource");
+            UserRule.setProtectSource(ProtectSource.intValue());
+        }
         UserRule.setImmissionRule(imm);
         UserRule.setProtectRule(pro);
 		return UserRule;

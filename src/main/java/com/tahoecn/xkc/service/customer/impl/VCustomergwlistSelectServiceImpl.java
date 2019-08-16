@@ -22,7 +22,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
@@ -31,11 +30,9 @@ import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
-import com.tahoecn.xkc.model.customer.VCustomergwlistSelect;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
 import com.tahoecn.xkc.model.vo.CGWDetailModel;
 import com.tahoecn.xkc.model.vo.CSearchModelVo;
-import com.tahoecn.xkc.model.vo.ChildItem;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerModelVo;
 import com.tahoecn.xkc.model.vo.FilterItem;
@@ -57,7 +54,7 @@ import com.tahoecn.xkc.service.sys.ISystemMessageService;
 @SuppressWarnings("unchecked")
 @Service
 @Transactional(readOnly=true)
-public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlistSelectMapper, VCustomergwlistSelect> implements IVCustomergwlistSelectService {
+public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectService {
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
 	@Resource
@@ -85,27 +82,31 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         		}
         	}
         	Map<String,List<Map<String,Object>>> childs = new HashMap<>();
-        	List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
-        	if(data_child!=null && data_child.size()>0){
-        		for(Map<String,Object> data_child_map : data_child){
-        			String tkey = data_child_map.get("ParentID").toString();
-        			if(!childs.containsKey(tkey)){
-        				List<Map<String,Object>> list = new ArrayList<>();
-        				list.add(data_child_map);
-        				childs.put(tkey, list);
-        			}else{
-        				childs.get(tkey).add(data_child_map);
-        			}
-        		}
-        	}
-        	if(childs!=null && childs.size()>0){
-        		for(Map<String,Object> data_map : data){
-        			String tkey = data_map.get("OpportunityID").toString();
-        			if(childs.containsKey(tkey)){
-        				data_map.put("childItem", childs.get(tkey));
-        			}
-        		}
-        	}
+        	try {
+        		List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
+            	if(data_child!=null && data_child.size()>0){
+            		for(Map<String,Object> data_child_map : data_child){
+            			String tkey = data_child_map.get("ParentID").toString();
+            			if(!childs.containsKey(tkey)){
+            				List<Map<String,Object>> list = new ArrayList<>();
+            				list.add(data_child_map);
+            				childs.put(tkey, list);
+            			}else{
+            				childs.get(tkey).add(data_child_map);
+            			}
+            		}
+            	}
+            	if(childs!=null && childs.size()>0){
+            		for(Map<String,Object> data_map : data){
+            			String tkey = data_map.get("OpportunityID").toString();
+            			if(childs.containsKey(tkey)){
+            				data_map.put("childItem", childs.get(tkey));
+            			}
+            		}
+            	}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_count(model);
         	Map<String,Object> re = new HashMap<String, Object>();
         	re.put("List", data);
@@ -135,12 +136,16 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	}
         	List<String> OpportunityID_list = new ArrayList<String>();
         	OpportunityID_list.add(model.getOpportunityID());
-        	List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
-        	if(data_child!=null && data_child.size()>0){
-        		for(Map<String,Object> data_child_map : data_child){
-        			OpportunityID_list.add(data_child_map.get("OpportunityID").toString());
-        		}
-        	}
+        	try {
+        		List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
+            	if(data_child!=null && data_child.size()>0){
+            		for(Map<String,Object> data_child_map : data_child){
+            			OpportunityID_list.add(data_child_map.get("OpportunityID").toString());
+            		}
+            	}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         	model.setOpportunityIDList(OpportunityID_list);
         	setParamForCustomerList(model);
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_forUpdateChild(model);
@@ -404,11 +409,16 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
 				//获取子集信息
 				List<String> opportunityIDlist = new ArrayList<String>();
 				opportunityIDlist.add(OpportunityID);
-				List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
-				if(childs!=null && childs.size()>0){
-					for(Map<String, Object> child : childs){
-						opportunityIDlist.add(child.get("OpportunityID").toString());
+				
+				try {
+					List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
+					if(childs!=null && childs.size()>0){
+						for(Map<String, Object> child : childs){
+							opportunityIDlist.add(child.get("OpportunityID").toString());
+						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				for(String oppoID : opportunityIDlist){
 					CustomerActionVo customerActionVo = new CustomerActionVo();
@@ -864,26 +874,30 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
                 	if("成员信息".equals(PanelItem.getName())){
                 		List<String> parentID = new ArrayList<>();
                 		parentID.add(opportunityID);
-                		List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(parentID);
-                		if(childs!=null && childs.size()>0){
-                			JSONArray J_DATA = new JSONArray();
-                			for(Map<String, Object> map : childs){
-                				String ChildID = map.get("OpportunityID").toString();
-                				String ParentRelation ="";
-                				if(map.get("ParentRelation")!=null){
-                					ParentRelation = map.get("ParentRelation").toString();
-                				}
-                				String CustomerName = map.get("CustomerName").toString();
-                				String CustomerMobile = map.get("CustomerMobile").toString();
-                				JSONObject json = new JSONObject();
-                				json.put("ChildID", ChildID);
-                				json.put("ParentRelation", ParentRelation);
-                				json.put("CustomerName", CustomerName);
-                				json.put("CustomerMobile", CustomerMobile);
-                				J_DATA.add(json);
-                			}
-                			PanelItem.getChild().get(0).setChild(J_DATA);
-                		}
+                		try {
+                			List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(parentID);
+                    		if(childs!=null && childs.size()>0){
+                    			JSONArray J_DATA = new JSONArray();
+                    			for(Map<String, Object> map : childs){
+                    				String ChildID = map.get("OpportunityID").toString();
+                    				String ParentRelation ="";
+                    				if(map.get("ParentRelation")!=null){
+                    					ParentRelation = map.get("ParentRelation").toString();
+                    				}
+                    				String CustomerName = map.get("CustomerName").toString();
+                    				String CustomerMobile = map.get("CustomerMobile").toString();
+                    				JSONObject json = new JSONObject();
+                    				json.put("ChildID", ChildID);
+                    				json.put("ParentRelation", ParentRelation);
+                    				json.put("CustomerName", CustomerName);
+                    				json.put("CustomerMobile", CustomerMobile);
+                    				J_DATA.add(json);
+                    			}
+                    			PanelItem.getChild().get(0).setChild(J_DATA);
+                    		}
+        				} catch (Exception e) {
+        					e.printStackTrace();
+        				}
                 	}
                 }
                 entity.setData(customerModel);
@@ -1504,26 +1518,30 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
         	if("成员信息".equals(PanelItem.getName())){
         		List<String> parentID = new ArrayList<>();
         		parentID.add(model.getOpportunityID());
-        		List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(parentID);
-        		if(childs!=null && childs.size()>0){
-        			JSONArray J_DATA = new JSONArray();
-        			for(Map<String, Object> map : childs){
-        				String ChildID = map.get("OpportunityID").toString();
-        				String ParentRelation ="";
-        				if(map.get("ParentRelation")!=null){
-        					ParentRelation = map.get("ParentRelation").toString();
-        				}
-        				String CustomerName = map.get("CustomerName").toString();
-        				String CustomerMobile = map.get("CustomerMobile").toString();
-        				JSONObject json = new JSONObject();
-        				json.put("ChildID", ChildID);
-        				json.put("ParentRelation", ParentRelation);
-        				json.put("CustomerName", CustomerName);
-        				json.put("CustomerMobile", CustomerMobile);
-        				J_DATA.add(json);
-        			}
-        			PanelItem.getChild().get(0).setChild(J_DATA);
-        		}
+        		try {
+        			List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(parentID);
+            		if(childs!=null && childs.size()>0){
+            			JSONArray J_DATA = new JSONArray();
+            			for(Map<String, Object> map : childs){
+            				String ChildID = map.get("OpportunityID").toString();
+            				String ParentRelation ="";
+            				if(map.get("ParentRelation")!=null){
+            					ParentRelation = map.get("ParentRelation").toString();
+            				}
+            				String CustomerName = map.get("CustomerName").toString();
+            				String CustomerMobile = map.get("CustomerMobile").toString();
+            				JSONObject json = new JSONObject();
+            				json.put("ChildID", ChildID);
+            				json.put("ParentRelation", ParentRelation);
+            				json.put("CustomerName", CustomerName);
+            				json.put("CustomerMobile", CustomerMobile);
+            				J_DATA.add(json);
+            			}
+            			PanelItem.getChild().get(0).setChild(J_DATA);
+            		}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
         	}
         }
         customerModel.setIsNew(isNew);
