@@ -19,9 +19,7 @@ import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.tahoecn.xkc.common.annotation.DataSource;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
-import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
@@ -500,7 +498,6 @@ public class CustomerHelp implements ICustomerHelp {
 		String jsonStr = "";
 		if (redisTemplate.hasKey(jsonFile)) {
 			jsonStr = redisTemplate.opsForValue().get(jsonFile);
-			redisTemplate.delete(jsonFile);
 		} else {
 			jsonStr = JSONUtil.readJsonFile(jsonFile);
 			redisTemplate.opsForValue().set(jsonFile, jsonStr);
@@ -678,14 +675,30 @@ public class CustomerHelp implements ICustomerHelp {
 					String CustomerID = String.valueOf(customerObj.get("CustomerID"));
 					JSONObject Parameter = new JSONObject();
 					Parameter.put("CustomerID", CustomerID);
-					Result re = iMYService.CustomerDetail_Insert(Parameter);
-					System.out.println("明源同步1"+re.getErrmsg());
+					String customerID = Parameter.getString("CustomerID");
+					Map<String, Object> info = vCustomergwlistSelectMapper.LocalCustomerDetail_Select(customerID);
+					if (info!=null && info.size() > 0){
+						/*DateTime ModifyOn = DateUtil.parse(info.get("ModifyOn").toString());
+						DateTime CreatedOn = DateUtil.parse(info.get("CreatedOn").toString());
+						info.put("ModifyOn", ModifyOn.toString("yyyy-MM-dd HH:mm:ss.SSS"));
+						info.put("CreatedOn", CreatedOn.toString("yyyy-MM-dd HH:mm:ss.SSS"));*/
+						Result re = iMYService.CustomerDetail_Insert(info);
+						System.out.println("明源同步1"+re.getErrmsg());
+					}else{
+						 System.out.println("客户信息不正确");
+					}
 				}
 				if (optionType == 0 || optionType == 2) {
 					JSONObject Parameter = new JSONObject();
 					Parameter.put("OpportunityID", opportunityID);
-					Result re = iMYService.OpportunityDetail_Insert(Parameter);
-					System.out.println("明源同步2"+re.getErrmsg());
+			        List<Map<String,Object>> info = vCustomergwlistSelectMapper.LocalOpportunityDetail_Select(opportunityID);
+			        List<Map<String,Object>> infoCustomer = vCustomergwlistSelectMapper.LocalOpportunityCustomerList_Select(opportunityID);
+			        if (info!=null && info.size() > 0){
+			        	Result re = iMYService.OpportunityDetail_Insert(info,infoCustomer);
+						System.out.println("明源同步2"+re.getErrmsg());
+			        }else{
+			        	System.out.println("机会信息不正确");
+			        }
 				}
 			}
 		} catch (Exception e) {

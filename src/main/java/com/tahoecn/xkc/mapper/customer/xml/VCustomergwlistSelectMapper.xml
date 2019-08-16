@@ -2392,7 +2392,7 @@ VALUES  ( #{OpportunityID},
                         #{Address},
                         #{CardType},
                         CONVERT(DATETIME, #{CreatedOn}, 121) ,
-                        #{CreatedBy}' ,
+                        #{CreatedBy},
                         CONVERT(DATETIME, #{ModifyOn}, 121) ,
                         #{ModifyBy},
                         #{SurName},
@@ -2558,7 +2558,7 @@ VALUES  ( #{OpportunityID},
 		                  #{CognizeAve},
 		                  #{Status},
 		                  CONVERT(DATETIME, #{CreatedOn}, 121) ,
-		                  #{CreatedBy}' ,
+		                  #{CreatedBy},
 		                  CONVERT(DATETIME, #{ModifyOn}, 121) ,
 		                  #{ModifyBy},
 		                  CASE WHEN #{UserGUID} = '99' THEN NULL
@@ -2658,7 +2658,7 @@ VALUES  ( #{OpportunityID},
 		                        AND ProjGUID = #{ProjGUID}
 	</select>
 	
-	<insert id="MYOpportunityDetail_Insert_insert_1" parameterType="java.util.Map">
+	<insert id="MYOpportunityDetail_Insert_insert_2" parameterType="java.util.Map">
 		<![CDATA[
 		INSERT  INTO p_CstAttach
 	                ( BUGUID ,
