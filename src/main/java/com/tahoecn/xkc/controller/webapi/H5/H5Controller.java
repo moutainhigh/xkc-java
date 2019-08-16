@@ -751,7 +751,7 @@ public class H5Controller extends TahoeBaseController {
     @RequestMapping(value = "/getRqCodeUrl", method = {RequestMethod.POST})
     public Result getRqCodeUrl() {
         StringBuilder sb=new StringBuilder();
-        sb.append(physicalPath).append("rqcodeImg").append("/twoCode.png");
+        sb.append("rqcodeImg").append("/twoCode.png");
         return Result.okm(sb.toString());
     }
 
