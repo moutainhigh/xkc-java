@@ -1,5 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
+import javax.annotation.Resource;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -17,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
+import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 
 /**
@@ -33,6 +36,8 @@ public class CareerConsCustController extends TahoeBaseController {
 
     @Autowired
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
+    @Resource
+	private ICustomerHelp customerTemplate;
     /**
      * 职业顾问客户列表
      * @param gWCustomerPageDto
@@ -257,7 +262,14 @@ public class CareerConsCustController extends TahoeBaseController {
     @RequestMapping(value = "/mCustomerSubscribeDetail_Insert", method = RequestMethod.POST)
     public Result mCustomerSubscribeDetail_Insert(@RequestBody JSONObject paramAry) {
 		JSONObject json = paramAry.getJSONObject("_param");
-		return iVCustomergwlistSelectService.mCustomerSubscribeDetail_Insert(json);
+		Result Result = iVCustomergwlistSelectService.mCustomerSubscribeDetail_Insert(json);
+		try {
+			String OpportunityID = json.getString("OpportunityID");
+			customerTemplate.SyncCustomer(OpportunityID, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Result;
     }
 	
 	@ResponseBody

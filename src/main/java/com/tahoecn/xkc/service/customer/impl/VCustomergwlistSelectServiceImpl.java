@@ -1897,7 +1897,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                             this.CustomerFollowUp_Insert(customerActionVo);
                         }
                         //同步明源客户和机会数据
-                        customerTemplate.SyncCustomer(opportunityID, 0);
+                        //customerTemplate.SyncCustomer(opportunityID, 0);
                         entity.setErrcode(0);
                         entity.setErrmsg("成功");
                     }
