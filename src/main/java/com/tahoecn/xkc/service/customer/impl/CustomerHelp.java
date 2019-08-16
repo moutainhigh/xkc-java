@@ -13,17 +13,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.tahoecn.xkc.common.annotation.DataSource;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
-import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
@@ -502,7 +498,6 @@ public class CustomerHelp implements ICustomerHelp {
 		String jsonStr = "";
 		if (redisTemplate.hasKey(jsonFile)) {
 			jsonStr = redisTemplate.opsForValue().get(jsonFile);
-			redisTemplate.delete(jsonFile);
 		} else {
 			jsonStr = JSONUtil.readJsonFile(jsonFile);
 			redisTemplate.opsForValue().set(jsonFile, jsonStr);
