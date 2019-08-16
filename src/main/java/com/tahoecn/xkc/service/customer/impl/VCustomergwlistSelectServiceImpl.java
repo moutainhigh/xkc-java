@@ -1988,6 +1988,11 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				String CardID = customerData.get("CardID")!=null?customerData.get("CardID").toString():"空值";
 				String Gender = customerData.get("Gender")!=null?customerData.get("Gender").toString():"空值";
 				
+				List<Map<String, Object>>  jarry = vCustomergwlistSelectMapper.DictionaryList_Select("E72C340D-4092-467A-9B8F-5138DBDCA43B");
+				
+				List<Map<String, Object>>  cardTypejarry = vCustomergwlistSelectMapper.DictionaryList_Select("848EBE45-2C03-40C5-AE91-EC72533539BD");
+				
+				
 				UpdateCustinfoLog log = new UpdateCustinfoLog();
 				
 		        log.setOpportunityID(OpportunityID);
@@ -2007,7 +2012,17 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				String newCardType = pmap.get("CardType")!=null?pmap.get("CardType").toString():"";
 				if(!"".equals(newCardType)){
 					if(!CardType.equals(newCardType)){
-						log.setCardType(CardType + "->" + newCardType);
+						String newCardTypeStr="";
+						String oldCardTypeStr="";
+						for(Map<String, Object> map : cardTypejarry){
+							if(map.get(CardType)!=null){
+								oldCardTypeStr = map.get(CardType).toString();
+							}
+							if(map.get(newCardType)!=null){
+								newCardTypeStr = map.get(newCardType).toString();
+							}
+						}
+						log.setCardType(oldCardTypeStr + "->" + newCardTypeStr);
 					}
 				}
 				String newCardID = pmap.get("CardID")!=null?pmap.get("CardID").toString():"";
@@ -2019,7 +2034,17 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				String newGender = pmap.get("Gender")!=null?pmap.get("Gender").toString():"";
 				if(!"".equals(newGender)){
 					if(!Gender.equals(newGender)){
-						log.setGender(Gender + "->" + newGender);
+						String newGenderStr = "";
+						String oldGenderStr = "";
+						for(Map<String, Object> map : jarry){
+							if(map.get(Gender)!=null){
+								oldGenderStr = map.get(Gender).toString();
+							}
+							if(map.get(newGenderStr)!=null){
+								newGenderStr = map.get(newGender).toString();
+							}
+						}
+						log.setGender(oldGenderStr + "->" + newGenderStr);
 					}
 				}
 		        log.setCreateTime(new Date());
