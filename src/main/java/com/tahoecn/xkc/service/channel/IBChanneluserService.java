@@ -168,5 +168,5 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
     Result mChannelStoreUserApproval_Update(Map<String, Object> paramMap);
 
-    Result getRqCode(Map<String, Object> paramMap);
+    Result getRqCode();
 }

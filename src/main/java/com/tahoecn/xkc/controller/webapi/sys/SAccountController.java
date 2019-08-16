@@ -56,7 +56,7 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "新增人员(用户管理)", notes = "新增人员(用户管理)")
     @RequestMapping(value = "/SystemUser_Insert", method = {RequestMethod.POST})
     public Result SystemUser_Insert(@RequestBody SAccount account) {
-        account.setCreator(ThreadLocalUtils.getUserName());
+//        account.setCreator(ThreadLocalUtils.getUserName());
         account.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");
         account.setCreateTime(new Date());
         account.setIsDel(0);

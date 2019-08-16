@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -461,14 +462,14 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
      * // 线索报备验证后，创建线索信息
      * @param channelOrgId
      * @param ruleValidate
-     * @param userRule
+     * @param UserRule
      * @param status
      * @param paramMap
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, Map<String, Object> userRule, int status, Map paramMap) {
+    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap) {
         QueryWrapper<BCustomerpotential> wrapper=new QueryWrapper<>();
         wrapper.eq("Mobile",paramMap.get("Mobile"));
         List<BCustomerpotential> list = customerpotentialService.list(wrapper);
@@ -499,12 +500,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         Date InvalidTime= (boolean) ruleValidate.get("Tag") ? null : new Date();
         String sourceType = customerpotentialService.getOpportunitySourceByAdviserGroup((String) paramMap.get("AdviserGroupID"));
         String ChannelIdentify=channelOrgId;
-        Date ComeOverdueTime=(Date)userRule.get("ComeOverdueTime");
-        Date TradeOverdueTime=(Date)userRule.get("TradeOverdueTime");
+        String ComeOverdueTime=UserRule.getComeOverdueTime();
+        String TradeOverdueTime=UserRule.getTradeOverdueTime();
 
-        int IsSelect=(int)userRule.get("IsSelect");
+        int IsSelect=UserRule.getProtectRule().getIsSelect();
         String ConfirmUserId="";
-        if ((int)userRule.get("ValidationMode")==2){
+        if (UserRule.getImmissionRule().getValidationMode()==2){
              ConfirmUserId="99";
         }
         //获取报备人信息以及适配的规则
@@ -527,8 +528,14 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setInvalidType((int) ruleValidate.get("InvalidType"));
         clue.setInvalidTime(InvalidTime);
         clue.setInvalidReason((String) ruleValidate.get("Message"));
-        clue.setComeOverdueTime(ComeOverdueTime);
-        clue.setTradeOverdueTime(TradeOverdueTime);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
+            clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
         clue.setAdviserGroupID((String) paramMap.get("AdviserGroupID"));
         clue.setSourceType(sourceType);
         clue.setIsSelect(IsSelect);

@@ -432,7 +432,7 @@
               b.Url
         FROM   dbo.S_CommonJobsMenuRel a
               JOIN dbo.S_Dictionary s ON a.JobID = s.ID
-              INNER JOIN dbo.S_Menus b ON a.MenuID = b.ID
+              INNER JOIN dbo.S_Menus_xkc b ON a.MenuID = b.ID
                                           AND b.IsDel = 0
                                           AND b.Creator = '99'
         WHERE  s.DictCode = #{jobCode}
@@ -453,7 +453,7 @@
             b.Url
          FROM dbo.A_ShareCommonJobsMenuRel a
             JOIN dbo.S_Dictionary s ON a.JobID = s.ID
-            INNER JOIN dbo.S_Menus b ON a.MenuID = b.ID
+            INNER JOIN dbo.S_Menus_xkc b ON a.MenuID = b.ID
                                         AND b.IsDel = 0
             WHERE a.ProjectID = #{projectID}
                 AND s.DictCode = #{jobCode}

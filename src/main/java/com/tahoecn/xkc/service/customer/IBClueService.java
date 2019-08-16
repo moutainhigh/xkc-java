@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.vo.Customer;
+import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public interface IBClueService extends IService<BClue> {
 
     String GetMessageForReturn(int invalidType, Map<String, Object> map);
 
-    boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, Map<String, Object> map, int status, Map paramMap);
+    boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap);
 	/**
 	 * 案场助手统计
 	 */

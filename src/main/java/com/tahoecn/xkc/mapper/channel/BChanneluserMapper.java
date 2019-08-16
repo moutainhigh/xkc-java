@@ -62,7 +62,7 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 
     String getChannelOrgID(@Param("UserID") String userID);
 
-    Map<String, Object> GetReportUserInfo_Select(@Param("UserID")String userID, @Param("IntentProjectID")String intentProjectID, @Param("UserID")String ChannelIdentify);
+    Map<String, Object> GetReportUserInfo_Select(@Param("UserID")String userID, @Param("IntentProjectID")String intentProjectID, @Param("ChannelIdentify")String ChannelIdentify);
 
 	/*
    	 * 删除兼职成员

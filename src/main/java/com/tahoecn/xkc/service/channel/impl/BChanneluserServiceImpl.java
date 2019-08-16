@@ -401,6 +401,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify) {
+        System.out.println("userID = " + userID);
+        System.out.println("intentProjectID = " + intentProjectID);
+        System.out.println("channelIdentify = " + channelIdentify);
         return baseMapper.GetReportUserInfo_Select(userID,intentProjectID,channelIdentify);
     }
 
@@ -641,8 +644,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public Result getRqCode(Map<String, Object> paramMap) {
-	    int width= (int) paramMap.get("width");
+    public Result getRqCode() {
+	    int width= 500;
         String accessToken = RqCodeUtils.getToken();
         String twoCodeUrl = RqCodeUtils.getminiqrQr(accessToken,width);//todo:根据活动id生成路径
         if (twoCodeUrl==null){

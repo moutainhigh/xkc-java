@@ -15,9 +15,12 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.model.sys.SFormsession;
+import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
+import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
+import com.tahoecn.xkc.service.customer.impl.PotentialCustomerServiceImpl;
 import com.tahoecn.xkc.service.project.IABrokerprojectService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBProjectcollectionService;
@@ -74,8 +77,14 @@ public class H5Controller extends TahoeBaseController {
     @Autowired
     private CsSendSmsLogService csSendSmsLogService;
 
+    @Autowired
+    private IBChannelService iBChannelService;
+
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
+
+    @Autowired
+    private PotentialCustomerServiceImpl potentialCustomerService;
 
     //已测  AppID=5D4D7079-D294-4204-BD51-C3AB420C6C2F
     @ApiOperation(value = "获取城市", notes = "获取城市")
@@ -394,6 +403,7 @@ public class H5Controller extends TahoeBaseController {
     @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
     public Result mBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
+        Result re=new Result();
         Map paramMap = (HashMap)jsonParam.get("_param");
         String userID=(String) paramMap.get("UserID");
         String mobile=(String) paramMap.get("Mobile");
@@ -429,22 +439,35 @@ public class H5Controller extends TahoeBaseController {
         }
         //获取报备用户所适用的规则
         //未测 目前map无值
-        Map<String,Object> userRule=clueruleService.getRegisterRule(projectId,adviserGroupID);
+//        Map<String,Object> userRule=clueruleService.getRegisterRule(projectId,adviserGroupID);
+        ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userID, adviserGroupID, projectId);
+
+
+
 //        if (userRule.get("RuleID")==null){
-        if (userRule==null){
+        if (channelRegisterModel.getUserRule()==null){
             Result.errormsg(1,"未找到该渠道的报备规则");
         }
         //验证报备客户是否有效
-        Map<String, Object> ruleValidate = clueService.ValidateForReport(userID, mobile, projectId, userRule);
+        Map<String, Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
+
+//        Map<String, Object> ruleValidate = clueService.ValidateForReport(userID, mobile, projectId, userRule);
         String channelOrgId=channeluserService.getChannelOrgID(userID,adviserGroupID);
-        String msg=clueService.getMessage((int)ruleValidate.get("InvalidType"),userRule);
-        ruleValidate.put("Message",msg);
-        String errMsg=clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),userRule);
+        Map<String, Object> userRule=new HashMap<>();
+        userRule.put("RuleType",channelRegisterModel.getUserRule().getRuleType());
+        userRule.put("ValidationMode",channelRegisterModel.getUserRule().getImmissionRule().getValidationMode());
+        String msg=clueService.getMessage((int)CustomerValidate.get("InvalidType"),userRule);
+        CustomerValidate.put("Message",msg);
+        String reMsg = iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
+        re.setErrmsg(reMsg);
+//        ruleValidate.put("Message",msg);
+//        String errMsg=clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),userRule);
         //通过有效验证
         int status = 0;
-        if ((boolean)ruleValidate.get("Tag")){
+
+        if ((boolean)CustomerValidate.get("Tag")){
             //竞争带看
-            if ((int) userRule.get("RuleType") == 1 ){
+            if (channelRegisterModel.getUserRule().getRuleType() == 1 ){
                 //创建新线索，线索状态是待确认
                 status = 1;
             }else//报备保护
@@ -458,11 +481,16 @@ public class H5Controller extends TahoeBaseController {
             status = 3;
         }
         //线索报备验证后，创建线索信息
-            boolean b=clueService.createClue(channelOrgId,ruleValidate,userRule,status,paramMap);
-        if (b){
-            return Result.ok("成功");
+            boolean b=clueService.createClue(channelOrgId,CustomerValidate,channelRegisterModel.getUserRule(),status,paramMap);
+        if (reMsg!=null){
+            re.setErrmsg(reMsg);
         }
-        return Result.errormsg(1,errMsg);
+        if (b){
+            re.setErrcode(0);
+            return re;
+        }
+        re.setErrcode(1);
+        return re;
     }
 
     //已测
@@ -714,9 +742,8 @@ public class H5Controller extends TahoeBaseController {
 
     @ApiOperation(value = "获取小程序码", notes = "获取小程序码")
     @RequestMapping(value = "/getRqCode", method = {RequestMethod.POST})
-    public Result getRqCode(@RequestBody JSONObject jsonParam) {
-        Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
-        Result result=channeluserService.getRqCode(paramMap);
+    public Result getRqCode() {
+        Result result=channeluserService.getRqCode();
         return result;
     }
 
@@ -724,7 +751,7 @@ public class H5Controller extends TahoeBaseController {
     @RequestMapping(value = "/getRqCodeUrl", method = {RequestMethod.POST})
     public Result getRqCodeUrl() {
         StringBuilder sb=new StringBuilder();
-        sb.append(physicalPath).append("rqcodeImg").append(File.separator).append("twoCode.png");
+        sb.append(physicalPath).append("rqcodeImg").append("/twoCode.png");
         return Result.okm(sb.toString());
     }
 
