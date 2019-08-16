@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -62,6 +63,10 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Autowired
     private IVABrokerMycustomersService mycustomersService;
+
+    @Value("${tahoe.application.physicalPath}")
+    private  String physicalPath;
+
     @Override
     public List<Map<String, String>> AgenApproverList() {
         return baseMapper.AgenApproverList();
@@ -647,7 +652,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     public Result getRqCode() {
 	    int width= 500;
         String accessToken = RqCodeUtils.getToken();
-        String twoCodeUrl = RqCodeUtils.getminiqrQr(accessToken,width);//todo:根据活动id生成路径
+        System.out.println("accessToken = " + accessToken);
+        String twoCodeUrl = RqCodeUtils.getminiqrQr(accessToken,width,physicalPath);//todo:根据活动id生成路径
         if (twoCodeUrl==null){
             return Result.errormsg(1,"生成失败");
         }

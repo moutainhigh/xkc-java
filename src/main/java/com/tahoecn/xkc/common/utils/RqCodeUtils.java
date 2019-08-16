@@ -39,8 +39,7 @@ public class RqCodeUtils {
         RqCodeUtils.appSecret = appSecret;
     }
 
-    @Value("${tahoe.application.physicalPath}")
-    private static String physicalPath;
+
 
     /**
      * 获取 token
@@ -73,10 +72,10 @@ public class RqCodeUtils {
      * 获取 二维码图片
 　　 *
      */
-    public static String getminiqrQr(String accessToken, int width) {
+    public static String getminiqrQr(String accessToken, int width,String physicalPath) {
 //        String p = request.getSession().getServletContext().getRealPath("/");
-        String codeUrl = physicalPath + "rqcodeImg" + File.separator;
-        String codeFile = physicalPath + "rqcodeImg" + File.separator + "twoCode.png";
+        String codeUrl = physicalPath + "rqcodeImg" ;
+        String codeFile = physicalPath + "rqcodeImg"+ "/twoCode.png";
         String twoCodeUrl = "/twoCode.png";
         try {
             URL url = new URL("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" + accessToken);
@@ -114,7 +113,7 @@ public class RqCodeUtils {
             File logoSaveFile = new File(codeUrl);
             if (!logoSaveFile.exists()){
                 logoSaveFile.mkdirs();
-            }
+        }
             OutputStream os = new FileOutputStream(codeFile);
             int len;
             byte[] arr = new byte[1024];
