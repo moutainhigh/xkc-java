@@ -1498,6 +1498,34 @@ public class VCustomergwlistSelectServiceImpl extends ServiceImpl<VCustomergwlis
             customerModeType = CustomerModeType.顾问_客户_更新.getTypeID();
         }
         CustomerModelVo customerModel = customerTemplate.InitCustomerModeData(model, jsonFile, CustomerObj, customerModeType);
+        
+        List<PanelItem> PanelItems = customerModel.getPanel();
+        for(PanelItem PanelItem : PanelItems){
+        	if("成员信息".equals(PanelItem.getName())){
+        		List<String> parentID = new ArrayList<>();
+        		parentID.add(model.getOpportunityID());
+        		List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(parentID);
+        		if(childs!=null && childs.size()>0){
+        			JSONArray J_DATA = new JSONArray();
+        			for(Map<String, Object> map : childs){
+        				String ChildID = map.get("OpportunityID").toString();
+        				String ParentRelation ="";
+        				if(map.get("ParentRelation")!=null){
+        					ParentRelation = map.get("ParentRelation").toString();
+        				}
+        				String CustomerName = map.get("CustomerName").toString();
+        				String CustomerMobile = map.get("CustomerMobile").toString();
+        				JSONObject json = new JSONObject();
+        				json.put("ChildID", ChildID);
+        				json.put("ParentRelation", ParentRelation);
+        				json.put("CustomerName", CustomerName);
+        				json.put("CustomerMobile", CustomerMobile);
+        				J_DATA.add(json);
+        			}
+        			PanelItem.getChild().get(0).setChild(J_DATA);
+        		}
+        	}
+        }
         customerModel.setIsNew(isNew);
         entity.setData(customerModel);
         entity.setErrcode(0);

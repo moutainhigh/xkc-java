@@ -669,7 +669,7 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
 			// 如果开启销支，验证客储等级
 			Map<String, Object> objRank = vCustomergwlistSelectMapper.mCustomerAllotRoleAndRank_Select(opportunityID);
-			if (objRank!=null && objRank.size() == 0) {
+			if (objRank==null || objRank.size() == 0) {
 				if (optionType == 0 || optionType == 1) {
 					String where = "  AND OpportunityID ='" + opportunityID+ "' ";
 					Map<String, Object> customerObj = vCustomergwlistSelectMapper.OpportunityDetail_Select(where);
