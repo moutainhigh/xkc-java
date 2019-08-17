@@ -562,10 +562,22 @@
         [S_Account] a
         WHERE
         a.UserOrgID IN ( SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%' )
-        AND ( #{Key} = ''
+        <!-- AND ( #{Key} = ''
         OR a.UserName LIKE concat('%',#{Key},'%')
         OR a.EmployeeName LIKE concat('%',#{Key},'%')
-        )
+        ) -->
+        <if test="Key != null and Key != ''">
+        	and a.EmployeeName LIKE concat('%',#{Key},'%')
+        </if>
+        <if test="UserName != null and UserName != ''">
+        	and a.UserName LIKE concat('%',#{UserName},'%')
+        </if>
+        <if test="Mobile != null and Mobile != ''">
+        	and a.Mobile LIKE concat('%',#{Mobile},'%')
+        </if>
+        <if test="Status != null and Status != ''">
+        	and a.Status = #{Status}
+        </if>
 
         AND a.AuthCompanyID = #{AuthCompanyID}
         <if test="Type != 0">
@@ -600,10 +612,22 @@
         WHERE
         b.AuthCompanyID = #{AuthCompanyID}
         AND b.IsDel = 0
-        AND ( #{Key} = ''
+        <!-- AND ( #{Key} = ''
         OR b.UserName LIKE concat('%',#{Key},'%')
         OR b.EmployeeName LIKE concat('%',#{Key},'%')
-        )
+        ) -->
+        <if test="Key != null and Key != ''">
+        	and a.EmployeeName LIKE concat('%',#{Key},'%')
+        </if>
+        <if test="UserName != null and UserName != ''">
+        	and a.UserName LIKE concat('%',#{UserName},'%')
+        </if>
+        <if test="Mobile != null and Mobile != ''">
+        	and a.Mobile LIKE concat('%',#{Mobile},'%')
+        </if>
+        <if test="Status != null and Status != ''">
+        	and a.Status = #{Status}
+        </if>
         <if test="Type != 0">
             and b.AccountType = #{Type}
         </if>

@@ -46,9 +46,11 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "获取组织下的人员(改后)", notes = "获取组织下的人员(改后)")
     @RequestMapping(value = "/SystemUserListByOrgID_Select", method = {RequestMethod.GET})
     public Result SystemUserListByOrgID_Select(String AuthCompanyID,String OrgID, @RequestParam(required = false) String Name, @RequestParam(defaultValue = "0",required = false)int Type,
-                                               @RequestParam(defaultValue = "1")int Pageindex, @RequestParam(defaultValue = "10")int Pagesize) {
+                                               @RequestParam(defaultValue = "1")int Pageindex, @RequestParam(defaultValue = "10")int Pagesize,
+                                               String UserName,String Mobile,String Status) {
         IPage page = new Page(Pageindex, Pagesize);
-        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_SelectN(page,AuthCompanyID,OrgID,Name,Type);
+        IPage<Map<String,Object>> list=accountService.SystemUserListByOrgID_SelectN(page,AuthCompanyID,OrgID,Name,Type,
+        		UserName, Mobile, Status);
         return Result.ok(list);
     }
 

@@ -113,7 +113,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             sqlWhere.append("AND (UserName LIKE  '%"+kw.trim()+"%' OR EmployeeName LIKE '%"+kw.trim()+"%')");
         }
 
-        if (tp == 0)
+        if (Integer.valueOf(tp) == 0)
         {
             if (StringUtil.isNotNull(RoleID))
             {
@@ -136,6 +136,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 }
             }
             map.put("whereOne", whereOne);
+            map.put("where",sqlWhere.toString());
             result.put("NoAddedList",bSaleGroupMemberMapper.SalesGroupTeamNoAddedList_Select(page,map));
 
         }else{

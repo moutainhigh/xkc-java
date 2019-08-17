@@ -347,13 +347,13 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                 	if(step1_map.get("SalePartnerID")!=null){
                                 		tSalePartnerID = step1_map.get("SalePartnerID").toString();
                                 	}
-                                	if(IsIPad==1 && Status==2 && tSalePartnerID==null && "".equals(tFirstVisitAddress) && "".equals(tReVisitAddress) && !StringUtils.isEmpty(paramAry.getString("VisitAddress")) && paramAry.getIntValue("IsReAlloc")==0 ){
+                                	if(IsIPad==1 && Status==2 && tSalePartnerID==null && "".equals(tFirstVisitAddress) && "".equals(tReVisitAddress) && !StringUtils.isEmpty(parameter.getString("VisitAddress")) && parameter.getIntValue("IsReAlloc")==0 ){
                                 		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step3(pmap);
                                 	}
-                                	if(IsIPad==1 && Status==2 && !tSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899") && tSalePartnerID==null && "".equals(tReVisitAddress) && !tFirstVisitAddress.equals(paramAry.getString("VisitAddress")) && paramAry.getIntValue("IsReAlloc")==1){
+                                	if(IsIPad==1 && Status==2 && !tSaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899") && tSalePartnerID==null && "".equals(tReVisitAddress) && !tFirstVisitAddress.equals(parameter.getString("VisitAddress")) && parameter.getIntValue("IsReAlloc")==1){
                                 		vCustomerfjlistSelectMapper.mCustomerFJDetail_Update_step4(pmap);
                                 	}
-                                	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(paramAry.getString("VisitType"))){
+                                	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(parameter.getString("VisitType"))){
                                 		pmap.put("CustomerRank", "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
                                 		pmap.put("UpDownStatus", 1);
                                 		vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
@@ -370,7 +370,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                             	pmap.put("CustomerRank", "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
                             	pmap.put("UpDownStatus", 1);
                             	vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
-                            	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(paramAry.getString("VisitType"))){
+                            	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(parameter.getString("VisitType"))){
                             		pmap.put("CustomerRank", "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
                             		pmap.put("UpDownStatus", 1);
                             		vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
@@ -386,7 +386,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                             	pmap.put("CustomerRank", "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
                             	pmap.put("UpDownStatus", 1);
                             	vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
-                            	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(paramAry.getString("VisitType"))){
+                            	if("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(parameter.getString("VisitType"))){
                             		pmap.put("CustomerRank", "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
                             		pmap.put("UpDownStatus", 1);
                             		vCustomergwlistSelectMapper.P_OpportunityCustomerRank(pmap);
