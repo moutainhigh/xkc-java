@@ -54,8 +54,8 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
     }
 
     @Override
-    public IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, Date startTime, Date endTime, String projectID) {
-        IPage<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Select(page, startTime, endTime, projectID);
+    public IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, Date startTime, Date endTime, String projectID, String checkDate, String name, String mobile, String taskName, String reportName) {
+        IPage<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Select(page, startTime, endTime, projectID, checkDate, name, mobile, taskName, reportName);
         List<Map<String, Object>> result=new ArrayList<>();
         for (Map<String, Object> map : list.getRecords()) {
             Date checkInTime = (Date) map.get("CheckInTime");
@@ -74,8 +74,8 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
     }
 
     @Override
-    public List<Map<String, Object>> mChannelCheckReportList_Export(Date startTime, Date endTime, String projectID) {
-        List<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Export(startTime, endTime, projectID);
+    public List<Map<String, Object>> mChannelCheckReportList_Export(Date startTime, Date endTime, String projectID, String checkDate, String name, String mobile, String taskName, String reportName) {
+        List<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Export(startTime, endTime, projectID, checkDate, name, mobile, taskName, reportName);
         List<Map<String, Object>> result=new ArrayList<>();
         for (Map<String, Object> map : list) {
             Date checkInTime = (Date) map.get("CheckInTime");

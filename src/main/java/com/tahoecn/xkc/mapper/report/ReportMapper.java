@@ -35,7 +35,11 @@ public interface ReportMapper extends BaseMapper<BChannelorg> {
     List<Map<String,Object>> ChannelCustomerReportDL_Select(@Param("orglevel")String orglevel, @Param("accountID")String accountID,
                                                             @Param("startDate")String startDate, @Param("endDate")String endDate);
 
-    IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, @Param("StartTime")Date startTime, @Param("EndTime")Date endTime, @Param("ProjectID")String projectID);
+    IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, @Param("StartTime")Date startTime, @Param("EndTime")Date endTime, 
+    		@Param("ProjectID")String projectID, @Param("CheckDate")String checkDate, @Param("Name")String name, @Param("Mobile")String mobile,
+    		 @Param("TaskName")String taskName, @Param("ReportName")String reportName);
 
-    List<Map<String, Object>> mChannelCheckReportList_Export(@Param("StartTime")Date startTime, @Param("EndTime")Date endTime, @Param("ProjectID")String projectID);
+    List<Map<String, Object>> mChannelCheckReportList_Export(@Param("StartTime")Date startTime, @Param("EndTime")Date endTime,
+    		@Param("ProjectID")String projectID, @Param("CheckDate")String checkDate, @Param("Name")String name, @Param("Mobile")String mobile,
+   		 @Param("TaskName")String taskName, @Param("ReportName")String reportName);
 }

@@ -1564,9 +1564,25 @@
         AND ccr.ProjectID = #{ProjectID}
         AND ccr.CheckInTime >= #{StartTime}
         AND ccr.CheckInTime <= #{EndTime}
+        ]]>
+        <if test = 'CheckDate != null'>
+        AND ccr.CheckDate = #{checkDate}
+        </if>
+        <if test = 'Name != null'>
+        AND cu.Name = #{Name}
+        </if>
+        <if test = 'Mobile != null'>
+        AND cu.Mobile = #{Mobile}
+        </if>
+        <if test = 'TaskName != null'>
+        AND ccr.TaskName = #{TaskName}
+        </if>
+        <if test = 'ReportName != null'>
+        AND cur.Name = #{ReportName}
+        </if>
         ORDER BY
         ccr.CheckDate
-        ]]>
+        
     </select>
 
     <select id="mChannelCheckReportList_Export" resultType="java.util.HashMap">
@@ -1612,9 +1628,25 @@
         AND ccr.ProjectID = #{ProjectID}
         AND ccr.CheckInTime >= #{StartTime}
         AND ccr.CheckInTime <= #{EndTime}
+        ]]>
+         <if test = 'CheckDate != null'>
+        AND ccr.CheckDate = #{checkDate}
+        </if>
+        <if test = 'Name != null'>
+        AND cu.Name = #{Name}
+        </if>
+        <if test = 'Mobile != null'>
+        AND cu.Mobile = #{Mobile}
+        </if>
+        <if test = 'TaskName != null'>
+        AND ccr.TaskName = #{TaskName}
+        </if>
+        <if test = 'ReportName != null'>
+        AND cur.Name = #{ReportName}
+        </if>
         ORDER BY
         ccr.CheckDate
-        ]]>
+        
     </select>
 
     <!--<select id="asddsa" resultType="java.util.HashMap">

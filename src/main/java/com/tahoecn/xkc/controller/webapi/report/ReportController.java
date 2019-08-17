@@ -231,15 +231,17 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "考勤报表查询", notes = "考勤报表查询")
     @RequestMapping(value = "/mChannelCheckReportList_Select", method = {RequestMethod.GET})
-    public Result mChannelCheckReportList_Select(String ProjectID, Date StartTime,Date EndTime,int PageIndex,int PageSize) {
+    public Result mChannelCheckReportList_Select(String ProjectID, Date StartTime,Date EndTime,String CheckDate,String Name,String Mobile,String TaskName,
+    		String ReportName,int PageIndex,int PageSize) {
         IPage page=new Page(PageIndex,PageSize);
-        IPage<Map<String,Object>> list=reportService.mChannelCheckReportList_Select(page,StartTime,EndTime,ProjectID);
+        IPage<Map<String,Object>> list=reportService.mChannelCheckReportList_Select(page,StartTime,EndTime,ProjectID,CheckDate,Name,Mobile,TaskName,ReportName);
         return Result.ok(list);
     }
     @ApiOperation(value = "考勤报表导出", notes = "考勤报表导出")
     @RequestMapping(value = "/mChannelCheckReportList_Export", method = {RequestMethod.GET})
-    public Result mChannelCheckReportList_Export(String ProjectID, Date StartTime,Date EndTime) {
-        List<Map<String,Object>> list=reportService.mChannelCheckReportList_Export(StartTime,EndTime,ProjectID);
+    public Result mChannelCheckReportList_Export(String ProjectID, Date StartTime,Date EndTime,String CheckDate,String Name,String Mobile,String TaskName,
+    		String ReportName) {
+        List<Map<String,Object>> list=reportService.mChannelCheckReportList_Export(StartTime,EndTime,ProjectID,CheckDate,Name,Mobile,TaskName,ReportName);
         SetExcel_mChannelCheckReportList(list);
         return null;
     }
