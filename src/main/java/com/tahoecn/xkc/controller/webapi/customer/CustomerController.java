@@ -544,7 +544,8 @@ public class CustomerController extends TahoeBaseController {
     @ApiOperation(value = "锁房列表")
     @RequestMapping(value = "/CustomerLockRoomPageList_Select", method = {RequestMethod.GET})
     public Result CustomerLockRoomPageList_Select(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize,
-                                                  String ProjectID, String CustomerMobile,String IsExcel,String checkarr[]){
+                                                  String ProjectID, String CustomerMobile,String IsExcel,String checkarr[],
+                                                  String Name, String SaleUserName, String RoomCode){
         IPage page = new Page(pageNum,pageSize);
         StringBuilder sqlWhere = new StringBuilder();
 
@@ -556,6 +557,15 @@ public class CustomerController extends TahoeBaseController {
 
         if (StringUtils.isNotEmpty(CustomerMobile)) {
             sqlWhere.append(" AND c.Mobile like '%").append(CustomerMobile).append("%'");
+        }
+        if (StringUtils.isNotEmpty(Name)) {
+        	sqlWhere.append(" AND c.Name like '%").append(Name).append("%'");
+        }
+        if (StringUtils.isNotEmpty(SaleUserName)) {
+        	sqlWhere.append(" AND dbo.F_GetSaleUserName(clr.Creator) like '%").append(SaleUserName).append("%'");
+        }
+        if (StringUtils.isNotEmpty(RoomCode)) {
+        	sqlWhere.append(" AND c.RoomCode like '%").append(RoomCode).append("%'");
         }
 
         if (StringUtils.isNotEmpty(IsExcel)) {
