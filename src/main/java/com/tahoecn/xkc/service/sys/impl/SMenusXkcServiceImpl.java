@@ -80,7 +80,7 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             String Editor = ThreadLocalUtils.getUserName();
             Integer Status = menu.getStatus();
             String OldPath=baseMapper.getOldPath(ID);
-            String NewPath=baseMapper.getNewPath(ID);
+            String NewPath=baseMapper.getNewPath(pid);
             if (NewPath!=null){
                 NewPath=NewPath+"/"+MenuSysName;
             }else {
@@ -102,6 +102,7 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             menus.setEditTime(new Date());
             menus.setStatus(Status);
             menus.setFullPath(NewPath);
+            menus.setPid(pid);
             baseMapper.updateById(menus);
             if (StringUtils.isNotBlank(OldPath)){
                 QueryWrapper<SMenusXkc> wrapper=new QueryWrapper<>();

@@ -73,7 +73,7 @@
         SELECT FullPath FROM S_Menus_xkc WHERE ID = #{ID}
     </select>
     <select id="getNewPath" parameterType="string" resultType="string">
-        SELECT FullPath FROM S_Menus_xkc WHERE ID = ( SELECT PID FROM S_Menus_xkc WHERE ID = #{ID} )
+        SELECT FullPath FROM S_Menus_xkc WHERE ID = #{ID}
     </select>
 
     <select id="getResult" resultType="java.util.HashMap">
@@ -90,7 +90,8 @@
         dbo.S_Menus_xkc  m
         WHERE
         m.IsDel = 0
-        AND m.[Status] = 1;
+        AND m.[Status] = 1
+        AND FullPath NOT LIKE '%App菜单%';
 
     </select>
 
@@ -113,7 +114,8 @@
         AND cj.[Status] = 1
         AND m.IsDel = 0
         AND m.[Status] = 1
-        AND cj.ID =#{CommonJobID};
+        AND cj.ID =#{CommonJobID}
+        AND m.FullPath NOT LIKE '%App菜单%';
 
     </select>
     <select id="getOtherResult" parameterType="string" resultType="java.util.HashMap">
@@ -133,7 +135,8 @@
         m.IsDel = 0
         AND m.[Status] = 1
         AND jmr.JobID=#{JobID}
-        AND jmr.MenuID IS NOT IN(${ID});
+        AND jmr.MenuID IS NOT IN(${ID})
+        AND m.FullPath NOT LIKE '%App菜单%';
 
     </select>
     <select id="UserFunctions" resultType="java.util.HashMap" parameterType="string">
