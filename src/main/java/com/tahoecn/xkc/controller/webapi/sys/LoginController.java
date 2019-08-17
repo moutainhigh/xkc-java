@@ -75,14 +75,14 @@ public class LoginController extends TahoeBaseController {
 
         //不需要HashMap<String,String> userJob = accountService.getUserJob(userName);
         List<HashMap<String,String>> userProduct = accountService.getUserPorduct(userName);
-        if (userProduct == null){
+        if (userProduct == null||userProduct.size()==0){
             return markError("账号无权限登录系统");
         }else{
             String productId = userProduct.get(0).get("ID");
 
             //不需要HashMap<String,String> userProject = accountService.getUserPorject(userJob.get("UserID"),productId);
             List<HashMap<String,String>> userJobMenus = accountService.getUserJobMenus(userName,productId);
-            if (userJobMenus == null){
+            if (userJobMenus == null||userJobMenus.size()==0){
                 return markError("账号无权限登录系统");
             }
             //不需要List<HashMap<String,String>> userWXApp = accountService.getUserWXApp(userName);
