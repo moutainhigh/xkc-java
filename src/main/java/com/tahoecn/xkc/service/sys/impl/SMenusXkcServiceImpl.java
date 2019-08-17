@@ -57,8 +57,9 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean SystemMenu_Update(SMenusXkc menu) {
+    public Result SystemMenu_Update(SMenusXkc menu) {
         try {
+            SMenusXkc oldMenu = this.getById(menu.getId());
             String ID = menu.getId();
             String MenuSysName = menu.getMenuSysName();
             String MenuName = menu.getMenuName();
@@ -76,6 +77,7 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
                 Levels=1;
             }
             Integer ListIndex = menu.getListIndex();
+            // 1为一级菜单  0为非一级
             Integer IsLast = menu.getIsLast();
             String Editor = ThreadLocalUtils.getUserName();
             Integer Status = menu.getStatus();
@@ -84,6 +86,21 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
             if (NewPath!=null){
                 NewPath=NewPath+"/"+MenuSysName;
             }else {
+                NewPath=MenuSysName;
+            }
+
+            //一级菜单修改为非一级
+            if (oldMenu.getIsLast()==1&&IsLast==0){
+                QueryWrapper<SMenusXkc> wrapper=new QueryWrapper<>();
+                wrapper.eq("PID",ID);
+                wrapper.eq("IsDel",0);
+                List<SMenusXkc> list = this.list(wrapper);
+                if (list.size()>0){
+                    return Result.errormsg(1,"此菜单有下级菜单,请移出下级菜单");
+                }
+            } if (oldMenu.getIsLast()==0&&IsLast==1){//非一级菜单修改为一级
+                pid="-1";
+                Levels=1;
                 NewPath=MenuSysName;
             }
             SMenusXkc menus=new SMenusXkc();
@@ -129,9 +146,9 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
         } catch (Exception e) {
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return false;
+            return Result.errormsg(1,"修改失败");
         }
-        return true;
+        return Result.okm("成功");
     }
 
     @Override

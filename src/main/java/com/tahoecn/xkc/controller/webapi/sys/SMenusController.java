@@ -118,12 +118,9 @@ public class SMenusController extends TahoeBaseController {
     @RequestMapping(value = "/SystemMenu_Update", method = {RequestMethod.POST})
     public Result SystemMenu_Update(@RequestBody SMenusXkc menus) {
 
-        boolean b=isMenusService.SystemMenu_Update(menus);
-        if (b){
-            return Result.okm("成功");
-        }
-        //随便提交
-        return Result.errormsg(99,"修改失败");
+        Result result=isMenusService.SystemMenu_Update(menus);
+
+        return result;
     }
 
 }

@@ -91,7 +91,8 @@
         WHERE
         m.IsDel = 0
         AND m.[Status] = 1
-        AND FullPath NOT LIKE '%App菜单%';
+        AND FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;
 
     </select>
 
@@ -115,7 +116,8 @@
         AND m.IsDel = 0
         AND m.[Status] = 1
         AND cj.ID =#{CommonJobID}
-        AND m.FullPath NOT LIKE '%App菜单%';
+        AND m.FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;;
 
     </select>
     <select id="getOtherResult" parameterType="string" resultType="java.util.HashMap">
@@ -136,7 +138,8 @@
         AND m.[Status] = 1
         AND jmr.JobID=#{JobID}
         AND jmr.MenuID IS NOT IN(${ID})
-        AND m.FullPath NOT LIKE '%App菜单%';
+        AND m.FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;
 
     </select>
     <select id="UserFunctions" resultType="java.util.HashMap" parameterType="string">
