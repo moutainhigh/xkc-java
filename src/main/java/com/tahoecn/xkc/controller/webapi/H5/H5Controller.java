@@ -763,7 +763,7 @@ public class H5Controller extends TahoeBaseController {
     public Result getTwoCode(@RequestBody JSONObject jsonParam) {
         String UserID = (String) jsonParam.get("UserID");
 //        String OrgID = (String) jsonParam.get("OrgID");
-        String OrgID = "www.baidu.com";
+        String OrgID = "https://www.baidu.com/";
 
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath, 500, null);
         if (url==null){

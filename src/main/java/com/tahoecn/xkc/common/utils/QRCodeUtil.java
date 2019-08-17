@@ -65,13 +65,14 @@ public class QRCodeUtil {
             Random random = new Random();
             //生成二维码存放文件
             String url = path + "twoCode/";
-            String codeFile = url+UUID.randomUUID()+".jpg";
+            String fileName=UUID.randomUUID()+".jpg";
+            String codeFile = url+fileName;
             File file = new File(codeFile);
             if (!file.exists()) {
                 file.mkdirs();
             }
             ImageIO.write(image, imageType, file);
-            return codeFile;
+            return "twoCode/"+fileName;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
