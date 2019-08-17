@@ -64,7 +64,7 @@ public class QRCodeUtil {
             //获得随机数
             Random random = new Random();
             //生成二维码存放文件
-            String url = path + "twoCode" + File.separator;
+            String url = path + "twoCode/";
             String codeFile = url+UUID.randomUUID()+".jpg";
             File file = new File(codeFile);
             if (!file.exists()) {

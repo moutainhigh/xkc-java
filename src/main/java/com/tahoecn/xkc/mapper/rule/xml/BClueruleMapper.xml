@@ -77,4 +77,11 @@
 			where CustomerMobile=#{CustomerMobile} and ProjectID=#{ProjectID} AND IsDel = 0 AND Status <> 6
 	    ]]>
 	</select>
+
+    <select id="getOpp" resultType="java.util.Map" parameterType="string">
+        select * from B_Opportunity
+        where
+        status in(1,2,3,4,5)
+        and CustomerMobile=#{CustomerMobile} and ProjectID=#{ProjectID}
+    </select>
 </mapper>

@@ -121,4 +121,15 @@ public class BClueruleServiceImpl extends ServiceImpl<BClueruleMapper, BCluerule
 		List<Map<String,Object>> data = bClueruleMapper.IsExistOpportunity_Select(obj);
 		return data.size() == 0 ? false : true;
 	}
+
+    /**
+     *根据手机号、项目id获取销售机会
+     * @param mobile
+     * @param projectId
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getOpp(String mobile, String projectId) {
+        return baseMapper.getOpp(mobile,projectId);
+    }
 }

@@ -63,4 +63,6 @@ public interface IBClueruleService extends IService<BCluerule> {
 	 * 判断是否存在销售机会（不区分有效无效）
 	 */
 	boolean IsExistOpportunity(String phone, String projectId);
+
+    List<Map<String, Object>> getOpp(String mobile, String projectId);
 }

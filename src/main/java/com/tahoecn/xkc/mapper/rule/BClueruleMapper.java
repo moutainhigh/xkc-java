@@ -61,4 +61,7 @@ public interface BClueruleMapper extends BaseMapper<BCluerule> {
 	 * 验证是否存在销售机会（不区分机会状态）
 	 */
 	List<Map<String, Object>> IsExistOpportunity_Select(Map<String, Object> obj);
+
+    List<Map<String, Object>> getOpp(@Param("CustomerMobile")String mobile, @Param("ProjectID")String projectId);
+
 }

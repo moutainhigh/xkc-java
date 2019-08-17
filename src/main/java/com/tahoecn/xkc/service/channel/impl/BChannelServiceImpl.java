@@ -470,6 +470,8 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	public Map<String, Object> ValidateForReport(String mobile, String projectId,
 			ChannelRegisterModel channelRegisterModel) {
 		Map<String, Object> msg = new HashMap<String, Object>();
+		//默认值false
+		msg.put("IsExsitOpp",false);
         if (clueruleService.IsRepeatedReg(mobile, projectId, channelRegisterModel.getChannelUserId())){
             msg.put("Tag", false);
             msg.put("InvalidType", 9);
@@ -499,6 +501,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	private Map<String, Object> InstantConfirmation(String phone, String projectId, 
 			ChannelRegisterModel channelRegisterModel) {
 		Map<String, Object> msg = new HashMap<String, Object>();
+        msg.put("IsExsitOpp", false);
         if (channelRegisterModel.getUserRule().getImmissionRule().getIsOnlyAllowNew() == 1){//仅允许报备新客户
             //验证该项目是否已存在销售机会
             boolean flag = clueruleService.IsExistOpportunity(phone, projectId);
@@ -538,6 +541,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	 */
 	private Map<String, Object> validateOpp(String phone, String projectId) {
 		Map<String, Object> msg = new HashMap<String, Object>();
+        msg.put("IsExsitOpp", false);
 		Map<String, Object> obj = new HashMap<String, Object>();
         obj.put("ProjectID", projectId);
         obj.put("CustomerMobile", phone);
@@ -578,6 +582,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	 */
 	private Map<String, Object> validateClue(String phone, String projectId,ChannelRegisterModel channelRegisterModel) {
 		Map<String, Object> msg = new HashMap<String, Object>();
+        msg.put("IsExsitOpp", false);
         //查询项目下存在该手机号的有效线索
         List<Map<String,Object>> clues = bClueMapper.RuleClueList_Select(phone, projectId,channelRegisterModel.getChannelUserId());
         //该项目已经存在已确认线索

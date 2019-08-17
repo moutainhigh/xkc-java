@@ -34,13 +34,14 @@ import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.StringUtils;
+
 
 import javax.security.auth.login.Configuration;
 
@@ -511,6 +512,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         //获取报备人信息以及适配的规则
         Map<String,Object> map=channeluserService.GetReportUserInfo_Select((String)paramMap.get("UserID"),(String)paramMap.get("IntentProjectID"),ChannelIdentify);
         BClue clue=new BClue();
+        clue.setId(UUID.randomUUID().toString());
         clue.setCustomerPotentialID(customerPotentialID);
         clue.setName((String) paramMap.get("Name"));
         clue.setLastName((String) paramMap.get("Name"));
@@ -528,10 +530,15 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setInvalidType((int) ruleValidate.get("InvalidType"));
         clue.setInvalidTime(InvalidTime);
         clue.setInvalidReason((String) ruleValidate.get("Message"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
         try {
-            clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
-            clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
+            if (StringUtils.isNotBlank(ComeOverdueTime)){
+                clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
+            }
+            if (StringUtils.isNotBlank(TradeOverdueTime)){
+                clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
             return false;
