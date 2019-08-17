@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.project;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -22,7 +23,7 @@ public class BProjectparameters implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("ID")
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     @TableField("ProjectID")

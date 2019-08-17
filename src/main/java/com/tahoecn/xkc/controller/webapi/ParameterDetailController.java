@@ -3,6 +3,7 @@ package com.tahoecn.xkc.controller.webapi;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.landray.sso.client.oracle.StringUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dto.ParameterDto;
@@ -144,14 +145,24 @@ public class ParameterDetailController extends TahoeBaseController {
 
 
         //修改公共客户池开放给
-        BProjectparameters projectparameters = new BProjectparameters();
-        UpdateWrapper<BProjectparameters> updateParamWrapper = new UpdateWrapper<>();
-        updateParamWrapper.set("ProjectID",bProject.getId());
-        updateParamWrapper.set("Category",1);
-        projectparameters.setSale(param.getSale());
-        projectparameters.setSelfDrains(param.getSelfDrains());
-        iBProjectparametersService.update(projectparameters,updateParamWrapper);
-
+//        BProjectparameters projectparameters = new BProjectparameters();
+//        UpdateWrapper<BProjectparameters> updateParamWrapper = new UpdateWrapper<>();
+//        updateParamWrapper.set("ProjectID",bProject.getId());
+//        updateParamWrapper.set("Category",1);
+//        projectparameters.setSale(param.getSale());
+//        projectparameters.setSelfDrains(param.getSelfDrains());
+//        iBProjectparametersService.update(projectparameters,updateParamWrapper);
+        if(StringUtil.isNull(param.getId())){
+            param.setCreateTime(new Date());
+            param.setCreator(UserId);
+            param.setStatus(1);
+            param.setIsDel(0);
+            param.setCategory(1);
+        }else{
+            param.setEditTime(new Date());
+            param.setEditor(UserId);
+        }
+        iBProjectparametersService.saveOrUpdate(param);
 
         return Result.ok("更新成功");
     }
