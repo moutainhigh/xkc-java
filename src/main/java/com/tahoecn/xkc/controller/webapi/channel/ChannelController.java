@@ -340,7 +340,7 @@ public class ChannelController extends TahoeBaseController {
                     String ClueRuleID = split[1];
                     flag = clueruleAdvisergroupService.updateRules(channelInsertDto.getOrgID(), ThreadLocalUtils.getUserName(), rProjectID, ClueRuleID, ProjectIDWhereStr);
                     if (!flag) {
-                        return Result.errormsg(500,"数据库修改错误");
+                        return Result.errormsg(500,"数据库修改错误!");
                     }
                 }
                 }
