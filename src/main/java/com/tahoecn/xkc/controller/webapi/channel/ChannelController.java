@@ -284,6 +284,7 @@ public class ChannelController extends TahoeBaseController {
                 channelorg.setEditTime(new Date());
                 channelorg.setBizLicense(channelInsertDto.getBizlicense());
                 channelorg.setId(channelInsertDto.getOrgID());
+                System.out.println(channelorg+"++++++++++++");
                 channelorgService.updateById(channelorg);
 
                 BChanneluser channeluser = new BChanneluser();
@@ -294,6 +295,7 @@ public class ChannelController extends TahoeBaseController {
                 channeluser.setStatus(Integer.valueOf(channelInsertDto.getStatus()));
                 channeluser.setEditor(ThreadLocalUtils.getUserName());
                 channeluser.setEditeTime(new Date());
+                System.out.println(channeluser+"++++++++++++");
                 channeluserService.updateById(channeluser);
 
                 //编辑这个机构的项目权限   这里可以先全部删除再进行新增
