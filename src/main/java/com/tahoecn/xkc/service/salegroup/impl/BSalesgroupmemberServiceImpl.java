@@ -460,8 +460,8 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 //判断该用户下在该项目下是否有客户，有客户添加到 离职/调岗表
                 //自有渠道 团队负责人 团队人员
                 if(roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582")){
-                   int customerCount = clueListSelectMapper.getCustomerCount(projectId,memberId);
-                    if(customerCount>0){
+//                   int customerCount = clueListSelectMapper.getCustomerCount(projectId,memberId);
+//                    if(customerCount>0){
                         BQuituser insertQuituser = new BQuituser();
                         insertQuituser.setProjectID(projectId);
                         insertQuituser.setUserType(1);
@@ -479,11 +479,11 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                             insertQuituser.setCreateTime(new Date());
                             bQuituserMapper.insert(insertQuituser);
                         }
-                    }
+//                    }
                 }else if(roleId.equals("3BC23001-BC31-4594-8463-C7DA89C0FB36") || roleId.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7")){
                     //案场销售(顾问) 团队负责人 团队人员 判断该用户(顾问)下在该项目下是否有客户，有客户添加到 离职/调岗表
-                    int customerCount = bOpportunityMapper.getCustomerCount(projectId,memberId);
-                    if(customerCount>0){
+//                    int customerCount = bOpportunityMapper.getCustomerCount(projectId,memberId);
+//                    if(customerCount>0){
                         BQuituser insertQuituser = new BQuituser();
                         insertQuituser.setProjectID(projectId);
                         insertQuituser.setUserType(2);
@@ -501,7 +501,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                             insertQuituser.setCreateTime(new Date());
                             bQuituserMapper.insert(insertQuituser);
                         }
-                    }
+//                    }
                 }
             }
         }
