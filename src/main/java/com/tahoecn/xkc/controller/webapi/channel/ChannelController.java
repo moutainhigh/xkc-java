@@ -217,8 +217,10 @@ public class ChannelController extends TahoeBaseController {
 
                 String OrgID = UUID.randomUUID().toString();
                 String LeaderID = UUID.randomUUID().toString();
+                String orgCode = channelorgService.getOrgCode();
                 channelInsertDto.setOrgID(OrgID);
                 channelInsertDto.setLeaderID(LeaderID);
+                channelInsertDto.setOrgCode(orgCode);
                 channelorgService.ChannelDetail_InsertN(channelInsertDto);
 
                 //添加这个机构的项目权限SQL语句
