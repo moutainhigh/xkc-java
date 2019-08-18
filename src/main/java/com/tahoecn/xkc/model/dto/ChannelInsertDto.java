@@ -18,6 +18,7 @@ public class ChannelInsertDto implements Serializable {
      * "RuleIDs":["CD69E423-63B5-E711-80C7-00505686C900,"],
      * "UserID":"6C883173-489C-47A4-97D2-3601CB7CEDFD"}
      */
+    private static final long serialVersionUID = 1L;
     private String projectID;
     private String orgID;
     private String orgName;
@@ -152,5 +153,26 @@ public class ChannelInsertDto implements Serializable {
 
     public void setOrgCode(String orgCode) {
         this.orgCode = orgCode;
+    }
+
+    @Override
+    public String toString() {
+        return "ChannelInsertDto{" +
+                "projectID='" + projectID + '\'' +
+                ", orgID='" + orgID + '\'' +
+                ", orgName='" + orgName + '\'' +
+                ", orgShortName='" + orgShortName + '\'' +
+                ", bizlicense='" + bizlicense + '\'' +
+                ", leaderID='" + leaderID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", name='" + name + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", status='" + status + '\'' +
+                ", projectIDs='" + projectIDs + '\'' +
+                ", ruleIDs='" + ruleIDs + '\'' +
+                ", userID='" + userID + '\'' +
+                ", orgCode='" + orgCode + '\'' +
+                ", pid='" + pid + '\'' +
+                '}';
     }
 }
