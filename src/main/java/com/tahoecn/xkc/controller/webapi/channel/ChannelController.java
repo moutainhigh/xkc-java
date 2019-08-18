@@ -324,7 +324,7 @@ public class ChannelController extends TahoeBaseController {
 
 
                     JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
-                if (channelInsertDto.getRuleIDs()!=null){
+                if (RuleIDs!=null){
                     System.out.println("RuleIDs = !!!!!!!!!!!!!!!!!!!!!!!!!!" + RuleIDs);
                     for (Object ruleID : RuleIDs) {
                         //拼接project条件
