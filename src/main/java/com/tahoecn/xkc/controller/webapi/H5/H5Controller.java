@@ -652,6 +652,7 @@ public class H5Controller extends TahoeBaseController {
         }
     }
 
+
     @ApiOperation(value = "全民经纪人忘记密码--修改密码", notes = "全民经纪人忘记密码--修改密码")
     @RequestMapping(value = "/mBrokerLoginForgetPwd_Update", method = {RequestMethod.POST})
     public Result mBrokerLoginForgetPwd_Update(@RequestBody JSONObject jsonParam) {
@@ -763,7 +764,7 @@ public class H5Controller extends TahoeBaseController {
     public Result getTwoCode(@RequestBody JSONObject jsonParam) {
         String UserID = (String) jsonParam.get("UserID");
 //        String OrgID = (String) jsonParam.get("OrgID");
-        String OrgID = "https://www.baidu.com/";
+        String OrgID = "https://www.baidu.com?ChannelOrgCode=";
 
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath, 500, null);
         if (url==null){

@@ -191,12 +191,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             //重新查一次 不知道为什么
             QueryWrapper<BChannelorg> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("OrgCode", channelOrgCode);
-            List<BChannelorg> channelorgs = channelorgService.list(wrapper);
+                List<BChannelorg> channelorgs = channelorgService.list(wrapper);
             int job = 2;
-            int approvalStatus = 1;
+            int approvalStatus = 0;
+
             if (StringUtils.equals(mobile, channelorgs.get(0).getMobile())) {
                 job = 1;
-                approvalStatus = 1;
+                approvalStatus = 0;
             }
             String orgId = channelorgs.get(0).getId();
             //保存人员信息   组建人员信息参数

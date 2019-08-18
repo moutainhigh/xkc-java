@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microsoft.schemas.office.visio.x2012.main.PageType;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
@@ -222,19 +224,20 @@ public class ChannelController extends TahoeBaseController {
                 channelorgService.ChannelDetail_InsertN(channelInsertDto);
 
                 //添加这个机构的项目权限SQL语句
-                String[] ProjectIDs = channelInsertDto.getProjectIDs().split(",");
+                if (channelInsertDto.getProjectIDs()!=null) {
+                    String[] ProjectIDs = channelInsertDto.getProjectIDs().split(",");
 
-                for (String projectID : ProjectIDs) {
-                    BPojectchannelorgrel pojectchannelorgrel = new BPojectchannelorgrel();
-                    pojectchannelorgrel.setOrgID(channelInsertDto.getOrgID());
-                    pojectchannelorgrel.setProjectID(projectID);
-                    pojectchannelorgrel.setCreator(ThreadLocalUtils.getUserName());
-                    pojectchannelorgrel.setCreateTime(new Date());
-                    pojectchannelorgrel.setIsDel(0);
-                    pojectchannelorgrel.setStatus(1);
-                    pojectchannelorgrelService.save(pojectchannelorgrel);
+                    for (String projectID : ProjectIDs) {
+                        BPojectchannelorgrel pojectchannelorgrel = new BPojectchannelorgrel();
+                        pojectchannelorgrel.setOrgID(channelInsertDto.getOrgID());
+                        pojectchannelorgrel.setProjectID(projectID);
+                        pojectchannelorgrel.setCreator(ThreadLocalUtils.getUserName());
+                        pojectchannelorgrel.setCreateTime(new Date());
+                        pojectchannelorgrel.setIsDel(0);
+                        pojectchannelorgrel.setStatus(1);
+                        pojectchannelorgrelService.save(pojectchannelorgrel);
+                    }
                 }
-
                 //添加这个机构的规则
                 if (StringUtils.isNotBlank(channelInsertDto.getRuleIDs())) {
                     JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
@@ -297,6 +300,7 @@ public class ChannelController extends TahoeBaseController {
                 //先将这个机构的项目权限全部设置为删除状态
                 pojectchannelorgrelService.updateToDelete(channelInsertDto.getOrgID(), channelInsertDto.getUserID());
                 //然后重新新增
+                if (channelInsertDto.getProjectIDs()!=null) {
                 String[] ProjectIDs = channelInsertDto.getProjectIDs().split(",");
                 for (String projectID : ProjectIDs) {
                     BPojectchannelorgrel pojectchannelorgrel = new BPojectchannelorgrel();
@@ -307,6 +311,7 @@ public class ChannelController extends TahoeBaseController {
                     pojectchannelorgrel.setIsDel(0);
                     pojectchannelorgrel.setStatus(1);
                     pojectchannelorgrelService.save(pojectchannelorgrel);
+                }
                 }
                 //编辑这个机构下所设置的所有规则  不能直接全删在新增，会出问题，要进行判断是否已经设置了规则，
                 // 根据项目ID和机构ID查询，设置了就Update 没设置就新增，目前没有删除，所以不搞删除，删除了项目权限，也就没有了规则
