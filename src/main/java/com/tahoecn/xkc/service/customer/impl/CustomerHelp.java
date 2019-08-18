@@ -678,10 +678,6 @@ public class CustomerHelp implements ICustomerHelp {
 					String customerID = Parameter.getString("CustomerID");
 					Map<String, Object> info = vCustomergwlistSelectMapper.LocalCustomerDetail_Select(customerID);
 					if (info!=null && info.size() > 0){
-						/*DateTime ModifyOn = DateUtil.parse(info.get("ModifyOn").toString());
-						DateTime CreatedOn = DateUtil.parse(info.get("CreatedOn").toString());
-						info.put("ModifyOn", ModifyOn.toString("yyyy-MM-dd HH:mm:ss.SSS"));
-						info.put("CreatedOn", CreatedOn.toString("yyyy-MM-dd HH:mm:ss.SSS"));*/
 						Result re = iMYService.CustomerDetail_Insert(info);
 						System.out.println("明源同步1"+re.getErrmsg());
 					}else{
