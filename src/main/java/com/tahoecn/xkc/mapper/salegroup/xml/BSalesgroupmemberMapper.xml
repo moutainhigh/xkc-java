@@ -15,6 +15,7 @@
             WHEN '938935B7-4131-4E61-A811-4323A7F193A2' THEN '案场销售负责人'
             WHEN '0269F35E-B32D-4D12-8496-4E6E4CE597B7' THEN '案场销售团队人员'
             END TitleName,
+            o.FullPath OrgName,
             CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN 'XMYXFZR'
             WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN 'ZYQDFZR'
             WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN 'ACXSTDRY'
@@ -42,6 +43,7 @@
             left join B_SalesGroup c on c.ID=a.ReceptionGroupID
             INNER JOIN dbo.S_Dictionary d ON d.ID=a.RoleID AND d.IsDel=0 AND d.PID='54E311BD-943C-41E6-BF09-42191198C229'
             INNER JOIN dbo.S_Account e ON e.ID=a.MemberID AND e.IsDel=0 AND e.Status=1
+            left JOIN S_Organization o ON e.UserOrgID = o.ID AND o.IsDel = 0
             WHERE a.IsDel=0 and a.RoleID!='E417A997-9A91-4D22-8428-9C2C2C560656'
              AND a.ProjectID<>'' AND a.ProjectID=#{ProjectID}  AND ISNULL(c.IsDel,0)<>1 ORDER BY d.ListIndex
         ]]>
