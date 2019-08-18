@@ -150,6 +150,11 @@ public class BCluerule implements Serializable {
     @TableField("extendSigningProEndDate")
     private Date extendSigningProEndDate;
 
+    @TableField("extendProOpt")
+    private Integer extendProOpt;
+
+    @TableField("extendArriSignProOpt")
+    private Integer extendArriSignProOpt;
 
     @TableField(exist = false)
     private List<BClueruleGourpVo> clueruleGourpVoList;
@@ -446,6 +451,22 @@ public class BCluerule implements Serializable {
 
     public void setExtendSigningProEndDate(Date extendSigningProEndDate) {
         this.extendSigningProEndDate = extendSigningProEndDate;
+    }
+
+    public Integer getExtendProOpt() {
+        return extendProOpt;
+    }
+
+    public void setExtendProOpt(Integer extendProOpt) {
+        this.extendProOpt = extendProOpt;
+    }
+
+    public Integer getExtendArriSignProOpt() {
+        return extendArriSignProOpt;
+    }
+
+    public void setExtendArriSignProOpt(Integer extendArriSignProOpt) {
+        this.extendArriSignProOpt = extendArriSignProOpt;
     }
 
     @Override
