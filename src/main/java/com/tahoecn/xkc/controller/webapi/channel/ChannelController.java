@@ -195,7 +195,7 @@ public class ChannelController extends TahoeBaseController {
     @ApiOperation(value = "新增渠道机构", notes = "新增渠道机构")
     @RequestMapping(value = "/ChannelDetail_InsertN", method = {RequestMethod.POST})
     @Transactional(rollbackFor = Exception.class)
-    public Result ChannelDetail_InsertN(ChannelInsertDto channelInsertDto) {
+    public Result ChannelDetail_InsertN(@RequestBody ChannelInsertDto channelInsertDto) {
 
         try{
             if (StringUtils.isEmpty(channelInsertDto.getOrgID())){
