@@ -102,7 +102,11 @@ public class AppAPropertyController extends TahoeBaseController {
             QueryWrapper<BOpportunity> wrapper = new QueryWrapper<BOpportunity>();
             wrapper.eq("CustomerMobile", CustomerMobile);
             List<BOpportunity> bo = bOpportunityMapper.selectList(wrapper);
-			return Result.ok(bo.get(0));
+            if(bo == null || bo.size() == 0){
+            	return Result.ok(null);
+            }else{
+            	return Result.ok(bo.get(0));
+            }
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
