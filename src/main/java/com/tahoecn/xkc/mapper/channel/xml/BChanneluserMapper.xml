@@ -220,7 +220,13 @@ FROM B_ChannelUser WHERE ID=#{UserID};
     		WHERE ID=#{UserID} and Password = #{OldPassword}
 	    ]]>
 	</update>
-
+	<!-- 忘记密码修改 -->
+	<update id="ChannelUserForgetPassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+		    UPDATE B_ChannelUser SET Password = #{Password} 
+    		WHERE Mobile = #{Mobile}
+	    ]]>
+	</update>
 	<!-- 删除兼职成员 -->
 	<delete id="mChannelTempPerson_Delete" parameterType="java.util.Map" >
 		<![CDATA[

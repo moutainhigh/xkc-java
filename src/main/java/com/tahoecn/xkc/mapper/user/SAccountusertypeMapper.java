@@ -25,5 +25,9 @@ public interface SAccountusertypeMapper extends BaseMapper<SAccountusertype> {
 	 * 修改用户密码资料
 	 */
 	void SalesUserPwdDetail_Update(Map<String, Object> map);
+	/**
+	 * 修改用户密码资料
+	 */
+	void SalesUserForgetPwdDetail_Update(Map<String, Object> map);
 
 }

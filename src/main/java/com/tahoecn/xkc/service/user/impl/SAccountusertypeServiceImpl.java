@@ -40,5 +40,12 @@ public class SAccountusertypeServiceImpl extends ServiceImpl<SAccountusertypeMap
 	public void SalesUserPwdDetail_Update(Map<String, Object> map) {
 		sAccountusertypeMapper.SalesUserPwdDetail_Update(map);
 	}
+	/**
+	 * 修改用户密码资料
+	 */
+	@Override
+	public void SalesUserForgetPwdDetail_Update(Map<String, Object> map) {
+		sAccountusertypeMapper.SalesUserForgetPwdDetail_Update(map);
+	}
 
 }

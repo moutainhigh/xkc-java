@@ -145,6 +145,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 	public boolean ChannelUserPassWord_Update(Map<String, Object> map){
 		return bChanneluserMapper.ChannelUserPassWord_Update(map);
 	}
+	/**
+	 * 忘记密码修改
+	 */
+	@Override
+	public boolean ChannelUserForgetPassWord_Update(Map<String, Object> map){
+		return bChanneluserMapper.ChannelUserForgetPassWord_Update(map);
+	}
     /**
      * H5注册
      * @param paramMap

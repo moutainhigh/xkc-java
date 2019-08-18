@@ -8,9 +8,12 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.project.SAccountuserproject;
 import com.tahoecn.xkc.model.project.SAccountuserprojectjob;
+import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.project.ISAccountuserprojectService;
 import com.tahoecn.xkc.service.project.ISAccountuserprojectjobService;
+import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
+import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.user.ISAccountusertypeService;
 
 import io.swagger.annotations.Api;
@@ -48,7 +51,11 @@ public class AppUserController extends TahoeBaseController {
     private ISAccountuserprojectjobService iSAccountuserprojectjobService;
     @Autowired
     private ISAccountusertypeService iSAccountusertypeService;
-
+    @Autowired
+    private ISAccountService iISAccountService;
+    @Autowired
+    private IBVerificationcodeService iBVerificationcodeService;
+    
 	@ResponseBody
     @ApiOperation(value = "用户基本信息查询", notes = "用户基本信息查询")
     @RequestMapping(value = "/mUserDetail_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -140,6 +147,7 @@ public class AppUserController extends TahoeBaseController {
     @RequestMapping(value = "/mUserPwdDetail_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mUserPwdDetail_Update(@RequestBody JSONObject jsonParam) {
     	try{
+    		System.out.println("------------------------------------------"+jsonParam);
     		Map paramMap = (HashMap)jsonParam.get("_param");
             String JobCode = (String)paramMap.get("JobCode");
             String Password = (String)paramMap.get("Password");
@@ -187,6 +195,104 @@ public class AppUserController extends TahoeBaseController {
         map.put("UserID", UserID);
         map.put("Password", SecureUtil.md5(Password).toUpperCase());
         if (Password.equals(RePassword)){
+        	QueryWrapper<SAccount> wrapper = new  QueryWrapper<SAccount>();
+        	wrapper.eq("ID", UserID);
+        	SAccount s = iISAccountService.getOne(wrapper);
+        	if(s == null){
+        		return Result.errormsg(91, "用户信息不正确");
+        	}else if(s != null && s.getAccountType() == 1){
+        		return Result.errormsg(91, "请到泰信重置修改密码");
+        	}
+            List<Map<String,Object>> obj = iSAccountusertypeService.SalesUserPwdDetail_Select(paramMap);
+            if (obj != null && obj.size() > 0){
+                String OldPasswordMD5 = SecureUtil.md5((String) obj.get(0).get("OldPassword")).toUpperCase();
+                String ReOldPasswordMD5 = (String) obj.get(0).get("ReOldPassword");
+                if (OldPasswordMD5.equals(ReOldPasswordMD5)){
+                	iSAccountusertypeService.SalesUserPwdDetail_Update(paramMap);
+                    return Result.ok("用户密码修改成功");
+                }else{
+                	return Result.errormsg(92, "原密码不正确");
+                }
+            }else{
+            	return Result.errormsg(91, "用户信息不正确");
+            }
+        }else{
+            return Result.errormsg(90, "密码与确认密码不一致");
+        }
+	}
+	@ResponseBody
+    @ApiOperation(value = "忘记密码", notes = "忘记密码")
+    @RequestMapping(value = "/mUserForgetPwd_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mUserForgetPwd_Update(@RequestBody JSONObject jsonParam) {
+    	try{
+    		System.out.println("------------------------------------------"+jsonParam);
+    		JSONObject paramMap = jsonParam.getJSONObject("_param");
+            String Password = (String)paramMap.get("Password");//密码
+            String RePassword = (String)paramMap.get("RePassword");//确认密码
+            String Mobile = (String)paramMap.get("Mobile");//手机号码
+            String AuthCode = (String)paramMap.get("AuthCode");//验证码
+            
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("Mobile", Mobile);
+            map.put("Password", SecureUtil.md5(Password).toUpperCase());
+            //1.校验验证码
+            if(!iBVerificationcodeService.Verification(Mobile,AuthCode)){
+            	return Result.errormsg(1,"验证码验证失败");
+            }
+            if(Password.equals(RePassword)){
+            	//2.是否为兼职
+            	QueryWrapper<BChanneluser> wrapper = new  QueryWrapper<BChanneluser>();
+            	wrapper.eq("Mobile", Mobile);
+            	List<BChanneluser> Channeluser = iBChanneluserService.list(wrapper);
+                if (Channeluser != null && Channeluser.size() > 0){
+                    iBChanneluserService.ChannelUserForgetPassWord_Update(map);
+                    return Result.ok("用户修改密码成功");
+                }
+                else{
+                	//3.查询是否为UC用户
+                	QueryWrapper<SAccount> wrapper1 = new  QueryWrapper<SAccount>();
+                	wrapper1.eq("Mobile", Mobile);
+                	SAccount sAccount = iISAccountService.getOne(wrapper1);
+                	if(sAccount == null){
+                		return Result.errormsg(91, "用户信息不正确");
+                	}else if(sAccount != null && sAccount.getAccountType() == 1){
+                		return Result.errormsg(91, "请到泰信重置修改密码");
+                	}else{
+                		//4.UC用户修改密码
+                		iSAccountusertypeService.SalesUserForgetPwdDetail_Update(map);
+                        return Result.ok("用户密码修改成功");
+                	}
+                }
+            }else{
+            	return Result.errormsg(90, "密码与确认密码不一致");
+            }
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return Result.errormsg(1, "系统异常，请联系管理员");
+    	}
+    }
+	/**
+     * 用户忘记密码修改
+     * @param map
+     */
+	private Result UserForgetPwdDetail_Update(Map<String, Object> paramMap) {
+        String Password = (String) paramMap.get("Password");
+        String RePassword = (String) paramMap.get("RePassword");
+        String OldPassword = (String) paramMap.get("OldPassword");
+        String UserID = (String) paramMap.get("UserID");
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("OldPassword", OldPassword);
+        map.put("UserID", UserID);
+        map.put("Password", SecureUtil.md5(Password).toUpperCase());
+        if (Password.equals(RePassword)){
+        	QueryWrapper<SAccount> wrapper = new  QueryWrapper<SAccount>();
+        	wrapper.eq("ID", UserID);
+        	SAccount s = iISAccountService.getOne(wrapper);
+        	if(s == null){
+        		return Result.errormsg(91, "用户信息不正确");
+        	}else if(s != null && s.getAccountType() == 1){
+        		return Result.errormsg(91, "请到泰信重置修改密码");
+        	}
             List<Map<String,Object>> obj = iSAccountusertypeService.SalesUserPwdDetail_Select(paramMap);
             if (obj != null && obj.size() > 0){
                 String OldPasswordMD5 = SecureUtil.md5((String) obj.get(0).get("OldPassword")).toUpperCase();

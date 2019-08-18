@@ -1566,19 +1566,19 @@
         AND ccr.CheckInTime <= #{EndTime}
         ]]>
         <if test = 'CheckDate != null'>
-        AND ccr.CheckDate = #{checkDate}
+        AND ccr.CheckDate like CONCAT('%',#{CheckDate},'%')
         </if>
         <if test = 'Name != null'>
-        AND cu.Name = #{Name}
+        AND cu.Name like CONCAT('%',#{Name},'%')
         </if>
         <if test = 'Mobile != null'>
-        AND cu.Mobile = #{Mobile}
+        AND cu.Mobile like CONCAT('%',#{Mobile},'%')
         </if>
         <if test = 'TaskName != null'>
-        AND ccr.TaskName = #{TaskName}
+        AND ccr.TaskName like CONCAT('%',#{TaskName},'%')
         </if>
         <if test = 'ReportName != null'>
-        AND cur.Name = #{ReportName}
+        AND cur.Name like CONCAT('%',#{ReportName},'%')
         </if>
         ORDER BY
         ccr.CheckDate
@@ -1629,20 +1629,20 @@
         AND ccr.CheckInTime >= #{StartTime}
         AND ccr.CheckInTime <= #{EndTime}
         ]]>
-         <if test = 'CheckDate != null'>
-        AND ccr.CheckDate = #{checkDate}
+       <if test = 'CheckDate != null'>
+        AND ccr.CheckDate like CONCAT('%',#{CheckDate},'%')
         </if>
         <if test = 'Name != null'>
-        AND cu.Name = #{Name}
+        AND cu.Name like CONCAT('%',#{Name},'%')
         </if>
         <if test = 'Mobile != null'>
-        AND cu.Mobile = #{Mobile}
+        AND cu.Mobile like CONCAT('%',#{Mobile},'%')
         </if>
         <if test = 'TaskName != null'>
-        AND ccr.TaskName = #{TaskName}
+        AND ccr.TaskName like CONCAT('%',#{TaskName},'%')
         </if>
         <if test = 'ReportName != null'>
-        AND cur.Name = #{ReportName}
+        AND cur.Name like CONCAT('%',#{ReportName},'%')
         </if>
         ORDER BY
         ccr.CheckDate
