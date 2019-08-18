@@ -401,9 +401,12 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             String[] removeIdStrs = RemoveIds.split(",");
             for(int i=0;i<removeIdStrs.length;i++)
             {
-                int ifHaveCustCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
-                if(ifHaveCustCount>0){
-                    return Result.errormsg(9527,"该成员下有客户数"+ifHaveCustCount + "个,请处理客户后再移除!");
+
+                int clueCount = clueListSelectMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
+                int customerCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
+
+                if(clueCount + customerCount>0){
+                    return Result.errormsg(9527,"该成员下有客户数"+clueCount + customerCount + "个,请处理客户后再移除!");
                 }
 
                 //删除人员

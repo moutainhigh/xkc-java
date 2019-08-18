@@ -288,7 +288,7 @@ public class RuleAppController extends TahoeBaseController {
         {
             if (bCluerule.getFollowUpOverdueDays() <= 3)
             {
-                return Result.errormsg(0,"保护期需大于3天");
+                return Result.errormsg(9527,"保护期需大于3天");
             }
         }
 
