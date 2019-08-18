@@ -254,7 +254,7 @@
 
 		SELECT NEWID(),'',a.ChannelTaskID,'ChannelTask','任务提前结束通知','任务:['+b.Name +'] 已被渠道专员提前结束',b.Creator,GETDATE(),'7D7663A7-2867-43D1-89E8-73459A137A1B',a.ChannelUserID,0,0,1,0,'sys',GETDATE(),0,1
 		FROM dbo.B_ChannelTask_ChannelUser a
-		INNER JOIN dbo.B_ChannelTask b ON a.ChannelTaskID=b.ID AND b.Creator='{OldUserID}' AND b.Status=2 AND b.IsDel=0
+		INNER JOIN dbo.B_ChannelTask b ON a.ChannelTaskID=b.ID AND b.Creator=#{OldUserID} AND b.Status=2 AND b.IsDel=0
 		WHERE a.IsDel=0;
 	    ]]>
 	</insert>
@@ -262,14 +262,14 @@
 	<update id="mChannelLeaderQuit_Update" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE  dbo.B_ChannelTask
-		SET     Status = 3 , Editor = '{UserID}' , EditTime = GETDATE()
-		WHERE   ID IN (SELECT ID FROM dbo.B_ChannelTask WHERE Creator='{OldUserID}' AND Status<3 AND Status>0 );  
+		SET     Status = 3 , Editor = #{UserID} , EditTime = GETDATE()
+		WHERE   ID IN (SELECT ID FROM dbo.B_ChannelTask WHERE Creator=#{OldUserID} AND Status<3 AND Status>0 );  
 		]]>
 	</update>
 	<update id="mChannelLeaderQuit_Update2" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE B_ChannelTask_ChannelUser SET  Status = 3 WHERE ChannelTaskID 
-		IN (SELECT ID FROM dbo.B_ChannelTask WHERE Creator='{OldUserID}');
+		IN (SELECT ID FROM dbo.B_ChannelTask WHERE Creator=#{OldUserID});
 		]]> 
 	</update>
 	<!-- 写入将分配的线索跟进记录 -->
@@ -279,22 +279,22 @@
 		( ID ,CustomerPotentialID ,CustomerPotentialMobile ,CustomerPotentialName ,ClueID ,FollwUpUserID ,FollwUpUserName ,
 		          FollwUpType ,FollwUpWay ,FollowUpContent ,Creator ,CreateTime ,IsDel ,Status ,FollwUpUserRole ,CustomerRank ,ProjectID)
 		
-		SELECT NEWID(),a.CustomerPotentialID,a.Mobile,a.Name,a.ID,'{UserID}','{UserDisName}','C1E26493-7D4E-4BFC-9238-725180DFC7AE'
+		SELECT NEWID(),a.CustomerPotentialID,a.Mobile,a.Name,a.ID,#{UserID},#{UserDisName},'C1E26493-7D4E-4BFC-9238-725180DFC7AE'
 			,'C1E26493-7D4E-4BFC-9238-725180DFC7AE','渠道经理重分配渠道专员','99',GETDATE(),0,1,'B0BF5636-94AD-4814-BB67-9C1873566F29'
 			,a.CustomerRank,a.IntentProjectID
 		FROM dbo.B_Clue a
 		LEFT JOIN dbo.B_Opportunity b ON a.ID=b.ClueID AND b.IsDel=0
-		WHERE a.ReportUserID='{OldUserID}' AND a.IntentProjectID='{ProjectID}' AND a.IsDel=0 AND (b.ID IS NULL or b.Status<4);
+		WHERE a.ReportUserID=#{OldUserID} AND a.IntentProjectID=#{ProjectID} AND a.IsDel=0 AND (b.ID IS NULL or b.Status<4);
 	    ]]>
 	</insert>
 	<!-- 分配线索 -->
 	<update id="mChannelLeaderQuit_Update3" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE a
-		SET a.ReportUserID='{NewUserID}', a.ReportUserName = dbo.F_GetSaleUserName('{NewUserID}'),a.ChannelUserID = NULL, ChannelTaskID = NULL, a.Editor = '{UserID}' , a.EditeTime = GETDATE() , a.TheLatestFollowUpDate = GETDATE() 
+		SET a.ReportUserID=#{NewUserID}, a.ReportUserName = dbo.F_GetSaleUserName(#{NewUserID}),a.ChannelUserID = NULL, ChannelTaskID = NULL, a.Editor = #{UserID} , a.EditeTime = GETDATE() , a.TheLatestFollowUpDate = GETDATE() 
 		FROM dbo.B_Clue a
 		LEFT JOIN dbo.B_Opportunity b ON a.ID=b.ClueID AND b.IsDel=0
-		WHERE a.ReportUserID='{OldUserID}' AND a.IntentProjectID='{ProjectID}' AND a.IsDel=0 AND (b.ID IS NULL or b.Status<4);
+		WHERE a.ReportUserID=#{OldUserID} AND a.IntentProjectID=#{ProjectID} AND a.IsDel=0 AND (b.ID IS NULL or b.Status<4);
 
 		]]> 
 	</update>
@@ -302,11 +302,11 @@
 	<update id="mChannelLeaderQuit_Update4" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE a
-		SET a.ReportUserID='{NewUserID}' 
+		SET a.ReportUserID=#{NewUserID} 
 		FROM dbo.B_ChannelUser a
 		INNER JOIN dbo.B_ChannelTask_ChannelUser b ON a.ID=b.ChannelUserID AND b.IsDel=0
 		INNER JOIN dbo.B_ChannelTask c ON b.ChannelTaskID=c.ID AND c.IsDel=0
-		WHERE a.ReportUserID='{OldUserID}' AND c.ProjectID='{ProjectID}' AND a.IsDel=0 AND a.Status=1;
+		WHERE a.ReportUserID=#{OldUserID} AND c.ProjectID=#{ProjectID} AND a.IsDel=0 AND a.Status=1;
 		]]> 
 	</update>
 	
