@@ -585,11 +585,13 @@ public class AppKCController extends TahoeBaseController {
             String OldUserID = (String)paramMap.get("OldUserID").toString();//
             String ProjectID = (String)paramMap.get("ProjectID").toString();//
             String NewUserID = (String)paramMap.get("NewUserID").toString();//
+            String UserDisName = (String)paramMap.get("UserDisName").toString();//
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("UserID", UserID);
             map.put("OldUserID", OldUserID);
             map.put("ProjectID", ProjectID);
             map.put("NewUserID", NewUserID);
+            map.put("UserDisName", UserDisName);
            iBChanneltaskService.mChannelLeaderQuit_Insert(map);
            iBChanneltaskService.mChannelLeaderQuit_Update(map);
            iBChanneltaskService.mChannelLeaderQuit_Update2(map);
