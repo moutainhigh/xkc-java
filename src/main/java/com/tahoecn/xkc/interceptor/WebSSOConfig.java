@@ -46,7 +46,8 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		// addPathPatterns 用于添加拦截规则
 		// excludePathPatterns 用户排除拦截
 		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
-		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").excludePathPatterns("/app/login/**","/app/system/mSystemAppVersion_Select","/app/system/mVerificationCode_Select","/app/login/mChannelRegistJZ_Insert");
+		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").excludePathPatterns("/app/login/**","/app/system/mSystemAppVersion_Select","/app/system/mVerificationCode_Select","/app/login/mChannelRegistJZ_Insert",
+				"/app/system/SystemAD_Select","/app/user/mUserForgetPwd_Update");
 
 	}
 
