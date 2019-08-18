@@ -321,28 +321,29 @@ public class ChannelController extends TahoeBaseController {
                 //可能有删除掉的项目，要把这个机构这些项目下的规则删除掉
 
                 StringBuilder ProjectIDWhere = new StringBuilder();
-                if (channelInsertDto.getRuleIDs()!=null){
+
 
                     JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
+                if (channelInsertDto.getRuleIDs()!=null){
                     System.out.println("RuleIDs = !!!!!!!!!!!!!!!!!!!!!!!!!!" + RuleIDs);
                     for (Object ruleID : RuleIDs) {
-                    //拼接project条件
-                    String[] split = ruleID.toString().split(",");
-                    ProjectIDWhere.append("'" + split[0] + "',");
-                }
-
-                boolean flag = false;
-                //去掉最后一个逗号
-                String ProjectIDWhereStr = ProjectIDWhere.substring(0, ProjectIDWhere.length() - 1);
-                for (Object ruleID : RuleIDs) {
-                    String[] split = ruleID.toString().split(",");
-                    String rProjectID = split[0];
-                    String ClueRuleID = split[1];
-                    flag = clueruleAdvisergroupService.updateRules(channelInsertDto.getOrgID(), ThreadLocalUtils.getUserName(), rProjectID, ClueRuleID, ProjectIDWhereStr);
-                    if (!flag) {
-                        return Result.errormsg(500,"数据库修改错误!");
+                        //拼接project条件
+                        String[] split = ruleID.toString().split(",");
+                        ProjectIDWhere.append("'" + split[0] + "',");
                     }
-                }
+
+                    boolean flag = false;
+                    //去掉最后一个逗号
+                    String ProjectIDWhereStr = ProjectIDWhere.substring(0, ProjectIDWhere.length() - 1);
+                    for (Object ruleID : RuleIDs) {
+                        String[] split = ruleID.toString().split(",");
+                        String rProjectID = split[0];
+                        String ClueRuleID = split[1];
+                        flag = clueruleAdvisergroupService.updateRules(channelInsertDto.getOrgID(), ThreadLocalUtils.getUserName(), rProjectID, ClueRuleID, ProjectIDWhereStr);
+                        if (!flag) {
+                            return Result.errormsg(500,"数据库修改错误!");
+                        }
+                    }
                 }
             }
         }catch (Exception e){
