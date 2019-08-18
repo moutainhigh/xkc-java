@@ -196,7 +196,6 @@ public class ChannelController extends TahoeBaseController {
     @RequestMapping(value = "/ChannelDetail_InsertN", method = {RequestMethod.POST})
     @Transactional(rollbackFor = Exception.class)
     public Result ChannelDetail_InsertN(ChannelInsertDto channelInsertDto) {
-        System.out.println("channelInsertDto = " + channelInsertDto);
         try{
             if (StringUtils.isEmpty(channelInsertDto.getOrgID())){
                 //首先查询这个项目下机构名称是否重复
@@ -284,7 +283,6 @@ public class ChannelController extends TahoeBaseController {
                 channelorg.setEditTime(new Date());
                 channelorg.setBizLicense(channelInsertDto.getBizlicense());
                 channelorg.setId(channelInsertDto.getOrgID());
-                System.out.println(channelorg+"++++++++++++");
                 channelorgService.updateById(channelorg);
 
                 BChanneluser channeluser = new BChanneluser();
@@ -295,7 +293,6 @@ public class ChannelController extends TahoeBaseController {
                 channeluser.setStatus(Integer.valueOf(channelInsertDto.getStatus()));
                 channeluser.setEditor(ThreadLocalUtils.getUserName());
                 channeluser.setEditeTime(new Date());
-                System.out.println(channeluser+"++++++++++++");
                 channeluserService.updateById(channeluser);
 
                 //编辑这个机构的项目权限   这里可以先全部删除再进行新增
@@ -321,11 +318,8 @@ public class ChannelController extends TahoeBaseController {
                 //可能有删除掉的项目，要把这个机构这些项目下的规则删除掉
 
                 StringBuilder ProjectIDWhere = new StringBuilder();
-
-
+                if (StringUtils.isNotBlank(channelInsertDto.getRuleIDs())){
                     JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
-                if (RuleIDs!=null){
-                    System.out.println("RuleIDs = !!!!!!!!!!!!!!!!!!!!!!!!!!" + RuleIDs);
                     for (Object ruleID : RuleIDs) {
                         //拼接project条件
                         String[] split = ruleID.toString().split(",");
