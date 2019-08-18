@@ -4,24 +4,30 @@
 
 	<!-- 用户密码信息 -->
 	<select id="SalesUserPwdDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<!-- 原逻辑 -->
+		<!-- SELECT Password ReOldPassword, #{OldPassword} OldPassword 
+		FROM S_AccountUserType WHERE UserName IN( SELECT UserName FROM S_Account WHERE ID = #{UserID} 
+		and AccountType = '1') -->
 		<![CDATA[
-			SELECT Password ReOldPassword, #{OldPassword} OldPassword 
-			FROM S_AccountUserType WHERE UserName IN( SELECT UserName FROM S_Account WHERE ID = #{UserID} 
-			and AccountType = '1')
+			SELECT Password ReOldPassword, #{OldPassword} OldPassword
+			FROM S_Account WHERE ID = #{UserID} and AccountType = '1'
 	    ]]>
 	</select>
 	<!-- 修改用户密码资料 -->
 	<update id="SalesUserPwdDetail_Update" parameterType="java.util.Map">
+		<!-- 原逻辑 -->
+		<!-- UPDATE S_AccountUserType SET Password = #{Password}
+			WHERE UserName IN( SELECT UserName FROM S_Account WHERE ID = #{UserID} and AccountType = '1') -->
 		<![CDATA[
-			UPDATE S_AccountUserType SET Password = #{Password}
-			WHERE UserName IN( SELECT UserName FROM S_Account WHERE ID = #{UserID} and AccountType = '1')
+			UPDATE S_Account SET Password = #{Password}
+			WHERE ID = #{UserID} and AccountType = '1'
 	    ]]>
 	</update>
 	<!-- 修改用户密码资料 -->
 	<update id="SalesUserForgetPwdDetail_Update" parameterType="java.util.Map">
 		<![CDATA[
-			UPDATE S_AccountUserType SET Password = #{Password}
-			WHERE UserName IN( SELECT UserName FROM S_Account WHERE Mobile = #{Mobile} and AccountType = '1')
+			UPDATE S_Account SET Password = #{Password}
+			WHERE Mobile = #{Mobile} and AccountType = '1'
 	    ]]>
 	</update>
 </mapper>
