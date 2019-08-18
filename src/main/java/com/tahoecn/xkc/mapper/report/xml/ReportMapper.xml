@@ -1569,16 +1569,16 @@
         AND ccr.CheckDate = #{checkDate}
         </if>
         <if test = 'Name != null'>
-        AND cu.Name = #{Name}
+        AND cu.Name like CONCAT('%',#{Name},'%')
         </if>
         <if test = 'Mobile != null'>
-        AND cu.Mobile = #{Mobile}
+        AND cu.Mobile like CONCAT('%',#{Mobile},'%')
         </if>
         <if test = 'TaskName != null'>
-        AND ccr.TaskName = #{TaskName}
+        AND ccr.TaskName like CONCAT('%',#{TaskName},'%')
         </if>
         <if test = 'ReportName != null'>
-        AND cur.Name = #{ReportName}
+        AND cur.Name like CONCAT('%',#{ReportName},'%')
         </if>
         ORDER BY
         ccr.CheckDate
