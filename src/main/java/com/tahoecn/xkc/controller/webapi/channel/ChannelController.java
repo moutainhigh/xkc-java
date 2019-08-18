@@ -195,8 +195,8 @@ public class ChannelController extends TahoeBaseController {
     @ApiOperation(value = "新增渠道机构", notes = "新增渠道机构")
     @RequestMapping(value = "/ChannelDetail_InsertN", method = {RequestMethod.POST})
     @Transactional(rollbackFor = Exception.class)
-    public Result ChannelDetail_InsertN(@RequestBody ChannelInsertDto channelInsertDto) {
-
+    public Result ChannelDetail_InsertN(ChannelInsertDto channelInsertDto) {
+        System.out.println("channelInsertDto = " + channelInsertDto);
         try{
             if (StringUtils.isEmpty(channelInsertDto.getOrgID())){
                 //首先查询这个项目下机构名称是否重复
