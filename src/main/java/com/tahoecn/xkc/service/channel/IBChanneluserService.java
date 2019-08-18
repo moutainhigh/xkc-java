@@ -56,6 +56,10 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	 * 修改密码
 	 */
 	boolean ChannelUserPassWord_Update(Map<String, Object> map);
+	/**
+	 * 忘记密码修改
+	 */
+	boolean ChannelUserForgetPassWord_Update(Map<String, Object> map);
 
     Result  register(Map paramMap);
 
