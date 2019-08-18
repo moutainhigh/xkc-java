@@ -31,13 +31,13 @@ public class MYServiceImpl implements IMYService {
 		try {
 	        String CreatedByGUID = info.get("CreatedByGUID")!=null?info.get("CreatedByGUID").toString():"";
         	String ModifyByGUID = info.get("ModifyByGUID")!=null?info.get("ModifyByGUID").toString():"";
-        	if(!"".equals(CreatedByGUID) && "99".equals(CreatedByGUID)){
+        	if(!"".equals(CreatedByGUID) && !"99".equals(CreatedByGUID)){
         		List<Map<String,Object>> vaild_1_map = vCustomergwlistSelectMapper.MYUserDetail_Insert_valid_1(info);
         		if(vaild_1_map==null || vaild_1_map.size()==0){
         			vCustomergwlistSelectMapper.MYUserDetail_Insert_step1(info);
         		}
         	}
-        	if(!"".equals(ModifyByGUID) && "99".equals(ModifyByGUID)){
+        	if(!"".equals(ModifyByGUID) && !"99".equals(ModifyByGUID)){
         		List<Map<String,Object>> vaild_2_map = vCustomergwlistSelectMapper.MYUserDetail_Insert_valid_2(info);
         		if(vaild_2_map==null || vaild_2_map.size()==0){
         			vCustomergwlistSelectMapper.MYUserDetail_Insert_step2(info);

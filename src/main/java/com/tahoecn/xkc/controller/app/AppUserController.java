@@ -203,12 +203,12 @@ public class AppUserController extends TahoeBaseController {
         	}else if(s != null && s.getAccountType() == 1){
         		return Result.errormsg(91, "请到泰信重置修改密码");
         	}
-            List<Map<String,Object>> obj = iSAccountusertypeService.SalesUserPwdDetail_Select(paramMap);
+            List<Map<String,Object>> obj = iSAccountusertypeService.SalesUserPwdDetail_Select(map);
             if (obj != null && obj.size() > 0){
                 String OldPasswordMD5 = SecureUtil.md5((String) obj.get(0).get("OldPassword")).toUpperCase();
                 String ReOldPasswordMD5 = (String) obj.get(0).get("ReOldPassword");
                 if (OldPasswordMD5.equals(ReOldPasswordMD5)){
-                	iSAccountusertypeService.SalesUserPwdDetail_Update(paramMap);
+                	iSAccountusertypeService.SalesUserPwdDetail_Update(map);
                     return Result.ok("用户密码修改成功");
                 }else{
                 	return Result.errormsg(92, "原密码不正确");
@@ -271,43 +271,4 @@ public class AppUserController extends TahoeBaseController {
     		return Result.errormsg(1, "系统异常，请联系管理员");
     	}
     }
-	/**
-     * 用户忘记密码修改
-     * @param map
-     */
-	private Result UserForgetPwdDetail_Update(Map<String, Object> paramMap) {
-        String Password = (String) paramMap.get("Password");
-        String RePassword = (String) paramMap.get("RePassword");
-        String OldPassword = (String) paramMap.get("OldPassword");
-        String UserID = (String) paramMap.get("UserID");
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("OldPassword", OldPassword);
-        map.put("UserID", UserID);
-        map.put("Password", SecureUtil.md5(Password).toUpperCase());
-        if (Password.equals(RePassword)){
-        	QueryWrapper<SAccount> wrapper = new  QueryWrapper<SAccount>();
-        	wrapper.eq("ID", UserID);
-        	SAccount s = iISAccountService.getOne(wrapper);
-        	if(s == null){
-        		return Result.errormsg(91, "用户信息不正确");
-        	}else if(s != null && s.getAccountType() == 1){
-        		return Result.errormsg(91, "请到泰信重置修改密码");
-        	}
-            List<Map<String,Object>> obj = iSAccountusertypeService.SalesUserPwdDetail_Select(paramMap);
-            if (obj != null && obj.size() > 0){
-                String OldPasswordMD5 = SecureUtil.md5((String) obj.get(0).get("OldPassword")).toUpperCase();
-                String ReOldPasswordMD5 = (String) obj.get(0).get("ReOldPassword");
-                if (OldPasswordMD5.equals(ReOldPasswordMD5)){
-                	iSAccountusertypeService.SalesUserPwdDetail_Update(paramMap);
-                    return Result.ok("用户密码修改成功");
-                }else{
-                	return Result.errormsg(92, "原密码不正确");
-                }
-            }else{
-            	return Result.errormsg(91, "用户信息不正确");
-            }
-        }else{
-            return Result.errormsg(90, "密码与确认密码不一致");
-        }
-	}
 }
