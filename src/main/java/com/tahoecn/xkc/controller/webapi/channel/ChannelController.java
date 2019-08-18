@@ -323,9 +323,9 @@ public class ChannelController extends TahoeBaseController {
                 StringBuilder ProjectIDWhere = new StringBuilder();
                 if (channelInsertDto.getRuleIDs()!=null){
 
-
-                JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
-                for (Object ruleID : RuleIDs) {
+                    JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
+                    System.out.println("RuleIDs = !!!!!!!!!!!!!!!!!!!!!!!!!!" + RuleIDs);
+                    for (Object ruleID : RuleIDs) {
                     //拼接project条件
                     String[] split = ruleID.toString().split(",");
                     ProjectIDWhere.append("'" + split[0] + "',");
