@@ -783,7 +783,6 @@ public class H5Controller extends TahoeBaseController {
         String SourceType = (String) paramMap.get("SourceType");
         String name = "{\"TokerUserID\":\"" + TokerUserID + "\",\"ClueMobile\":\"" + ClueMobile
                 + "\",\"ClueID\":\"" + ClueID + "\",\"SourceType\":\"" + SourceType + "\"}";
-        System.out.println(name);
         String url = QRCodeUtil.zxingCodeCreate(name,physicalPath,"CustomerQRCode/", 500, null);
         if (url==null){
             return Result.errormsg(1,"生成失败");

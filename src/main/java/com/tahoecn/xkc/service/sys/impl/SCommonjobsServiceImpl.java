@@ -2,21 +2,16 @@ package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.tahoecn.xkc.model.sys.SCommonjobsfunctionsrel;
-import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
-import com.tahoecn.xkc.model.sys.SMenus;
-import com.tahoecn.xkc.service.sys.ISCommonjobsService;
+import com.tahoecn.xkc.model.sys.*;
+import com.tahoecn.xkc.service.sys.*;
 import com.tahoecn.xkc.mapper.sys.SCommonjobsMapper;
-import com.tahoecn.xkc.model.sys.SCommonjobs;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.tahoecn.xkc.service.sys.ISCommonjobsfunctionsrelService;
-import com.tahoecn.xkc.service.sys.ISCommonjobsmenurelService;
-import com.tahoecn.xkc.service.sys.ISMenusService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +40,9 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 
     @Autowired
     private ISMenusService menusService;
+
+    @Autowired
+    private ISMenusXkcService menusXkcService;
 
 	@Override
 	public List<SCommonjobs> SystemCommonJobsList_Select(String AuthCompanyID, String ProductID, String JobName) {
@@ -130,13 +128,26 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 //            }
 
             //新增新菜单
-            if (menusSplit.length!=0){
-                for (String s : menusSplit) {
-                    SCommonjobsmenurel commonjobsmenurel=new SCommonjobsmenurel();
-                    commonjobsmenurel.setJobID(jobID);
-                    commonjobsmenurel.setMenuID(s);
-                    commonjobsmenurelService.save(commonjobsmenurel);
-                }
+            //查询出所有子菜单父级, 传递的菜单ID若子集没全选 是没有父级菜单ID的
+                    HashSet<String> set=new HashSet();
+                    List<SMenusXkc> fuList = menusXkcService.list();
+                    for (String s : menusSplit) {
+                        for (SMenusXkc sMenusXkc : fuList) {
+                            if (StringUtils.equals(s,sMenusXkc.getId())){
+                                //去pid存入set
+                                set.add(sMenusXkc.getPid());
+                            }
+                        }
+                        set.add(s);
+                    }
+
+                    if (menusSplit.length!=0){
+                    for (String s : set) {
+                        SCommonjobsmenurel commonjobsmenurel=new SCommonjobsmenurel();
+                        commonjobsmenurel.setJobID(jobID);
+                        commonjobsmenurel.setMenuID(s);
+                        commonjobsmenurelService.save(commonjobsmenurel);
+                    }
             }
 //            if (functionsSplit.length!=0){
 //                for (String s : functionsSplit) {
