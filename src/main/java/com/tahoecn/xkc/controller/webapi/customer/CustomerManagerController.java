@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -258,6 +259,7 @@ public class CustomerManagerController extends TahoeBaseController {
 
 
     @ApiOperation(value = "修改客户基本信息")
+    @Transactional(rollbackFor = Exception.class)
     @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
     public Result UpdateCustBaseInfo(String oppoId,String custId,String userId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
         String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg) {
