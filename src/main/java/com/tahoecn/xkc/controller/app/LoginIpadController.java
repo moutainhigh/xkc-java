@@ -8,6 +8,7 @@ import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.utils.JwtTokenUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
@@ -44,6 +45,9 @@ public class LoginIpadController extends TahoeBaseController {
     @Autowired
     private IBSalesuserService salesuserService;
 
+    @Autowired
+    private IBVerificationcodeService verificationcodeService;
+
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
 
@@ -68,6 +72,23 @@ public class LoginIpadController extends TahoeBaseController {
         Map<String,Object> paramMap = (HashMap)jsonParam.get("_param");
         //登录日志记录
         String UserName= (String) paramMap.get("UserName");
+
+
+        String MobileNum = (String) paramMap.get("MobileNum");
+        String Code = (String) paramMap.get("Code");
+
+        if (StringUtils.isNotEmpty(MobileNum)) {
+            if (StringUtils.isEmpty(Code)){
+                return Result.errormsg(1, "请输入验证码");
+            }
+            BVerificationcode vc = verificationcodeService.checkAuthCode(MobileNum);
+            if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
+                return Result.errormsg(1, "验证码验证失败");
+            }
+            paramMap.put("Mobile",SecureUtil.md5(MobileNum));
+        }
+
+
 
         Map<String, Object> log=new HashMap<>();
         log.put("BizType","LoginLF");
@@ -110,18 +131,22 @@ public class LoginIpadController extends TahoeBaseController {
             if (accountType==1)
             {
                 // 用户验证
-                String s = accountService.checkUCUser(UserName, password);
-                JSONObject ucResult = JSONObject.parseObject(s);
-                if (0 != ucResult.getInteger("code")) {
-                    return Result.errormsg(11, "登录异常" + ucResult.getString("msg"));
+                if (StringUtils.isEmpty(Code)) {
+                    String s = accountService.checkUCUser(UserName, password);
+                    JSONObject ucResult = JSONObject.parseObject(s);
+                    if (0 != ucResult.getInteger("code")) {
+                        return Result.errormsg(11, "登录异常" + ucResult.getString("msg"));
+                    }
                 }
             }
             else {
+                if (StringUtils.isEmpty(Code)) {
                     String Password = (String) res.get("Password");
                     String RePassword = (String) res.get("RePassword");
-                    if (StringUtils.equals(Password,RePassword)){
-                        return Result.errormsg(10,"用户名密码不正确");
+                    if (StringUtils.equals(Password, RePassword)) {
+                        return Result.errormsg(10, "用户名密码不正确");
                     }
+                }
             }
         }
         if (paramMap.get("UserID")!=null){

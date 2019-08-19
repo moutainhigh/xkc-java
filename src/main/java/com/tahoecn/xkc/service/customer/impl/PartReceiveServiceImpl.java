@@ -192,7 +192,9 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	            }
 	        }
 	        CustomerModelVo customerModel = customerTemplate.InitCustomerModeData(model, jsonFile, CustomerObj, customerModeType);
-	        customerModel.setIsNew(isNew);
+	        if(customerModel!=null){
+	        	customerModel.setIsNew(isNew);
+	        }
 	        entity.setData(customerModel);
 	        entity.setErrcode(0);
 	        entity.setErrmsg("成功");

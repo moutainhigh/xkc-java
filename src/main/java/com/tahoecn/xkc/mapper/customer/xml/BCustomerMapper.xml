@@ -520,7 +520,7 @@
             WHERE ProjectID = #{projectID}
             AND CustomerPotentialMobile = #{mobile}
             ) t
-            ORDER BY t.CreateTime
+            ORDER BY t.CreateTime desc
         ]]>
     </select>
 
@@ -1036,7 +1036,7 @@
                         CustomerRank FROM dbo.B_CustomerPotentialFollowUp WHERE  ProjectID=#{projectID}
                   AND (CustomerPotentialID = #{customerID}
                   OR CustomerPotentialMobile = ( SELECT TOP 1 CustomerMobile FROM  dbo.B_Opportunity WHERE  ID = #{opportunityID} ))
-                        ) t ORDER BY t.CreateTime
+                        ) t ORDER BY t.CreateTime desc
         ]]>
     </select>
     <select id="CustomerNEWSignInfo_Select" resultType="java.util.Map">

@@ -93,7 +93,7 @@ public class SAccount implements Serializable {
 
     @ApiModelProperty(value = "移动电话")
     @TableField("Mobile")
-    private String Mobile;
+    private String mobile;
 
     @ApiModelProperty(value = "性别")
     @TableField("Gender")
@@ -221,15 +221,16 @@ public class SAccount implements Serializable {
     public void setOfficeMail(String OfficeMail) {
         this.OfficeMail = OfficeMail;
     }
-    public String getMobile() {
-        return Mobile;
-    }
-
-    public void setMobile(String Mobile) {
-        this.Mobile = Mobile;
-    }
     public Integer getGender() {
         return Gender;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public void setGender(Integer Gender) {
@@ -301,7 +302,7 @@ public class SAccount implements Serializable {
         ", ProductID=" + ProductID +
         ", Address=" + Address +
         ", OfficeMail=" + OfficeMail +
-        ", Mobile=" + Mobile +
+        ", Mobile=" + mobile +
         ", Gender=" + Gender +
         ", AccountType=" + AccountType +
         ", id=" + id +

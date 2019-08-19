@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,8 +44,10 @@ public class CustomerHelp implements ICustomerHelp {
 
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
-	@Resource
-	private RedisTemplate<String, String> redisTemplate;
+
+	@Autowired
+	RedisTemplate redisTemplate;
+	
 	@Resource
 	private IProjectService iProjectService;
 	@Resource
@@ -495,12 +498,19 @@ public class CustomerHelp implements ICustomerHelp {
 
 	@Override
 	public CustomerModelVo InitCustomerModelByFileName(String jsonFile) {
+		if(StringUtils.isEmpty(jsonFile)){
+			return null;
+		}
 		String jsonStr = "";
-		if (redisTemplate.hasKey(jsonFile)) {
-			jsonStr = redisTemplate.opsForValue().get(jsonFile);
-		} else {
+		try {
+			if (redisTemplate.hasKey(jsonFile)) {
+				jsonStr = (String) redisTemplate.opsForValue().get(jsonFile);	//YYY:todo
+			} else {
+				jsonStr = JSONUtil.readJsonFile(jsonFile);
+				redisTemplate.opsForValue().set(jsonFile, jsonStr);
+			}
+		} catch (Exception e) {
 			jsonStr = JSONUtil.readJsonFile(jsonFile);
-			redisTemplate.opsForValue().set(jsonFile, jsonStr);
 		}
 		CustomerModelVo customerModelVo = JSONObject.parseObject(jsonStr,CustomerModelVo.class);
 		return customerModelVo;
@@ -508,12 +518,19 @@ public class CustomerHelp implements ICustomerHelp {
 	
 	@Override
 	public List<DicInfo> InitCustomerDicModel(String jsonFile) {
+		if(StringUtils.isEmpty(jsonFile)){
+			return null;
+		}
 		String jsonStr = "";
-		if (redisTemplate.hasKey(jsonFile)) {
-			jsonStr = redisTemplate.opsForValue().get(jsonFile);
-		} else {
+		try {
+			if (redisTemplate.hasKey(jsonFile)) {
+				jsonStr = (String) redisTemplate.opsForValue().get(jsonFile);
+			} else {
+				jsonStr = JSONUtil.readJsonFile(jsonFile);
+				redisTemplate.opsForValue().set(jsonFile, jsonStr);
+			}
+		} catch (Exception e) {
 			jsonStr = JSONUtil.readJsonFile(jsonFile);
-			redisTemplate.opsForValue().set(jsonFile, jsonStr);
 		}
 		List<DicInfo> list = JSONArray.parseArray(jsonStr, DicInfo.class);
 		return list;
