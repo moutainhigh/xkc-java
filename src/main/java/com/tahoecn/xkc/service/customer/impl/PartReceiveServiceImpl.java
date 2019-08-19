@@ -321,7 +321,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                         }
                         String VisitType = parameter.getString("VisitType");
                         String FollwUpWay = "";
-                        if (VisitType == "E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450"){
+                        if ("E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450".equals(VisitType)){
                         	//来访
                             FollwUpWay = "E30825AA-B894-4A5F-AF55-24CAC34C8F1F";
                         }else{//来电
