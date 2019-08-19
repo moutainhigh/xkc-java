@@ -85,7 +85,7 @@ public class CustomerHelp implements ICustomerHelp {
 		CustomerModelVo customerModel = null;
 		try {
 			customerModel = InitCustomerModelByFileName(jsonFileName);
-			if (customerModel != null && customerModel.getIsNew()!=-1) {
+			if (customerModel != null) {
 				List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
 				if (CustomerObj!=null) {
 					customerModel.setCustomerID(CustomerObj.getString("CustomerID"));
@@ -496,10 +496,7 @@ public class CustomerHelp implements ICustomerHelp {
 	@Override
 	public CustomerModelVo InitCustomerModelByFileName(String jsonFile) {
 		if(StringUtils.isEmpty(jsonFile)){
-			CustomerModelVo customerModelVo = new CustomerModelVo();
-			customerModelVo.setClueID("jsonFile空");
-			customerModelVo.setIsNew(-1);
-			return customerModelVo;
+			return null;
 		}
 		String jsonStr = "";
 		try {
@@ -518,12 +515,19 @@ public class CustomerHelp implements ICustomerHelp {
 	
 	@Override
 	public List<DicInfo> InitCustomerDicModel(String jsonFile) {
+		if(StringUtils.isEmpty(jsonFile)){
+			return null;
+		}
 		String jsonStr = "";
-		if (redisTemplate.hasKey(jsonFile)) {
-			jsonStr = redisTemplate.opsForValue().get(jsonFile);
-		} else {
+		try {
+			if (redisTemplate.hasKey(jsonFile)) {
+				jsonStr = redisTemplate.opsForValue().get(jsonFile);
+			} else {
+				jsonStr = JSONUtil.readJsonFile(jsonFile);
+				redisTemplate.opsForValue().set(jsonFile, jsonStr);
+			}
+		} catch (Exception e) {
 			jsonStr = JSONUtil.readJsonFile(jsonFile);
-			redisTemplate.opsForValue().set(jsonFile, jsonStr);
 		}
 		List<DicInfo> list = JSONArray.parseArray(jsonStr, DicInfo.class);
 		return list;
