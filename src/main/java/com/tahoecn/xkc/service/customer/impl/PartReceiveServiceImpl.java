@@ -633,25 +633,27 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                                 String fClueID = parameter.getString("ClueID");
                                                 if(!StringUtils.isEmpty(fClueID)){
                                                     Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(fClueID);
-                                                    String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
-                                                    String projectID = parameter.getString("ProjectID");
-                                                    Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
-                                                    String ReportUserID = "";
-                                                    ClueID = "";
-                                                    Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
-                                                    if(AllotRemind.intValue()>0){
-                                                    	if(re_map_step1.get("ReportUserID")!=null){
-                                                    		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
-                                                    	}
-                                                    	if(re_map_step1.get("ClueID")!=null){
-                                                    		ClueID = String.valueOf(re_map_step1.get("ClueID"));
-                                                    	}
-                                                    }
-                                                    if (!"".equals(ClueID) && !"".equals(ReportUserID)){
-                                                    	String UserID = parameter.getString("UserID");
-                                                        String ProjectID = parameter.getString("ProjectID");
-                                                        String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + MessageType.到访提醒.getTypeID();
-                                                        iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.带看通知.getTypeID(), true);
+                                                    if(re_map_step1!=null && re_map_step1.size()>0){
+                                                    	String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
+                                                        String projectID = parameter.getString("ProjectID");
+                                                        Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                                        String ReportUserID = "";
+                                                        ClueID = "";
+                                                        Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
+                                                        if(AllotRemind.intValue()>0){
+                                                        	if(re_map_step1.get("ReportUserID")!=null){
+                                                        		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                                        	}
+                                                        	if(re_map_step1.get("ClueID")!=null){
+                                                        		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                                        	}
+                                                        }
+                                                        if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                        	String UserID = parameter.getString("UserID");
+                                                            String ProjectID = parameter.getString("ProjectID");
+                                                            String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + MessageType.到访提醒.getTypeID();
+                                                            iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.带看通知.getTypeID(), true);
+                                                        }
                                                     }
                                                 }
                                             }
