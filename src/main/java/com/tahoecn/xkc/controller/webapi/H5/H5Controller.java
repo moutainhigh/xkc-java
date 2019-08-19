@@ -497,7 +497,8 @@ public class H5Controller extends TahoeBaseController {
     @ApiOperation(value = "获取客户详情", notes = "获取客户详情")
     @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject jsonParam) {
-        String ClueID=(String) jsonParam.get("ClueID");
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String ClueID=(String) paramMap.get("ClueID");
         Result result = new Result();
         Map<String, Object> map = clueService.mBrokerCustomerDetail_Select(ClueID);
         if (map==null||map.size()==0){
@@ -759,8 +760,9 @@ public class H5Controller extends TahoeBaseController {
     @ApiOperation(value = "生成二维码", notes = "生成二维码")
     @RequestMapping(value = "/getTwoCode", method = {RequestMethod.POST})
     public Result getTwoCode(@RequestBody JSONObject jsonParam) {
-        String Code = (String) jsonParam.get("Code");
-        String ChannelTypeID = (String) jsonParam.get("ChannelTypeID");
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String Code = (String) paramMap.get("Code");
+        String ChannelTypeID = (String) paramMap.get("ChannelTypeID");
         String OrgID = "https://www.baidu.com?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
 
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath,"twoCode/", 500, null);
@@ -774,11 +776,11 @@ public class H5Controller extends TahoeBaseController {
     @ApiOperation(value = "客户信息二维码", notes = "客户信息二维码")
     @RequestMapping(value = "/mCustomerQRCode_Select", method = {RequestMethod.POST})
     public Result mCustomerQRCode_Select(@RequestBody JSONObject jsonParam) {
-
-        String TokerUserID = (String) jsonParam.get("TokerUserID");
-        String ClueMobile = (String) jsonParam.get("ClueMobile");
-        String ClueID = (String) jsonParam.get("ClueID");
-        String SourceType = (String) jsonParam.get("SourceType");
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String TokerUserID = (String) paramMap.get("TokerUserID");
+        String ClueMobile = (String) paramMap.get("ClueMobile");
+        String ClueID = (String) paramMap.get("ClueID");
+        String SourceType = (String) paramMap.get("SourceType");
         String name = "{\"TokerUserID\":\"" + TokerUserID + "\",\"ClueMobile\":\"" + ClueMobile
                 + "\",\"ClueID\":\"" + ClueID + "\",\"SourceType\":\"" + SourceType + "\"}";
         System.out.println(name);
