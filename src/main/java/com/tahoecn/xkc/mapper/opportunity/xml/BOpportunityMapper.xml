@@ -3,8 +3,8 @@
 <mapper namespace="com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper">
     <select id="getCustomerCount" resultType="int">
         SELECT COUNT(1) FROM dbo.B_Opportunity O
-        LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
-        WHERE O.ProjectID=#{projectId} AND O.SaleUserID=#{MemberID}
+		LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
+		WHERE O.ProjectID=#{projectId} AND O.SaleUserID=(SELECT MemberID FROM dbo.B_SalesGroupMember WHERE ID=#{MemberID})
     </select>
 	<!-- 客户确认归属 -->
 	<update id="mCustomerBelong_Update" statementType="CALLABLE">

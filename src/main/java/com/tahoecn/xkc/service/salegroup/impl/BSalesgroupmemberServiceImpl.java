@@ -547,6 +547,6 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
         }
 
 
-        return null;
+        return Result.ok("成功");
     }
 }
