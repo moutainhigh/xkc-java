@@ -115,7 +115,7 @@
         WHERE     A.IsDel = 0
         AND A.Status = 1
         AND B.RoleID = '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' <!---销支角色-->
-        AND S.UserName = LTRIM(RTRIM(#{UserName}))
+        AND (S.UserName = LTRIM(RTRIM(#{UserName})) or S.Mobile = #{Mobile})
         ) T
         ORDER BY T.AllowDeviceTypeSort ,
         T.PSort ,
