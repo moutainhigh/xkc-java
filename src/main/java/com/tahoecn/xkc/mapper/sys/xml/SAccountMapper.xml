@@ -123,7 +123,7 @@
     <select id="getUserJobMenus" resultType="java.util.HashMap">
         <![CDATA[
             SELECT DISTINCT
-              *
+              MenuID,MenuPID,MenuName,Url,ImageUrl,IconClass,IsHomePage,IsShow,ListIndex,Levels,IsHasChild
             FROM [dbo].[F_GetAllJobMenu_xkc](#{userName},#{productID})
             ORDER BY IsHomePage DESC ,
               Levels ASC ,
@@ -368,6 +368,7 @@
             LEFT JOIN dbo.B_Project P
                 ON C.ProjectID = P.ID
         WHERE (A.ChannelType = '兼职' or a.ChannelType = '自由经纪')
+              AND A.UserName = #{userName}
               AND( A.UserName = #{userName} or A.Mobile = #{Mobile})
         ORDER BY C.ID DESC
         ]]>
