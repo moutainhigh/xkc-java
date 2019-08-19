@@ -495,12 +495,19 @@ public class CustomerHelp implements ICustomerHelp {
 
 	@Override
 	public CustomerModelVo InitCustomerModelByFileName(String jsonFile) {
+		if(StringUtils.isEmpty(jsonFile)){
+			return null;
+		}
 		String jsonStr = "";
-		if (redisTemplate.hasKey(jsonFile)) {
+		try {
+			if (redisTemplate.hasKey(jsonFile)) {
+				jsonStr = redisTemplate.opsForValue().get(jsonFile);
+			} else {
+				jsonStr = JSONUtil.readJsonFile(jsonFile);
+				redisTemplate.opsForValue().set(jsonFile, jsonStr);
+			}
+		} catch (Exception e) {
 			jsonStr = redisTemplate.opsForValue().get(jsonFile);
-		} else {
-			jsonStr = JSONUtil.readJsonFile(jsonFile);
-			redisTemplate.opsForValue().set(jsonFile, jsonStr);
 		}
 		CustomerModelVo customerModelVo = JSONObject.parseObject(jsonStr,CustomerModelVo.class);
 		return customerModelVo;
