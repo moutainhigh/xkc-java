@@ -144,8 +144,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
         map.put("RoleName",RoleName);
         map.put("ReceptionGroupID",ReceptionGroupID);
 
-        iSaleGroupMemberService.SalesGroupMembers_Insert(map);
-        return Result.ok("成功");
+        return iSaleGroupMemberService.SalesGroupMembers_Insert(map);
     }
 
 

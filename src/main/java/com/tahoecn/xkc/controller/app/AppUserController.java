@@ -245,17 +245,22 @@ public class AppUserController extends TahoeBaseController {
             	wrapper.eq("Mobile", Mobile);
             	List<BChanneluser> Channeluser = iBChanneluserService.list(wrapper);
                 if (Channeluser != null && Channeluser.size() > 0){
-                    iBChanneluserService.ChannelUserForgetPassWord_Update(map);
-                    return Result.ok("用户修改密码成功");
-                }
-                else{
+                	if(Channeluser.size() > 1){
+                		return Result.errormsg(91, "根据手机号查询存在多个用户，请联系系统管理员");
+                	}else{
+	                    iBChanneluserService.ChannelUserForgetPassWord_Update(map);
+	                    return Result.ok("用户修改密码成功");
+                	}
+                }else{
                 	//3.查询是否为UC用户
                 	QueryWrapper<SAccount> wrapper1 = new  QueryWrapper<SAccount>();
                 	wrapper1.eq("Mobile", Mobile);
-                	SAccount sAccount = iISAccountService.getOne(wrapper1);
-                	if(sAccount == null){
+                	List<SAccount> sAccount = iISAccountService.list(wrapper1);
+                	if(sAccount == null || sAccount.size() == 0){
                 		return Result.errormsg(91, "用户信息不正确");
-                	}else if(sAccount != null && sAccount.getAccountType() == 1){
+                	}else if(sAccount != null && sAccount.size() > 1){
+                		return Result.errormsg(91, "根据手机号查询存在多个用户，请联系系统管理员");
+                	}else if(sAccount != null && sAccount.get(0).getAccountType() == 1){
                 		return Result.errormsg(91, "请到泰信重置修改密码");
                 	}else{
                 		//4.UC用户修改密码
