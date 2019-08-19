@@ -379,7 +379,7 @@ public class LoginAppController extends TahoeBaseController {
 
 
             if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("Helper"))) {   //营销助手
-                sb.append("{'Name': '营销助手','Categroy': 'Mine','NormalImage': '','SelectedImage': '','ChildRole': {'CustomerMobileHide':0");
+                sb.append("{'Name': '营销助手','Categroy': 'yxzs','NormalImage': '','SelectedImage': '','ChildRole': {'CustomerMobileHide':0");
                 sb.append("}},");
             }
 
