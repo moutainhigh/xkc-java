@@ -323,7 +323,9 @@ public class LoginAppController extends TahoeBaseController {
 					}
 				}
 			}
-            if(MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("WeiBook")) ||
+            /**
+             * 不要了
+             * if(MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("WeiBook")) ||
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("AR")) ||
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("Helper")) ||
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("RobbingCustomerPool")) ||
@@ -373,7 +375,16 @@ public class LoginAppController extends TahoeBaseController {
                 }
                 sb.append(",'CaseLinkageUrl':'").append(CaseLinkageUrl).append("'");
                 sb.append("}},");
+            }*/
+
+
+            if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("Helper"))) {   //营销助手
+                sb.append("{'Name': '营销助手','Categroy': 'Mine','NormalImage': '','SelectedImage': '','ChildRole': {'CustomerMobileHide':0");
+                sb.append("}},");
             }
+
+
+
 
             if(MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("MineCare")) ||
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("ChangePassword")) ||
@@ -468,6 +479,20 @@ public class LoginAppController extends TahoeBaseController {
                 } else {
                     sb.append(",'IsMineEvaluate': 0");
                 }
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("IsDynamic"))) {    //动态
+                    sb.append(",'IsDynamic':1");
+                } else {
+                    sb.append(",'IsDynamic':0");
+                }
+
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("CaseLinkage")) && !Objects.equals(ProjectID.toUpperCase(), "252B3699-51B2-E711-80C7-00505686C900")) {    //案场联动
+                    sb.append(",'IsCaseLinkage':1");
+                } else {
+                    sb.append(",'IsCaseLinkage':0");
+                }
+                sb.append(",'CaseLinkageUrl':'").append(CaseLinkageUrl).append("'");
+
+
                 sb.append("}},");
 			}
 			sb.deleteCharAt(sb.length()-1);
