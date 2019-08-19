@@ -127,34 +127,42 @@ public class BChannelorg implements Serializable {
     @TableField("Province")
     private String Province;
 
+    @ApiModelProperty(value = "上级机构")
+    @TableField("NewPID")
+    private String NewPID;
+
     public Integer getOrgCategory() {
         return OrgCategory;
     }
 
-    public void setOrgCategory(Integer OrgCategory) {
-        this.OrgCategory = OrgCategory;
+    public void setOrgCategory(Integer orgCategory) {
+        OrgCategory = orgCategory;
     }
+
     public Integer getApprovalStatus() {
         return ApprovalStatus;
     }
 
-    public void setApprovalStatus(Integer ApprovalStatus) {
-        this.ApprovalStatus = ApprovalStatus;
+    public void setApprovalStatus(Integer approvalStatus) {
+        ApprovalStatus = approvalStatus;
     }
+
     public Integer getIsDel() {
         return IsDel;
     }
 
-    public void setIsDel(Integer IsDel) {
-        this.IsDel = IsDel;
+    public void setIsDel(Integer isDel) {
+        IsDel = isDel;
     }
+
     public Date getCreateTime() {
         return CreateTime;
     }
 
-    public void setCreateTime(Date CreateTime) {
-        this.CreateTime = CreateTime;
+    public void setCreateTime(Date createTime) {
+        CreateTime = createTime;
     }
+
     public String getPid() {
         return pid;
     }
@@ -162,104 +170,119 @@ public class BChannelorg implements Serializable {
     public void setPid(String pid) {
         this.pid = pid;
     }
+
     public String getChannelTypeID() {
         return ChannelTypeID;
     }
 
-    public void setChannelTypeID(String ChannelTypeID) {
-        this.ChannelTypeID = ChannelTypeID;
+    public void setChannelTypeID(String channelTypeID) {
+        ChannelTypeID = channelTypeID;
     }
+
     public String getOrgShortName() {
         return OrgShortName;
     }
 
-    public void setOrgShortName(String OrgShortName) {
-        this.OrgShortName = OrgShortName;
+    public void setOrgShortName(String orgShortName) {
+        OrgShortName = orgShortName;
     }
+
     public String getMobile() {
         return Mobile;
     }
 
-    public void setMobile(String Mobile) {
-        this.Mobile = Mobile;
+    public void setMobile(String mobile) {
+        Mobile = mobile;
     }
+
     public Integer getLevels() {
         return Levels;
     }
 
-    public void setLevels(Integer Levels) {
-        this.Levels = Levels;
+    public void setLevels(Integer levels) {
+        Levels = levels;
     }
+
     public String getResponsible() {
         return Responsible;
     }
 
-    public void setResponsible(String Responsible) {
-        this.Responsible = Responsible;
+    public void setResponsible(String responsible) {
+        Responsible = responsible;
     }
+
     public Date getApprovalDate() {
         return ApprovalDate;
     }
 
-    public void setApprovalDate(Date ApprovalDate) {
-        this.ApprovalDate = ApprovalDate;
+    public void setApprovalDate(Date approvalDate) {
+        ApprovalDate = approvalDate;
     }
+
     public String getCity() {
         return City;
     }
 
-    public void setCity(String City) {
-        this.City = City;
+    public void setCity(String city) {
+        City = city;
     }
+
     public String getProjectID() {
         return ProjectID;
     }
 
-    public void setProjectID(String ProjectID) {
-        this.ProjectID = ProjectID;
+    public void setProjectID(String projectID) {
+        ProjectID = projectID;
     }
+
     public String getBizLicense() {
         return BizLicense;
     }
 
-    public void setBizLicense(String BizLicense) {
-        this.BizLicense = BizLicense;
+    public void setBizLicense(String bizLicense) {
+        BizLicense = bizLicense;
     }
+
     public Integer getListIndex() {
         return ListIndex;
     }
 
-    public void setListIndex(Integer ListIndex) {
-        this.ListIndex = ListIndex;
+    public void setListIndex(Integer listIndex) {
+        ListIndex = listIndex;
     }
+
     public String getFullPath() {
         return FullPath;
     }
 
-    public void setFullPath(String FullPath) {
-        this.FullPath = FullPath;
+    public void setFullPath(String fullPath) {
+        FullPath = fullPath;
     }
+
     public Integer getStatus() {
         return Status;
     }
 
-    public void setStatus(Integer Status) {
-        this.Status = Status;
+    public void setStatus(Integer status) {
+        Status = status;
     }
+
     public String getEditor() {
         return Editor;
     }
 
-    public void setEditor(String Editor) {
-        this.Editor = Editor;
+    public void setEditor(String editor) {
+        Editor = editor;
     }
+
     public String getOrgCode() {
         return OrgCode;
     }
 
-    public void setOrgCode(String OrgCode) {
-        this.OrgCode = OrgCode;
+    public void setOrgCode(String orgCode) {
+        OrgCode = orgCode;
     }
+
     public String getQRcode() {
         return QRcode;
     }
@@ -267,20 +290,23 @@ public class BChannelorg implements Serializable {
     public void setQRcode(String QRcode) {
         this.QRcode = QRcode;
     }
+
     public String getApprover() {
         return Approver;
     }
 
-    public void setApprover(String Approver) {
-        this.Approver = Approver;
+    public void setApprover(String approver) {
+        Approver = approver;
     }
+
     public String getCreator() {
         return Creator;
     }
 
-    public void setCreator(String Creator) {
-        this.Creator = Creator;
+    public void setCreator(String creator) {
+        Creator = creator;
     }
+
     public String getId() {
         return id;
     }
@@ -288,57 +314,69 @@ public class BChannelorg implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
     public Date getEditTime() {
         return EditTime;
     }
 
-    public void setEditTime(Date EditTime) {
-        this.EditTime = EditTime;
+    public void setEditTime(Date editTime) {
+        EditTime = editTime;
     }
+
     public String getOrgName() {
         return OrgName;
     }
 
-    public void setOrgName(String OrgName) {
-        this.OrgName = OrgName;
+    public void setOrgName(String orgName) {
+        OrgName = orgName;
     }
+
     public String getProvince() {
         return Province;
     }
 
-    public void setProvince(String Province) {
-        this.Province = Province;
+    public void setProvince(String province) {
+        Province = province;
+    }
+
+    public String getNewPID() {
+        return NewPID;
+    }
+
+    public void setNewPID(String newPID) {
+        NewPID = newPID;
     }
 
     @Override
     public String toString() {
         return "BChannelorg{" +
-        "OrgCategory=" + OrgCategory +
-        ", ApprovalStatus=" + ApprovalStatus +
-        ", IsDel=" + IsDel +
-        ", CreateTime=" + CreateTime +
-        ", pid=" + pid +
-        ", ChannelTypeID=" + ChannelTypeID +
-        ", OrgShortName=" + OrgShortName +
-        ", Mobile=" + Mobile +
-        ", Levels=" + Levels +
-        ", Responsible=" + Responsible +
-        ", ApprovalDate=" + ApprovalDate +
-        ", City=" + City +
-        ", ProjectID=" + ProjectID +
-        ", BizLicense=" + BizLicense +
-        ", ListIndex=" + ListIndex +
-        ", FullPath=" + FullPath +
-        ", Status=" + Status +
-        ", Editor=" + Editor +
-        ", OrgCode=" + OrgCode +
-        ", QRcode=" + QRcode +
-        ", Approver=" + Approver +
-        ", Creator=" + Creator +
-        ", id=" + id +
-        ", EditTime=" + EditTime +
-        ", OrgName=" + OrgName +
-        ", Province=" + Province +
-        "}";
+                "OrgCategory=" + OrgCategory +
+                ", ApprovalStatus=" + ApprovalStatus +
+                ", IsDel=" + IsDel +
+                ", CreateTime=" + CreateTime +
+                ", pid='" + pid + '\'' +
+                ", ChannelTypeID='" + ChannelTypeID + '\'' +
+                ", OrgShortName='" + OrgShortName + '\'' +
+                ", Mobile='" + Mobile + '\'' +
+                ", Levels=" + Levels +
+                ", Responsible='" + Responsible + '\'' +
+                ", ApprovalDate=" + ApprovalDate +
+                ", City='" + City + '\'' +
+                ", ProjectID='" + ProjectID + '\'' +
+                ", BizLicense='" + BizLicense + '\'' +
+                ", ListIndex=" + ListIndex +
+                ", FullPath='" + FullPath + '\'' +
+                ", Status=" + Status +
+                ", Editor='" + Editor + '\'' +
+                ", OrgCode='" + OrgCode + '\'' +
+                ", QRcode='" + QRcode + '\'' +
+                ", Approver='" + Approver + '\'' +
+                ", Creator='" + Creator + '\'' +
+                ", id='" + id + '\'' +
+                ", EditTime=" + EditTime +
+                ", OrgName='" + OrgName + '\'' +
+                ", Province='" + Province + '\'' +
+                ", NewPID='" + NewPID + '\'' +
+                '}';
     }
 }

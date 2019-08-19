@@ -283,6 +283,7 @@ public class ChannelController extends TahoeBaseController {
                 channelorg.setEditTime(new Date());
                 channelorg.setBizLicense(channelInsertDto.getBizlicense());
                 channelorg.setId(channelInsertDto.getOrgID());
+                channelorg.setNewPID(channelInsertDto.getPid());
                 channelorgService.updateById(channelorg);
 
                 BChanneluser channeluser = new BChanneluser();
