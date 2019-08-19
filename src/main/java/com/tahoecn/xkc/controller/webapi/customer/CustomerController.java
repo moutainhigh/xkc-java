@@ -30,10 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -281,7 +278,7 @@ public class CustomerController extends TahoeBaseController {
 
     @ApiOperation(value = "归属变更查询")
     @RequestMapping(value = "/SourceTypeChangeList_Select", method = {RequestMethod.GET})
-    public Result SourceTypeChangeList_Select(String ReportUserName,String ReportUserMobile,String Mobile,String projectID,String ClueID) {
+    public Result SourceTypeChangeList_Select(String ReportUserName,String ReportUserMobile,String Mobile,String projectID,String ClueID,String SourceType) {
         StringBuilder sqlWhere = new StringBuilder();
 
         //客户姓名
@@ -294,6 +291,12 @@ public class CustomerController extends TahoeBaseController {
         }
 
         List<Map<String,Object>> result = customerService.SourceTypeChangeList_Select(Mobile,projectID,sqlWhere.toString(),ClueID);
+        if (!"自然到访".equals(SourceType)){
+            Map<String,Object> map = new HashMap<>();
+            map.put("ChannelName","自然到访");
+            map.put("ClueID","111111");
+            result.add(map);
+        }
         return Result.ok(result);
     }
 
