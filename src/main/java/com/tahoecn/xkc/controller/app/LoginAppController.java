@@ -8,6 +8,7 @@ import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.utils.JwtTokenUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
 import com.tahoecn.xkc.model.sys.SLogs;
@@ -57,6 +58,9 @@ public class LoginAppController extends TahoeBaseController {
     @Autowired
     private IBSalesuserService salesuserService;
 
+    @Autowired
+    private IBVerificationcodeService verificationcodeService;
+
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
 
@@ -79,20 +83,34 @@ public class LoginAppController extends TahoeBaseController {
     @ApiOperation(value = "登陆", notes = "登陆")
     @RequestMapping(value = "/mLoginAC_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result mLoginAC_Select(@RequestBody JSONObject jsonParam) {
+
         Map paramMap = (HashMap) jsonParam.get("_param");
         String userName = (String) paramMap.get("UserName");
         String password = (String) paramMap.get("Password");
+        String MobileNum = (String) paramMap.get("MobileNum");
+        String Code = (String) paramMap.get("Code");
+
+        if (StringUtils.isNotEmpty(MobileNum)) {
+            if (StringUtils.isEmpty(Code)){
+                return Result.errormsg(1, "请输入验证码");
+            }
+            BVerificationcode vc = verificationcodeService.checkAuthCode(MobileNum);
+            if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
+                return Result.errormsg(1, "验证码验证失败");
+            }
+        }
+
         QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(SAccount::getStatus, 1);
         wrapper.lambda().eq(SAccount::getIsDel, 0);
-        wrapper.lambda().eq(SAccount::getUserName, userName);
+        wrapper.lambda().and(rolewrapper -> rolewrapper.eq(SAccount::getUserName, userName).or().eq(SAccount::getMobile,MobileNum));
         //wrapper.lambda().eq(SAccount::getPassword, SecureUtil.md5(pwd));
         SAccount account = accountService.getOne(wrapper);
         HashMap<String, Object> map;
         if (account != null) {
-            map = accountService.mLoginSelectByAccount(userName);
+            map = accountService.mLoginSelectByAccount(userName,MobileNum);
         } else {
-            map = accountService.mLoginSelectByChannelUser(userName);
+            map = accountService.mLoginSelectByChannelUser(userName,MobileNum);
         }
         if (map == null) {
             return Result.errormsg(10, "用户不存在");
@@ -127,15 +145,19 @@ public class LoginAppController extends TahoeBaseController {
         }
 
         if (1 == AccountType) {
-            String smap = accountService.checkUCUser(userName, password);
-            JSONObject ucResult = JSONObject.parseObject(smap);
-            if (0 != ucResult.getInteger("code")) {
-                return Result.errormsg(11, "登录异常" + ucResult.getString("msg"));
+            if (StringUtils.isEmpty(Code)){
+                String smap = accountService.checkUCUser(userName, password);
+                JSONObject ucResult = JSONObject.parseObject(smap);
+                if (0 != ucResult.getInteger("code")) {
+                    return Result.errormsg(11, "登录异常" + ucResult.getString("msg"));
+                }
             }
         } else {
-            password = SecureUtil.md5(password);
-            if (!tempPwd.equalsIgnoreCase(password)) {
-                return Result.errormsg(10, "用户名密码不正确");
+            if (StringUtils.isEmpty(Code)) {
+                password = SecureUtil.md5(password);
+                if (!tempPwd.equalsIgnoreCase(password)) {
+                    return Result.errormsg(10, "用户名密码不正确");
+                }
             }
         }
 

@@ -97,13 +97,13 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     }
 
     @Override
-    public HashMap<String,Object> mLoginSelectByAccount(String userName) {
-        return sAccountMapper.mLoginSelectByAccount(userName);
+    public HashMap<String,Object> mLoginSelectByAccount(String userName,String mobile) {
+        return sAccountMapper.mLoginSelectByAccount(userName,mobile);
     }
 
     @Override
-    public HashMap<String,Object> mLoginSelectByChannelUser(String userName) {
-        return sAccountMapper.mLoginSelectByChannelUser(userName);
+    public HashMap<String,Object> mLoginSelectByChannelUser(String userName,String mobile) {
+        return sAccountMapper.mLoginSelectByChannelUser(userName,mobile);
     }
 
     @Override

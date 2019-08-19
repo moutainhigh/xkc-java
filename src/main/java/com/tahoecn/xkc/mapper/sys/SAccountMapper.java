@@ -29,8 +29,8 @@ public interface SAccountMapper extends BaseMapper<SAccount> {
     List<HashMap<String,String>> getJobFunctions(@Param("userName") String userName,@Param("productID") String productID);
     List<HashMap<String,String>> getJobProject(@Param("userName") String userName);
 
-    HashMap<String,Object> mLoginSelectByAccount(@Param("userName") String userName);
-    HashMap<String,Object> mLoginSelectByChannelUser(@Param("userName") String userName);
+    HashMap<String,Object> mLoginSelectByAccount(@Param("userName") String userName,@Param("Mobile") String Mobile);
+    HashMap<String,Object> mLoginSelectByChannelUser(@Param("userName") String userName,@Param("Mobile") String Mobile);
 
     List<HashMap<String,String>> salesUserProjectList(@Param("userId") String userId);
 

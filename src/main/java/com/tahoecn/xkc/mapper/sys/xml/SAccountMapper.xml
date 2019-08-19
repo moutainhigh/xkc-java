@@ -314,7 +314,7 @@
                    AND ASP.Status = 1
         WHERE A.IsDel = 0
               AND A.Status = 1
-              AND S.UserName = LTRIM(RTRIM(#{userName}))
+              AND( S.UserName = LTRIM(RTRIM(#{userName})) or S.Mobile = #{Mobile})
               AND (CASE
                        WHEN dbo.F_DictCode(B.RoleID) IN ( 'XSZC', 'FJ' )
                             AND P.IsNoAllotRole = 1 THEN
@@ -368,7 +368,7 @@
             LEFT JOIN dbo.B_Project P
                 ON C.ProjectID = P.ID
         WHERE (A.ChannelType = '兼职' or a.ChannelType = '自由经纪')
-              AND A.UserName = #{userName}
+              AND( A.UserName = #{userName} or A.Mobile = #{Mobile})
         ORDER BY C.ID DESC
         ]]>
     </select>
