@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.sys;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
@@ -58,8 +59,16 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "新增人员(用户管理)", notes = "新增人员(用户管理)")
     @RequestMapping(value = "/SystemUser_Insert", method = {RequestMethod.POST})
     public Result SystemUser_Insert(@RequestBody SAccount account) {
-//        account.setCreator(ThreadLocalUtils.getUserName());
+        //手机号不可重复
+        String mobile = account.getMobile();
+        QueryWrapper<SAccount> wrapper=new QueryWrapper();
+        wrapper.eq("Mobile",mobile).eq("IsDel",0);
+        int count = accountService.count(wrapper);
+        if (count>0) {
+            return Result.errormsg(500, "电话号码已存在,请使用其他号码");
+        }
         account.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");
+        account.setCreator(ThreadLocalUtils.getUserName());
         account.setCreateTime(new Date());
         account.setIsDel(0);
         accountService.save(account);
@@ -69,6 +78,14 @@ public class SAccountController extends TahoeBaseController {
     @ApiOperation(value = "编辑人员(用户管理)", notes = "编辑人员(用户管理)")
     @RequestMapping(value = "/SystemUser_Update", method = {RequestMethod.POST})
     public Result SystemUser_Update(@RequestBody SAccount account) {
+        //手机号不可重复
+        String mobile = account.getMobile();
+        QueryWrapper<SAccount> wrapper=new QueryWrapper();
+        wrapper.eq("Mobile",mobile).eq("IsDel",0).ne("ID",account.getId());
+        int count = accountService.count(wrapper);
+        if (count>0) {
+            return Result.errormsg(500, "电话号码已存在,请使用其他号码");
+        }
         account.setEditor(ThreadLocalUtils.getUserName());
         account.setEditTime(new Date());
 

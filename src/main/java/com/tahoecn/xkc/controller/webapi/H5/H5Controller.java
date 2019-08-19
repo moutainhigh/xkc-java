@@ -758,13 +758,12 @@ public class H5Controller extends TahoeBaseController {
 
 
 
-    //{"_datatype":"text","_param":{"UserID":"72bc40ae-4ed7-498c-8e42-dad2e1f102e0","OrgID":"a4271087-60a4-4976-bc54-ea74a46bf11f","Name":"","CityID":"","PageIndex":1,"PageSize":100}}:
     @ApiOperation(value = "生成二维码", notes = "生成二维码")
     @RequestMapping(value = "/getTwoCode", method = {RequestMethod.POST})
     public Result getTwoCode(@RequestBody JSONObject jsonParam) {
-        String UserID = (String) jsonParam.get("UserID");
-//        String OrgID = (String) jsonParam.get("OrgID");
-        String OrgID = "https://www.baidu.com?ChannelOrgCode=";
+        String Code = (String) jsonParam.get("Code");
+        String ChannelTypeID = (String) jsonParam.get("ChannelTypeID");
+        String OrgID = "https://www.baidu.com?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
 
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath, 500, null);
         if (url==null){
