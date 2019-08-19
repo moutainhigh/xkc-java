@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,8 +44,10 @@ public class CustomerHelp implements ICustomerHelp {
 
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
-	@Resource
-	private RedisTemplate<String, String> redisTemplate;
+
+	@Autowired
+	RedisTemplate redisTemplate;
+	
 	@Resource
 	private IProjectService iProjectService;
 	@Resource
@@ -501,7 +504,7 @@ public class CustomerHelp implements ICustomerHelp {
 		String jsonStr = "";
 		try {
 			if (redisTemplate.hasKey(jsonFile)) {
-				jsonStr = redisTemplate.opsForValue().get(jsonFile);
+				jsonStr = (String) redisTemplate.opsForValue().get(jsonFile);	//YYY:todo
 			} else {
 				jsonStr = JSONUtil.readJsonFile(jsonFile);
 				redisTemplate.opsForValue().set(jsonFile, jsonStr);
@@ -521,7 +524,7 @@ public class CustomerHelp implements ICustomerHelp {
 		String jsonStr = "";
 		try {
 			if (redisTemplate.hasKey(jsonFile)) {
-				jsonStr = redisTemplate.opsForValue().get(jsonFile);
+				jsonStr = (String) redisTemplate.opsForValue().get(jsonFile);
 			} else {
 				jsonStr = JSONUtil.readJsonFile(jsonFile);
 				redisTemplate.opsForValue().set(jsonFile, jsonStr);
