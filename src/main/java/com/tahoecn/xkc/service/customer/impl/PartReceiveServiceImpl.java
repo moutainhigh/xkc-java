@@ -162,6 +162,11 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	                customerModeType = CustomerModeType.分接_老机会_老客户_未分配.getTypeID();
 	                isNew = 1;
 	            }
+	            if(StringUtils.isEmpty(jsonFile)){
+	            	 entity.setErrcode(1);
+	        	     entity.setErrmsg(SaleUserID+""+CustomerObj.toJSONString());
+	        	     return entity;
+	            }
 	        }else{//新客户
 	        	JSONObject j_re_1 = customerTemplate.CustomerExist(model.getMobile());
 	            if (!j_re_1.getBooleanValue("status")){//不存在客户信息
@@ -190,12 +195,19 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	                    customerModeType = CustomerModeType.分接_新机会_老客户.getTypeID();
 	                }
 	            }
+	            if(StringUtils.isEmpty(jsonFile)){
+	            	 entity.setErrcode(1);
+	        	     entity.setErrmsg(j_re_1.getBooleanValue("status")+"");
+	        	     return entity;
+	            }
 	        }
 	        CustomerModelVo customerModel = customerTemplate.InitCustomerModeData(model, jsonFile, CustomerObj, customerModeType);
-	        customerModel.setIsNew(isNew);
+	        if(customerModel!=null){
+	        	customerModel.setIsNew(isNew);
+	        }
 	        entity.setData(customerModel);
 	        entity.setErrcode(0);
-	        entity.setErrmsg("成功");
+	        entity.setErrmsg("成功"+jsonFile);
 		} catch (Exception e) {
 			entity.setErrcode(1);
 	        entity.setErrmsg("系统异常");
