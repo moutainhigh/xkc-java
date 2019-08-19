@@ -567,7 +567,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 			LEFT JOIN ( SELECT TOP 1 OpportunityID, CreateTime FROM V_FollowUpList WHERE FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND OpportunityID = #{opportunityID} ORDER BY CreateTime ) C ON A.ID = C.OpportunityID
 			LEFT JOIN ( SELECT TOP 1 OpportunityID, CreateTime FROM V_FollowUpList WHERE FollwUpWay = 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND OpportunityID = #{opportunityID} ORDER BY CreateTime DESC ) D ON A.ID = D.OpportunityID 
 		WHERE
-			A.ID = #{ opportunityID}
+			A.ID = #{opportunityID}
 		]]>
 	</update>
 	

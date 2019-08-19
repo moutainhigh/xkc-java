@@ -179,7 +179,7 @@
         TractTime IS NOT NULL
         ORDER BY
         sort,
-        TractTime
+        TractTime  desc
     </select>
 
     <select id="IsExistReportProtectClue_Select" resultType="java.util.HashMap" parameterType="string">

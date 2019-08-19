@@ -130,7 +130,8 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     public Map<String, Object> mBrokerCustomerDetail_Select(String clueID) {
 
         Map<String, Object> map = baseMapper.BrokerClueDetail_Select(clueID);
-        if (map.size() > 0) {
+        if (map!=null&&map.size()>0) {
+            map.isEmpty();
             //获取轨迹记录
             List<Map<String, Object>> list = baseMapper.TrackList_Select(clueID);
             map.put("List", list);
