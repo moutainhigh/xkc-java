@@ -43,6 +43,9 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     @Autowired
     private ISAccountService accountService;
 
+    @Autowired
+    private ISMenusXkcService menusXkcService;
+
 
 
     @Override
@@ -178,14 +181,27 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     public Map<String, Object> CommonJobFunctions(String jobID) {
         List<Map<String, Object>> list=baseMapper.getCommonJobFunctions(jobID);
         List<Map<String, Object>> list1=baseMapper.CommonJobFunctions(jobID);
-        List result=new ArrayList();
+        List<String> result=new ArrayList();
         Map<String, Object> objectMap=new HashMap<>();
         for (Map<String, Object> map : list) {
-            result.add(map.get("IDS"));
+            result.add((String)map.get("IDS"));
         }
         for (Map<String, Object> map : list1) {
-            result.add(map.get("IDS"));
+            result.add((String)map.get("IDS"));
         }
+        //去掉父级ID 只要子级ID
+        QueryWrapper<SMenusXkc> wrapper=new QueryWrapper<>();
+        wrapper.eq("PID","-1").eq("IsDel",0);
+        List<SMenusXkc> PIDList = menusXkcService.list(wrapper);
+        List<String> type=new ArrayList();
+        for (String s : result) {
+            for (SMenusXkc sMenusXkc : PIDList) {
+                if (StringUtils.equals(s,sMenusXkc.getId())){
+                    type.add(s);
+                }
+            }
+        }
+        result.removeAll(type);
         objectMap.put("IDS",result);
         return objectMap;
     }
