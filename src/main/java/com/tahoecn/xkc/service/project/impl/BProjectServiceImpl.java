@@ -29,8 +29,8 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     @Autowired
     private IBChanneluserService channeluserService;
     @Override
-    public List<Map<String,Object>> findByOrgID(IPage page,String orgID) {
-        return baseMapper.findByOrgID(page,orgID);
+    public List<Map<String,Object>> findByOrgID(IPage page,String orgID,String Name) {
+        return baseMapper.findByOrgID(page,orgID,Name);
     }
 
     @Override

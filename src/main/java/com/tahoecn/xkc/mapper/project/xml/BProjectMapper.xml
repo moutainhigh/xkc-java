@@ -6,6 +6,9 @@
             SELECT p.ID ProjectID ,p.Alias as ProjectAlias ,p.Name as ProjectName,p.BUGUID
             FROM [B_Project] as p left join B_PojectChannelOrgRel as pj on p.ID=pj.ProjectID
             where p.IsDel=0 and pj.IsDel=0 and pj.OrgID=#{OrgID}
+        <if test="Name!=null and Name!=''">
+            AND p.Name like CONCAT('%',#{Name},'%')
+        </if>
     </select>
 
     <select id="ProjectInfoList_SelectN" resultType="java.util.HashMap" parameterType="string">
@@ -28,7 +31,7 @@
         AND A.Status = 1
         <where>
             <if test="Name!=null and Name!=''">
-                AND A.Name like '%#{Name}%'
+                AND A.Name like CONCAT('%',#{Name},'%')
             </if>
             <if test="CityID!=null and CityID!=''">
                 AND A.CityID = #{CityID}

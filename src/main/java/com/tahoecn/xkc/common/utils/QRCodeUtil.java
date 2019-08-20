@@ -6,8 +6,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.imageio.ImageIO;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Binarizer;
 import com.google.zxing.BinaryBitmap;
@@ -22,7 +24,9 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
+import zipkin2.internal.DateUtil;
 
 /**
  * 二维码生成解析工具类
@@ -64,7 +68,10 @@ public class QRCodeUtil {
             //获得随机数
             Random random = new Random();
             //生成二维码存放文件
-            String url = path+folder ;
+            Date dd=new Date();
+            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
+            String time=sim.format(dd);
+            String url = path+folder+time;
             String fileName=UUID.randomUUID()+".jpg";
             String codeFile = url+fileName;
             File file = new File(codeFile);
@@ -72,7 +79,7 @@ public class QRCodeUtil {
                 file.mkdirs();
             }
             ImageIO.write(image, imageType, file);
-            return folder+fileName;
+            return folder+time+fileName;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
