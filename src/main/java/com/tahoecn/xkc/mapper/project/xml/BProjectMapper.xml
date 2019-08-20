@@ -1470,4 +1470,24 @@
     <select id="getProjectIDs" resultType="string">
         SELECT ID FROM B_Project WHERE IsDel=0 AND Status=1 AND Level=1
     </select>
+
+    <select id="ProjectList_Select" parameterType="string" resultType="java.util.HashMap">
+        SELECT
+        p.Name AS ProjectName,
+        p.ID AS ProjectID,
+        o.OrgName,
+        s.OrgName AS quyu
+        FROM
+        B_Project p
+        INNER JOIN S_Organization o ON p.BUGUID= o.ID AND o.IsDel=0 AND o.Status=1 AND o.FullPath LIKE '%地产板块%'
+        INNER JOIN S_Organization s ON o.PID =s.ID AND s.IsDel=0 AND s.Status=1
+        WHERE
+        p.[Level] = 1
+        AND p.IsDel= 0
+        AND p.Status=1
+        <if test="name!='' and name!= null">
+            AND p.Name LIKE CONCAT('%',#{name},'%')
+        </if>
+        ORDER BY quyu,OrgName,ProjectName
+    </select>
 </mapper>

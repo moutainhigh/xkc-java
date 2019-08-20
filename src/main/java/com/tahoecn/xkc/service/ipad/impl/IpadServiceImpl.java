@@ -487,9 +487,11 @@ public class IpadServiceImpl implements IIpadService {
 	                }
 	            }
 	            for (Map<String, Object> item : optionList){
-	                if (!HasChoose)
-	                    HasChoose = (int)item.get("IsChoose") == 1 ? true : false;
-	                OptionItem tOptionItem = new OptionItem(item.get("ID").toString(), item.get("Name").toString(),(int)item.get("IsChoose"));
+	            	Number IsChooseN1 = (Number)item.get("IsChoose");
+	                if (!HasChoose){
+	                	HasChoose = IsChooseN1.intValue() == 1 ? true : false;
+	                }
+	                OptionItem tOptionItem = new OptionItem(item.get("ID").toString(), item.get("Name").toString(),IsChooseN1.intValue());
 	                ClueList.add(tOptionItem);
 	            }
 	            if (HasChoose){
@@ -613,7 +615,8 @@ public class IpadServiceImpl implements IIpadService {
                     if (!StringUtils.isEmpty(Mobile.trim())){
                         if (!StringUtils.isEmpty(parameter.getString("ClueID"))){
                         	Map<String,Object> objClueStatus = ipadMapper.mCustomerClueStatus_Select(parameter.getString("ClueID"));
-                            if (objClueStatus.size() > 0 && objClueStatus.get("Status")!=null && (int)objClueStatus.get("Status") == 3){
+                        	Number StatusN= (Number)objClueStatus.get("Status");
+                            if (objClueStatus.size() > 0 && objClueStatus.get("Status")!=null && StatusN.intValue() == 3){
                                 entity.setErrcode(1);
                                 entity.setErrmsg("不能分配无效客户!");
                                 return entity;
@@ -848,7 +851,9 @@ public class IpadServiceImpl implements IIpadService {
                                                 
                                                 String ReportUserID = "";
                                                 ClueID = "";
-                                                if((int)re_map_step2.get("AllotRemind")>0){
+                                                
+                                                Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
+                                                if(AllotRemind.intValue()>0){
                                                 	if(re_map_step1.get("ReportUserID")!=null){
                                                 		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                                 	}
@@ -891,7 +896,8 @@ public class IpadServiceImpl implements IIpadService {
                                                 	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
                                                 	int customerVisitsRemind = 0;
                                                 	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                                		customerVisitsRemind = (int) resf.get("customerVisitsRemind");
+                                                		Number customerVisitsRemindN = (Number)resf.get("customerVisitsRemind");
+                                                		customerVisitsRemind = customerVisitsRemindN.intValue();
                                                 	}
                                                 	if(customerVisitsRemind>0){
                                                 		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
@@ -998,7 +1004,8 @@ public class IpadServiceImpl implements IIpadService {
                                                 Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
                                                 String ReportUserID = "";
                                                 ClueID = "";
-                                                if((int)re_map_step2.get("AllotRemind")>0){
+                                                Number AllotRemindN = (Number)re_map_step2.get("AllotRemind");
+                                                if(AllotRemindN.intValue()>0){
                                                 	if(re_map_step1.get("ReportUserID")!=null){
                                                 		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                                 	}
@@ -1063,7 +1070,8 @@ public class IpadServiceImpl implements IIpadService {
                                                     Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
                                                     String ReportUserID = "";
                                                     ClueID = "";
-                                                    if((int)re_map_step2.get("AllotRemind")>0){
+                                                    Number AllotRemindN = (Number)re_map_step2.get("AllotRemind");
+                                                    if(AllotRemindN.intValue()>0){
                                                     	if(re_map_step1.get("ReportUserID")!=null){
                                                     		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
                                                     	}

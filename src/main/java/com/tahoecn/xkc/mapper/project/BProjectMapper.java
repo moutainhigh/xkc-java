@@ -83,4 +83,5 @@ public interface BProjectMapper extends BaseMapper<BProject> {
 
     List<String> getProjectIDs();
 
+    List<Map<String, Object>> ProjectList_Select(@Param("name") String name);
 }

@@ -13,6 +13,7 @@ import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
+import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
@@ -126,6 +127,21 @@ public class H5Controller extends TahoeBaseController {
         result.setData(map);
         return result;
     }
+    @ApiOperation(value = "获取房源项目列表", notes = "获取房源项目列表")
+    @RequestMapping(value = "/mBrokerProjectList", method = {RequestMethod.POST})
+    public Result mBrokerProjectList(@RequestBody JSONObject jsonParam) {
+        QueryWrapper<BProject> wrapper=new QueryWrapper<>();
+        wrapper.eq("IsDel",0);
+        wrapper.eq("Status",1);
+        wrapper.eq("Level",1);
+
+
+
+
+
+        return Result.ok("");
+    }
+
 
     //已测   BrokerProjectID=90DCFD49-0AE6-4F1E-A0CB-0EAC1151600E       ChannelOrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
         @ApiOperation(value = "首页-房源详情列表", notes = "首页-房源详情列表")
@@ -189,14 +205,13 @@ public class H5Controller extends TahoeBaseController {
             if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
                 return Result.errormsg(1, "验证码验证失败");
             }
-            paramMap.put("Mobile",SecureUtil.md5(MobileNum));
+            paramMap.put("Mobile",MobileNum);
         }
+        Object mobile = paramMap.get("Mobile");
 
-        Date date = new Date();
-        String time = DateUtil.format(date,"yyyyMMddHHmm");
         Map<String, Object> map;
-        if (StringUtils.equals(time, Password)) {
-            map = channeluserService.ChannelUserCurrency_Find(UserName);
+        if (mobile!=null) {
+            map = channeluserService.ChannelUserCurrency_Find((String) mobile);
         } else {
             //channelTypeID是写死的
             map =channeluserService.ChannelUser_Find(UserName,SecureUtil.md5(Password));
@@ -413,7 +428,7 @@ public class H5Controller extends TahoeBaseController {
         }
     }
 
-    //未完成
+
     @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
     public Result mBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
@@ -802,5 +817,20 @@ public class H5Controller extends TahoeBaseController {
             return Result.errormsg(1,"生成失败");
         }
         return Result.ok(url);
+    }
+
+    @ApiOperation(value = "区域项目列表", notes = "区域项目列表")
+    @RequestMapping(value = "/ProjectList_Select", method = {RequestMethod.POST})
+    public Result ProjectList_Select(@RequestBody JSONObject jsonParam) {
+        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+        Object Name = paramMap.get("Name");
+        List<Map<String,Object>> list;
+        if (Name!=null){
+            String key= (String) Name;
+            list=projectService.ProjectList_Select(key);
+        }else {
+            list=projectService.ProjectList_Select(null);
+        }
+        return Result.ok(list);
     }
 }

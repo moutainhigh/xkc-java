@@ -5,6 +5,7 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.vo.FrVo;
 import com.tahoecn.xkc.model.vo.UnitVo;
+import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBRoomService;
 import com.tahoecn.xkc.service.project.IVProjectbuildingService;
 import com.tahoecn.xkc.service.project.IVProjectroomService;
@@ -44,6 +45,8 @@ public class ProjectAppController extends TahoeBaseController {
 	private IVProjectroomService iVProjectroomService;
 	@Autowired 
 	private IBRoomService iBRoomService;
+	@Autowired
+    private IBProjectService projectService;
 	
 	@ResponseBody
     @ApiOperation(value = "房源列表GW", notes = "房源列表GW")
@@ -419,4 +422,20 @@ public class ProjectAppController extends TahoeBaseController {
     		return Result.errormsg(1, "系统异常，请联系管理员");
     	}
 	}
+
+    @ApiOperation(value = "区域项目列表", notes = "区域项目列表")
+    @RequestMapping(value = "/ProjectList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result ProjectList_Select(@RequestBody JSONObject jsonParam) {
+
+        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+        Object Name = paramMap.get("Name");
+        List<Map<String,Object>> list;
+        if (Name!=null){
+            String key= (String) Name;
+            list=projectService.ProjectList_Select(key);
+        }else {
+            list=projectService.ProjectList_Select(null);
+        }
+        return Result.ok(list);
+    }
 }
