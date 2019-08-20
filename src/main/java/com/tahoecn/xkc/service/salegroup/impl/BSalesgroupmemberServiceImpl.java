@@ -143,7 +143,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                     whereOne = " and RoleId in (" +
                             "'48FC928F-6EB5-4735-BF2B-29B1F591A582'," +  //自有渠道团队人员
                             "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
-                            "'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
+                            //"'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
                             "'938935B7-4131-4E61-A811-4323A7F193A2')";  //案场销售负责人
                 }else
                 {
