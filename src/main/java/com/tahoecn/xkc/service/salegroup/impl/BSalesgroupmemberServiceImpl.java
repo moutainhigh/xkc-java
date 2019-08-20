@@ -145,41 +145,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                             "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
                             "'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
                             "'938935B7-4131-4E61-A811-4323A7F193A2')";  //案场销售负责人
-                }
-
-
-
-                else if(RoleID.equals("8100EAF4-FBCE-408B-A51D-B7247A3ADB19"))//销管组
-                {
-                    whereOne = " and RoleId in(" +
-                            "'48FC928F-6EB5-4735-BF2B-29B1F591A582'," +  //自有渠道团队人员
-                            "'B0BF5636-94AD-4814-BB67-9C1873566F29'," +  //自有渠道团队负责人
-                            "'A2C076C4-09D1-4B42-862D-8688A93320F4'," +  //项目营销负责人
-                            "'3BC23001-BC31-4594-8463-C7DA89C0FB36'," +  //案场销售团队负责人
-                            "'8100EAF4-FBCE-408B-A51D-B7247A3ADB19'," +  //销管组
-                            "'0269F35E-B32D-4D12-8496-4E6E4CE597B7')";   //案场销售团队人员
-
-                }else if(RoleID.equals("97F5E202-2D3B-4935-BA91-4AFD5C5578FC"))//策划组
-                {
-                    whereOne = " and RoleId in(" +
-                            "'48FC928F-6EB5-4735-BF2B-29B1F591A582'," +  //自有渠道团队人员
-                            "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
-                            "'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
-                            "'3BC23001-BC31-4594-8463-C7DA89C0FB36'," + //案场销售团队负责人
-                            "'97F5E202-2D3B-4935-BA91-4AFD5C5578FC'," + //策划组
-                            "'0269F35E-B32D-4D12-8496-4E6E4CE597B7')";  //案场销售团队人员
-
-                }
-                else if (RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))//销售人员
-                {
-                    whereOne = " and RoleId in('0269F35E-B32D-4D12-8496-4E6E4CE597B7'," + //案场销售团队人员
-                            "'3BC23001-BC31-4594-8463-C7DA89C0FB36'," + //案场销售团队负责人
-                            "'48FC928F-6EB5-4735-BF2B-29B1F591A582'," + //自有渠道团队人员
-                            "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
-                            "'9584A4B7-F105-44BA-928D-F2FBA2F3B4A4')";  //自有渠道负责人
-                }
-
-                else
+                }else
                 {
                     whereOne = " and RoleId in('"+RoleID+"','48FC928F-6EB5-4735-BF2B-29B1F591A582'," + //自有渠道团队人员
                             "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
@@ -461,7 +427,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 int clueCount = clueListSelectMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
                 int customerCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
 
-                if(clueCount + customerCount>0){
+                if(clueCount + customerCount>0 && StringUtil.isNotNull(RoleID) && (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582") || RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))){
                     return Result.errormsg(9527,"该成员下有客户数"+clueCount + customerCount + "个,请处理客户后再移除!");
                 }
 
