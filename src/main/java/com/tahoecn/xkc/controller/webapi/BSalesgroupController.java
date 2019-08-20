@@ -65,7 +65,7 @@ public class BSalesgroupController extends TahoeBaseController {
         }
         BSalesgroup bSalesgroupinsert = new BSalesgroup();
         if(StringUtil.isNotNull(ID)){
-            bSalesgroupinsert.setId();
+            bSalesgroupinsert.setId(ID);
         }
         bSalesgroupinsert.setPid(null);
         bSalesgroupinsert.setProjectID(ProjectID);
