@@ -184,8 +184,8 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 return Result.errormsg(9527,"无效的团队ID");
             }
 
-            Nature = map.get("Nature")==null?1:(int)map.get("Nature");
-            if (Nature == 3 || Nature == 4 || Nature == 5||Nature==6||Nature==7)
+            Nature = bSalesgroup.getNature()==null?1:bSalesgroup.getNature();
+            if (Integer.valueOf(Nature) == 3 || Integer.valueOf(Nature) == 4 || Integer.valueOf(Nature) == 5|| Integer.valueOf(Nature)==6|| Integer.valueOf(Nature)==7)
             {
                 RoleID = "48FC928F-6EB5-4735-BF2B-29B1F591A582";
                 RoleName = "自有渠道人员";

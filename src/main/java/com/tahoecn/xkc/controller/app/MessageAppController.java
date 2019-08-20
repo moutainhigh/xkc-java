@@ -16,7 +16,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +77,9 @@ public class MessageAppController extends TahoeBaseController {
     		int isCount = iSystemMessageService.IsExistsShareProject(map);
     		//2.统计消息类型id
     		String[] msgType = null;
-    		switch (JobCode.toUpperCase()){
+    		msgType = MsgType(JobCode,TypeCode,isCount);
+    		//原逻辑
+    		/*switch (JobCode.toUpperCase()){
     		case "FJ":
     			msgType = new String[]{MessageType.系统通知.getTypeID()};
     			break;
@@ -213,7 +214,7 @@ public class MessageAppController extends TahoeBaseController {
             default:
                 msgType = new String[] {MessageType.系统通知.getTypeID()};
                 break;
-    		}
+    		}*/
     		//3.查询数据
     		List<UnreadCountVo> msgArray = null;
     		if(msgType != null){
@@ -232,8 +233,72 @@ public class MessageAppController extends TahoeBaseController {
     		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
     }
-    
-    private List<Map<String, Object>> GetUnreadMessageTypeList(List<UnreadCountVo> msgArray, String[] msgType, String jobCode) {
+    /**
+     * 统计消息类型id
+     * @param jobCode 岗位代码
+     * @param typeCode 页签代码--逾期时传YQ，其余传空
+     * 置业顾问GW：当日待跟进、当日跟进逾期、当日认购逾期、当日签约逾期、当日回款逾期、分配待跟进、（我的——逾期：认购逾期、签约逾期、回款逾期）
+	 * 销售负责人XSFZR：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
+	 * 营销负责人YXJL：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
+	 * 自渠负责人ZQFZR：当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
+	 * 自渠人员ZQ：当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
+	 * 小蜜蜂JZ：渠道任务通知
+     * @return
+     */
+    private String[] MsgType(String JobCode, String TypeCode,int isCount) {
+    	String[] msgType = null;
+    	if(StringUtils.isEmpty(TypeCode)){//消息列表
+    		switch (JobCode.toUpperCase()){
+    		case "GW":
+    			msgType = new String[]{MessageType.当日待跟进.getTypeID(),
+    					MessageType.当日跟进逾期.getTypeID(),
+    					MessageType.当日认购逾期.getTypeID(),
+    					MessageType.当日签约逾期.getTypeID(),
+    					MessageType.当日回款逾期.getTypeID(),
+    					MessageType.分配待跟进.getTypeID()};
+    			break;
+    		case "XSFZR":
+    			msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
+    					MessageType.当日签约逾期.getTypeID(),
+    					MessageType.当日回款逾期.getTypeID()};
+    			break;
+    		case "YXJL":
+    			msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
+    					MessageType.当日签约逾期.getTypeID(),
+    					MessageType.当日回款逾期.getTypeID()};
+    			break;
+    		case "ZQFZR"://当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
+    			msgType = new String[]{MessageType.当日跟进逾期.getTypeID(),
+    					MessageType.带看通知.getTypeID(),
+    					MessageType.认筹通知.getTypeID(),
+    					MessageType.认购通知.getTypeID(),
+    					MessageType.签约通知.getTypeID(),
+    					MessageType.退房通知.getTypeID(),
+    					MessageType.无效通知.getTypeID()};
+    			break;
+    		case "ZQ"://当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
+    			msgType = new String[]{MessageType.当日跟进逾期.getTypeID(),
+    					MessageType.带看通知.getTypeID(),
+    					MessageType.认筹通知.getTypeID(),
+    					MessageType.认购通知.getTypeID(),
+    					MessageType.签约通知.getTypeID(),
+    					MessageType.退房通知.getTypeID(),
+    					MessageType.无效通知.getTypeID()};
+    			break;
+    		case "JZ"://渠道任务通知
+    			msgType = new String[]{MessageType.渠道任务通知.getTypeID()};
+    			break;
+    		}
+    	}else{//逾期
+    		msgType = new String[]{MessageType.认购逾期.getTypeID(),
+    				MessageType.签约逾期.getTypeID(),
+    				MessageType.回款逾期.getTypeID()};
+    	}
+    	
+		return msgType;
+	}
+
+	private List<Map<String, Object>> GetUnreadMessageTypeList(List<UnreadCountVo> msgArray, String[] msgType, String jobCode) {
     	List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
     	Map<String,Map<String,Object>> resJo = new HashMap<String,Map<String,Object>>();
 		for(String item : msgType){
