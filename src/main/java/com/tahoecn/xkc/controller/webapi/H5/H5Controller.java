@@ -178,6 +178,20 @@ public class H5Controller extends TahoeBaseController {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String UserName=(String) paramMap.get("UserName");
         String Password=(String) paramMap.get("Password");
+        String MobileNum = (String) paramMap.get("MobileNum");
+        String Code = (String) paramMap.get("Code");
+        //手机验证码登录
+        if (StringUtils.isNotEmpty(MobileNum)) {
+            if (StringUtils.isEmpty(Code)){
+                return Result.errormsg(1, "请输入验证码");
+            }
+            BVerificationcode vc = verificationcodeService.checkAuthCode(MobileNum);
+            if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
+                return Result.errormsg(1, "验证码验证失败");
+            }
+            paramMap.put("Mobile",SecureUtil.md5(MobileNum));
+        }
+
         Date date = new Date();
         String time = DateUtil.format(date,"yyyyMMddHHmm");
         Map<String, Object> map;
