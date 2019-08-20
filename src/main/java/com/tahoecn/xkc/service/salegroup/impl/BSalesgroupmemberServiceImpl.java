@@ -511,7 +511,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
         if (StringUtil.isNotNull(ReceptionGroupID)){
             String leaderRoleId = "";
             String leaderRoleName = "";
-            if (Nature == 3 || Nature == 4 || Nature == 5||Nature==6||Nature==7)
+            if (Integer.valueOf(Nature) == 3 || Integer.valueOf(Nature) == 4 || Integer.valueOf(Nature) == 5|| Integer.valueOf(Nature)==6|| Integer.valueOf(Nature)==7)
             {
                 leaderRoleId = "B0BF5636-94AD-4814-BB67-9C1873566F29";
                 leaderRoleName = "自有渠道团队负责人";

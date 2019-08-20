@@ -11,7 +11,7 @@
 				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
 				FROM dbo.S_Logs_Bak 
 				WHERE 1=1 ${str1}
-				UNION
+				UNION ALL
 				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
 				FROM dbo.S_Logs 
 				WHERE 1=1 ${str1} 
@@ -29,7 +29,7 @@
 				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
 				FROM dbo.S_Logs_Bak 
 				WHERE 1=1 ${str1}
-				UNION
+				UNION ALL
 				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
 				FROM dbo.S_Logs 
 				WHERE 1=1 ${str1} 
@@ -45,7 +45,7 @@
 				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
 				FROM dbo.S_Logs_Bak 
 				WHERE 1=1 ${str1}
-				UNION
+				UNION ALL
 				SELECT BizType, BizDesc, IP, Ext1, Ext2, Ext3, Data, CreateTime
 				FROM dbo.S_Logs 
 				WHERE 1=1 ${str1} 

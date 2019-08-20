@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +29,8 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     @Autowired
     private IBChanneluserService channeluserService;
     @Override
-    public List<Map<String,Object>> findByOrgID(IPage page,String orgID) {
-        return baseMapper.findByOrgID(page,orgID);
+    public List<Map<String,Object>> findByOrgID(IPage page,String orgID,String Name) {
+        return baseMapper.findByOrgID(page,orgID,Name);
     }
 
     @Override
@@ -68,6 +69,19 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     @Override
     public List<Map<String, Object>> ProjectList_Select(String name) {
         return baseMapper.ProjectList_Select(name);
+    }
+
+    @Override
+    public List<Map<String, Object>> addName(List<Map<String, Object>> list) {
+        List<Map<String, Object>> result=new ArrayList<>();
+        for (Map<String, Object> map : list) {
+            String projectID = (String) map.get("BUGUID");
+            Map<String, Object> addName=baseMapper.addName(projectID);
+            addName.put("ProjectID",map.get("ProjectID"));
+            addName.put("ProjectName",map.get("ProjectName"));
+            result.add(addName);
+        }
+        return result;
     }
 
 }

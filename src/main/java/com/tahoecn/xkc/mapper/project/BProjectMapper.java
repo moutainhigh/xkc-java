@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface BProjectMapper extends BaseMapper<BProject> {
 
-    List<Map<String,Object>> findByOrgID(IPage page,@Param("OrgID") String orgID);
+    List<Map<String,Object>> findByOrgID(IPage page,@Param("OrgID") String orgID,@Param("Name") String Name);
 
     List<Map<String,Object>> ProjectInfoList_SelectN(IPage page,@Param("Name")String Name, @Param("CityID")String cityID);
 
@@ -84,4 +84,6 @@ public interface BProjectMapper extends BaseMapper<BProject> {
     List<String> getProjectIDs();
 
     List<Map<String, Object>> ProjectList_Select(@Param("name") String name);
+
+    Map<String, Object> addName(@Param("projectID")String projectID);
 }

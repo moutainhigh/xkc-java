@@ -28,7 +28,7 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
         String where;
         String search="";
         if (StringUtils.isNotBlank(customerInfo)) {
-            search = "and (CustomerName like '%" + customerInfo + "%' or Mobile like '%" + customerInfo + "%' ";
+            search = "and (CustomerName like '%" + customerInfo + "%' or Mobile like '%" + customerInfo + "%' )";
         }
         if (sort == 1) {
             order = " order by ReportTime desc ";

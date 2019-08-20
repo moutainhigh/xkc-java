@@ -320,7 +320,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         String channelOrgId = GetChannelOrgID(userId);
         //如果渠道是分销中介，则把渠道身份赋值成机构ID
         adviserGroupID = StringUtils.isEmpty(channelOrgId) ? adviserGroupID : channelOrgId;
-        //获取当前渠道的准入规则
+        //
         Map<String,Object> UserRule1 = clueruleService.getRegisterRule(projecId,adviserGroupID);
         RegisterRuleBaseModel UserRule = loadModel(UserRule1);//JSON.parseObject(JSON.toJSONString(UserRule1), RegisterRuleBaseModel.class);
 //        this.UserRule = new RegisterRuleBaseModel(adviserGroupID, projecId);

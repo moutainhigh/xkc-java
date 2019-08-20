@@ -128,6 +128,7 @@ public class AppKCController extends TahoeBaseController {
     		// 直接将json信息打印出来
     		System.out.println(jsonParam.toJSONString());
             Map paramMap = (HashMap)jsonParam.get("_param");
+            String Name = (String)paramMap.get("Name").toString();//
             String Longitude = (String)paramMap.get("Longitude").toString();//经度
             String Dimension = (String)paramMap.get("Dimension").toString();//纬度
             String UserID = (String)paramMap.get("UserID").toString();//用户ID
@@ -135,6 +136,7 @@ public class AppKCController extends TahoeBaseController {
     		map.put("Longitude", Longitude);
     		map.put("Dimension", Dimension);
     		map.put("UserID", UserID);
+    		map.put("Name", Name);
     		
     		iBChanneltaskareaService.mChannelTaskArea_Insert(map);
     		
