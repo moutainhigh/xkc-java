@@ -131,7 +131,7 @@ public class ParameterDetailController extends TahoeBaseController {
         bSalescenterrule.setEditor(UserId);
         bSalescenterrule.setCreator(UserId);
         bSalescenterrule.setCreateTime(new Date());
-        iBSalescenterruleService.save(bSalescenterrule);
+        iBSalescenterruleService.saveOrUpdate(bSalescenterrule);
 
         //案场消息提醒
         UpdateWrapper<BRemindrule> remindruleUpdateWrapper = new UpdateWrapper<>();
@@ -141,7 +141,7 @@ public class ParameterDetailController extends TahoeBaseController {
         bRemindrule.setRuleStartTime(new Date());
         bRemindrule.setCreator(UserId);
         bRemindrule.setVersionStartTime(new Date());
-        iBRemindruleService.save(bRemindrule);
+        iBRemindruleService.saveOrUpdate(bRemindrule);
 
 
         //修改公共客户池开放给

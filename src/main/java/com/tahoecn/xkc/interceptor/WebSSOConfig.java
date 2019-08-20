@@ -1,18 +1,12 @@
 package com.tahoecn.xkc.interceptor;
 
-import java.util.Arrays;
-
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import com.landray.sso.client.EKPSSOClient;
 
 /**
  * Created by zhanghw on 2018/10/11.
@@ -46,9 +40,9 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		// addPathPatterns 用于添加拦截规则
 		// excludePathPatterns 用户排除拦截
 		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
-		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").excludePathPatterns("/app/login/**","/app/system/mSystemAppVersion_Select","/app/system/mVerificationCode_Select","/app/login/mChannelRegistJZ_Insert",
-				"/app/system/SystemAD_Select","/app/user/mUserForgetPwd_Update","/app/partReceive/mCustomerFJSearch_Select","/H5/mVerificationCode_Select","/H5/mLoginTK_SelectN",
-				"/app/potenCust/mCustomerPotentialZQDetail_Insert");
+//		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").excludePathPatterns("/app/login/**","/app/system/mSystemAppVersion_Select","/app/system/mVerificationCode_Select","/app/login/mChannelRegistJZ_Insert",
+//				"/app/system/SystemAD_Select","/app/user/mUserForgetPwd_Update","/app/partReceive/mCustomerFJSearch_Select","/H5/mVerificationCode_Select","/H5/mLoginTK_SelectN",
+//				"/app/potenCust/mCustomerPotentialZQDetail_Insert");
 
 	}
 

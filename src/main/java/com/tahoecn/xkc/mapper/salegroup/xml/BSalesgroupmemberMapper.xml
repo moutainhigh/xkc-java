@@ -94,14 +94,15 @@
     <select id="getChannelOrgId" parameterType="java.util.Map" resultType="java.lang.String">
         SELECT TOP 1 CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
 			INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID and b.IsDel=0
-            <if test="memberId != null">
-			    AND b.MemberID=#{memberId}
-            </if>
-            <if test="ID != null">
-                AND b.ID=#{ID}
-            </if>
-			AND b.RoleID IN('B0BF5636-94AD-4814-BB67-9C1873566F29','48FC928F-6EB5-4735-BF2B-29B1F591A582')
-			WHERE a.IsDel=0 and a.Status=1 ORDER BY b.CreateTime DESC
+            AND b.ID=#{ID}
+    </select>
+
+    <select id="getChannelOrgId2" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT TOP 1 CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
+        INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID and b.IsDel=0
+        AND b.MemberID=#{memberId}
+        AND b.RoleID IN('B0BF5636-94AD-4814-BB67-9C1873566F29','48FC928F-6EB5-4735-BF2B-29B1F591A582')
+        WHERE a.IsDel=0 and a.Status=1 ORDER BY b.CreateTime DESC
     </select>
 
     <select id="SalesGroupMemberExistProject_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.vo.SalesGroupMemberExistProjectVo">
