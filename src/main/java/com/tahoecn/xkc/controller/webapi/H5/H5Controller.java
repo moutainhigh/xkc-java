@@ -119,29 +119,15 @@ public class H5Controller extends TahoeBaseController {
         } else {
             list = projectService.ProjectInfoList_SelectN(page,Name, CityID);
         }
+        List<Map<String, Object>> resultList=projectService.addName(list);
         Map<String, Object> map=new HashMap<>();
-        map.put("List",list);
+        map.put("List",resultList);
         Result result = new Result();
         result.setErrcode(0);
         result.setErrmsg("成功");
         result.setData(map);
         return result;
     }
-    @ApiOperation(value = "获取房源项目列表", notes = "获取房源项目列表")
-    @RequestMapping(value = "/mBrokerProjectList", method = {RequestMethod.POST})
-    public Result mBrokerProjectList(@RequestBody JSONObject jsonParam) {
-        QueryWrapper<BProject> wrapper=new QueryWrapper<>();
-        wrapper.eq("IsDel",0);
-        wrapper.eq("Status",1);
-        wrapper.eq("Level",1);
-
-
-
-
-
-        return Result.ok("");
-    }
-
 
     //已测   BrokerProjectID=90DCFD49-0AE6-4F1E-A0CB-0EAC1151600E       ChannelOrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
         @ApiOperation(value = "首页-房源详情列表", notes = "首页-房源详情列表")
@@ -792,8 +778,7 @@ public class H5Controller extends TahoeBaseController {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String Code = (String) paramMap.get("Code");
         String ChannelTypeID = (String) paramMap.get("ChannelTypeID");
-        String OrgID = "https://www.baidu.com?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
-
+        String OrgID = "http://xkc.tahoecndemo.com:8080/H5/#/teamMemberRegister?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath,"twoCode/", 500, null);
         if (url==null){
             return Result.errormsg(1,"生成失败");

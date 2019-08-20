@@ -3,9 +3,9 @@
 <mapper namespace="com.tahoecn.xkc.mapper.project.BProjectMapper">
 
     <select id="findByOrgID" resultType="java.util.HashMap" parameterType="string">
-        SELECT p.ID ProjectID ,p.Alias as ProjectAlias ,p.Name as ProjectName
-        FROM [B_Project] as p left join B_PojectChannelOrgRel as pj on p.ID=pj.ProjectID
-        where p.IsDel=0 and pj.IsDel=0 and pj.OrgID=#{OrgID}
+            SELECT p.ID ProjectID ,p.Alias as ProjectAlias ,p.Name as ProjectName,p.BUGUID
+            FROM [B_Project] as p left join B_PojectChannelOrgRel as pj on p.ID=pj.ProjectID
+            where p.IsDel=0 and pj.IsDel=0 and pj.OrgID=#{OrgID}
     </select>
 
     <select id="ProjectInfoList_SelectN" resultType="java.util.HashMap" parameterType="string">
@@ -20,7 +20,8 @@
         dbo.F_CityNameByID(A.CityID) CityName ,
         A.Address ,
         A.Discount,
-        b.IsReportOwn
+        b.IsReportOwn,
+        b.BUGUID
         FROM A_BrokerProject A
         LEFT JOIN dbo.B_Project b ON a.ProjectID=b.ID
         WHERE A.IsDel = 0
@@ -1489,5 +1490,23 @@
             AND p.Name LIKE CONCAT('%',#{name},'%')
         </if>
         ORDER BY quyu,OrgName,ProjectName
+    </select>
+
+    <select id="addName" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        o.OrgName,
+        s.OrgName AS quyu
+        FROM
+        S_Organization o
+        LEFT JOIN S_Organization s ON o.PID = s.ID
+        AND s.IsDel= 0
+        AND s.Status= 1
+        WHERE
+        o.IsDel= 0
+        AND o.Status= 1
+        AND o.ID=#{projectID}
+        ORDER BY
+        quyu,
+        OrgName
     </select>
 </mapper>

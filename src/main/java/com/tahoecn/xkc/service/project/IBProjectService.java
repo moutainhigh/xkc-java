@@ -28,4 +28,6 @@ public interface IBProjectService extends IService<BProject> {
     List<String> getProjectIDs();
 
     List<Map<String, Object>> ProjectList_Select(String name);
+
+    List<Map<String, Object>> addName(List<Map<String, Object>> list);
 }
