@@ -272,6 +272,7 @@ public class CustomerManagerController extends TahoeBaseController {
 
         BCustomer cust = new BCustomer();
         UpdateWrapper<BCustomer> custUpWarapper = new UpdateWrapper<>();
+        cust.setName(customerName);
         cust.setCardType(cardType);
         cust.setCardID(cardId);
         cust.setGender(gender);
