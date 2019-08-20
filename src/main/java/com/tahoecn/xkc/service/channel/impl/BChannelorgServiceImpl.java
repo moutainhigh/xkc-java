@@ -124,14 +124,17 @@ public class BChannelorgServiceImpl extends ServiceImpl<BChannelorgMapper, BChan
             sb.append("'").append(s).append("'").append(",");
         }
         String substring = sb.substring(0, sb.length() - 1);
-        List<Map<String,Object>> childList=baseMapper.getChildList(id,substring);
+        List<Map<String,Object>> childList=new ArrayList<>();
+        //如果查询结果为0 则没有可选机构 返回null
+        childList=baseMapper.getChildList(id,substring);
+        if (childList.size()==0) {
+            return null;
+        }
         BChannelorg byId = this.getById(channelOrgID);
         Map<String,Object> map=new HashMap<>();
         map.put("ID",channelOrgID);
         map.put("OrgName",byId.getOrgName());
         childList.add(map);
-
-
         return childList;
     }
 

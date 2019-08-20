@@ -227,7 +227,9 @@ public class H5Controller extends TahoeBaseController {
             }
         }
         List<Map<String,Object>> list= channelorgService.getChildOrg(id);
-        user.put("ChannelorgList",list);
+        if (list!=null){
+            user.put("ChannelorgList",list);
+        }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
 //        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
