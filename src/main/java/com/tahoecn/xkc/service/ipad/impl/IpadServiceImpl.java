@@ -362,7 +362,8 @@ public class IpadServiceImpl implements IIpadService {
 	                Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
 	                Map<String,Object> lfCustomerPotentialDetailObj = ipadMapper.mLFCustomerPotentialDetailByMobile_Select(pmap);
 	                if(lfCustomerPotentialDetailObj!=null && lfCustomerPotentialDetailObj.size()>0){
-	                	if ((int)lfCustomerPotentialDetailObj.get("RuleType") == 1){//如果是竞争带看
+	                	Number number = (Number)lfCustomerPotentialDetailObj.get("RuleType");
+	                	if (number.intValue()== 1){//如果是竞争带看
 	                        entity.setErrcode(1);
 	                        entity.setErrmsg("客户已存在，请扫码确认");
 	                        return entity;
@@ -471,8 +472,10 @@ public class IpadServiceImpl implements IIpadService {
 	        List<Map<String, Object>> optionList = ipadMapper.sCustomerPotentialClue(obj);
 	        if (optionList!=null && optionList.size() > 0){//存在线索
 	            List<OptionItem> ClueList = new ArrayList<OptionItem>();
-	            int RuleType = (int)optionList.get(0).get("RuleType");
-	            int IsChoose = (int)optionList.get(0).get("IsChoose");
+	            Number RuleTypeN = (Number)optionList.get(0).get("RuleType");
+	            int RuleType = RuleTypeN.intValue();
+	            Number IsChooseN = (Number)optionList.get(0).get("IsChoose");
+	            int IsChoose = IsChooseN.intValue();
 	            ruleType = RuleType;
 	            Boolean HasChoose = false;
 	            if (RuleType == 1){//竞争带看规则线索
