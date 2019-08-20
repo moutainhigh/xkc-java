@@ -570,15 +570,12 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         cu.BankCardPerson,
         cu.BankCardBranch,
         cu.BankCardPic,
-        cu.BankCardCreate,
-        o.NewPID,
-        w.OrgName as NewPIDName
+        cu.BankCardCreate
         FROM
         dbo.B_ChannelUser cu
         LEFT JOIN dbo.B_ChannelOrg o ON cu.ChannelOrgID= o.ID
         AND o.IsDel= 0
         AND o.[Status] = 1
-        LEFT JOIN dbo.B_ChannelOrg w ON w.ID= o.NewPID
         WHERE
         cu.ID = #{id}
         AND cu.IsDel= 0

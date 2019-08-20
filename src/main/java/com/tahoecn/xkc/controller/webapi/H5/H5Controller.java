@@ -19,6 +19,7 @@ import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.service.channel.IBChannelService;
+import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
@@ -81,6 +82,9 @@ public class H5Controller extends TahoeBaseController {
 
     @Autowired
     private IBChannelService iBChannelService;
+
+    @Autowired
+    private IBChannelorgService channelorgService;
 
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
@@ -211,6 +215,7 @@ public class H5Controller extends TahoeBaseController {
         }
         String id= (String) map.get("ID");
         Map<String,Object> user=channeluserService.ChannelUser_Detail_FindByIdN(id);
+        //获取机构及其下属所有机构名和机构id
         if (user==null){
             //获取出数据，需要修改其中的SQL语句??? what??
             return Result.errormsg(1,"获取用户信息失败，机构被禁用");
@@ -221,9 +226,12 @@ public class H5Controller extends TahoeBaseController {
                 return Result.errormsg(1,"获取用户信息失败，机构被禁用");
             }
         }
+        List<Map<String,Object>> list= channelorgService.getChildOrg(id);
+        user.put("ChannelorgList",list);
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
-        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
+//        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
+        user.put("token",token);
         return Result.ok(user);
     }
 

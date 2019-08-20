@@ -3,6 +3,7 @@ package com.tahoecn.xkc.service.channel.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -111,6 +112,27 @@ public class BChannelorgServiceImpl extends ServiceImpl<BChannelorgMapper, BChan
     @Override
     public List<Map<String, Object>> getParentOrg() {
         return baseMapper.getParentOrg();
+    }
+
+    @Override
+    public List<Map<String,Object>> getChildOrg(String id) {
+        BChanneluser channeluser = channeluserMapper.selectById(id);
+        String channelOrgID = channeluser.getChannelOrgID();
+        List<String> list=baseMapper.getProjectID(channelOrgID);
+        StringBuilder sb=new StringBuilder();
+        for (String s : list) {
+            sb.append("'").append(s).append("'").append(",");
+        }
+        String substring = sb.substring(0, sb.length() - 1);
+        List<Map<String,Object>> childList=baseMapper.getChildList(id,substring);
+        BChannelorg byId = this.getById(channelOrgID);
+        Map<String,Object> map=new HashMap<>();
+        map.put("ID",channelOrgID);
+        map.put("OrgName",byId.getOrgName());
+        childList.add(map);
+
+
+        return childList;
     }
 
     /**

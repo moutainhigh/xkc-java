@@ -220,4 +220,14 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
     <select id="getParentOrg" resultType="java.util.Map">
         select * from B_ChannelOrg where (PID IS NULL or PID = '')
     </select>
+
+    <select id="getProjectID" parameterType="string" resultType="string">
+        SELECT ProjectID FROM B_PojectChannelOrgRel WHERE OrgID=#{channelOrgID} AND IsDel=0 AND Status=1
+    </select>
+
+    <select id="getChildList" resultType="java.util.HashMap" parameterType="string">
+        SELECT c.ID,c.OrgName FROM B_ChannelOrg c
+        INNER JOIN B_PojectChannelOrgRel p ON c.ID=p.OrgID AND p.ProjectID IN (${ProjectID})
+        WHERE  c.NewPID=#{ID}
+    </select>
 </mapper>
