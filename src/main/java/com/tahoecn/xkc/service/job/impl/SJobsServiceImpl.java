@@ -636,7 +636,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private   List<SMenusXkcDto> buildByRecursive(List<SMenusXkcDto> treeNodes) {
         List<SMenusXkcDto> trees = new ArrayList<SMenusXkcDto>();
         for (SMenusXkcDto treeNode : treeNodes) {
-            if ("-1".equals(treeNode.getPid())) {
+            if ("-1".equals(treeNode.getPid()) && !"营销助手".equals(treeNode.getMenuName())) {
                 trees.add(findChildren(treeNode,treeNodes));
             }
         }
