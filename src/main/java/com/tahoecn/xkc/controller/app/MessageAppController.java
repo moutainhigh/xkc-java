@@ -218,14 +218,14 @@ public class MessageAppController extends TahoeBaseController {
     		//3.查询数据
     		List<UnreadCountVo> msgArray = null;
     		if(msgType != null){
-    			if("GW".equals(JobCode.toUpperCase()) && "YQ".equals(TypeCode.toUpperCase())){
-    				String[] msgTypeTemp = msgType.clone();
-    				String[] temp = new String[] {MessageType.系统通知.getTypeID()};
-    				msgTypeTemp = ArrayUtil.ArrayUnion(msgTypeTemp,temp);
-    				msgArray = UnreadCountListByMessageType_Select(msgTypeTemp,map);
-    			}else{
+//    			if("GW".equals(JobCode.toUpperCase()) && "YQ".equals(TypeCode.toUpperCase())){
+//    				String[] msgTypeTemp = msgType.clone();
+//    				String[] temp = new String[] {MessageType.系统通知.getTypeID()};
+//    				msgTypeTemp = ArrayUtil.ArrayUnion(msgTypeTemp,temp);
+//    				msgArray = UnreadCountListByMessageType_Select(msgTypeTemp,map);
+//    			}else{
     				msgArray = UnreadCountListByMessageType_Select(msgType,map);
-    			}
+//    			}
     		}
     		return Result.ok(GetUnreadMessageTypeList(msgArray,msgType,JobCode));
     	}catch(Exception e){
@@ -301,303 +301,307 @@ public class MessageAppController extends TahoeBaseController {
 	private List<Map<String, Object>> GetUnreadMessageTypeList(List<UnreadCountVo> msgArray, String[] msgType, String jobCode) {
     	List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
     	Map<String,Map<String,Object>> resJo = new HashMap<String,Map<String,Object>>();
-		for(String item : msgType){
-			Map<String,Object> res = new HashMap<String,Object>();
-			if(MessageType.楼盘动态.getTypeID().equals(item)){
-				res.put("TypeID", MessageType.楼盘动态.getTypeID());
-                res.put("TypeName", MessageType.楼盘动态.toString());
-                res.put("TypeCate", MessageCate.楼盘动态.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_loupandongtai.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-                res.put("Url", H5Url);
-			}
-			if (item.equals(MessageType.预约客户.getTypeID()))
-            {
-                res.put("TypeID", MessageType.预约客户.getTypeID());
-                res.put("TypeName", MessageType.预约客户.toString());
-                res.put("TypeCate", MessageCate.预约客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_yuyuekehu.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-			if (item.equals(MessageType.系统通知.getTypeID()))
-            {
-                res.put("TypeID", MessageType.系统通知.getTypeID());
-                res.put("TypeName", MessageType.系统通知.toString());
-                res.put("TypeCate", MessageCate.系统通知.getCateID());
-                res.put("Icon", ThemeUrl + "images/menu_icon_xttz.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-			if (item.equals(MessageType.渠道任务通知.getTypeID()))
-            {
-                res.put("TypeID", MessageType.渠道任务通知.getTypeID());
-                res.put("TypeName", MessageType.渠道任务通知.toString());
-                res.put("TypeCate", MessageCate.渠道任务通知.getCateID());
-                res.put("Icon", ThemeUrl + "images/menu_icon_xttz.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.带看通知.getTypeID()))
-            {
-                res.put("TypeID", MessageType.带看通知.getTypeID());
-                res.put("TypeName", MessageType.带看通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_daikan.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.认筹通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.认筹通知.getTypeID());
-                res.put("TypeName", MessageType.认筹通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_renchou.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.认购通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.认购通知.getTypeID());
-                res.put("TypeName", MessageType.认购通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_rengou.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.签约通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.签约通知.getTypeID());
-                res.put("TypeName", MessageType.签约通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_qianyue.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.退房通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.退房通知.getTypeID());
-                res.put("TypeName", MessageType.退房通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_tuifang.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.无效通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.无效通知.getTypeID());
-                res.put("TypeName", MessageType.无效通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_wuxiao.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.客户丢失通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.客户丢失通知.getTypeID());
-                res.put("TypeName", MessageType.客户丢失通知.toString());
-                res.put("TypeCate", (jobCode.toUpperCase() == "YXJL" || jobCode.toUpperCase() == "XSJL") ? MessageCate.客户丢失列表.getCateID() : MessageCate.系统通知.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_kehudiushi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.当日待跟进.getTypeID()) || item.equals(MessageType.今日待跟进.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.当日待跟进.getTypeID());
-                res.put("TypeName", MessageType.当日待跟进.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_daihuifang.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.待完善首访客户资料.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.待完善首访客户资料.getTypeID());
-                res.put("TypeName", MessageType.待完善首访客户资料.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_daiwanshan.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.首访信息录入逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.首访信息录入逾期.getTypeID());
-                res.put("TypeName", MessageType.首访信息录入逾期.toString());
-                res.put("TypeCate", MessageCate.全部顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_daiwanshan.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.当日跟进逾期.getTypeID()) ||item.equals(MessageType.跟进即将逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.当日跟进逾期.getTypeID());
-                res.put("TypeName", MessageType.当日跟进逾期.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.当日认购逾期.getTypeID()) || item.equals(MessageType.认购即将逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.当日认购逾期.getTypeID());
-                res.put("TypeName", MessageType.当日认购逾期.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_rengouyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.当日签约逾期.getTypeID()) || item.equals(MessageType.签约即将逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.当日签约逾期.getTypeID());
-                res.put("TypeName", MessageType.当日签约逾期.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_qianyueyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.当日回款逾期.getTypeID()) || item.equals(MessageType.回款即将逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.当日回款逾期.getTypeID());
-                res.put("TypeName", MessageType.当日回款逾期.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_huikuanyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.回收提醒.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.回收提醒.getTypeID());
-                res.put("TypeName", MessageType.回收提醒.toString());
-                res.put("TypeCate", MessageCate.系统通知.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_huisoutixing.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.到访提醒.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.到访提醒.getTypeID());
-                res.put("TypeName", MessageType.到访提醒.toString());
-                res.put("TypeCate", MessageCate.系统通知.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_daiwanshan.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.跟进逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.跟进逾期.getTypeID());
-                res.put("TypeName", MessageType.跟进逾期.toString());
-                res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.认购逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.认购逾期.getTypeID());
-                res.put("TypeName", MessageType.认购逾期.toString());
-                res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_rengouyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.签约逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.签约逾期.getTypeID());
-                res.put("TypeName", MessageType.签约逾期.toString());
-                res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_qianyueyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.回款逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.回款逾期.getTypeID());
-                res.put("TypeName", MessageType.回款逾期.toString());
-                res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_huikuanyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.分配待跟进.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.分配待跟进.getTypeID());
-                res.put("TypeName", MessageType.分配待跟进.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_feipeidaigenjin.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.客户即将失效.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.客户即将失效.getTypeID());
-                res.put("TypeName", MessageType.客户即将失效.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_huisoutixing.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.客户失效通知.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.客户失效通知.getTypeID());
-                res.put("TypeName", MessageType.客户失效通知.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.到访即将逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.到访即将逾期.getTypeID());
-                res.put("TypeName", MessageType.到访即将逾期.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            if (item.equals(MessageType.成交即将逾期.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.成交即将逾期.getTypeID());
-                res.put("TypeName", MessageType.成交即将逾期.toString());
-                res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-
-            if (item.equals(MessageType.催办.getTypeID()))
-            {
-                res.put("TypeID",  MessageType.催办.getTypeID());
-                res.put("TypeName", MessageType.催办.toString());
-                res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
-                res.put("Icon", ThemeUrl + "images/icon_cuiban.png");
-                res.put("Count", 0);
-                res.put("Content", "");
-            }
-            resJo.put(item, res);
-		}
+    	if(msgType != null && msgType.length != 0){
+    		for(String item : msgType){
+    			Map<String,Object> res = new HashMap<String,Object>();
+    			if(MessageType.楼盘动态.getTypeID().equals(item)){
+    				res.put("TypeID", MessageType.楼盘动态.getTypeID());
+    				res.put("TypeName", MessageType.楼盘动态.toString());
+    				res.put("TypeCate", MessageCate.楼盘动态.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_loupandongtai.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    				res.put("Url", H5Url);
+    			}
+    			if (item.equals(MessageType.预约客户.getTypeID()))
+    			{
+    				res.put("TypeID", MessageType.预约客户.getTypeID());
+    				res.put("TypeName", MessageType.预约客户.toString());
+    				res.put("TypeCate", MessageCate.预约客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_yuyuekehu.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.系统通知.getTypeID()))
+    			{
+    				res.put("TypeID", MessageType.系统通知.getTypeID());
+    				res.put("TypeName", MessageType.系统通知.toString());
+    				res.put("TypeCate", MessageCate.系统通知.getCateID());
+    				res.put("Icon", ThemeUrl + "images/menu_icon_xttz.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.渠道任务通知.getTypeID()))
+    			{
+    				res.put("TypeID", MessageType.渠道任务通知.getTypeID());
+    				res.put("TypeName", MessageType.渠道任务通知.toString());
+    				res.put("TypeCate", MessageCate.渠道任务通知.getCateID());
+    				res.put("Icon", ThemeUrl + "images/menu_icon_xttz.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.带看通知.getTypeID()))
+    			{
+    				res.put("TypeID", MessageType.带看通知.getTypeID());
+    				res.put("TypeName", MessageType.带看通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_daikan.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.认筹通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.认筹通知.getTypeID());
+    				res.put("TypeName", MessageType.认筹通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_renchou.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.认购通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.认购通知.getTypeID());
+    				res.put("TypeName", MessageType.认购通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_rengou.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.签约通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.签约通知.getTypeID());
+    				res.put("TypeName", MessageType.签约通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_qianyue.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.退房通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.退房通知.getTypeID());
+    				res.put("TypeName", MessageType.退房通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_tuifang.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.无效通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.无效通知.getTypeID());
+    				res.put("TypeName", MessageType.无效通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_wuxiao.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.客户丢失通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.客户丢失通知.getTypeID());
+    				res.put("TypeName", MessageType.客户丢失通知.toString());
+    				res.put("TypeCate", (jobCode.toUpperCase() == "YXJL" || jobCode.toUpperCase() == "XSJL") ? MessageCate.客户丢失列表.getCateID() : MessageCate.系统通知.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_kehudiushi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.当日待跟进.getTypeID()) || item.equals(MessageType.今日待跟进.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.当日待跟进.getTypeID());
+    				res.put("TypeName", MessageType.当日待跟进.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_daihuifang.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.待完善首访客户资料.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.待完善首访客户资料.getTypeID());
+    				res.put("TypeName", MessageType.待完善首访客户资料.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_daiwanshan.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.首访信息录入逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.首访信息录入逾期.getTypeID());
+    				res.put("TypeName", MessageType.首访信息录入逾期.toString());
+    				res.put("TypeCate", MessageCate.全部顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_daiwanshan.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.当日跟进逾期.getTypeID()) ||item.equals(MessageType.跟进即将逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.当日跟进逾期.getTypeID());
+    				res.put("TypeName", MessageType.当日跟进逾期.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.当日认购逾期.getTypeID()) || item.equals(MessageType.认购即将逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.当日认购逾期.getTypeID());
+    				res.put("TypeName", MessageType.当日认购逾期.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_rengouyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.当日签约逾期.getTypeID()) || item.equals(MessageType.签约即将逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.当日签约逾期.getTypeID());
+    				res.put("TypeName", MessageType.当日签约逾期.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_qianyueyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.当日回款逾期.getTypeID()) || item.equals(MessageType.回款即将逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.当日回款逾期.getTypeID());
+    				res.put("TypeName", MessageType.当日回款逾期.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_huikuanyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.回收提醒.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.回收提醒.getTypeID());
+    				res.put("TypeName", MessageType.回收提醒.toString());
+    				res.put("TypeCate", MessageCate.系统通知.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_huisoutixing.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.到访提醒.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.到访提醒.getTypeID());
+    				res.put("TypeName", MessageType.到访提醒.toString());
+    				res.put("TypeCate", MessageCate.系统通知.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_daiwanshan.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.跟进逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.跟进逾期.getTypeID());
+    				res.put("TypeName", MessageType.跟进逾期.toString());
+    				res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.认购逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.认购逾期.getTypeID());
+    				res.put("TypeName", MessageType.认购逾期.toString());
+    				res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_rengouyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.签约逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.签约逾期.getTypeID());
+    				res.put("TypeName", MessageType.签约逾期.toString());
+    				res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_qianyueyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.回款逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.回款逾期.getTypeID());
+    				res.put("TypeName", MessageType.回款逾期.toString());
+    				res.put("TypeCate", jobCode.toUpperCase() == "GW" ? MessageCate.顾问客户列表.getCateID() : MessageCate.全部顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_huikuanyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.分配待跟进.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.分配待跟进.getTypeID());
+    				res.put("TypeName", MessageType.分配待跟进.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_feipeidaigenjin.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.客户即将失效.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.客户即将失效.getTypeID());
+    				res.put("TypeName", MessageType.客户即将失效.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_huisoutixing.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.客户失效通知.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.客户失效通知.getTypeID());
+    				res.put("TypeName", MessageType.客户失效通知.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.到访即将逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.到访即将逾期.getTypeID());
+    				res.put("TypeName", MessageType.到访即将逾期.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			if (item.equals(MessageType.成交即将逾期.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.成交即将逾期.getTypeID());
+    				res.put("TypeName", MessageType.成交即将逾期.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_genjinyuqi.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			
+    			if (item.equals(MessageType.催办.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.催办.getTypeID());
+    				res.put("TypeName", MessageType.催办.toString());
+    				res.put("TypeCate", MessageCate.顾问客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_cuiban.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
+    			resJo.put(item, res);
+    		}
+    	}
 		String TypeIDTemp = MessageType.催办.getTypeID();
-		for(UnreadCountVo item : msgArray){
-			String TypeID = item.getMessageType();
-            int Count = item.getMessageCount();
-            String Content = item.getContent();
-            if (resJo.get(TypeID) != null){
-            	resJo.get(TypeID).put("Count", Count);
-            	resJo.get(TypeID).put("Content", Content);
-            }else{
-            	if (TypeID.equals(MessageType.首访信息录入逾期催办.getTypeID())
-                        || TypeID.equals(MessageType.跟进逾期催办.getTypeID())
-                        || TypeID.equals(MessageType.认购逾期催办.getTypeID())
-                        || TypeID.equals(MessageType.签约逾期催办.getTypeID())
-                        || TypeID.equals(MessageType.回款逾期催办.getTypeID())){
-            		if (resJo.get(TypeIDTemp) != null){
-            			int CountTemp = (int) resJo.get(TypeIDTemp).get("Count");
-            			String ContentTemp = (String) resJo.get(TypeIDTemp).get("Content");
-            			resJo.get(TypeIDTemp).put("Count", CountTemp + Count);
-            			resJo.get(TypeIDTemp).put("Content", ContentTemp + (Content.isEmpty() ? "" : Content + ","));
-            		}
-            	}
-            }
+		if(msgArray != null && msgArray.size() != 0){
+			for(UnreadCountVo item : msgArray){
+				String TypeID = item.getMessageType();
+				int Count = item.getMessageCount();
+				String Content = item.getContent();
+				if (resJo.get(TypeID) != null){
+					resJo.get(TypeID).put("Count", Count);
+					resJo.get(TypeID).put("Content", Content);
+				}else{
+					if (TypeID.equals(MessageType.首访信息录入逾期催办.getTypeID())
+							|| TypeID.equals(MessageType.跟进逾期催办.getTypeID())
+							|| TypeID.equals(MessageType.认购逾期催办.getTypeID())
+							|| TypeID.equals(MessageType.签约逾期催办.getTypeID())
+							|| TypeID.equals(MessageType.回款逾期催办.getTypeID())){
+						if (resJo.get(TypeIDTemp) != null){
+							int CountTemp = (int) resJo.get(TypeIDTemp).get("Count");
+							String ContentTemp = (String) resJo.get(TypeIDTemp).get("Content");
+							resJo.get(TypeIDTemp).put("Count", CountTemp + Count);
+							resJo.get(TypeIDTemp).put("Content", ContentTemp + (Content.isEmpty() ? "" : Content + ","));
+						}
+					}
+				}
+			}
 		}
 		if (resJo.get(TypeIDTemp) != null){
             String ContentTemp = (String) resJo.get(TypeIDTemp).get("Content");

@@ -216,7 +216,8 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             String[] idStrs = Ids.split(",");
             for(int i=0;i<idStrs.length;i++)
             {
-                map.put("ID",UUID.randomUUID());
+                String ID = UUID.randomUUID().toString();
+                map.put("ID",ID);
                 //saleGroupMemberMapper."UserMember_InsertNew", obj, out msg);//添加人员
                 String MemberID = idStrs[i];
                 QueryWrapper<BSalesgroupmember> sgmWrapper = new QueryWrapper<BSalesgroupmember>();
@@ -230,9 +231,10 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 gmWrapper.eq("MemberID", idStrs[i]);
                 gmWrapper.ne("RoleID", "E417A997-9A91-4D22-8428-9C2C2C560656");
                 gmWrapper.eq("RoleID", RoleID);
-                int gmCount = bSaleGroupMemberMapper.selectCount(gmWrapper);
-                if(sgmCount==0 && gmCount==0){
+                List gmCount = bSaleGroupMemberMapper.selectList(gmWrapper);
+                if(sgmCount==0 && gmCount.size()==0){
                     BSalesgroupmember bSalesgroupmember = new BSalesgroupmember();
+                    bSalesgroupmember.setId(ID);
                     bSalesgroupmember.setProjectID(ProjectID);
                     bSalesgroupmember.setReceptionGroupID(ReceptionGroupID);
                     bSalesgroupmember.setMemberID(idStrs[i]);
@@ -243,6 +245,9 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                     bSalesgroupmember.setIsDel(0);
                     bSalesgroupmember.setStatus(1);
                     bSaleGroupMemberMapper.insert(bSalesgroupmember);
+                }else{
+                    BSalesgroupmember tempMember = (BSalesgroupmember)gmCount.get(0);
+                    ID = tempMember.getId();
                 }
 
                 QueryWrapper<BSalesuser> salesuserWrapper = new QueryWrapper<BSalesuser>();
@@ -269,7 +274,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 }
                 //渠道人员
                 QueryWrapper<BChanneluser> chanelUserWrapper = new QueryWrapper<BChanneluser>();
-                salesuserWrapper.eq("id", idStrs[i]);
+                chanelUserWrapper.eq("id", idStrs[i]);
                 int chanelUserCount = bChanneluserMapper.selectCount(chanelUserWrapper);
                 if(chanelUserCount==0 && (RoleID.equals("B0BF5636-94AD-4814-BB67-9C1873566F29")|| RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582")))
                 {
@@ -451,7 +456,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectOne(selchanneluserWrapper);
                 if(channeluser!=null  && (roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))){
                     map.put("memberId",memberId);
-                    String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId(map);
+                    String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId2(map);
                     if(channelOrgId==null || "".equals(channelOrgId)){
                         channelOrgId = "46830C26-0E01-4041-8054-3865CCDD26AD";
                     }

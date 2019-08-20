@@ -236,7 +236,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                 if (parameter!=null && parameter.size() > 0){
                     Boolean IsNew = true;
                     String sqlKey = "";
-                    String Mobile =parameter.getString("Mobile").trim();
+                    String Mobile =parameter.getString("Mobile");
                     if (!StringUtils.isEmpty(Mobile)){
                     	JSONObject re_j = customerTemplate.CustomerOpportunityExist(model.getProjectID(), Mobile);
                     	if(re_j.getBooleanValue("status")){

@@ -227,8 +227,8 @@
       Cl.ReportUserName,<!--渠道人员-->
       Ch.OrgName,<!--渠道所属机构-->
       <!--dbo.F_DictName(O.OpportunitySource) OpportunitySource,渠道来源-->
-      dbo.F_GetStatusName_xkc(O.Status) Status<!--客户状态-->
-
+      dbo.F_GetStatusName_xkc(O.Status) Status,<!--客户状态-->
+        O.SpareMobile SpareMobile
        from B_Customer  C
        left join B_CustomerAttribute A on A.CustomerID=C.ID and A.IsDel=0
        left join B_Opportunity O on C.ID=O.CustomerID and C.IsDel=0

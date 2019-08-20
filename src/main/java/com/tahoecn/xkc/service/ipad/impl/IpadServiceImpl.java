@@ -165,7 +165,7 @@ public class IpadServiceImpl implements IIpadService {
             CPageModel model = JSONObject.parseObject(paramAry.toJSONString(), CPageModel.class);
             StringBuilder whereSb = new StringBuilder();
             StringBuilder OrderSb = new StringBuilder();
-            if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+            if (!StringUtils.isEmpty(model.getKeyWord())){
                 whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%')");
             }
             paramAry.put("WHERE", whereSb.toString());
@@ -191,7 +191,7 @@ public class IpadServiceImpl implements IIpadService {
             JSONArray groupJArry = new JSONArray();
 
             //添加全部分组
-            if (StringUtils.isEmpty(model.getKeyWord().trim())){
+            if (StringUtils.isEmpty(model.getKeyWord())){
             	JSONObject totalGroupObj = new JSONObject();
                 totalGroupObj.put("GroupID", "");
                 totalGroupObj.put("GroupName", "全部");
@@ -612,7 +612,7 @@ public class IpadServiceImpl implements IIpadService {
                     Boolean IsNew = true;
                     String sqlKey = "";
                     String Mobile = parameter.getString("Mobile");
-                    if (!StringUtils.isEmpty(Mobile.trim())){
+                    if (!StringUtils.isEmpty(Mobile)){
                         if (!StringUtils.isEmpty(parameter.getString("ClueID"))){
                         	Map<String,Object> objClueStatus = ipadMapper.mCustomerClueStatus_Select(parameter.getString("ClueID"));
                         	Number StatusN= (Number)objClueStatus.get("Status");
@@ -1183,7 +1183,7 @@ public class IpadServiceImpl implements IIpadService {
 	        		break;
 	        	}
 	        }
-	        if (StringUtils.isEmpty(OpportunitySource.trim()) || "自然访客".equals(OpportunitySource)){
+	        if (StringUtils.isEmpty(OpportunitySource) || "自然访客".equals(OpportunitySource)){
 	        	//自然访客
 	            opportunitySourceID = "0390CD8C-D6D4-4C92-995B-08C7E18E6EC2";
 	        }else if (hasCount){//存在客户来源ID
@@ -1270,10 +1270,10 @@ public class IpadServiceImpl implements IIpadService {
 		Result re = new Result();
 		CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
         StringBuilder whereSb = new StringBuilder();
-        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+        if (!StringUtils.isEmpty(model.getKeyWord())){
             whereSb.append(" AND (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) LIKE '%"+model.getKeyWord()+"%'");
         }
-        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime").trim())){
+        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
             String time = paramAry.getString("ReceptTime");
             whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) = '"+time+"'");
         }
@@ -1305,10 +1305,10 @@ public class IpadServiceImpl implements IIpadService {
 		Result re = new Result();
 		CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
         StringBuilder whereSb = new StringBuilder();
-        if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+        if (!StringUtils.isEmpty(model.getKeyWord())){
             whereSb.append(" AND (o.CustomerName LIKE '%"+model.getKeyWord()+"%' OR c.Mobile LIKE '%"+model.getKeyWord()+"%')");
         }
-        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime").trim())){
+        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
             String time = paramAry.getString("ReceptTime");
             whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,120) = '"+time+"'");
         }
@@ -1419,7 +1419,7 @@ public class IpadServiceImpl implements IIpadService {
         }try{
             CPageModel model = JSONObject.parseObject(paramAry.toJSONString(), CPageModel.class);
             StringBuilder whereSb = new StringBuilder();
-            if (!StringUtils.isEmpty(model.getKeyWord().trim())){
+            if (!StringUtils.isEmpty(model.getKeyWord())){
                 whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%')");
             }
             paramAry.put("WHERE", whereSb.toString());

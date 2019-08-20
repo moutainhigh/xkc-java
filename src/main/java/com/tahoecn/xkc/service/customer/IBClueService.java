@@ -90,5 +90,5 @@ public interface IBClueService extends IService<BClue> {
 	/*
 	 * 报备
 	 */
-	public Result report(String reportUserId, String intentProjectId, String customerName, String mobile, String gender, String remark);
+	public Result report(String reportUserId, String intentProjectId, String customerName, String mobile, String gender, String remark, String projectName);
 }

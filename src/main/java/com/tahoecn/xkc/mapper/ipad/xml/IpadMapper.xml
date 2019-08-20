@@ -338,7 +338,7 @@
 		            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
 		            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
 		            LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
-		            INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{FollwUpUserID})
+		            INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{pmap.FollwUpUserID})
 		    WHERE o.IsDel = 0
 		        AND o.Status > 0
 		        AND o.Status <> 6

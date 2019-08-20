@@ -195,7 +195,7 @@
 		        dbo.F_GetReportCustomerPotentialTag(c.CustomerPotentialID,
 		                                            c.ReportUserID) AS CustomerTag ,
 		        dbo.F_DictName(c.CustomerLevel) CustomerLevel ,
-		        dbo.F_DictName(ISNULL(c.CustomerRank,
+		        dbo.F_DictName(ISNULL(o.CustomerRank,
 		                              '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
 		        dbo.F_GetClueStatusName_xkc(c.Status, o.Status) ClueStatus ,
 		        dbo.F_FormatDate(c.TheLatestFollowUpDate) TheLatestFollowUpDate ,

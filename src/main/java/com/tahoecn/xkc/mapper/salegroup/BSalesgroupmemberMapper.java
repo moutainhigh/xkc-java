@@ -25,6 +25,8 @@ public interface BSalesgroupmemberMapper extends BaseMapper<BSalesgroupmember> {
 
     String getChannelOrgId(Map<String, Object> map);
 
+    String getChannelOrgId2(Map<String, Object> map);
+
     SalesGroupMemberExistProjectVo SalesGroupMemberExistProject_Select(Map<String, Object> map);
 
 	Map<String,Object> getSaleGroupName(Map<String, Object> map);
