@@ -98,7 +98,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                                             paramAry.put("WHERE", whereStr);
                                             List<Map<String, Object>> optionList = bCustomerpotentialMapper.mChannelTaskListZQ_Select(paramAry);
                                             if (customerPotentialModeType.equals(CustomerPotentialModeType.自渠_客户_更新.getTypeID())){
-                                                if (!StringUtils.isEmpty(model.getClueID().trim())){
+                                                if (!StringUtils.isEmpty(model.getClueID())){
                                                 	Map<String,Object> param = new HashMap<String, Object>();
                                                     param.put("ClueID", model.getClueID());
                                                     optionList =bCustomerpotentialMapper.mChannelTaskGetByClueID_Select(param);
@@ -189,7 +189,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                             childItem.setValueID(StringUtils.isEmpty(dicInfo.getValueID())? childItem.getValueID() : dicInfo.getValueID());
                             if ("8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36".equals(childItem.getID())){
                             	//来访时间
-                                if (StringUtils.isEmpty(childItem.getValue().trim())){
+                                if (StringUtils.isEmpty(childItem.getValue())){
                                     childItem.setValue(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
 									childItem.setValueID(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
                                 }
@@ -198,7 +198,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                                 if (IsNoMobileVerify == 1){
                                     childItem.setType("Text");
                                 }
-                                if (StringUtils.isEmpty(childItem.getValue().trim())){
+                                if (StringUtils.isEmpty(childItem.getValue())){
                                     childItem.setValue(model.getMobile());
                                 }
                             }
@@ -303,7 +303,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                 }else{//字典包含参数 参数值赋值到对应字典值
                     dicInfo.setValue(item.getValue());
                 }
-                if (StringUtils.isEmpty(dicInfo.getValue().trim())){//如果字典值
+                if (StringUtils.isEmpty(dicInfo.getValue())){//如果字典值
                     dicInfo.setValue("");
                 }
                 parameter.put(dicInfo.getFieldName(), dicInfo.getValue().replaceAll("'", ""));

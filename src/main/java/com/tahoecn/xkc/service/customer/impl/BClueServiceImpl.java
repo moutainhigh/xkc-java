@@ -791,7 +791,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 			return Result.errormsg(-1,"手机号必须填写");
 		}
 
-		if (mobile.trim().equals(channelUser.getMobile())) {
+		if (mobile.equals(channelUser.getMobile())) {
 			return Result.errormsg(-1,"报备无效，不允许报备自己！");
 		}
 

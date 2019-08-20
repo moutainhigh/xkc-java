@@ -225,7 +225,7 @@ public class CustomerHelp implements ICustomerHelp {
 							childItem.setValue(StringUtils.isEmpty(dicInfo.getValue()) ? childItem.getValue(): dicInfo.getValue());
 							childItem.setValueID(StringUtils.isEmpty(dicInfo.getValueID()) ? childItem.getValueID(): dicInfo.getValueID());
 							if (childItem.getID().equals("8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36")) {// 来访时间
-								if (StringUtils.isEmpty(childItem.getValue().trim())) {
+								if (StringUtils.isEmpty(childItem.getValue())) {
 									childItem.setValue(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
 									childItem.setValueID(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm"));
 								}
@@ -234,7 +234,7 @@ public class CustomerHelp implements ICustomerHelp {
 								if (IsNoMobileVerify == 1) {
 									childItem.setType("Text");
 								}
-								if (StringUtils.isEmpty(childItem.getValue().trim())) {
+								if (StringUtils.isEmpty(childItem.getValue())) {
 									childItem.setValue(model.getMobile());
 								}
 							}
@@ -402,7 +402,7 @@ public class CustomerHelp implements ICustomerHelp {
 							if (model.getIsEquity()!=null && model.getIsEquity().equals("1")) {
 								// 初始化手机号
 								if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {
-									childItem.setValue(StringUtils.isEmpty(childItem.getValue().trim()) ? model.getMobile() : childItem.getValue());
+									childItem.setValue(StringUtils.isEmpty(childItem.getValue()) ? model.getMobile() : childItem.getValue());
 								}
 								// 除了客户标签,备注非必填,下次跟进 其他都必填
 								if (!childItem.getID().equals("47A4BAF0-F946-4A8A-81F1-D675BEED6DE2") && !childItem.getID().equals("4D35ABCF-E61C-4650-9F55-0D2D66548CF0") && !childItem.getID().equals("7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10")) {
@@ -835,7 +835,7 @@ public class CustomerHelp implements ICustomerHelp {
 		Map<String, String> map = new HashMap<String, String>();
 		String ClueID = "";
         String opportunitySourceID = "";
-        String OpportunitySource = parameter.getString("OpportunitySource").trim();
+        String OpportunitySource = parameter.getString("OpportunitySource");
         List<OptionItem> option = GetOptionList("F1725D6B-D1F7-4BC3-8C35-20FAB53A1602", true);
         Boolean b = false;
         for(OptionItem optionItem : option){
