@@ -72,7 +72,7 @@ public class BVerificationcodeServiceImpl extends ServiceImpl<BVerificationcodeM
 		String VerificationCode = (String) parameter.get("VerificationCode");
 		baseMapper.VerificationCodeDetail_Insert(Mobile);
 		Date time=new Date();
-        Date overdueTime=new Date(time.getTime()+10*60*1000);
+        Date overdueTime=new Date(time.getTime()+24*60*60*1000);
 		BVerificationcode bv = new BVerificationcode();
 		bv.setCreateTime(time);
 		bv.setIsDel(0);
