@@ -525,6 +525,7 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
 			if (redisTemplate.hasKey(jsonFile)) {
 				jsonStr = (String) redisTemplate.opsForValue().get(jsonFile);
+				redisTemplate.delete(jsonFile);
 			} else {
 				jsonStr = JSONUtil.readJsonFile(jsonFile);
 				redisTemplate.opsForValue().set(jsonFile, jsonStr);

@@ -239,13 +239,17 @@ public class ChannelController extends TahoeBaseController {
                 }
                 //添加这个机构的规则
                 if (StringUtils.isNotBlank(channelInsertDto.getRuleIDs())) {
-                    JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
-                    String[] RuleID = RuleIDs.get(0).toString().split(",");
-                    for (String ruleID : RuleID) {
+                    //JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
+                    String[] rules = channelInsertDto.getRuleIDs().split("@");
+                    //String[] RuleID = RuleIDs.get(0).toString().split(",");
+                    for (String ruleID : rules) {
                         if (StringUtils.isNotBlank(ruleID)) {
+
+                            String ruleid = ruleID.split(",")[1];
+
                             //如果ruleID为空，表示没有在新增机构的时候给这个项目选择现有规则，就跳过这条数据
                             BClueruleAdvisergroup clueruleAdvisergroup = new BClueruleAdvisergroup();
-                            clueruleAdvisergroup.setClueRuleID(ruleID);
+                            clueruleAdvisergroup.setClueRuleID(ruleid);
                             clueruleAdvisergroup.setAdviserGroupID(channelInsertDto.getOrgID());
                             clueruleAdvisergroup.setCreator(ThreadLocalUtils.getUserName());
                             clueruleAdvisergroup.setCreateTime(new Date());
@@ -320,18 +324,19 @@ public class ChannelController extends TahoeBaseController {
 
                 StringBuilder ProjectIDWhere = new StringBuilder();
                 if (StringUtils.isNotBlank(channelInsertDto.getRuleIDs())){
-                    JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
-                    for (Object ruleID : RuleIDs) {
+                    //JSONArray RuleIDs = JSON.parseArray(channelInsertDto.getRuleIDs());
+                    String[] rules = channelInsertDto.getRuleIDs().split("@");
+                    for (String ruleID : rules) {
                         //拼接project条件
-                        String[] split = ruleID.toString().split(",");
+                        String[] split = ruleID.split(",");
                         ProjectIDWhere.append("'" + split[0] + "',");
                     }
 
                     boolean flag = false;
                     //去掉最后一个逗号
                     String ProjectIDWhereStr = ProjectIDWhere.substring(0, ProjectIDWhere.length() - 1);
-                    for (Object ruleID : RuleIDs) {
-                        String[] split = ruleID.toString().split(",");
+                    for (String ruleID : rules) {
+                        String[] split = ruleID.split(",");
                         String rProjectID = split[0];
                         String ClueRuleID = split[1];
                         flag = clueruleAdvisergroupService.updateRules(channelInsertDto.getOrgID(), ThreadLocalUtils.getUserName(), rProjectID, ClueRuleID, ProjectIDWhereStr);
