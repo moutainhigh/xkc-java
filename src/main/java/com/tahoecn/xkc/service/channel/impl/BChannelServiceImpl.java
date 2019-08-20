@@ -160,7 +160,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         	if (rule.getIsPreIntercept() != null && rule.getIsPreIntercept() == 1){
         		ruleList.add("启用防截客时间" + rule.getPreInterceptTime() + "分钟");
         	}
-        	ruleList.add("规则在:" + sdf.format(rule.getTakeEffectTime()) + "生效");
+        	ruleList.add("规则在：" + (rule.getTakeEffectTime() == null ? "" :sdf.format(rule.getTakeEffectTime())) + "生效");
         }
         //无效信息 根据手机号获取有效的线索
         List<Map<String,Object>> invalidList = new ArrayList<Map<String,Object>>();
