@@ -36,19 +36,19 @@ public class AppBClueController extends TahoeBaseController {
 		try {
 			System.out.println(jsonParam.toJSONString());
 			 String remark = "";
-			 String projectId = "";
+//			 String projectId = "";
+//			 String projectName = "";
             Map paramMap = (HashMap)jsonParam.get("_param");
             String reportId = (String)paramMap.get("reportId").toString();//报告人ID
             String name = (String)paramMap.get("name").toString();//客户姓名
             String sex = (String)paramMap.get("sex").toString();//客户性别 
             String mobile = (String)paramMap.get("mobile").toString();//客户手机号码
-            if(paramMap.get("projectId") != null) {
-            	projectId = (String)paramMap.get("projectId").toString();//项目ID
-            }
+            String projectId = (String)paramMap.get("projectId").toString();//项目ID
+            String projectName = (String)paramMap.get("projectName").toString();//项目名
             if(paramMap.get("remark") != null) {
             	remark = (String)paramMap.get("remark").toString();//备注
             }
-			return bClueService.report(reportId, projectId, name, mobile, sex, remark);
+			return bClueService.report(reportId, projectId, name, mobile, sex, remark, projectName);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
