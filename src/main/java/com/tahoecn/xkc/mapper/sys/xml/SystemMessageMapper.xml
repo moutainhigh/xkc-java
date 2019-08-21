@@ -104,7 +104,7 @@
     </select>
     <!-- 更新消息信息 -->
     <update id="updMessage" parameterType="java.util.Map">
-    	UPDATE S_Message SET IsRead = 1, ReadTime = getdate(), IsApprove = 1 
+    	UPDATE A SET IsRead = 1, ReadTime = getdate(), IsApprove = 1 from S_Message A
 	    WHERE Receiver = #{UserID} AND ProjectID = #{ProjectID} 
 	    AND IsDel = 0 AND Status = 1 AND ISNULL(IsRead, 0) = 0 ${sqlWhere}
     </update>
@@ -183,7 +183,7 @@
     </select>
     <!-- 更新消息信息 -->
     <update id="updMessageZQ" parameterType="java.util.Map">
-    	UPDATE S_Message SET IsRead = 1, ReadTime = getdate() 
+    	UPDATE A SET IsRead = 1, ReadTime = getdate() from S_Message A
 	    WHERE Receiver = #{UserID} AND ProjectID = #{ProjectID} 
 	    AND IsDel = 0 AND Status = 1 AND ISNULL(IsRead, 0) = 0 ${sqlWhere}
     </update>
