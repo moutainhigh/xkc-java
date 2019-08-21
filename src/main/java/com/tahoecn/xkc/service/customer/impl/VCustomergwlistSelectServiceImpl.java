@@ -2024,11 +2024,11 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
 			if(customerData!=null && customerData.size()>0 && OpportunityData!=null && OpportunityData.size()>0){
 				//姓名  副手机号 证件类型  证件号码  性别 
-				String CustomerName = OpportunityData.get("CustomerName")!=null?OpportunityData.get("CustomerName").toString():"空值";
-				String SpareMobile =OpportunityData.get("SpareMobile")!=null?OpportunityData.get("SpareMobile").toString():"空值";
-				String CardType = customerData.get("CardType")!=null?customerData.get("CardType").toString():"空值";
-				String CardID = customerData.get("CardID")!=null?customerData.get("CardID").toString():"空值";
-				String Gender = customerData.get("Gender")!=null?customerData.get("Gender").toString():"空值";
+				String CustomerName = OpportunityData.get("CustomerName")!=null&& !"".equals(customerData.get("CustomerName").toString())?customerData.get("CustomerName").toString():"空值";
+				String SpareMobile =OpportunityData.get("SpareMobile")!=null&& !"".equals(customerData.get("SpareMobile").toString())?customerData.get("SpareMobile").toString():"空值";
+				String CardType = customerData.get("CardType")!=null&& !"".equals(customerData.get("CardType").toString())?customerData.get("CardType").toString():"空值";
+				String CardID = customerData.get("CardID")!=null && !"".equals(customerData.get("CardID").toString())?customerData.get("CardID").toString():"空值";
+				String Gender = customerData.get("Gender")!=null && !"".equals(customerData.get("Gender").toString())?customerData.get("Gender").toString():"空值";
 				
 				List<Map<String, Object>>  jarry = vCustomergwlistSelectMapper.DictionaryList_Select("E72C340D-4092-467A-9B8F-5138DBDCA43B");
 				
@@ -2055,7 +2055,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				if(!"".equals(newCardType)){
 					if(!CardType.equals(newCardType)){
 						String newCardTypeStr="";
-						String oldCardTypeStr="";
+						String oldCardTypeStr="空值";
 						for(Map<String, Object> map : cardTypejarry){
 							if(map.get(CardType)!=null){
 								oldCardTypeStr = map.get(CardType).toString();
@@ -2077,12 +2077,12 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				if(!"".equals(newGender)){
 					if(!Gender.equals(newGender)){
 						String newGenderStr = "";
-						String oldGenderStr = "";
+						String oldGenderStr = "空值";
 						for(Map<String, Object> map : jarry){
 							if(map.get(Gender)!=null){
 								oldGenderStr = map.get(Gender).toString();
 							}
-							if(map.get(newGenderStr)!=null){
+							if(map.get(newGender)!=null){
 								newGenderStr = map.get(newGender).toString();
 							}
 						}
