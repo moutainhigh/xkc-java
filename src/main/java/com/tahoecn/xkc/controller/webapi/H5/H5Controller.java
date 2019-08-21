@@ -792,7 +792,9 @@ public class H5Controller extends TahoeBaseController {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String Code = (String) paramMap.get("Code");
         String ChannelTypeID = (String) paramMap.get("ChannelTypeID");
-        String OrgID = "http://xkc.tahoecndemo.com:8080/H5/#/teamMemberRegister?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
+        String http=request.getScheme();
+        String serverName=request.getServerName();
+        String OrgID = http+"://"+serverName+":"+request.getServerPort()+"/H5/#/teamMemberRegister?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath,"twoCode/", 500, null);
         if (url==null){
             return Result.errormsg(1,"生成失败");
