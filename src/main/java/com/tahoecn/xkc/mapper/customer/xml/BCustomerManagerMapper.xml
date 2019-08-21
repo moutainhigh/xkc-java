@@ -114,7 +114,7 @@
                                ${paramMap.ClueWhere}
                     ) tm  where 1=1 ${paramMap.sqlWhere}
                     ) ts where 1=1 ${paramMap.WhereLast}) tab WHERE tab.OpportunityID=b.ID)
-                      UNION
+                      UNION ALL
                       SELECT    b.ID OpportunityID ,
                                 b.CustomerPotentialID CustomerID ,
                                 b.Name CustomerName ,
