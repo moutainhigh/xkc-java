@@ -89,6 +89,9 @@ public class H5Controller extends TahoeBaseController {
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
 
+    @Value("${registerUrl}")
+    private  String registerUrl;
+
     @Autowired
     private PotentialCustomerServiceImpl potentialCustomerService;
 
@@ -655,8 +658,8 @@ public class H5Controller extends TahoeBaseController {
             int verificationCode = ran.nextInt(899999)+100000;
             //写入数据,并调取短信接口
             Map<String,Object> parameter = new HashMap<String,Object>();
-            parameter.put("Mobile", Mobile);//string
-            parameter.put("VerificationCode", String.valueOf(verificationCode));//string
+            parameter.put("Mobile", Mobile);
+            parameter.put("VerificationCode", String.valueOf(verificationCode));
             iBVerificationcodeService.Detail_Add(parameter);
             csSendSmsLogService.sendSms(Mobile,"【泰禾集团】验证码："+String.valueOf(verificationCode)+"，5分钟内有效","");
             return Result.ok(String.valueOf(verificationCode));
@@ -792,9 +795,7 @@ public class H5Controller extends TahoeBaseController {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String Code = (String) paramMap.get("Code");
         String ChannelTypeID = (String) paramMap.get("ChannelTypeID");
-        String http=request.getScheme();
-        String serverName=request.getServerName();
-        String OrgID = http+"://"+serverName+":"+request.getServerPort()+"/H5/#/teamMemberRegister?ChannelOrgCode="+ChannelTypeID+"&Code="+Code;
+        String OrgID = registerUrl+ChannelTypeID+"&Code="+Code;
         String url = QRCodeUtil.zxingCodeCreate(OrgID,physicalPath,"twoCode/", 500, null);
         if (url==null){
             return Result.errormsg(1,"生成失败");

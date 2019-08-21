@@ -46,10 +46,13 @@ public class MYServiceImpl implements IMYService {
         	List<Map<String,Object>> vaild_1_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_1(info);
         	List<Map<String,Object>> vaild_2_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_2(info);
         	if((vaild_1_map==null || vaild_1_map.size()==0) && (vaild_2_map==null || vaild_2_map.size()==0)){
-        		vCustomergwlistSelectMapper.MYCustomerDetail_Insert_insert_1(info);
-        		vCustomergwlistSelectMapper.MYCustomerDetail_Insert_insert_2(info);
-        	}else{
-        		vCustomergwlistSelectMapper.MYCustomerDetail_Insert_update(info);
+        		List<Map<String,Object>> vaild_3_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_3(info);
+        		if(vaild_3_map!=null && vaild_3_map.size()>0){
+        			vCustomergwlistSelectMapper.MYCustomerDetail_Insert_update(info);
+        		}else{
+        			vCustomergwlistSelectMapper.MYCustomerDetail_Insert_insert_1(info);
+            		vCustomergwlistSelectMapper.MYCustomerDetail_Insert_insert_2(info);
+        		}
         	}
             re.setErrcode(0);
             re.setErrmsg("成功");
