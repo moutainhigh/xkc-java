@@ -448,6 +448,15 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
                 }
             }
 
+            if (StringUtils.equals(sMenusXkcDto.getMenuName(),"营销助手")){
+                result.add(sMenusXkcDto);
+                if (sMenusXkcDto.getChildren()!=null){
+                    for (SMenusXkcDto child : sMenusXkcDto.getChildren()) {
+                        child.setSignal(false);
+                    }
+                }
+            }
+
             if (sMenusXkcDto.getChildren()!=null){
                 result.add(sMenusXkcDto);
             }
@@ -636,7 +645,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     private   List<SMenusXkcDto> buildByRecursive(List<SMenusXkcDto> treeNodes) {
         List<SMenusXkcDto> trees = new ArrayList<SMenusXkcDto>();
         for (SMenusXkcDto treeNode : treeNodes) {
-            if ("-1".equals(treeNode.getPid()) && !"营销助手".equals(treeNode.getMenuName())) {
+            if ("-1".equals(treeNode.getPid())) {
                 trees.add(findChildren(treeNode,treeNodes));
             }
         }
