@@ -1821,7 +1821,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
             	Map<String, Object> objRank = vCustomergwlistSelectMapper.mCustomerTwoRankAllowSubscribe_Select(model.getOpportunityID());
                 if (objRank!=null && objRank.size() > 0){
                     entity.setErrcode(1);
-                    entity.setErrmsg("请到ipad端扫码确认到访！");
+                    entity.setErrmsg("未到访客户不能提交认购意向！");
                     return entity;
                 }
                 CustomerObj = customerTemplate.OpportunityCustomer(model.getOpportunityID());
