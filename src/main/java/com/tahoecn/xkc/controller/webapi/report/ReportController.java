@@ -283,7 +283,7 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getFollwUpWayTxt()), CostomerReport::getFollwUpWayTxt, report.getFollwUpWayTxt());    //跟进类型
-
+        wrapper.lambda().eq(report.getDaofangCount() != null, CostomerReport::getDaofangCount, report.getDaofangCount());    //到访次数
         wrapper.lambda().between(report.getCreateTime() != null, CostomerReport::getCreateTime, report.getCreateTime(),report.getCreateTimeEnd());  //创建时间
         wrapper.lambda().between(report.getReportTime() != null, CostomerReport::getReportTime, report.getReportTime(),report.getReportTimeEnd());  //宝贝时间
         wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(),report.getTheFirstVisitDateEnd());  //首访时间
