@@ -32,7 +32,7 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 
     HashMap<String, Object> ChannelUserCurrency_Find(@Param("Mobile")String mobile);
 
-    Map<String, Object> BrokerMyCenter_Select(@Param("BrokerID")String brokerID);
+    List<Map<String, Object>> BrokerMyCenter_Select(@Param("BrokerID")String brokerID);
 
     int mBrokerChannelUserCardDetail_Update(@Param("UserID")String userID, @Param("CertificatesName")String certificatesName,
                                             @Param("CertificatesType")String certificatesType, @Param("CertificatesNo")String certificatesNo,
