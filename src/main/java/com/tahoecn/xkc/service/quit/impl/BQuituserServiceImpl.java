@@ -334,7 +334,7 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
             followup.setFollwUpUserMobile(vo1.getUserMobile());
             followup.setFollwUpType("69331990-DBF4-0A2F-80CD-7BC424AA8912");
             followup.setFollwUpWay("69331990-DBF4-0A2F-80CD-7BC424AA8912");
-            followup.setFollowUpContent("从原顾问( '"+vo4.get_UserNameOld()+"')分配给新顾问('"+vo2.get_UserName()+"')  ");
+            followup.setFollowUpContent("从原顾问( '"+vo4.getUserName2Old()+"')分配给新顾问('"+vo2.getUserName2()+"')  ");
             followup.setNextFollowUpDate(new Date());
             followup.setIntentionLevel("");
             followup.setOrgID("");

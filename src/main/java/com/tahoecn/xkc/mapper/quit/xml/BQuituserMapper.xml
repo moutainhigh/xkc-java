@@ -159,7 +159,7 @@
     </select>
 
     <select id="getQuitSalesTeamMember2" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
-        SELECT RoleName RoleName,su.Name _UserName FROM dbo.B_SalesGroupMember sgm
+        SELECT RoleName RoleName,su.Name User2Name FROM dbo.B_SalesGroupMember sgm
 		 LEFT JOIN dbo.B_SalesUser su ON sgm.MemberID=su.ID AND su.IsDel=0 AND su.Status=1
 		 WHERE MemberID=#{SelectUserID} AND sgm.IsDel=0 AND sgm.Status=1 AND ProjectID=#{ProjectID}
     </select>
@@ -169,7 +169,7 @@
     </select>
 
     <select id="getQuitSalesTeamMember4" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
-        SELECT su.Name _UserNameOld FROM  dbo.B_SalesUser su  WHERE ID=#{SaleUser} AND su.IsDel=0 AND su.Status=1
+        SELECT su.Name UserName2Old, su.TelPhone UserMobile FROM  dbo.B_SalesUser su  WHERE ID=#{SaleUser} AND su.IsDel=0 AND su.Status=1
     </select>
 
     <select id="getCustomerCount" resultType="int">
