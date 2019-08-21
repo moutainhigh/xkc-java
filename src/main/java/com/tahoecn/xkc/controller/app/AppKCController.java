@@ -256,7 +256,7 @@ public class AppKCController extends TahoeBaseController {
     			return re.ok(obj);
     		}
     		else {
-    			return re.ok("没有考勤记录");
+    			return re.okm("没有考勤记录");
     		}
     	}catch (Exception e) {
 			e.printStackTrace();
