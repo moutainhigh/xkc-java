@@ -247,15 +247,12 @@ public class AppKCController extends TahoeBaseController {
     		Map paramMap = (HashMap)jsonParam.get("_param");
     		String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//任务ID
             String CheckDate = (String)paramMap.get("CheckDate").toString();//
-            int PageIndex = (int)paramMap.get("PageIndex");//页面索引
-            int PageSize = (int)paramMap.get("PageSize");//每页数量
-            
-            IPage page = new Page(PageIndex, PageSize);
+           
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("ChannelTaskID", ChannelTaskID);
     		map.put("CheckDate", CheckDate);
-    		List<Map<String,Object>> obj = iBChanneluserService.mChannelCheckClockTotal_Select(page, ChannelTaskID,CheckDate);
-    		if(obj != null && obj.size() > 0) {
+    		List<Map<String, Object>> obj = iBChanneluserService.mChannelCheckClockTotal_Select(map);
+    		if(obj != null && obj.size() > 0 && obj.get(0) != null) {
     			return re.ok(obj);
     		}
     		else {
