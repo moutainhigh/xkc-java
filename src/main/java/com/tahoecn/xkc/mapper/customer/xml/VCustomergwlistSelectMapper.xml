@@ -230,6 +230,36 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	      ]]>
 	</select>
 	
+	<select id="sCustomerGWBase_Select_GetClue" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  c.ID ClueID ,
+		        c.CustomerPotentialID CustomerID ,
+		        c.Name CustomerName ,
+		        c.Mobile CustomerMobile ,
+		        dbo.F_DictName(c.Gender) CustomerGender ,
+		        dbo.F_GetReportCustomerPotentialTag(c.CustomerPotentialID,
+		                                            c.ReportUserID) AS CustomerTag ,
+		        dbo.F_DictName(c.CustomerLevel) CustomerLevel ,
+		        dbo.F_DictName(ISNULL(o.CustomerRank,
+		                              '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+		        dbo.F_GetClueStatusName_xkc(c.Status, o.Status) ClueStatus ,
+		        dbo.F_FormatDate(c.TheLatestFollowUpDate) TheLatestFollowUpDate ,
+		        c.TheLatestFollowUpContent ,
+		        c.Remark CustomerRemark ,
+		        c.CreateTime ,
+		        CASE WHEN o.ID IS NULL THEN 0
+		             ELSE 1
+		        END IsAlloc ,
+		        c.ReportUserID ,
+		        c.SourceType ,
+		        dbo.F_GetSaleUserName(o.SaleUserID) SaleUserName,
+		        c.ChannelTaskID
+		FROM    dbo.B_Clue c
+		        LEFT JOIN dbo.B_Opportunity o ON o.ClueID = c.ID
+		WHERE   o.ID = #{opportunityID}
+	    ]]>
+	</select>
+	
 	<select id="sCustomerGWBaseSalerInfo_Select" resultType="java.util.HashMap">
 		<![CDATA[
 		SELECT  ISNULL(su.Name,'') Name,
@@ -611,7 +641,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	
 	<delete id="CustomerTagDetail_Insert_delete">
 		<![CDATA[
-		DELETE B_CustomerTag where CustomerID='{customerID}' AND Creator ='{userID}'
+		DELETE B_CustomerTag where CustomerID=#{customerID} AND Creator =#{userID}
     	]]>
 	</delete>
 	
@@ -839,7 +869,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	
 	<insert id="SystemMessageDetail_Insert" parameterType="java.util.Map">
 		<![CDATA[
-		INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status) VALUES( NEWID(), '{ProjectID}', '{BizID}', '{BizType}', '{Subject}', '{Content}', '{Sender}', GETDATE(), '{MessageType}', '{Receiver}', 0, 0, '{IsNeedPush}', '{Creator}', GETDATE(), 0, 1)
+		INSERT INTO S_Message( ID, ProjectID, BizID, BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, IsRead, IsPush, IsNeedPush, Creator, CreateTime, IsDel, Status) VALUES( NEWID(), #{ProjectID}, #{BizID}, #{BizType}, #{Subject}, #{Content}, #{Sender}, GETDATE(), #{MessageType}, #{Receiver}, 0, 0,#{IsNeedPush}, #{Creator}, GETDATE(), 0, 1)
 	    ]]>
 	</insert>
 	
@@ -1667,7 +1697,7 @@ VALUES  ( #{OpportunityID},
 	
 	<select id="CustomerPotential_Exist" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT * FROM V_CustomerPotential WHERE IsDel = 0 AND Mobile = '{Mobile}' ORDER BY CreateTime
+		SELECT * FROM V_CustomerPotential WHERE IsDel = 0 AND Mobile = #{Mobile} ORDER BY CreateTime
 	    ]]>
 	</select>
 	
@@ -2346,12 +2376,13 @@ VALUES  ( #{OpportunityID},
 	</select>
 	<select id="MYCustomerDetail_Insert_vaild_2" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-			SELECT TOP 1
-		                            BookingGUID
-		                     FROM   s_Booking A
-		                     WHERE  A.BookingGUID IN ( SELECT   BookingGUID
-		                                               FROM     dbo.s_Booking2Cst
-		                                               WHERE    CstGUID = #{CstGUID} ) 
+			SELECT TOP 1 BookingGUID FROM   s_Booking A WHERE  A.BookingGUID IN ( SELECT  BookingGUID FROM  dbo.s_Booking2Cst WHERE CstGUID = #{CstGUID} ) 
+		]]>
+	</select>
+	
+	<select id="MYCustomerDetail_Insert_vaild_3" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT TOP 1 CstGUID FROM  p_Customer WHERE  CstGUID = #{CstGUID}
 		]]>
 	</select>
 	
@@ -2620,7 +2651,7 @@ VALUES  ( #{OpportunityID},
 		                        ProjGUID = #{ProjGUID},
 		                        Status = #{Status},
 		                        ModifyOn = CONVERT(DATETIME, #{ModifyOn}, 121) ,
-		                        ModifyBy = #{ModifyBy}' ,
+		                        ModifyBy = #{ModifyBy} ,
 		                        UserGUID = CASE WHEN #{UserGUID} = '99' THEN NULL
 		                                        WHEN #{UserGUID} = '' THEN NULL
 		                                        ELSE #{UserGUID}
@@ -2630,7 +2661,7 @@ VALUES  ( #{OpportunityID},
 		                                       WHEN 0 THEN NULL
 		                                       ELSE #{ZJJHDate}
 		                                     END ) ,
-		                        LFCount = #{LFCount}' ,
+		                        LFCount = #{LFCount},
 		                        FisrtLFDate = ( CASE LEN(#{FisrtLFDate})
 		                                          WHEN 0 THEN NULL
 		                                          ELSE #{FisrtLFDate}

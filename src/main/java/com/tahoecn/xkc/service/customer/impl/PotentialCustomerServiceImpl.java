@@ -1010,7 +1010,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	                    //标签
 	                    if ("885AC55E-7FC5-467A-9809-82AC9867363D".equals(filterItem.getTagID())){
 	                        if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
-	                            whereinnerSb.append(" and t.CustomerPotentialID in(select  CustomerPotentialID  from  B_CustomerPotentialTag  t where t.TagName in('" + String.join("','", filterItem.getChild()) + "'))");
+	                            whereinnerSb.append(" and t.CustomerPotentialID in(select  CustomerPotentialID  from  B_CustomerPotentialTag   where TagName in('" + String.join("','", filterItem.getChild()) + "'))");
 	                        }
 	                    }
 	                }
