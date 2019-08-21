@@ -181,7 +181,7 @@
 	
 	<select id="mCustomerPotentialCopyList_Insert" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-	    SELECT ID, Name DictName  FROM B_Tag WHERE IsDel = 0 AND Status = 1 AND Creator = '{UserID}' ORDER BY Name
+	    SELECT ID, Name DictName  FROM B_Tag WHERE IsDel = 0 AND Status = 1 AND Creator = #{UserID} ORDER BY Name
 	    ]]>
 	</select>
 	

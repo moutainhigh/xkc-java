@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.enums.MessageType;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
@@ -57,6 +59,8 @@ import com.tahoecn.xkc.service.sys.ISystemMessageService;
 public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectService {
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
+	@Resource
+	private BCustomerpotentialMapper bCustomerpotentialMapper;
 	@Resource
 	private ISystemMessageService iSystemMessageService;
 	@Resource
@@ -324,14 +328,52 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	String opportunityID = paramAry.getString("OpportunityID");
         	String projectID = paramAry.getString("ProjectID");
         	HashMap<String,Object> objData =vCustomergwlistSelectMapper.sCustomerGWBase_Select(opportunityID,projectID);
-            //获取顾问和协作人信息
-            paramAry.put("SiteUrl", SiteUrl);
-            List<HashMap<String,Object>> gwInfo = vCustomergwlistSelectMapper.sCustomerGWBaseSalerInfo_Select(opportunityID, projectID,SiteUrl);
-            objData.put("AdviserList", gwInfo);
-            String dataStr = new JSONObject(objData).toJSONString();
-            JSONObject data = JSONObject.parseObject(dataStr);
-            entity.setData(data);
-            entity.setErrmsg("成功");
+        	if(objData!=null && objData.size()>0){
+        		 //获取顾问和协作人信息
+                paramAry.put("SiteUrl", SiteUrl);
+                List<HashMap<String,Object>> gwInfo = vCustomergwlistSelectMapper.sCustomerGWBaseSalerInfo_Select(opportunityID, projectID,SiteUrl);
+                objData.put("AdviserList", gwInfo);
+                String dataStr = new JSONObject(objData).toJSONString();
+                JSONObject data = JSONObject.parseObject(dataStr);
+                
+                Map<String,Object> clueData =vCustomergwlistSelectMapper.sCustomerGWBase_Select_GetClue(opportunityID);
+                JSONObject token = new JSONObject();
+                if(clueData!=null && clueData.size()>0){
+                	 token.put("TokerUserID",clueData.get("ReportUserID"));
+                     token.put("ClueMobile",clueData.get("CustomerMobile"));
+                     token.put("ClueID", clueData.get("ClueID"));
+                     token.put("SourceType",clueData.get("SourceType"));
+                     
+                     Map<String,Object> pmap = new HashMap<String, Object>();
+                     pmap.put("ClueID", clueData.get("ClueID"));
+                     Map<String,Object> job = bCustomerpotentialMapper.mCustomerPotentialZQTractDetail_Select(pmap);
+     	        	 if(job!=null && job.size()>0){
+     	        		 data.put("TractSort", job.get("Sort"));
+     		        	 data.put("TractName", job.get("Name"));
+     		        	 data.put("TractTime", job.get("TractTime"));
+     	        	 }
+                     try {
+                     	String CreateTime = clueData.get("CreateTime").toString();
+                        String TractTime = data.getString("TractTime");
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        
+                        if(CreateTime!=null && !CreateTime.equals("")){
+                         	data.put("CreateTime",sdf.format(DateUtil.parse(CreateTime)));
+                        }
+                        if(TractTime!=null && !TractTime.equals("")){
+                         	data.put("TractTime", sdf.format(DateUtil.parse(TractTime)));
+                       }
+         			} catch (Exception e) {
+         				e.printStackTrace();
+         			}
+                }
+                data.put("Token", token);
+                entity.setData(data);
+                entity.setErrmsg("成功");
+        	}else{
+        		 entity.setErrcode(1);
+                 entity.setErrmsg("失败");
+        	}
         }catch (Exception e){	
             entity.setErrcode(110);
             entity.setErrmsg("获取数据异常！");

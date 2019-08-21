@@ -65,6 +65,8 @@ public interface VCustomergwlistSelectMapper {
 	 */
 	HashMap<String,Object> sCustomerGWBase_Select(@Param("opportunityID")String opportunityID,@Param("projectID")String projectID);
 	
+	Map<String,Object> sCustomerGWBase_Select_GetClue(@Param("opportunityID")String opportunityID);
+	
 	/**
 	 * 置业顾问客户基本信息2
 	 * @param opportunityID
@@ -604,6 +606,9 @@ public interface VCustomergwlistSelectMapper {
 	
 	@DataSource(DataSourceEnum.DB2)
 	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_2(Map<String,Object> map);
+	
+	@DataSource(DataSourceEnum.DB2)
+	List<Map<String,Object>> MYCustomerDetail_Insert_vaild_3(Map<String,Object> map);
 	
 	@DataSource(DataSourceEnum.DB2)
 	void MYCustomerDetail_Insert_insert_1(Map<String,Object> map);
