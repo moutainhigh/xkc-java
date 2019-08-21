@@ -155,7 +155,7 @@
     <select id="getQuitSalesTeamMember1" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
         SELECT su.Name UserName,su.TelPhone UserMobile,sgm.RoleID RoleID FROM dbo.B_SalesGroupMember sgm
 		LEFT JOIN dbo.B_SalesUser su ON sgm.MemberID=su.ID AND su.IsDel=0 AND su.Status=1
-		 WHERE sgm.MemberID=#{userID} AND sgm.IsDel=0 AND sgm.Status=1 AND ProjectID=#{ProjectID}
+		 WHERE sgm.MemberID=#{UserID} AND sgm.IsDel=0 AND sgm.Status=1 AND ProjectID=#{ProjectID}
     </select>
 
     <select id="getQuitSalesTeamMember2" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
