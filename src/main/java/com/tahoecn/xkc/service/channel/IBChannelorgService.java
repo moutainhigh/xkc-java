@@ -38,4 +38,6 @@ public interface IBChannelorgService extends IService<BChannelorg> {
     IPage<Map<String, String>> AgenList_SelectN(IPage page,StringBuffer where, StringBuffer orderBy);
 
     List<Map<String, Object>> getParentOrg();
+
+    List<Map<String,Object>> getChildOrg(String id);
 }

@@ -2,6 +2,7 @@ package com.tahoecn.xkc.controller.webapi;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.landray.sso.client.oracle.StringUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.ResponseMessage;
 import com.tahoecn.xkc.model.salegroup.BSalesgroup;
@@ -63,7 +64,9 @@ public class BSalesgroupController extends TahoeBaseController {
             return ResponseMessage.error("团队名称不能重复");
         }
         BSalesgroup bSalesgroupinsert = new BSalesgroup();
-
+        if(StringUtil.isNotNull(ID)){
+            bSalesgroupinsert.setId(ID);
+        }
         bSalesgroupinsert.setPid(null);
         bSalesgroupinsert.setProjectID(ProjectID);
         bSalesgroupinsert.setName(Name);

@@ -525,9 +525,14 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setRemark((String) paramMap.get("Remark"));
         clue.setReportUserID((String) paramMap.get("UserID"));
         clue.setReportUserName((String) map.get("ReportUserName"));
-        clue.setReportUserMobile((String) paramMap.get("ReportUserMobile"));
-        clue.setReportUserOrg((String) paramMap.get("ReportUserOrg"));
-        clue.setRuleID((String) paramMap.get("RuleID"));
+        clue.setReportUserMobile((String) map.get("ReportUserMobile"));
+        //如果参数有 直接设置为参数值  如果参数为空 取ReportUserOrg
+        if (paramMap.get("newReportUserOrg")==null){
+            clue.setReportUserOrg((String) map.get("ReportUserOrg"));
+        }else {
+            clue.setReportUserOrg((String) paramMap.get("newReportUserOrg"));
+        }
+        clue.setRuleID((String) map.get("RuleID"));
         clue.setInvalidType((int) ruleValidate.get("InvalidType"));
         clue.setInvalidTime(InvalidTime);
         clue.setInvalidReason((String) ruleValidate.get("Message"));

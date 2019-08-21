@@ -120,19 +120,36 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 //2018-11-05 限制渠道(自有渠道负责人、自有渠道团队)和置业顾问(除了自有渠道负责人、自有渠道团队其它都是)不能兼岗
                 if (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))//自渠人员
                 {
-                    whereOne = " and RoleId in ('48FC928F-6EB5-4735-BF2B-29B1F591A582','B0BF5636-94AD-4814-BB67-9C1873566F29','A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36','8100EAF4-FBCE-408B-A51D-B7247A3ADB19','97F5E202-2D3B-4935-BA91-4AFD5C5578FC','938935B7-4131-4E61-A811-4323A7F193A2','0269F35E-B32D-4D12-8496-4E6E4CE597B7')";
+                    whereOne = " and RoleId in ('48FC928F-6EB5-4735-BF2B-29B1F591A582'," +  //自有渠道团队人员
+                            "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
+                            "'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
+                            "'3BC23001-BC31-4594-8463-C7DA89C0FB36'," + //案场销售团队负责人
+                            "'8100EAF4-FBCE-408B-A51D-B7247A3ADB19'," + //销管组
+                            "'97F5E202-2D3B-4935-BA91-4AFD5C5578FC'," + //策划组
+                            "'938935B7-4131-4E61-A811-4323A7F193A2'," + //案场销售负责人
+                            "'0269F35E-B32D-4D12-8496-4E6E4CE597B7')";  //案场销售团队人员
                 }
                 else if(RoleID.equals("9584A4B7-F105-44BA-928D-F2FBA2F3B4A4"))//自有渠道负责人
                 {
-                    whereOne = " and RoleId in('9584A4B7-F105-44BA-928D-F2FBA2F3B4A4','A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36','8100EAF4-FBCE-408B-A51D-B7247A3ADB19','97F5E202-2D3B-4935-BA91-4AFD5C5578FC','938935B7-4131-4E61-A811-4323A7F193A2','0269F35E-B32D-4D12-8496-4E6E4CE597B7')";
-                }
-                else if (RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))//销售人员
+                    whereOne = " and RoleId in('9584A4B7-F105-44BA-928D-F2FBA2F3B4A4'," + //自有渠道负责人
+                            "'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
+                            "'3BC23001-BC31-4594-8463-C7DA89C0FB36'," + //案场销售团队负责人
+                            "'8100EAF4-FBCE-408B-A51D-B7247A3ADB19'," + //销管组
+                            "'97F5E202-2D3B-4935-BA91-4AFD5C5578FC'," + //策划组
+                            "'938935B7-4131-4E61-A811-4323A7F193A2'," + //案场销售负责人
+                            "'0269F35E-B32D-4D12-8496-4E6E4CE597B7')";  //案场销售团队人员
+                }else if(RoleID.equals("938935B7-4131-4E61-A811-4323A7F193A2"))//案场销售负责人
                 {
-                    whereOne = " and RoleId in('0269F35E-B32D-4D12-8496-4E6E4CE597B7','3BC23001-BC31-4594-8463-C7DA89C0FB36','48FC928F-6EB5-4735-BF2B-29B1F591A582','B0BF5636-94AD-4814-BB67-9C1873566F29','9584A4B7-F105-44BA-928D-F2FBA2F3B4A4')";
-                }
-                else
+                    whereOne = " and RoleId in (" +
+                            "'48FC928F-6EB5-4735-BF2B-29B1F591A582'," +  //自有渠道团队人员
+                            "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
+                            //"'A2C076C4-09D1-4B42-862D-8688A93320F4'," + //项目营销负责人
+                            "'938935B7-4131-4E61-A811-4323A7F193A2')";  //案场销售负责人
+                }else
                 {
-                    whereOne = " and RoleId in('"+RoleID+"','48FC928F-6EB5-4735-BF2B-29B1F591A582','B0BF5636-94AD-4814-BB67-9C1873566F29','9584A4B7-F105-44BA-928D-F2FBA2F3B4A4')";
+                    whereOne = " and RoleId in('"+RoleID+"','48FC928F-6EB5-4735-BF2B-29B1F591A582'," + //自有渠道团队人员
+                            "'B0BF5636-94AD-4814-BB67-9C1873566F29'," + //自有渠道团队负责人
+                            "'9584A4B7-F105-44BA-928D-F2FBA2F3B4A4')";  //自有渠道负责人
                 }
             }
             map.put("whereOne", whereOne);
@@ -197,7 +214,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             }
         }
 
-        if (RoleID == "8100EAF4-FBCE-408B-A51D-B7247A3ADB19") //销支
+        if (StringUtil.isNotNull(RoleID) &&  RoleID.equals("8100EAF4-FBCE-408B-A51D-B7247A3ADB19")) //销支
         {
             String[] idsStr = Ids.split(",");
             for(int i=0;i<idsStr.length;i++){
@@ -216,7 +233,8 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
             String[] idStrs = Ids.split(",");
             for(int i=0;i<idStrs.length;i++)
             {
-                map.put("ID",UUID.randomUUID());
+                String ID = UUID.randomUUID().toString();
+                map.put("ID",ID);
                 //saleGroupMemberMapper."UserMember_InsertNew", obj, out msg);//添加人员
                 String MemberID = idStrs[i];
                 QueryWrapper<BSalesgroupmember> sgmWrapper = new QueryWrapper<BSalesgroupmember>();
@@ -230,9 +248,10 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 gmWrapper.eq("MemberID", idStrs[i]);
                 gmWrapper.ne("RoleID", "E417A997-9A91-4D22-8428-9C2C2C560656");
                 gmWrapper.eq("RoleID", RoleID);
-                int gmCount = bSaleGroupMemberMapper.selectCount(gmWrapper);
-                if(sgmCount==0 && gmCount==0){
+                List gmCount = bSaleGroupMemberMapper.selectList(gmWrapper);
+                if(sgmCount==0 && gmCount.size()==0){
                     BSalesgroupmember bSalesgroupmember = new BSalesgroupmember();
+                    bSalesgroupmember.setId(ID);
                     bSalesgroupmember.setProjectID(ProjectID);
                     bSalesgroupmember.setReceptionGroupID(ReceptionGroupID);
                     bSalesgroupmember.setMemberID(idStrs[i]);
@@ -243,6 +262,9 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                     bSalesgroupmember.setIsDel(0);
                     bSalesgroupmember.setStatus(1);
                     bSaleGroupMemberMapper.insert(bSalesgroupmember);
+                }else{
+                    BSalesgroupmember tempMember = (BSalesgroupmember)gmCount.get(0);
+                    ID = tempMember.getId();
                 }
 
                 QueryWrapper<BSalesuser> salesuserWrapper = new QueryWrapper<BSalesuser>();
@@ -269,7 +291,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 }
                 //渠道人员
                 QueryWrapper<BChanneluser> chanelUserWrapper = new QueryWrapper<BChanneluser>();
-                salesuserWrapper.eq("id", idStrs[i]);
+                chanelUserWrapper.eq("id", idStrs[i]);
                 int chanelUserCount = bChanneluserMapper.selectCount(chanelUserWrapper);
                 if(chanelUserCount==0 && (RoleID.equals("B0BF5636-94AD-4814-BB67-9C1873566F29")|| RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582")))
                 {
@@ -405,7 +427,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 int clueCount = clueListSelectMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
                 int customerCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
 
-                if(clueCount + customerCount>0){
+                if(clueCount + customerCount>0 && StringUtil.isNotNull(RoleID) && (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582") || RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))){
                     return Result.errormsg(9527,"该成员下有客户数"+clueCount + customerCount + "个,请处理客户后再移除!");
                 }
 
@@ -451,7 +473,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectOne(selchanneluserWrapper);
                 if(channeluser!=null  && (roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))){
                     map.put("memberId",memberId);
-                    String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId(map);
+                    String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId2(map);
                     if(channelOrgId==null || "".equals(channelOrgId)){
                         channelOrgId = "46830C26-0E01-4041-8054-3865CCDD26AD";
                     }

@@ -414,9 +414,6 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public Map<String, Object> GetReportUserInfo_Select(String userID, String intentProjectID, String channelIdentify) {
-        System.out.println("userID = " + userID);
-        System.out.println("intentProjectID = " + intentProjectID);
-        System.out.println("channelIdentify = " + channelIdentify);
         return baseMapper.GetReportUserInfo_Select(userID,intentProjectID,channelIdentify);
     }
 
