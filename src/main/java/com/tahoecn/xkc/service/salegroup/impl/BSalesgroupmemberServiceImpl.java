@@ -439,6 +439,10 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                     }
                 }
 
+                if(StringUtil.isNull(custCount)){
+                        return Result.errormsg(9527, "是否删除该成员!");
+                }
+
                 //删除人员
                 BSalesgroupmember salesgroupmember = new BSalesgroupmember();
                 salesgroupmember.setId(removeIdStrs[i]);
