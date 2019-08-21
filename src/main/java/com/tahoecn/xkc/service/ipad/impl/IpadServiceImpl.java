@@ -166,7 +166,7 @@ public class IpadServiceImpl implements IIpadService {
             StringBuilder whereSb = new StringBuilder();
             StringBuilder OrderSb = new StringBuilder();
             if (!StringUtils.isEmpty(model.getKeyWord())){
-                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%')");
+                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%' OR Mobile LIKE '%"+model.getKeyWord()+"%')");
             }
             paramAry.put("WHERE", whereSb.toString());
             paramAry.put("ORDER", OrderSb.toString());
@@ -1420,7 +1420,7 @@ public class IpadServiceImpl implements IIpadService {
             CPageModel model = JSONObject.parseObject(paramAry.toJSONString(), CPageModel.class);
             StringBuilder whereSb = new StringBuilder();
             if (!StringUtils.isEmpty(model.getKeyWord())){
-                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%')");
+                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%'  OR Mobile LIKE '%"+model.getKeyWord()+"%')");
             }
             paramAry.put("WHERE", whereSb.toString());
             paramAry.put("SiteUrl", SiteUrl);
