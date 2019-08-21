@@ -561,8 +561,10 @@
         a.CreateTime
         FROM
         [S_Account] a
-        WHERE
-        a.UserOrgID IN ( SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%' )
+       <where>
+           <if test="FullPath!= null and FullPath != ''">
+            a.UserOrgID IN ( SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%' )
+           </if>
         <!-- AND ( #{Key} = ''
         OR a.UserName LIKE concat('%',#{Key},'%')
         OR a.EmployeeName LIKE concat('%',#{Key},'%')
@@ -587,7 +589,9 @@
         AND a.IsDel= 0
         ) t ON t.UserOrgID= o.ID
         AND o.IsDel= 0 AND o.Status=1
+       </where>
         <if test="FullPath == '第三方组织/泰禾/泰禾移动营销管理平台/泰禾集团'">
+            <!--查找uc用户 orgid为null-->
         UNION
         SELECT
         b.[ID],
@@ -610,6 +614,7 @@
         '' AS OrgName
         FROM
         S_Account b
+        LEFT JOIN S_Organization o ON b.UserOrgID=o.ID
         WHERE
         b.AuthCompanyID = #{AuthCompanyID}
         AND b.IsDel = 0
@@ -632,7 +637,7 @@
         <if test="Type != 0">
             and b.AccountType = #{Type}
         </if>
-        AND b.UserOrgID IS NULL
+          AND (b.UserOrgID IS NULL OR o.FullPath ='第三方组织/泰禾/泰禾移动营销管理平台')
         </if>
         ) q
         ORDER BY CreateTime DESC

@@ -75,7 +75,7 @@ public class AppBClueController extends TahoeBaseController {
             if(paramMap.get("status") != null) {
             	status = (String)paramMap.get("status").toString();//客户状态
             }
-            List<Customer> customers = bClueService.listMyCustomers(reportId, "", ascOrDesc, nameOrMobile, status);
+            List<Customer> customers = bClueService.listMyCustomers(reportId, ascOrDesc, nameOrMobile, status);
     		if (customers == null) {
     			return Result.errormsg(-1,"未查询到该客户");
     		} else {

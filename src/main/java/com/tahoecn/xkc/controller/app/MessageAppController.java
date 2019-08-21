@@ -240,6 +240,7 @@ public class MessageAppController extends TahoeBaseController {
      * 置业顾问GW：当日待跟进、当日跟进逾期、当日认购逾期、当日签约逾期、当日回款逾期、分配待跟进、（我的——逾期：认购逾期、签约逾期、回款逾期）
 	 * 销售负责人XSFZR：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
 	 * 营销负责人YXJL：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
+	 * 销售经理XSJL：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
 	 * 自渠负责人ZQFZR：当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
 	 * 自渠人员ZQ：当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
 	 * 小蜜蜂JZ：渠道任务通知
@@ -263,6 +264,11 @@ public class MessageAppController extends TahoeBaseController {
     					MessageType.当日回款逾期.getTypeID()};
     			break;
     		case "YXJL":
+    			msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
+    					MessageType.当日签约逾期.getTypeID(),
+    					MessageType.当日回款逾期.getTypeID()};
+    			break;
+    		case "XSJL":
     			msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
     					MessageType.当日签约逾期.getTypeID(),
     					MessageType.当日回款逾期.getTypeID()};
@@ -343,7 +349,7 @@ public class MessageAppController extends TahoeBaseController {
     			if (item.equals(MessageType.带看通知.getTypeID()))
     			{
     				res.put("TypeID", MessageType.带看通知.getTypeID());
-    				res.put("TypeName", MessageType.带看通知.toString());
+    				res.put("TypeName", MessageType.到访通知.toString());
     				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
     				res.put("Icon", ThemeUrl + "images/icon_daikan.png");
     				res.put("Count", 0);
@@ -660,6 +666,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			|| MessageType.退房通知.getTypeID().equals(item)
 	    			|| MessageType.无效通知.getTypeID().equals(item)){
 	    		map.put("IsRead", "0");
+	    		map.put("MessageType", item);
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeOpportunityZQ_Select_Count(map));
@@ -687,6 +694,7 @@ public class MessageAppController extends TahoeBaseController {
 		    	}else{
 		    		map.put("IsApprove", "0");
 		    	}
+		    	map.put("MessageType", item);
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeOpportunity_Select_Count(map));
@@ -718,6 +726,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			|| MessageType.到访即将逾期.getTypeID().equals(item)
 	    			|| MessageType.成交即将逾期.getTypeID().equals(item)){
 	    		map.put("IsRead", "0");
+	    		map.put("MessageType", item);
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeClue_Select_Count(map));

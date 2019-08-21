@@ -343,27 +343,27 @@ public class RuleAppController extends TahoeBaseController {
             String userId = bClueruleVo.getUserId();
 
 
-            //延长到访保护期extendArriveProDays 更新 ComeOverdueTime
+            //延长到访保护期extendArriveProDays 更新 ComeOverdueTime 到访逾期时间
             if(bCluerule.getExtendArriveProDays()!=null && bCluerule.getExtendArriveProDays()!=0){
                 iBClueService.updateComeOverdueTimeByDay(bCluerule.getExtendArriveProDays(),bCluerule.getId());
             }
 
-            //延长到访保护期截止日extendArriveProEndDate 更新 ComeOverdueTime
+            //延长到访保护期截止日extendArriveProEndDate 更新 ComeOverdueTime 到访逾期时间
             if(bCluerule.getExtendArriveProEndDate()!=null){
-                iBClueService.updateComeOverdueTimeByDate(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+                iBClueService.updateComeOverdueTimeByDate(bCluerule.getExtendArriveProEndDate(),bCluerule.getId());
             }
 
-            //延长签约保护期extendSigningProDays 更新 TRADEOVERDUETIME
+            //延长签约保护期extendSigningProDays 更新 TRADEOVERDUETIME 成交逾期时间
             if(bCluerule.getExtendSigningProDays()!=null && bCluerule.getExtendSigningProDays()!= 0){
-                iBClueService.updateTradeOverdueTimeByDay(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+                iBClueService.updateTradeOverdueTimeByDay(bCluerule.getExtendSigningProDays(),bCluerule.getId());
             }
 
-            //延长签约保护期截止日extendSigningProEndDate 更新 TRADEOVERDUETIME
+            //延长签约保护期截止日extendSigningProEndDate 更新 TRADEOVERDUETIME 成交逾期时间
             if(bCluerule.getExtendSigningProEndDate()!=null){
-                iBClueService.updateTradeOverdueTimeByDate(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+                iBClueService.updateTradeOverdueTimeByDate(bCluerule.getExtendSigningProEndDate(),bCluerule.getId());
             }
 
-            if(StringUtil.isNotNull(oriProtectDays) && StringUtil.isNotNull(changeProtectDays) && !oriProtectDays.equals(changeProtectDays)) {
+            if(StringUtil.isNotNull(changeProtectDays)) {
                 List<BClueruleGourpVo> clueruleGourpVoList = new ArrayList<>();
                 if (protectSource == 2) {//2.分销
                     clueruleGourpVoList = iRuleAppService.getFenxiao(projectId, protectSource, bCluerule.getId());

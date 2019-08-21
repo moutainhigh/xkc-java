@@ -552,15 +552,15 @@
 		where statusTime is not null
 		order by statusTime desc
 	</select>
-	
+
 	<!-- 验证是否重复报备 -->
 	<select id="isRepeatedReg" resultType="java.lang.String">
-		select ID from B_Clue where Status in(1,2) 
+		select ID from B_Clue where Status in(1,2)
 		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID=#{reportUserId}
 	</select>
 	<!-- 验证是否已经被他人报备 -->
 	<select id="isProtected" resultType="java.lang.String">
-		select ID from B_Clue where Status in(1,2) 
+		select ID from B_Clue where Status in(1,2)
 		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID &lt;&gt; #{reportUserId}
 	</select>
 
@@ -588,26 +588,26 @@
     </insert>
 
     <update id = "updateComeOverdueTimeByDay">
-        update B_Clue c set ComeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendArriveProDays},ComeOverdueTime),23)
-        where c.ComeOverdueTime IS NOT NULL AND CONVERT(DATE, c.ComeOverdueTime) != '1900-01-01'
-        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+        update B_Clue set ComeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendArriveProDays},ComeOverdueTime),23)
+        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01'
+        AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 
     <update id = "updateComeOverdueTimeByDate">
-        update B_Clue c set ComeOverdueTime = #{extendArriveProEndDate}
-        where c.ComeOverdueTime IS NOT NULL AND CONVERT(DATE, c.ComeOverdueTime) != '1900-01-01'
-        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+        update B_Clue set ComeOverdueTime = #{extendArriveProEndDate}
+        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01'
+        AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 
     <update id = "updateTradeOverdueTimeByDay">
-        update B_Clue c set TradeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendSigningProDays},TradeOverdueTime),23)
-        where c.TradeOverdueTime IS NOT NULL AND CONVERT(DATE, c.TradeOverdueTime) != '1900-01-01'
-        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+        update B_Clue set TradeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendSigningProDays},TradeOverdueTime),23)
+        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01'
+        AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 
     <update id = "updateTradeOverdueTimeByDate">
-        update B_Clue c set TradeOverdueTime = #{extendSigningProEndDate}
-        where c.TradeOverdueTime IS NOT NULL AND CONVERT(DATE, c.TradeOverdueTime) != '1900-01-01'
-        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+        update B_Clue set TradeOverdueTime = #{extendSigningProEndDate}
+        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01'
+        AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 </mapper>

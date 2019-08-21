@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.clue.CStatus;
 import com.tahoecn.xkc.model.customer.BClue;
-import org.apache.ibatis.annotations.Param;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -79,11 +80,11 @@ public interface BClueMapper extends BaseMapper<BClue> {
 
     void CustomerTrack_Insert(@Param("oppID")String oppID,@Param("customerID") String customerID, @Param("clueID")String clueID);
 
-    void updateComeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId);
+    void updateComeOverdueTimeByDay(@Param("extendArriveProDays")Integer extendArriveProDays, @Param("clueRuleId")String clueRuleId);
 
-	void updateComeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId);
+	void updateComeOverdueTimeByDate(@Param("extendArriveProEndDate")Date extendArriveProEndDate, @Param("clueRuleId")String clueRuleId);
 
-	void updateTradeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId);
+	void updateTradeOverdueTimeByDay(@Param("extendSigningProDays")Integer extendSigningProDays, @Param("clueRuleId")String clueRuleId);
 
-	void updateTradeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId);
+	void updateTradeOverdueTimeByDate(@Param("extendSigningProEndDate")Date extendSigningProEndDate, @Param("clueRuleId")String clueRuleId);
 }
