@@ -775,6 +775,7 @@ public class CustomerHelp implements ICustomerHelp {
                 }
                 json.put(dicInfo.getFieldName(),dicInfo.getValue().replaceAll("'", ""));
             }
+            json.put("UseMobile", model.getUseMobile());
             json.put("OpportunityID", model.getOpportunityID());
     		json.put("CustomerID", model.getCustomerID());
     		json.put("ProjectID", model.getProjectID());

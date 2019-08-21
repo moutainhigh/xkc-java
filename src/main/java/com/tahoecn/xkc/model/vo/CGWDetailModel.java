@@ -39,7 +39,20 @@ public class CGWDetailModel implements Serializable{
     /// 来访地址
     private String VisitAddress;
     
-    public String getUserID() {
+    private String UseMobile;
+    
+    
+    public String getUseMobile() {
+		return UseMobile;
+	}
+
+
+	public void setUseMobile(String useMobile) {
+		UseMobile = useMobile;
+	}
+
+
+	public String getUserID() {
 		return UserID;
 	}
 
