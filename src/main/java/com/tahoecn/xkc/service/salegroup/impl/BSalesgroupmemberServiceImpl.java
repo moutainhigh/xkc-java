@@ -429,9 +429,14 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 int clueCount = clueListSelectMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
                 int customerCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
 
-                if(clueCount + customerCount>0 && StringUtil.isNotNull(RoleID) && (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582") || RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))
+                if(StringUtil.isNotNull(RoleID) && (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582") || RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))
                         && StringUtil.isNull(custCount)){
-                    return Result.errormsg(9527,"该成员下有客户数"+clueCount + customerCount + "个,请及时前往离职/调岗列表处理!");
+                    int sumcount = clueCount + customerCount;
+                    if(sumcount >0) {
+                        return Result.errormsg(9527, "该成员下有客户数" + sumcount + "个,请及时前往离职/调岗列表处理!");
+                    }else{
+                        return Result.errormsg(9527, "该成员下有客户数" + sumcount + "个!");
+                    }
                 }
 
                 //删除人员
