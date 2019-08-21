@@ -2,8 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.sys.BSystemadMapper">
 
-	<select id="SystemAD_Detail_Find" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.sys.BSystemad">
-		select top 1 * From B_SystemAD where IsDel= 0 and Status = 1 and ADType= #{ADType} 
+	<select id="SystemAD_Detail_Find" parameterType="java.util.Map" resultType="java.util.Map">
+		select top 1 
+			ID,
+		    EditTime,
+		    Title,
+		    Creator,
+		    ShareContent,
+		    PictureURL,
+		    ShareBanerURL,
+		    Status,
+		    PicturePath,
+		    Editor,
+		    SortNo,
+		    IsDel,
+		    CreateTime,
+		    ADType
+ 		From B_SystemAD where IsDel= 0 and Status = 1 and ADType= #{ADType} 
 	</select>
 	 <!-- 插入新的广告数据 -->
 	<insert id="SystemAD_Insert" parameterType="java.util.Map" >

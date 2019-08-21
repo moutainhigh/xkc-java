@@ -236,7 +236,7 @@ public class H5Controller extends TahoeBaseController {
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
 //        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
-        user.put("token",token);
+        user.put("token",JwtTokenUtil.TOKEN_PREFIX+token);
         return Result.ok(user);
     }
 

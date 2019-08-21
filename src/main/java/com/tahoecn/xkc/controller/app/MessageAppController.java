@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.MessageCate;
 import com.tahoecn.xkc.common.enums.MessageType;
-import com.tahoecn.xkc.common.utils.ArrayUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.vo.UnreadCountVo;
@@ -17,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -300,7 +300,7 @@ public class MessageAppController extends TahoeBaseController {
 
 	private List<Map<String, Object>> GetUnreadMessageTypeList(List<UnreadCountVo> msgArray, String[] msgType, String jobCode) {
     	List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-    	Map<String,Map<String,Object>> resJo = new HashMap<String,Map<String,Object>>();
+    	Map<String,Map<String,Object>> resJo = new LinkedHashMap<String,Map<String,Object>>();
     	if(msgType != null && msgType.length != 0){
     		for(String item : msgType){
     			Map<String,Object> res = new HashMap<String,Object>();

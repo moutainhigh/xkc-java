@@ -78,4 +78,12 @@ public interface BClueMapper extends BaseMapper<BClue> {
     Map<String, Object> getCustomerID(@Param("oppID")String oppID);
 
     void CustomerTrack_Insert(@Param("oppID")String oppID,@Param("customerID") String customerID, @Param("clueID")String clueID);
+
+    void updateComeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId);
+
+	void updateComeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId);
+
+	void updateTradeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId);
+
+	void updateTradeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId);
 }

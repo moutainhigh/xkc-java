@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -89,10 +90,19 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public Map<String, Object> BrokerMyCenter_Select(String brokerID) {
-        Map<String, Object> map = baseMapper.BrokerMyCenter_Select(brokerID);
+        List<Map<String, Object>> map = baseMapper.BrokerMyCenter_Select(brokerID);
+        Map<String, Object> resultMap=new HashMap<>();
+        if (map.size()==2){
+            BigDecimal a= (BigDecimal) map.get(0).get("DFCount");
+            BigDecimal b= (BigDecimal) map.get(1).get("DFCount");
+            resultMap=map.get(0);
+            resultMap.put("DFCount",a.intValue()+b.intValue());
+        }else {
+            resultMap=map.get(0);
+        }
         int count=mycustomersService.getWuXiao(brokerID);
-        map.put("WXcount",count);
-        return map;
+        resultMap.put("WXcount",count);
+        return resultMap;
     }
 
     @Override

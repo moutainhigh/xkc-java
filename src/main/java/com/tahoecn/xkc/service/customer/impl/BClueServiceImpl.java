@@ -1,11 +1,9 @@
 package com.tahoecn.xkc.service.customer.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
@@ -26,25 +24,17 @@ import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
-import com.tahoecn.xkc.model.vo.*;
+import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
+import com.tahoecn.xkc.model.vo.Customer;
+import com.tahoecn.xkc.model.vo.CustomerActionVo;
+import com.tahoecn.xkc.model.vo.CustomerStatus;
+import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-
-import javax.security.auth.login.Configuration;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +44,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  * <p>
@@ -914,4 +910,26 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customerpotentialfollowupMapper.insert(customerpotentialfollowup);
 		return result.ok("报备成功");
 	}
+
+    @Override
+    public void updateComeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId) {
+        clueMapper.updateComeOverdueTimeByDay(extendArriveProDays,clueRuleId);
+    }
+
+    @Override
+    public void updateComeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId) {
+        clueMapper.updateComeOverdueTimeByDate(extendArriveProDays,clueRuleId);
+    }
+
+    @Override
+    public void updateTradeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId) {
+        clueMapper.updateTradeOverdueTimeByDay(extendArriveProDays,clueRuleId);
+    }
+
+    @Override
+    public void updateTradeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId) {
+        clueMapper.updateTradeOverdueTimeByDate(extendArriveProDays,clueRuleId);
+    }
+
+
 }

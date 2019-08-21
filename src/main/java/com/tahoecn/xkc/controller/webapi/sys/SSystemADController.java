@@ -80,15 +80,6 @@ public class SSystemADController extends TahoeBaseController {
 			String VersionID_IOS,String AppVersionCode_IOS,String Url_IOS,
 			String VersionID_IPAD,String AppVersionCode_IPAD,String Url_IPAD) {
 		try {
-			System.out.println("1===========================VersionID_ANDROID:"+VersionID_ANDROID);
-			System.out.println("2===========================AppVersionCode_ANDROID:"+AppVersionCode_ANDROID);
-			System.out.println("3===========================Url_ANDROID:"+Url_ANDROID);
-			System.out.println("4===========================VersionID_IOS:"+VersionID_IOS);
-			System.out.println("5===========================AppVersionCode_IOS:"+AppVersionCode_IOS);
-			System.out.println("6===========================Url_IOS:"+Url_IOS);
-			System.out.println("7===========================VersionID_IPAD:"+VersionID_IPAD);
-			System.out.println("8===========================AppVersionCode_IPAD:"+AppVersionCode_IPAD);
-			System.out.println("9===========================Url_IPAD:"+Url_IPAD);
 			iBAppupgradeService.SystemAppVersion_Update(VersionID_ANDROID,AppVersionCode_ANDROID,Url_ANDROID,
 					VersionID_IOS,AppVersionCode_IOS,Url_IOS,
 					VersionID_IPAD,AppVersionCode_IPAD,Url_IPAD);
@@ -108,7 +99,7 @@ public class SSystemADController extends TahoeBaseController {
             
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ADType", ADType);
-    		List<BSystemad> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
+    		List<Map<String,Object>> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
     		return Result.ok(ataAd!= null && ataAd.size()!=0 ?ataAd.get(0):"");
     	}catch (Exception e) {
 			e.printStackTrace();

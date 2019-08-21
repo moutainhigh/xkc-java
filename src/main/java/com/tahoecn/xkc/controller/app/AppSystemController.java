@@ -88,7 +88,7 @@ public class AppSystemController extends TahoeBaseController {
             String ADType = (String)paramMap.get("ADType").toString();
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ADType", ADType);
-    		List<BSystemad> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
+    		List<Map<String,Object>> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
     		return Result.ok(ataAd!= null && ataAd.size()!=0 ?ataAd.get(0):"");
     	}catch (Exception e) {
 			e.printStackTrace();

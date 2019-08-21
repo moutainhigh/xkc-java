@@ -132,7 +132,8 @@ public class BSaleGroupMemberController extends TahoeBaseController {
                                                      @RequestParam(required = true) String RemoveIds,
                                                      @RequestParam(required = true) String UserID,
                                                      @RequestParam(required = true) String RoleName,
-                                           String ReceptionGroupID) {
+                                           String ReceptionGroupID,
+                                           String custCount) {
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("Ids",Ids);
@@ -143,6 +144,7 @@ public class BSaleGroupMemberController extends TahoeBaseController {
         map.put("UserID",UserID);
         map.put("RoleName",RoleName);
         map.put("ReceptionGroupID",ReceptionGroupID);
+        map.put("custCount",custCount);
 
         return iSaleGroupMemberService.SalesGroupMembers_Insert(map);
     }

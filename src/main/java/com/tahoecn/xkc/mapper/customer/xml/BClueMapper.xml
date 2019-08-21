@@ -178,7 +178,7 @@
         WHERE
         TractTime IS NOT NULL
         ORDER BY
-        sort,
+        sort desc,
         TractTime  desc
     </select>
 
@@ -586,4 +586,28 @@
         ,ReportUserMobile,'CA60462F-8767-4AC0-B2EC-5BCB092CE014',ReportUserID,GETDATE(),0,1
         from b_clue where ID=#{clueID};
     </insert>
+
+    <update id = "updateComeOverdueTimeByDay">
+        update B_Clue c set ComeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendArriveProDays},ComeOverdueTime),23)
+        where c.ComeOverdueTime IS NOT NULL AND CONVERT(DATE, c.ComeOverdueTime) != '1900-01-01'
+        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+    </update>
+
+    <update id = "updateComeOverdueTimeByDate">
+        update B_Clue c set ComeOverdueTime = #{extendArriveProEndDate}
+        where c.ComeOverdueTime IS NOT NULL AND CONVERT(DATE, c.ComeOverdueTime) != '1900-01-01'
+        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+    </update>
+
+    <update id = "updateTradeOverdueTimeByDay">
+        update B_Clue c set TradeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendSigningProDays},TradeOverdueTime),23)
+        where c.TradeOverdueTime IS NOT NULL AND CONVERT(DATE, c.TradeOverdueTime) != '1900-01-01'
+        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+    </update>
+
+    <update id = "updateTradeOverdueTimeByDate">
+        update B_Clue c set TradeOverdueTime = #{extendSigningProEndDate}
+        where c.TradeOverdueTime IS NOT NULL AND CONVERT(DATE, c.TradeOverdueTime) != '1900-01-01'
+        AND c.RuleID  = #{clueRuleId} and c.status in (1,2)
+    </update>
 </mapper>
