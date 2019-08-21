@@ -402,9 +402,9 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
     	<![CDATA[
     	SELECT  *
 		FROM    ( SELECT DISTINCT
-					c.ID as ID,
-					c.FollowUpContent as Content,
-					dbo.F_FormatDate(c.CreateTime) SendTime,
+					o.ID as ID,
+					'' as Content,
+					dbo.F_FormatDate(o.AllotTime) SendTime,
 					o.ID OpportunityID,
 					o.CustomerID,
 					o.CustomerName,
@@ -425,13 +425,18 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					'487F2C39-779D-097B-455B-799AC0B3CBB4' MessageType,
 					dbo.F_DictName ('487F2C39-779D-097B-455B-799AC0B3CBB4') MessageTypeName,
 					o.IsCustomerFirstEdit,
-					ROW_NUMBER() OVER ( ORDER BY c.CreateTime DESC ) num
-				FROM B_Opportunity o left join B_CustomerFollowUp c on c.OpportunityID = o.ID where o.ID in (
-					select distinct OpportunityID from B_CustomerFollowUp  WHERE
-					CONVERT (VARCHAR (10), NextFollowUpDate, 120) = #{CurDate} 
-					AND FollwUpUserID = #{UserID} 
-					AND ProjectID = #{ProjectID}
-					)    
+					ROW_NUMBER() OVER ( ORDER BY o.AllotTime DESC ) num
+					FROM
+					(
+						SELECT a.OpportunityID OpportunityID,
+							MAX ( CONVERT ( VARCHAR ( 10 ), a.NextFollowUpDate, 120 ) ) MaxFollowUpDate 
+						FROM B_CustomerFollowUp a
+						WHERE
+							CONVERT ( VARCHAR (10), a.NextFollowUpDate, 120 ) = #{CurDate} 
+							AND a.FollwUpUserID = #{UserID}
+							AND a.ProjectID = #{ProjectID}
+						GROUP BY a.OpportunityID 
+					) b LEFT JOIN B_Opportunity o ON o.id = b.OpportunityID   
 		        ) t
 		WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
 		        AND t.num <= ${PageIndex} * ${PageSize}
@@ -440,14 +445,20 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
     <!-- 今日待跟进列表-总数 -->
     <select id="ListDRDGJ_SelectCount" parameterType="java.util.Map" resultType="int">
     	<![CDATA[
-			SELECT  COUNT(1) recordCount
-			FROM B_Opportunity o left join B_CustomerFollowUp c on c.OpportunityID = o.ID 
-			where o.ID in (
-					select distinct OpportunityID from B_CustomerFollowUp  WHERE
-					CONVERT (VARCHAR (10), NextFollowUpDate, 120) = #{CurDate} 
-					AND FollwUpUserID = #{UserID} 
-					AND ProjectID = #{ProjectID}
-					) 
+			SELECT COUNT(1) recordCount 
+			FROM
+				(
+				SELECT a.OpportunityID OpportunityID,
+					MAX(CONVERT(VARCHAR(10), a.NextFollowUpDate, 120)) MaxFollowUpDate 
+				FROM B_CustomerFollowUp a 
+				WHERE
+					CONVERT(VARCHAR(10), a.NextFollowUpDate, 120) = #{CurDate} 
+					AND a.FollwUpUserID = #{UserID} 
+					AND a.ProjectID = #{ProjectID}
+				GROUP BY
+					a.OpportunityID 
+				) b
+			LEFT JOIN B_Opportunity o ON o.id = b.OpportunityID 
 		]]>		        
     </select>
 	<!-- 当日认购逾期列表 -->
@@ -760,18 +771,25 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
     <!-- 今日待跟进 -->
     <select id="DRDGJCalendar" parameterType="java.util.Map" resultType="java.lang.String">
     	<![CDATA[
-			SELECT CONVERT
-				( VARCHAR ( 10 ), NextFollowUpDate, 120 ) 
+			SELECT CONVERT(VARCHAR(10), b.NextFollowUpDate, 120) 
 			FROM
-				B_CustomerFollowUp 
-			WHERE
-				CONVERT ( VARCHAR ( 7 ), NextFollowUpDate, 120 ) = #{ month } 
-				AND FollwUpUserID = #{ UserID }
-				AND ProjectID = #{ ProjectID }
+			(
+				SELECT a.OpportunityID OpportunityID,
+					MAX(CONVERT(VARCHAR(10), a.NextFollowUpDate, 120)) NextFollowUpDate 
+				FROM
+					B_CustomerFollowUp a 
+				WHERE
+					CONVERT(VARCHAR(7), a.NextFollowUpDate, 120) = #{CurDate} 
+					AND a.FollwUpUserID = #{UserID} 
+					AND a.ProjectID = #{ProjectID}
+				GROUP BY
+					a.OpportunityID 
+				) b
+				LEFT JOIN B_Opportunity o ON o.id = b.OpportunityID 
 			GROUP BY
-				CONVERT ( VARCHAR ( 10 ), NextFollowUpDate, 120 ) 
+				CONVERT ( VARCHAR ( 10 ), b.NextFollowUpDate, 120 ) 
 			ORDER BY
-				CONVERT ( VARCHAR ( 10 ), NextFollowUpDate, 120 )
+				CONVERT ( VARCHAR ( 10 ), b.NextFollowUpDate, 120 )
 		]]>		        
     </select>
     <!-- 当日跟进逾期-机会 -->

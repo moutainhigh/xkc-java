@@ -660,6 +660,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			|| MessageType.退房通知.getTypeID().equals(item)
 	    			|| MessageType.无效通知.getTypeID().equals(item)){
 	    		map.put("IsRead", "0");
+	    		map.put("MessageType", item);
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeOpportunityZQ_Select_Count(map));
@@ -687,6 +688,7 @@ public class MessageAppController extends TahoeBaseController {
 		    	}else{
 		    		map.put("IsApprove", "0");
 		    	}
+		    	map.put("MessageType", item);
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeOpportunity_Select_Count(map));
@@ -718,6 +720,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			|| MessageType.到访即将逾期.getTypeID().equals(item)
 	    			|| MessageType.成交即将逾期.getTypeID().equals(item)){
 	    		map.put("IsRead", "0");
+	    		map.put("MessageType", item);
 	    		UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageTypeClue_Select_Count(map));
