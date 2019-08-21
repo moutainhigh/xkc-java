@@ -917,18 +917,18 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     }
 
     @Override
-    public void updateComeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId) {
-        clueMapper.updateComeOverdueTimeByDate(extendArriveProDays,clueRuleId);
+    public void updateComeOverdueTimeByDate(Date extendArriveProEndDate, String clueRuleId) {
+        clueMapper.updateComeOverdueTimeByDate(extendArriveProEndDate,clueRuleId);
     }
 
     @Override
-    public void updateTradeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId) {
-        clueMapper.updateTradeOverdueTimeByDay(extendArriveProDays,clueRuleId);
+    public void updateTradeOverdueTimeByDay(Integer extendSigningProDays, String clueRuleId) {
+        clueMapper.updateTradeOverdueTimeByDay(extendSigningProDays,clueRuleId);
     }
 
     @Override
-    public void updateTradeOverdueTimeByDate(Integer extendArriveProDays, String clueRuleId) {
-        clueMapper.updateTradeOverdueTimeByDate(extendArriveProDays,clueRuleId);
+    public void updateTradeOverdueTimeByDate(Date extendSigningProEndDate, String clueRuleId) {
+        clueMapper.updateTradeOverdueTimeByDate(extendSigningProEndDate,clueRuleId);
     }
 
 

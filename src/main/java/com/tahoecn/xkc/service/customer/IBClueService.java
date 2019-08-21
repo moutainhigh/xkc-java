@@ -6,7 +6,7 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.vo.Customer;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,9 +95,9 @@ public interface IBClueService extends IService<BClue> {
 
 	void updateComeOverdueTimeByDay(Integer extendArriveProDays, String id);
 
-	void updateComeOverdueTimeByDate(Integer extendArriveProDays, String id);
+	void updateComeOverdueTimeByDate(Date extendArriveProEndDate, String id);
 
-	void updateTradeOverdueTimeByDay(Integer extendArriveProDays, String id);
+	void updateTradeOverdueTimeByDay(Integer extendSigningProDays, String id);
 
-	void updateTradeOverdueTimeByDate(Integer extendArriveProDays, String id);
+	void updateTradeOverdueTimeByDate(Date extendSigningProEndDate, String id);
 }

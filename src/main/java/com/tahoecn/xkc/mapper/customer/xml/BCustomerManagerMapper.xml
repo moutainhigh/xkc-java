@@ -40,7 +40,8 @@
         tr.CardID,
         tr.CardType,
         tr.SpareMobile,
-        tr.HomeAddress
+        tr.HomeAddress,
+        tr.attrId
           FROM      ( SELECT    b.ID OpportunityID ,
                                 b.CustomerID ,
                                 b.CustomerName ,
@@ -70,7 +71,8 @@
                                 a.CardID CardID,
                                 a.CardType CardType,
                                 b.SpareMobile SpareMobile,
-                                ca.HomeAddress HomeAddress
+                                ca.HomeAddress HomeAddress,
+                                ca.ID attrId
                       FROM      B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_CustomerAttribute ca ON a.ID = ca.CustomerID
@@ -147,7 +149,8 @@
                                 '' CardID,
                                 '' CardType,
                                 '' SpareMobile,
-                                '' HomeAddress
+                                '' HomeAddress,
+                                '' attrId
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID

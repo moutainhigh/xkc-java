@@ -267,7 +267,7 @@ public class CustomerManagerController extends TahoeBaseController {
     @Transactional(rollbackFor = Exception.class)
     @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
     public Result UpdateCustBaseInfo(String oppoId,String custId,String userId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
-        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg,String homeAddressOrg,String homeAddress) {
+        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg,String homeAddressOrg,String homeAddress,String attrId) {
         UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
         BOpportunity oppo = new BOpportunity();
         oppo.setCustomerName(customerName);
@@ -286,10 +286,13 @@ public class CustomerManagerController extends TahoeBaseController {
 
         //更新客户地址
         BCustomerattribute custAttr = new BCustomerattribute();
-        UpdateWrapper<BCustomerattribute> custAttrWarapper = new UpdateWrapper<>();
-        custAttrWarapper.eq("CustomerID",custId);
+        if(StringUtil.isNotNull(attrId))
+            custAttr.setId(attrId);
+        custAttr.setCustomerID(custId);
         custAttr.setHomeAddress(homeAddress);
-        iBCustomerattributeService.update(custAttr,custAttrWarapper);
+        iBCustomerattributeService.saveOrUpdate(custAttr);
+
+
 
         //变更记录
         UpdateCustinfoLog log = new UpdateCustinfoLog();
