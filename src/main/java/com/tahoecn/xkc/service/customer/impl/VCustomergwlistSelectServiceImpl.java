@@ -2024,9 +2024,10 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
 			if(customerData!=null && customerData.size()>0 && OpportunityData!=null && OpportunityData.size()>0){
 				//姓名  副手机号 证件类型  证件号码  性别 
-				String CustomerName = OpportunityData.get("CustomerName")!=null&& !"".equals(customerData.get("CustomerName").toString())?customerData.get("CustomerName").toString():"空值";
-				String SpareMobile =OpportunityData.get("SpareMobile")!=null&& !"".equals(customerData.get("SpareMobile").toString())?customerData.get("SpareMobile").toString():"空值";
-				String CardType = customerData.get("CardType")!=null&& !"".equals(customerData.get("CardType").toString())?customerData.get("CardType").toString():"空值";
+				OpportunityData.get("CustomerName").toString();
+				String CustomerName = OpportunityData.get("CustomerName")!=null && !"".equals(OpportunityData.get("CustomerName").toString())?OpportunityData.get("CustomerName").toString():"空值";
+				String SpareMobile =OpportunityData.get("SpareMobile")!=null && !"".equals(OpportunityData.get("SpareMobile").toString())?OpportunityData.get("SpareMobile").toString():"空值";
+				String CardType = customerData.get("CardType")!=null && !"".equals(customerData.get("CardType").toString())?customerData.get("CardType").toString():"空值";
 				String CardID = customerData.get("CardID")!=null && !"".equals(customerData.get("CardID").toString())?customerData.get("CardID").toString():"空值";
 				String Gender = customerData.get("Gender")!=null && !"".equals(customerData.get("Gender").toString())?customerData.get("Gender").toString():"空值";
 				
@@ -2039,16 +2040,19 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				
 		        log.setOpportunityID(OpportunityID);
 		        log.setCustomerID(CustomerID);
+		        Boolean change = false;
 				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
 				if(!"".equals(newCustomerName)){
 					if(!CustomerName.equals(newCustomerName)){
 						log.setCustomerName(CustomerName + "->" + newCustomerName);
+						change=true;
 					}
 				}
 				String newSpareMobile =pmap.get("SpareMobile")!=null?pmap.get("SpareMobile").toString():"";
 				if(!"".equals(newSpareMobile)){
 					if(!SpareMobile.equals(newSpareMobile)){
 						log.setAuxiliaryMobile(SpareMobile + "->" + newSpareMobile);
+						change=true;
 					}
 				}
 				String newCardType = pmap.get("CardType")!=null?pmap.get("CardType").toString():"";
@@ -2057,20 +2061,22 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 						String newCardTypeStr="";
 						String oldCardTypeStr="空值";
 						for(Map<String, Object> map : cardTypejarry){
-							if(map.get(CardType)!=null){
-								oldCardTypeStr = map.get(CardType).toString();
+							if(CardType.equals(map.get("ID").toString())){
+								oldCardTypeStr = map.get("DictName").toString();
 							}
-							if(map.get(newCardType)!=null){
-								newCardTypeStr = map.get(newCardType).toString();
+							if(newCardType.equals(map.get("ID").toString())){
+								newCardTypeStr = map.get("DictName").toString();
 							}
 						}
 						log.setCardType(oldCardTypeStr + "->" + newCardTypeStr);
+						change=true;
 					}
 				}
 				String newCardID = pmap.get("CardID")!=null?pmap.get("CardID").toString():"";
 				if(!"".equals(newCardID)){
 					if(!CardID.equals(newCardID)){
 						log.setCardID(CardID + "->" + newCardID);
+						change=true;
 					}
 				}
 				String newGender = pmap.get("Gender")!=null?pmap.get("Gender").toString():"";
@@ -2079,18 +2085,21 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 						String newGenderStr = "";
 						String oldGenderStr = "空值";
 						for(Map<String, Object> map : jarry){
-							if(map.get(Gender)!=null){
-								oldGenderStr = map.get(Gender).toString();
+							if(Gender.equals(map.get("ID").toString())){
+								oldGenderStr = map.get("DictName").toString();
 							}
-							if(map.get(newGender)!=null){
-								newGenderStr = map.get(newGender).toString();
+							if(newGender.equals(map.get("ID").toString())){
+								newGenderStr = map.get("DictName").toString();
 							}
 						}
 						log.setGender(oldGenderStr + "->" + newGenderStr);
+						change=true;
 					}
 				}
-		        log.setCreateTime(new Date());
-		        iUpdateCustinfoLogService.save(log);
+				if(change){
+					 log.setCreateTime(new Date());
+				     iUpdateCustinfoLogService.save(log);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
