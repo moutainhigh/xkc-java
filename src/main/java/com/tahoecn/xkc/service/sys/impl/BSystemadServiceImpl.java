@@ -31,7 +31,7 @@ public class BSystemadServiceImpl extends ServiceImpl<BSystemadMapper, BSystemad
 	 * @return
 	 */
 	@Override
-	public List<BSystemad> SystemAD_Detail_Find(Map<String, Object> map) {
+	public List<Map<String,Object>> SystemAD_Detail_Find(Map<String, Object> map) {
 		return bSystemadMapper.SystemAD_Detail_Find(map);
 	}
 
