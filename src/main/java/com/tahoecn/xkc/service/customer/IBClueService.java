@@ -91,4 +91,13 @@ public interface IBClueService extends IService<BClue> {
 	 * 报备
 	 */
 	public Result report(String reportUserId, String intentProjectId, String customerName, String mobile, String gender, String remark, String projectName);
+
+
+	void updateComeOverdueTimeByDay(Integer extendArriveProDays, String id);
+
+	void updateComeOverdueTimeByDate(Integer extendArriveProDays, String id);
+
+	void updateTradeOverdueTimeByDay(Integer extendArriveProDays, String id);
+
+	void updateTradeOverdueTimeByDate(Integer extendArriveProDays, String id);
 }

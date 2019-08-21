@@ -58,6 +58,9 @@ public class UpdateCustinfoLog implements Serializable {
     @TableField("EditorName")
     private String EditorName;
 
+    @TableField("HomeAddress")
+    private String HomeAddress;
+
     public String getId() {
         return id;
     }
@@ -146,6 +149,14 @@ public class UpdateCustinfoLog implements Serializable {
         EditorName = editorName;
     }
 
+    public String getHomeAddress() {
+        return HomeAddress;
+    }
+
+    public void setHomeAddress(String homeAddress) {
+        HomeAddress = homeAddress;
+    }
+
     @Override
     public String toString() {
         return "UpdateCustinfoLog{" +
@@ -160,6 +171,7 @@ public class UpdateCustinfoLog implements Serializable {
         ", CardID=" + CardID +
         ", CreateTime=" + CreateTime +
         ", EditorId=" + EditorId +
+        ", HomeAddress=" + HomeAddress +
         ", EditorName=" + EditorName +
         "}";
     }

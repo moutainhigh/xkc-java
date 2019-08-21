@@ -186,6 +186,8 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
         String ReceptionGroupID = (String)map.get("ReceptionGroupID");//团队ID
         String RemoveIds = (String)map.get("RemoveIds");
         String msg = "";
+        String custCount = (String)map.get("custCount");
+
 
         if (StringUtil.isNull(ReceptionGroupID))
         {
@@ -427,8 +429,9 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 int clueCount = clueListSelectMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
                 int customerCount = bOpportunityMapper.getCustomerCount(ProjectID,removeIdStrs[i]);
 
-                if(clueCount + customerCount>0 && StringUtil.isNotNull(RoleID) && (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582") || RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))){
-                    return Result.errormsg(9527,"该成员下有客户数"+clueCount + customerCount + "个,请处理客户后再移除!");
+                if(clueCount + customerCount>0 && StringUtil.isNotNull(RoleID) && (RoleID.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582") || RoleID.equals("0269F35E-B32D-4D12-8496-4E6E4CE597B7"))
+                        && StringUtil.isNull(custCount)){
+                    return Result.errormsg(9527,"该成员下有客户数"+clueCount + customerCount + "个,请及时前往离职/调岗列表处理!");
                 }
 
                 //删除人员
