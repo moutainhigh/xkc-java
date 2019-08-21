@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.model.clue;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -60,7 +61,7 @@ public class BCustomerpotentialfollowup implements Serializable {
     @TableField("CustomerPotentialName")
     private String CustomerPotentialName;
 
-    @TableId("ID")
+    @TableId(value = "id", type = IdType.UUID)
     private String id;
 
     @TableField("FollwUpUserRole")
