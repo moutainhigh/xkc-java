@@ -39,7 +39,8 @@
         tr.SourceType SourceTypeID,
         tr.CardID,
         tr.CardType,
-        tr.SpareMobile
+        tr.SpareMobile,
+        tr.HomeAddress
           FROM      ( SELECT    b.ID OpportunityID ,
                                 b.CustomerID ,
                                 b.CustomerName ,
@@ -68,9 +69,11 @@
                                 G.CreateTime  ZJDF,
                                 a.CardID CardID,
                                 a.CardType CardType,
-                                b.SpareMobile SpareMobile
+                                b.SpareMobile SpareMobile,
+                                ca.HomeAddress HomeAddress
                       FROM      B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_CustomerAttribute ca ON a.ID = ca.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
                                 LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg
@@ -143,7 +146,8 @@
                                 '' ZJDF,
                                 '' CardID,
                                 '' CardType,
-                                '' SpareMobile
+                                '' SpareMobile,
+                                '' HomeAddress
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID

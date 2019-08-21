@@ -13,6 +13,7 @@ import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import com.tahoecn.xkc.model.rule.ProtectConfLog;
 import com.tahoecn.xkc.model.vo.BClueruleGourpVo;
 import com.tahoecn.xkc.model.vo.BClueruleVo;
+import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
@@ -64,6 +65,9 @@ public class RuleAppController extends TahoeBaseController {
 
     @Autowired
     private IProtectConfLogService iProtectConfLogService;
+
+    @Autowired
+    private IBClueService iBClueService;
 
     //规则设置：自有渠道，分销中介，推荐渠道
     @ApiImplicitParams({@ApiImplicitParam(name = "projectId", value = "项目Id", required = true, dataType = "String"),
@@ -338,6 +342,27 @@ public class RuleAppController extends TahoeBaseController {
             String changeProtectDays =  bClueruleVo.getChangeProtectDays();
             String userId = bClueruleVo.getUserId();
 
+
+            //延长到访保护期extendArriveProDays 更新 ComeOverdueTime
+            if(bCluerule.getExtendArriveProDays()!=null && bCluerule.getExtendArriveProDays()!=0){
+                iBClueService.updateComeOverdueTimeByDay(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+            }
+
+            //延长到访保护期截止日extendArriveProEndDate 更新 ComeOverdueTime
+            if(bCluerule.getExtendArriveProEndDate()!=null){
+                iBClueService.updateComeOverdueTimeByDate(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+            }
+
+            //延长签约保护期extendSigningProDays 更新 TRADEOVERDUETIME
+            if(bCluerule.getExtendSigningProDays()!=null && bCluerule.getExtendSigningProDays()!= 0){
+                iBClueService.updateTradeOverdueTimeByDay(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+            }
+
+            //延长签约保护期截止日extendSigningProEndDate 更新 TRADEOVERDUETIME
+            if(bCluerule.getExtendSigningProEndDate()!=null){
+                iBClueService.updateTradeOverdueTimeByDate(bCluerule.getExtendArriveProDays(),bCluerule.getId());
+            }
+
             if(StringUtil.isNotNull(oriProtectDays) && StringUtil.isNotNull(changeProtectDays) && !oriProtectDays.equals(changeProtectDays)) {
                 List<BClueruleGourpVo> clueruleGourpVoList = new ArrayList<>();
                 if (protectSource == 2) {//2.分销
@@ -362,7 +387,7 @@ public class RuleAppController extends TahoeBaseController {
                     log.setOriProtectDays(oriProtectDays);
                     log.setChangeProtectDays(changeProtectDays);
                     log.setEditorId(userId);
-                    log.setEditorName(ThreadLocalUtils.getUserName());
+                    log.setEditorName(ThreadLocalUtils.getRealName());
                     log.setCreateTime(new Date());
                     iProtectConfLogService.save(log);
                 }

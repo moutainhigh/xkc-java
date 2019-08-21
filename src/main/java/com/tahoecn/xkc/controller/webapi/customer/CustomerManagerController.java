@@ -15,11 +15,13 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerManagerMapper;
 import com.tahoecn.xkc.model.customer.BCustomer;
+import com.tahoecn.xkc.model.customer.BCustomerattribute;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.salegroup.BSalesgroup;
 import com.tahoecn.xkc.service.customer.IBCustomerManagerService;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
+import com.tahoecn.xkc.service.customer.IBCustomerattributeService;
 import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.salegroup.IBSalesgroupService;
@@ -70,6 +72,9 @@ public class CustomerManagerController extends TahoeBaseController {
 
     @Autowired
     private IUpdateCustinfoLogService iUpdateCustinfoLogService;
+
+    @Autowired
+    private IBCustomerattributeService iBCustomerattributeService;
 
 
     @ApiOperation(value = "客户管理列表")
@@ -262,7 +267,7 @@ public class CustomerManagerController extends TahoeBaseController {
     @Transactional(rollbackFor = Exception.class)
     @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
     public Result UpdateCustBaseInfo(String oppoId,String custId,String userId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
-        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg) {
+        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg,String homeAddressOrg,String homeAddress) {
         UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
         BOpportunity oppo = new BOpportunity();
         oppo.setCustomerName(customerName);
@@ -278,6 +283,13 @@ public class CustomerManagerController extends TahoeBaseController {
         cust.setGender(gender);
         custUpWarapper.eq("ID",custId);
         customerService.update(cust,custUpWarapper);
+
+        //更新客户地址
+        BCustomerattribute custAttr = new BCustomerattribute();
+        UpdateWrapper<BCustomerattribute> custAttrWarapper = new UpdateWrapper<>();
+        custAttrWarapper.eq("CustomerID",custId);
+        custAttr.setHomeAddress(homeAddress);
+        iBCustomerattributeService.update(custAttr,custAttrWarapper);
 
         //变更记录
         UpdateCustinfoLog log = new UpdateCustinfoLog();
@@ -296,6 +308,8 @@ public class CustomerManagerController extends TahoeBaseController {
             log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
         if(StringUtil.isNotNull(customerName))
             log.setCustomerName(customerNameOrg + "->" + customerName);
+        if(StringUtil.isNotNull(homeAddress))
+            log.setHomeAddress(homeAddressOrg + "->" + homeAddress);
         log.setCreateTime(new Date());
         iUpdateCustinfoLogService.save(log);
         return Result.ok("修改成功");
