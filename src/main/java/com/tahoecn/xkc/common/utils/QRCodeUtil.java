@@ -69,7 +69,7 @@ public class QRCodeUtil {
             Random random = new Random();
             //生成二维码存放文件
             Date dd=new Date();
-            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd/");
             String time=sim.format(dd);
             String url = path+folder+time;
             String fileName=UUID.randomUUID()+".jpg";
