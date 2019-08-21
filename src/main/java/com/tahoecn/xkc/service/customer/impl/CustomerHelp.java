@@ -95,8 +95,8 @@ public class CustomerHelp implements ICustomerHelp {
 					customerModel.setOpportunityID(CustomerObj.getString("OpportunityID"));
 					customerModel.setClueID(CustomerObj.getString("ClueID"));
 					customerModel.setSpareMobile(CustomerObj.getString("SpareMobile")!=null?CustomerObj.getString("SpareMobile"):"");
-					customerModel.setUseMobile(CustomerObj.getString("UseMobile")!=null?CustomerObj.getString("UseMobile"):"");
 					customerModel.setCustomerMobile(CustomerObj.getString("CustomerMobile")!=null?CustomerObj.getString("CustomerMobile"):"");
+					customerModel.setUseMobile(CustomerObj.getString("UseMobile")!=null?CustomerObj.getString("UseMobile"):customerModel.getCustomerMobile());
 					model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID"));
 					String fieldKey = null;
 					for (DicInfo item : dicList) {
