@@ -228,6 +228,7 @@ WHERE a.IsDel=0 and a.OrgCategory=1 and a.ID IN (SELECT DISTINCT OrgID FROM [dbo
     <select id="getChildList" resultType="java.util.HashMap" parameterType="string">
         SELECT c.ID,c.OrgName FROM B_ChannelOrg c
         INNER JOIN B_PojectChannelOrgRel p ON c.ID=p.OrgID AND p.ProjectID IN (${ProjectID})
+        AND p.IsDel=0 AND p.Status=1
         WHERE  c.NewPID=#{ID}
     </select>
 </mapper>
