@@ -561,8 +561,10 @@
         a.CreateTime
         FROM
         [S_Account] a
-        WHERE
-        a.UserOrgID IN ( SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%' )
+       <where>
+           <if test="FullPath!= null and FullPath != ''">
+            a.UserOrgID IN ( SELECT ID FROM S_Organization WHERE FullPath LIKE '${FullPath}%' )
+           </if>
         <!-- AND ( #{Key} = ''
         OR a.UserName LIKE concat('%',#{Key},'%')
         OR a.EmployeeName LIKE concat('%',#{Key},'%')
@@ -587,6 +589,7 @@
         AND a.IsDel= 0
         ) t ON t.UserOrgID= o.ID
         AND o.IsDel= 0 AND o.Status=1
+       </where>
         <if test="FullPath == '第三方组织/泰禾/泰禾移动营销管理平台/泰禾集团'">
         UNION
         SELECT

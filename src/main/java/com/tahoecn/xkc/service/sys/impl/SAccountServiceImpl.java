@@ -144,10 +144,15 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     @Override
     public IPage<Map<String,Object>> SystemUserListByOrgID_SelectN(IPage page, String authCompanyID,String OrgID, String key,int Type,
     		String UserName,String Mobile,String Status) {
-        SOrganization byId = organizationService.getById(OrgID);
+        if (OrgID!=null){
+            SOrganization byId = organizationService.getById(OrgID);
+            return baseMapper.SystemUserListByOrgID_SelectN(page,authCompanyID,byId.getFullPath(),key,Type,
+                    UserName, Mobile, Status);
+        }else {
+            return baseMapper.SystemUserListByOrgID_SelectN(page,authCompanyID,null,key,Type,
+                    UserName, Mobile, Status);
+        }
 
-        return baseMapper.SystemUserListByOrgID_SelectN(page,authCompanyID,byId.getFullPath(),key,Type,
-        		UserName, Mobile, Status);
     }
 
     @Override
