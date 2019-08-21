@@ -165,7 +165,7 @@
     </select>
 
     <select id="getQuitSalesTeamMember3" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
-        SELECT CustomerID CustomerID,CustomerName CustomerName,CustomerMobile CustomerMobile,SaleUserID SaleUser FROM dbo.B_Opportunity WHERE ID=#{clueId}
+        SELECT CustomerID CustomerID,CustomerName CustomerName,CustomerMobile CustomerMobile,SaleUserID SaleUser FROM dbo.B_Opportunity WHERE ID=#{oppoId}
     </select>
 
     <select id="getQuitSalesTeamMember4" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
