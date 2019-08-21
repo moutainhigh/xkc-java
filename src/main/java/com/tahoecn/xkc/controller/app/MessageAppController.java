@@ -343,7 +343,7 @@ public class MessageAppController extends TahoeBaseController {
     			if (item.equals(MessageType.带看通知.getTypeID()))
     			{
     				res.put("TypeID", MessageType.带看通知.getTypeID());
-    				res.put("TypeName", MessageType.带看通知.toString());
+    				res.put("TypeName", MessageType.到访通知.toString());
     				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
     				res.put("Icon", ThemeUrl + "images/icon_daikan.png");
     				res.put("Count", 0);
