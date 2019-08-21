@@ -178,7 +178,7 @@
         WHERE
         TractTime IS NOT NULL
         ORDER BY
-        sort,
+        sort desc,
         TractTime  desc
     </select>
 
