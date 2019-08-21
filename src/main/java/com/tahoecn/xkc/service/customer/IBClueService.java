@@ -85,7 +85,7 @@ public interface IBClueService extends IService<BClue> {
 	/*
 	 * 我的客户列表
 	 */
-	public List<Customer> listMyCustomers(String reportUserId, String projectId, String order, String nameOrMobile, String status);
+	public List<Customer> listMyCustomers(String reportUserId, String order, String nameOrMobile, String status);
 	
 	/*
 	 * 报备

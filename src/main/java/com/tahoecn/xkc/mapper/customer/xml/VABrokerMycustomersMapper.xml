@@ -11,7 +11,7 @@
 	</select>
 	
 	<select id="selectMyCustomer" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
-		select * from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} and IntentProjectName=#{projectName}
+		select * from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} 
 		<choose>
 		<when test="nameOrMobile!=null and nameOrMobile != ''">
     		 and (Mobile=#{nameOrMobile} or CustomerName=#{nameOrMobile})

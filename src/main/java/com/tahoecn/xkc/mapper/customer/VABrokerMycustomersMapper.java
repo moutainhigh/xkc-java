@@ -20,7 +20,7 @@ public interface VABrokerMycustomersMapper extends BaseMapper<VABrokerMycustomer
 
     IPage<Map<String, Object>> mGetMyCustomers_Select(IPage page,@Param("Where")String where, @Param("Order") String order,  @Param("Search")String search);
     VABrokerMycustomers selectClue(@Param("clueId") String clueId);
-	List<VABrokerMycustomers> selectMyCustomer(@Param("reportUserId") String reportUserId, @Param("order") String order, @Param("nameOrMobile") String nameOrMobile, @Param("status") String status, @Param("projectName") String projectName);
+	List<VABrokerMycustomers> selectMyCustomer(@Param("reportUserId") String reportUserId, @Param("order") String order, @Param("nameOrMobile") String nameOrMobile, @Param("status") String status);
 
     int getWuXiao(@Param("brokerID")String brokerID);
 }

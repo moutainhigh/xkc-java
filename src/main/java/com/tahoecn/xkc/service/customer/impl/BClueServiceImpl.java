@@ -105,12 +105,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
 
 
-	@Value("${mobilesale.projectid}")
-	private String intentProjectId;
-
-	@Value("${mobilesale.projectname}")
-	private String intentProjectName;
-
 	@Value("${mobilesale.ruleid}")
 	private String ruleId;
 
@@ -723,30 +717,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	 * 我的客户列表
 	 */
 	@Override
-	public List<Customer> listMyCustomers(String reportUserId, String projectId, String order, String nameOrMobile,
+	public List<Customer> listMyCustomers(String reportUserId, String order, String nameOrMobile,
 			String status) {
 		if (reportUserId == null) {
 			return null;
 		}
-
-		String projectName;
-		if(projectId != null && !"".equals(projectId)) {
-			BProject project = projectMapper.selectById(projectId);
-			if(project!=null) {
-				projectName = project.getShortName();
-			}else {
-				projectId = this.intentProjectId;
-				projectName = this.intentProjectName;
-			}
-
-
-		}else {
-			projectId = this.intentProjectId;
-			projectName = this.intentProjectName;
-		}
-
 		List<VABrokerMycustomers> cusList = vABrokerMycustomersMapper.selectMyCustomer(reportUserId, order,
-				nameOrMobile, status, projectName);
+				nameOrMobile, status);
 		List<Customer> customers = new ArrayList<Customer>();
 		if (cusList == null || cusList.isEmpty()) {
 			return null;
