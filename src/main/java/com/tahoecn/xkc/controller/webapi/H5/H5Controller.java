@@ -13,6 +13,7 @@ import com.tahoecn.xkc.common.utils.NetUtil;
 import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -232,6 +234,12 @@ public class H5Controller extends TahoeBaseController {
         List<Map<String,Object>> list= channelorgService.getChildOrg(id);
         if (list!=null){
             user.put("ChannelorgList",list);
+        }
+        BChannelorg channelOrg = channelorgService.getById((String) user.get("ChannelOrgID"));
+        if (StringUtils.equals(channelOrg.getMobile(),(String)user.get("Mobile"))){
+            user.put("position","负责人");
+        }else {
+            user.put("position","经纪人");
         }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
