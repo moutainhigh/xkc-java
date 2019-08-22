@@ -192,22 +192,22 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         						for(int i = 0; i < filterItem.getChild().size(); i++){
         							switch (filterItem.getChild().get(i)) {
 									case "17018427-C01B-0E2A-E62D-900B50EF2581":
-										filterItem.getChild().add(i, "1");
+										filterItem.getChild().set(i, "1");
 										break;
 									case "6A91A1AB-FC05-2BC0-8C08-0C3FCB07D865":
-										filterItem.getChild().add(i, "2");
+										filterItem.getChild().set(i, "2");
 										break;
 									case "3962D6C3-1141-F62F-2181-9F6AA82E0A6C":
-										filterItem.getChild().add(i, "3");
+										filterItem.getChild().set(i, "3");
 										break;
 									case "3089CC46-2736-2B3C-3B9C-6D44D059ACCD":
-										filterItem.getChild().add(i, "4");
+										filterItem.getChild().set(i, "4");
 										break;
 									case "E9C2D9B3-4538-CBDD-73DE-AEA7444DB20E":
-										filterItem.getChild().add(i, "5");
+										filterItem.getChild().set(i, "5");
 										break;
 									case "43A67B86-E775-158F-F897-30E78F5C8D4C":
-										filterItem.getChild().add(i, "7");
+										filterItem.getChild().set(i, "7");
 										break;
 									}
         						}
@@ -220,19 +220,19 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         						for(int i = 0; i < filterItem.getChild().size(); i++){
         							switch (filterItem.getChild().get(i)) {
 									case "CB61E620-7589-C99B-F834-7EA3203D75AB":
-										filterItem.getChild().add(i, "2A357E4A-90D7-5D69-C209-E26CFA5839FA");
+										filterItem.getChild().set(i, "2A357E4A-90D7-5D69-C209-E26CFA5839FA");
 										break;
 									case "ABC6231B-225A-1EC6-8BD6-5165D911BD4E":
-										filterItem.getChild().add(i, "DF2057E2-303B-1F14-4075-069668D3A3BE");
+										filterItem.getChild().set(i, "DF2057E2-303B-1F14-4075-069668D3A3BE");
 										break;
 									case "55EE9A36-4A34-36C6-5B77-8BC1227A156C":
-										filterItem.getChild().add(i, "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D");
+										filterItem.getChild().set(i, "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D");
 										break;
 									case "B8922623-E5E4-04BF-1A0B-DEE35CBC9A08":
-										filterItem.getChild().add(i, "9CEA46E8-A3ED-409E-646C-F38A5EAC383E");
+										filterItem.getChild().set(i, "9CEA46E8-A3ED-409E-646C-F38A5EAC383E");
 										break;
 									case "AE005A89-BB77-2E81-A8BA-05CB619654B5":
-										filterItem.getChild().add(i, "84640879-F4A7-CB87-E39B-F18070BCA568");
+										filterItem.getChild().set(i, "84640879-F4A7-CB87-E39B-F18070BCA568");
 										break;
 									}
         						}
