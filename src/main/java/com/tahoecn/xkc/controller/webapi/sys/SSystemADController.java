@@ -98,7 +98,7 @@ public class SSystemADController extends TahoeBaseController {
     		// 直接将json信息打印出来
             
     		Map<String,Object> map = new HashMap<String,Object>();
-    		map.put("ADType", '1');
+    		map.put("ADType", "1");
     		List<Map<String,Object>> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
     		return Result.ok(ataAd!= null && ataAd.size()!=0 ?ataAd.get(0):"");
     	}catch (Exception e) {
