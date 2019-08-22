@@ -280,7 +280,7 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
         BClue clue = new BClue();
         UpdateWrapper<BClue> clueUpdateWrapper = new UpdateWrapper<>();
         clueUpdateWrapper.eq("IntentProjectID",ProjectID);
-        clueUpdateWrapper.in("ID",ClueIDs);
+        clueUpdateWrapper.in("ID",ClueIDs.split(","));
         clue.setReportUserID(SelectUserID);
         clue.setReportUserName(account.getEmployeeName());
         clue.setReportUserMobile(account.getMobile());
@@ -358,7 +358,7 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
         BOpportunity opportunity = new BOpportunity();
         UpdateWrapper<BOpportunity> oppoUpdateWrapper = new UpdateWrapper<>();
         oppoUpdateWrapper.eq("ProjectID",ProjectID);
-        oppoUpdateWrapper.in("ID",ClueIDs);
+        oppoUpdateWrapper.in("ID",ClueIDs.split(","));
 
         opportunity.setSaleUserID(SelectUserID);
         opportunity.setSaleUserName(account.getEmployeeName());
@@ -400,7 +400,7 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
         BChanneluser channeluser = iBChanneluserService.getOne(channeluserQueryWrapper);
         BClue clue = new BClue();
         UpdateWrapper<BClue> clueUpdateWrapper = new UpdateWrapper<>();
-        clueUpdateWrapper.in("ID",ClueIDs);
+        clueUpdateWrapper.in("ID",ClueIDs.split(","));
         clue.setReportUserID(SelectUserID);
         clue.setReportUserName(channeluser.getName());
         clue.setReportUserMobile(channeluser.getMobile());
@@ -429,6 +429,4 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
         }
         return Result.ok("成功");
     }
-
-
 }
