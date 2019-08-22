@@ -270,7 +270,7 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
-    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel) {
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel,String isWhole) {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
@@ -305,18 +305,23 @@ public class ReportController extends TahoeBaseController {
         }
         IPage<CostomerReport> list=costomerReportService.page(page,wrapper);
         if (StringUtils.isNotEmpty(isExcel)){
-            SetExcel_costomerReport(list);
+            SetExcel_costomerReport(list,isWhole);
             return null;
         }
         return Result.ok(list);
     }
 
-    private void SetExcel_costomerReport(IPage<CostomerReport> result) {
+    private void SetExcel_costomerReport(IPage<CostomerReport> result,String isWhole) {
         List<ExcelExportEntity> entity = new ArrayList<>();
         entity.add(new ExcelExportEntity("区域", "areaName"));
         entity.add(new ExcelExportEntity("城市公司", "cityName"));
         entity.add(new ExcelExportEntity("项目名称", "intentProjectName"));
         entity.add(new ExcelExportEntity("客户姓名", "customerName"));
+        if (StringUtils.isNotEmpty(isWhole)){
+            entity.add(new ExcelExportEntity("客户电话", "customerMobileWhole"));
+        }else{
+            entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
+        }
         entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
         entity.add(new ExcelExportEntity("置业顾问", "saleUserName"));
         entity.add(new ExcelExportEntity("置业顾问所属团队", "saleTeamName"));
