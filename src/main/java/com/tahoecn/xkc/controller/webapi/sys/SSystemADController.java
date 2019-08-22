@@ -100,7 +100,7 @@ public class SSystemADController extends TahoeBaseController {
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ADType", ADType);
     		List<Map<String,Object>> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
-    		if(ataAd!= null){
+    		if(ataAd != null || ataAd.size() != 0){
     			return Result.ok(ataAd);
     		}else{
     			return Result.okm("");
