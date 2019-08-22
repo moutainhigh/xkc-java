@@ -43,7 +43,7 @@
 				#{PictureURL},
 				#{Title},
 				#{ShareContent},
-				1,
+				2,
 				1,
 				1,
 				GETDATE(),
@@ -57,6 +57,6 @@
 	<update id="SystemAD_Update" parameterType="java.util.Map" >
 		UPDATE dbo.B_SystemAD 
 		SET IsDel = 1
-		WHERE ADType=1 AND IsDel=0 AND Status=1;
+		WHERE ADType=2 AND IsDel=0 AND Status=1;
 	</update>
 </mapper>
