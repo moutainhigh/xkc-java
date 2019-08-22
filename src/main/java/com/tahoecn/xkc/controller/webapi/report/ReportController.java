@@ -284,14 +284,22 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getFollwUpWayTxt()), CostomerReport::getFollwUpWayTxt, report.getFollwUpWayTxt());    //跟进类型
         wrapper.lambda().eq(report.getDaofangCount() != null, CostomerReport::getDaofangCount, report.getDaofangCount());    //到访次数
-        wrapper.lambda().between(report.getCreateTime() != null, CostomerReport::getCreateTime, report.getCreateTime(),report.getCreateTimeEnd());  //创建时间
-        wrapper.lambda().between(report.getReportTime() != null, CostomerReport::getReportTime, report.getReportTime(),report.getReportTimeEnd());  //宝贝时间
-        wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(),report.getTheFirstVisitDateEnd());  //首访时间
-        wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(),report.getZjdfEnd());  //最近到访
-        wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(),report.getTheLatestFollowUpDateEnd());  //最近跟进
-        wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(),report.getBookingCreateTimeEnd());  //认筹时间
-        wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(),report.getOrderCreateTimeEnd());  //认购时间
-        wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),report.getmYContractCreateTimeEnd());  //签约时间
+        if (report.getCreateTime() != null)
+            wrapper.lambda().between(report.getCreateTime() != null, CostomerReport::getCreateTime, report.getCreateTime(), new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000));  //创建时间
+        if (report.getReportTime() != null)
+            wrapper.lambda().between(report.getReportTime() != null, CostomerReport::getReportTime, report.getReportTime(), new Date(report.getReportTime().getTime() + 60 * 60 * 24 * 1000));  //宝贝时间
+        if (report.getTheFirstVisitDate() != null)
+            wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(), new Date(report.getTheFirstVisitDate().getTime() + 60 * 60 * 24 * 1000));  //首访时间
+        if (report.getZjdf() != null)
+            wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(), new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000));  //最近到访
+        if (report.getTheLatestFollowUpDate() != null)
+            wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(), new Date(report.getTheLatestFollowUpDate().getTime() + 60 * 60 * 24 * 1000));  //最近跟进
+        if (report.getBookingCreateTime() != null)
+            wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(), new Date(report.getBookingCreateTime().getTime() + 60 * 60 * 24 * 1000));  //认筹时间
+        if (report.getOrderCreateTime() != null)
+            wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(), new Date(report.getOrderCreateTime().getTime() + 60 * 60 * 24 * 1000));  //认购时间
+        if (report.getmYContractCreateTime() != null)
+            wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),new Date(report.getmYContractCreateTime().getTime() + 60*60*24*1000));  //签约时间
         if (StringUtils.isNotEmpty(isExcel)){
             page = new Page(1,-1);
         }
