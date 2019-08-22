@@ -170,45 +170,45 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         //创建时间
         if (StringUtil.isNotNull(CreateTime_Start))
         {
-            sqlWhere.append(" and  tm.CreateTime>='"+CreateTime_Start+"'");
+            sqlWhere.append(" and  tm.CreateTime>='"+CreateTime_Start+" 00:00:00'");
         }
         //创建时间
         if (StringUtil.isNotNull(CreateTime_End))
         {
-            sqlWhere.append(" and  tm.CreateTime<='"+CreateTime_End+"'");
+            sqlWhere.append(" and  tm.CreateTime<='"+CreateTime_End+" 23:59:59'");
         }
         //首访时间TheFirstVisitDate_Start
         if (StringUtil.isNotNull(TheFirstVisitDate_Start))
         {
-            sqlWhere.append(" and  tm.TheFirstVisitDate>='"+TheFirstVisitDate_Start+"'");
+            sqlWhere.append(" and  tm.TheFirstVisitDate>='"+TheFirstVisitDate_Start+" 00:00:00'");
         }
         //首访时间
         if (StringUtil.isNotNull(TheFirstVisitDate_End))
         {
-            sqlWhere.append(" and  tm.TheFirstVisitDate<='"+TheFirstVisitDate_End+"'");
+            sqlWhere.append(" and  tm.TheFirstVisitDate<='"+TheFirstVisitDate_End+" 23:59:59'");
         }
         //最近到访时间
         if (StringUtil.isNotNull(ZJDF_Start))
         {
-            Where.append(" and  CreateTime>='"+ZJDF_Start+"'");
+            Where.append(" and  CreateTime>='"+ZJDF_Start+" 00:00:00'");
             WhereLast.append("");
         }
         //最近到访时间
         if (StringUtil.isNotNull(ZJDF_End))
         {
-            Where.append(" and  CreateTime<='"+ZJDF_End+"'");
+            Where.append(" and  CreateTime<='"+ZJDF_End+" 23:59:59'");
             WhereLast.append(" AND s.ZJDF IS NOT NULL AND s.ZJDF<>''");
         }
         //跟进时间--开始
         if (StringUtil.isNotNull(TheLatestFollowUpDate_Start))
         {
-            sqlWhere.append(" AND m.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+"' ");
+            sqlWhere.append(" AND m.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+" 00:00:00'' ");
         }
 
         //跟进时间--结束
         if (StringUtil.isNotNull(TheLatestFollowUpDate_End))
         {
-            sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+"' ");
+            sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+" 23:59:59' ");
         }
         if (StringUtil.isNotNull(uType) && uType.equals("1")){
             updateWhere.append(" AND b.Status IN (4,5)");
