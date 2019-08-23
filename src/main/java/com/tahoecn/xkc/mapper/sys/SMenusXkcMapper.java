@@ -27,11 +27,11 @@ public interface SMenusXkcMapper extends BaseMapper<SMenusXkc> {
 
     String getNewPath(@Param("ID")String id);
 
-    List<HashMap<String, Object>> getResult();
+    List<Map<String, Object>> getResult();
 
-    List<HashMap<String, Object>> getElseResult(@Param("CommonJobID") String commonJobID);
+    List<Map<String, Object>> getElseResult(@Param("CommonJobID") String commonJobID);
 
-    List<HashMap<String, Object>> getOtherResult(@Param("JobID") String jobID, @Param("ID") String id);
+    List<Map<String, Object>> getOtherResult(@Param("JobID") String jobID, @Param("ID") String id);
 
     List<Map<String, Object>> UserFunctions(@Param("UserID") String userID, @Param("AuthCompanyID")String authCompanyID, @Param("ProductID")String productID);
 

@@ -319,7 +319,7 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
-    @ApiOperation(value = "修改个人证件信息", notes = "修改个人证件信息")
+    @ApiOperation(value = "查询个人证件信息", notes = "查询个人证件信息")
     @RequestMapping(value = "/mBrokerChannelUserCardDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerChannelUserCardDetail_Select(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap)jsonParam.get("_param");
@@ -842,7 +842,7 @@ public class H5Controller extends TahoeBaseController {
         }
         return Result.ok(url);
     }
-    //todo 加UserID
+
     @ApiOperation(value = "区域项目列表", notes = "区域项目列表")
     @RequestMapping(value = "/ProjectList_Select", method = {RequestMethod.POST})
     public Result ProjectList_Select(@RequestBody JSONObject jsonParam) {
