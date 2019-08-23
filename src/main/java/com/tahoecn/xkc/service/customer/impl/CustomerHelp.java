@@ -90,6 +90,7 @@ public class CustomerHelp implements ICustomerHelp {
 			customerModel = InitCustomerModelByFileName(jsonFileName);
 			if (customerModel != null) {
 				List<DicInfo> dicList = InitCustomerDicModel("CustomerDic.json");
+				Integer Status = null;
 				if (CustomerObj!=null) {
 					customerModel.setCustomerID(CustomerObj.getString("CustomerID"));
 					customerModel.setOpportunityID(CustomerObj.getString("OpportunityID"));
@@ -98,6 +99,7 @@ public class CustomerHelp implements ICustomerHelp {
 					customerModel.setCustomerMobile(CustomerObj.getString("CustomerMobile")!=null?CustomerObj.getString("CustomerMobile"):"");
 					customerModel.setUseMobile(CustomerObj.getString("UseMobile")!=null?CustomerObj.getString("UseMobile"):customerModel.getCustomerMobile());
 					model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID"));
+					Status = CustomerObj.getInteger("Status");
 					String fieldKey = null;
 					for (DicInfo item : dicList) {
 						fieldKey = ("Option".equals(item.getType()) || "OptionRadio".equals(item.getType())) ? item.getFieldName() + "Name" : item.getFieldName();
@@ -479,6 +481,26 @@ public class CustomerHelp implements ICustomerHelp {
 						} else {// 字典不存在
 								// childItem.Value = "";
 								// childItem.ValueID = "";
+						}
+						if(Status!=null && (Status==4 || Status==5)){
+							if (childItem.getID().equals("149F778D-4244-46F6-908F-D33A363A5B58")) {// 姓名
+								childItem.setIsEdit(0);
+							}
+							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 主手机
+								childItem.setIsEdit(0);
+							}
+							if (childItem.getID().equals("E72C340D-4092-467A-9B8F-5138DBDCA43B")) {// 性别
+								childItem.setIsEdit(0);
+							}
+							if (childItem.getID().equals("848EBE45-2C03-40C5-AE91-EC72533539BD")) {// 证件类别
+								childItem.setIsEdit(0);
+							}
+							if (childItem.getID().equals("56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37")) {// 证件号码
+								childItem.setIsEdit(0);
+							}
+							if (childItem.getID().equals("9036F3E4-2EB7-4E7A-849D-FFF39EEB093D")) {// 通讯地址
+								childItem.setIsEdit(0);
+							}
 						}
 					}
 					panelIndex++;
