@@ -492,7 +492,7 @@ public interface VCustomergwlistSelectMapper {
 	 * @param mobile
 	 * @return
 	 */
-	Map<String,Object> CustomerPotential_Exist(@Param("mobile")String mobile);
+	Map<String,Object> CustomerPotential_Exist(@Param("Mobile")String mobile);
 	
 	/**
 	 * 获取机会客户信息
