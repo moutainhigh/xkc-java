@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.model.sys.SAccount;
+import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +35,9 @@ public class SAccountController extends TahoeBaseController {
 
     @Autowired
     private IBSalesuserService salesuserService;
+
+    @Autowired
+    private IBChanneluserService channeluserService;
 
 
 //    @ApiOperation(value = "获取组织下的人员(用户管理)", notes = "获取组织下的人员(用户管理)")
@@ -61,12 +66,27 @@ public class SAccountController extends TahoeBaseController {
     public Result SystemUser_Insert(@RequestBody SAccount account) {
         //手机号不可重复
         String mobile = account.getMobile();
+        String userName = account.getUserName();
         QueryWrapper<SAccount> wrapper=new QueryWrapper();
         wrapper.eq("Mobile",mobile).eq("IsDel",0);
         int count = accountService.count(wrapper);
-        if (count>0) {
+        QueryWrapper<BChanneluser> queryWrapper=new QueryWrapper();
+        queryWrapper.eq("Mobile",mobile).eq("IsDel",0);
+        int count1 = channeluserService.count(queryWrapper);
+        if (count>0||count1>0) {
             return Result.errormsg(500, "电话号码已存在,请使用其他号码");
         }
+
+//        QueryWrapper<SAccount> wrapper1=new QueryWrapper();
+//        wrapper.eq("Mobile",userName).eq("IsDel",0);
+//        int countName = accountService.count(wrapper);
+//        QueryWrapper<BChanneluser> queryWrapper1=new QueryWrapper();
+//        queryWrapper.eq("Mobile",userName).eq("IsDel",0);
+//        int countName1 = channeluserService.count(queryWrapper);
+//        if (count>0||count1>0) {
+//            return Result.errormsg(500, "电话号码已存在,请使用其他号码");
+//        }
+
         account.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");
         account.setCreator(ThreadLocalUtils.getUserName());
         account.setCreateTime(new Date());
