@@ -319,6 +319,20 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
+    @ApiOperation(value = "修改个人证件信息", notes = "修改个人证件信息")
+    @RequestMapping(value = "/mBrokerChannelUserCardDetail_Select", method = {RequestMethod.POST})
+    public Result mBrokerChannelUserCardDetail_Select(@RequestBody JSONObject jsonParam) {
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String UserID=(String) paramMap.get("UserID");
+        QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
+        wrapper.eq("ID",UserID).eq("IsDel",0).eq("Status",1);
+        wrapper.select("CertificatesName","CertificatesType","CertificatesNo","CertificatesPicFace","CertificatesPicBack");
+        BChanneluser one = channeluserService.getOne(wrapper);
+        if (one!=null){
+            return Result.ok(one);
+        }
+        return Result.errormsg(1,"加载用户个人信息失败");
+    }
 
     //已测
     @ApiOperation(value = "修改个人证件信息", notes = "修改个人证件信息")
@@ -828,7 +842,7 @@ public class H5Controller extends TahoeBaseController {
         }
         return Result.ok(url);
     }
-
+    //todo 加UserID
     @ApiOperation(value = "区域项目列表", notes = "区域项目列表")
     @RequestMapping(value = "/ProjectList_Select", method = {RequestMethod.POST})
     public Result ProjectList_Select(@RequestBody JSONObject jsonParam) {
@@ -837,9 +851,9 @@ public class H5Controller extends TahoeBaseController {
         List<Map<String,Object>> list;
         if (Name!=null){
             String key= (String) Name;
-            list=projectService.ProjectList_Select(key);
+            list=projectService.ProjectList_Select(key,null);
         }else {
-            list=projectService.ProjectList_Select(null);
+            list=projectService.ProjectList_Select(null,null);
         }
         return Result.ok(list);
     }
