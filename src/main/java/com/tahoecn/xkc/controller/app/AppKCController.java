@@ -316,9 +316,13 @@ public class AppKCController extends TahoeBaseController {
             map.put("ChannelTaskID", ChannelTaskID);
     		List<Map<String,Object>> a = iBChanneluserService.mChannelCheckClockPage_Select(map);
     		Map<String, Object> b = new HashMap<String, Object>();
+    		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
     		if(a.size() != 0) {
     			b = a.get(0);
     		}
+    		String sd1 = sdf.format(a.get(0).get("LastCheckTime"));
+        	a.get(0).put("LastCheckTime", sd1);
     		return re.ok(b);
     	}catch (Exception e) {
 			e.printStackTrace();
@@ -723,6 +727,20 @@ public class AppKCController extends TahoeBaseController {
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ProjectID", ProjectID);
     		List<Map<String, Object>> a = iBChanneltaskService.mChannelLeaderTaskList_Select(map);
+    		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            for(int x=0;x<a.size();x++) {
+            	
+            	String sd1 = sdf.format(a.get(x).get("WorkStartTime"));
+            	a.get(x).put("WorkStartTime", sd1);
+            	String sd2 = sdf.format(a.get(x).get("EndTime"));
+            	a.get(x).put("EndTime", sd2);
+            	String sd3 = sdf.format(a.get(x).get("WorkEndTime"));
+            	a.get(x).put("WorkEndTime", sd3);
+            	String sd4 = sdf.format(a.get(x).get("StartTime"));
+            	a.get(x).put("StartTime", sd4);
+            	String sd5 = sdf.format(a.get(x).get("CreateTime"));
+            	a.get(x).put("CreateTime", sd5);
+            }
     		Map<String,Object> obj1 = new HashMap<String,Object>();
     		Map<String,Object> obj2 = new HashMap<String,Object>();
     		Map<String,Object> obj3 = new HashMap<String,Object>();
