@@ -41,6 +41,7 @@
         tr.CardType,
         tr.SpareMobile,
         tr.HomeAddress,
+        tr.Address Address,
         tr.attrId
           FROM      ( SELECT    b.ID OpportunityID ,
                                 b.CustomerID ,
@@ -72,6 +73,7 @@
                                 a.CardType CardType,
                                 b.SpareMobile SpareMobile,
                                 ca.HomeAddress HomeAddress,
+                                ca.Address Address,
                                 ca.ID attrId
                       FROM      B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
@@ -150,6 +152,7 @@
                                 '' CardType,
                                 '' SpareMobile,
                                 '' HomeAddress,
+                                '' Address,
                                 '' attrId
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
@@ -218,6 +221,7 @@
       dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
       A.Birthday,<!--生日-->
       A.HomeAddress,<!--现居住地址-->
+      A.Address,<!--通信地址-->
       dbo.F_DictName(A.PropertyNum) PropertyNum,<!--置业次数-->
       dbo.F_DictName(A.Marriage) Marriage,<!--婚姻情况-->
       dbo.F_DictName(A.Family) Family,<!--家庭结构-->
