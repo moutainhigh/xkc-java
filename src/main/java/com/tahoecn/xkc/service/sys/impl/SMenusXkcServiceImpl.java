@@ -161,14 +161,14 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
     }
 
     @Override
-    public List<HashMap<String, Object>> UserMenus(String userID, String authCompanyID, String productID) {
-        List<HashMap<String, Object>> list=accountService.insertJob(userID,authCompanyID,productID);
+    public List<Map<String, Object>> UserMenus(String userID, String authCompanyID, String productID) {
+        List<Map<String, Object>> list=accountService.insertJob(userID,authCompanyID,productID);
 
         return list;
     }
 
     @Override
-    public List<HashMap<String, Object>> getResult() {
+    public List<Map<String, Object>> getResult() {
         return baseMapper.getResult();
     }
 
@@ -206,11 +206,11 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
         return objectMap;
     }
 
-    public List<HashMap<String, Object>> getElseResult(String commonJobID) {
+    public List<Map<String, Object>> getElseResult(String commonJobID) {
         return baseMapper.getElseResult(commonJobID);
     }
 
-    public List<HashMap<String, Object>> getOtherResult(String jobID, String id) {
+    public List<Map<String, Object>> getOtherResult(String jobID, String id) {
         return baseMapper.getOtherResult(jobID,id);
     }
 }

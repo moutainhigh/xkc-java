@@ -750,7 +750,7 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
 
         try {
 //        登录人有权限的菜单
-            List<HashMap<String,Object>> userMenus=menusXkcService.UserMenus(userID,authCompanyID,productID);
+            List<Map<String,Object>> userMenus=menusXkcService.UserMenus(userID,authCompanyID,productID);
             //排序成树形结构
             List<HashMap<String, Object>> userMenusTree = getChild(userMenus);
 //        登录人有权限的功能
@@ -775,12 +775,12 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
      * @param userMenus
      * @return
      */
-    private  List<HashMap<String,Object>> getChild(List<HashMap<String,Object>> userMenus){
-        List<HashMap<String,Object>> result=new ArrayList<>();
+    private  List<HashMap<String,Object>> getChild(List<Map<String,Object>> userMenus){
+        List<Map<String,Object>> result=new ArrayList<>();
         List<String> removeList=new ArrayList();
-        for (HashMap<String, Object> userMenu : userMenus) {
-            List<HashMap<String,Object>> child=new ArrayList<>();
-            for (HashMap<String, Object> menu : userMenus) {
+        for (Map<String, Object> userMenu : userMenus) {
+            List<Map<String,Object>> child=new ArrayList<>();
+            for (Map<String, Object> menu : userMenus) {
                 if (StringUtils.equals((String)userMenu.get("ID"),(String)menu.get("PID"))){
                     menu.put("IsLeaf",true);
                     child.add(menu);
@@ -791,7 +791,7 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
             userMenu.put("Children",child);
             result.add(userMenu);
         }
-        for (HashMap<String, Object> map : result) {
+        for (Map<String, Object> map : result) {
             //删除装入children的项
             for (String s : removeList) {
                 if (StringUtils.equals(s, (String) map.get("ID"))){
@@ -800,9 +800,10 @@ public class SMenusServiceImpl extends ServiceImpl<SMenusMapper, SMenus> impleme
             }
         }
         List<HashMap<String,Object>> resultList=new ArrayList<>();
-        for (HashMap<String, Object> map : result) {
+        for (Map<String, Object> map : result) {
             if (map.get("Del")==null){
-                resultList.add(map);
+
+                resultList.add((HashMap<String,Object>)map);
             }
         }
         return  resultList;

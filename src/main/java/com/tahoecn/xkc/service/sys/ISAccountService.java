@@ -83,7 +83,7 @@ public interface ISAccountService extends IService<SAccount> {
     IPage<Map<String,Object>> SystemUserListByOrgID_SelectN(IPage page, String authCompanyID,String OrgID,String key,int Type,
     		String UserName,String Mobile,String Status);
 
-    List<HashMap<String, Object>> insertJob(String userID, String authCompanyID, String productID);
+    List<Map<String, Object>> insertJob(String userID, String authCompanyID, String productID);
 
 
 }

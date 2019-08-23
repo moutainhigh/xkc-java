@@ -917,6 +917,10 @@ public class AppKCController extends TahoeBaseController {
             String UserID = (String)paramMap.get("UserID").toString();//
             String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//
             String Filter = (String)paramMap.get("Filter").toString();//
+            String ReportUserID = "";
+            if(paramMap.get("ReportUserID") != null) {
+            	ReportUserID = (String)paramMap.get("ReportUserID").toString();//
+            }
             String AppID = "";
             if(paramMap.get("AppID") != null) {
             	AppID =(String)paramMap.get("AppID").toString();
@@ -938,7 +942,7 @@ public class AppKCController extends TahoeBaseController {
             		sb.append(" AND a.ReportUserID='").append(UserID).append("'");
             	}
             	//专员+任务下所有兼职
-            	if(ChannelTaskID != null &&UserID.length() > 0 ) {
+            	if(ChannelTaskID != null &&ChannelTaskID.length() > 0 ) {
             		taskID.append("   AND c.ID='").append(ChannelTaskID).append("'");
             	}
             	if(Filter != null && Filter.length() > 0) {
@@ -948,14 +952,14 @@ public class AppKCController extends TahoeBaseController {
             else if(JobCode.equals("ZQFZR")) {
             	//专员下所有兼职
             	if(UserID != null && UserID.length() > 0){
-            		sb.append(" AND a.ReportUserID='").append(UserID).append("'");
+            		sb.append(" AND a.ReportUserID='").append(ReportUserID).append("'");
             	}
             	if(Filter != null && Filter.length() > 0) {
             		sb.append(" AND (a.Name LIKE '%").append(Filter).append("%' OR a.Mobile LIKE '%").append(Filter).append("%')");
             	}
             }
             else if(AppID.equals("PC")) {
-            	if(ProjectID != null) {
+            	if(ProjectID != null && ProjectID.length() > 0) {
             		sb.append(" AND c.ProjectID='").append(ProjectID).append("'");
             		sb.append(" AND c.Status=2");
             	}
@@ -968,9 +972,11 @@ public class AppKCController extends TahoeBaseController {
            
            map.put("sqlWhere", sqlWhere);
            map.put("ChannelTaskID",ChannelTaskID);
-           map.put("taskID", TaskID);
+           map.put("TaskID", TaskID);
            map.put("PageIndex", PageIndex);
            map.put("PageSize", PageSize);
+           System.out.println(sqlWhere);
+           System.out.println(TaskID);
            Map<String,Object> obj = new HashMap<String,Object>();
            if(JobCode.equals("ZQ") && ChannelTaskID != null && ChannelTaskID.length() > 0) {
         	   

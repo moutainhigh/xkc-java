@@ -429,12 +429,13 @@ public class ProjectAppController extends TahoeBaseController {
 
         Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
         Object Name = paramMap.get("Name");
+        String UserID = (String) paramMap.get("UserID");
         List<Map<String,Object>> list;
         if (Name!=null){
             String key= (String) Name;
-            list=projectService.ProjectList_Select(key);
+            list=projectService.ProjectList_Select(key,UserID);
         }else {
-            list=projectService.ProjectList_Select(null);
+            list=projectService.ProjectList_Select(null,UserID);
         }
         return Result.ok(list);
     }

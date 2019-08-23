@@ -156,30 +156,39 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     }
 
     @Override
-    public List<HashMap<String, Object>> insertJob(String userID, String authCompanyID, String productID) {
-        HashMap<String, Object> job = baseMapper.insertJob(userID, authCompanyID, productID);
-           List<HashMap<String, Object>> result;
+    public List<Map<String, Object>> insertJob(String userID, String authCompanyID, String productID) {
+        List<Map<String, Object>> jobList = baseMapper.insertJob(userID, authCompanyID, productID);
+           List<Map<String, Object>> result=new ArrayList<>();
+           Set<Map<String, Object>> resultSet=new HashSet<>();
+        for (Map<String, Object> job : jobList) {
             if (StringUtils.equals((String)job.get("CommonJobID"),"8B95D9B6-1F85-7565-A0B9-F1E07AE73C12")){
                  result=menusXkcService.getResult();
+                for (Map<String, Object> stringObjectHashMap : result) {
+                    resultSet.add(stringObjectHashMap);
+                }
             }else {
                 String commonJobID = (String) job.get("CommonJobID");
                  result=menusXkcService.getElseResult(commonJobID);
+                if (result.size()>0){
                 StringBuilder sb=new StringBuilder();
-                for (HashMap<String, Object> map : result) {
+                for (Map<String, Object> map : result) {
                     sb.append("'");
                     sb.append((String) map.get("ID"));
                     sb.append("'");
                     sb.append(",");
                 }
-                sb.substring(0,sb.length()-2);
+
+                String substring = sb.substring(0, sb.length() - 1);
                 String jobID = (String) job.get("JobID");
-                String ID=sb.toString();
-                List<HashMap<String, Object>> otherResult =menusXkcService.getOtherResult(jobID,ID);
-                for (HashMap<String, Object> map : otherResult) {
+                String ID=substring;
+                List<Map<String, Object>> otherResult =menusXkcService.getOtherResult(jobID,ID);
+                for (Map<String, Object> map : otherResult) {
                     result.add(map);
                 }
+                resultSet.addAll(result);
+                }
             }
-
+        }
         return result;
     }
 

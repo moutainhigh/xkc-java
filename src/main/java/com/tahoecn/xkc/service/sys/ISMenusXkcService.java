@@ -27,9 +27,9 @@ public interface ISMenusXkcService extends IService<SMenusXkc> {
 
     List<Map<String, Object>> SystemCommonJobAuth_Select(String userID, String authCompanyID, String productID, String jobID);
 
-    List<HashMap<String, Object>> UserMenus(String userID, String authCompanyID, String productID);
+    List<Map<String, Object>> UserMenus(String userID, String authCompanyID, String productID);
 
-    List<HashMap<String, Object>> getResult();
+    List<Map<String, Object>> getResult();
 
     List<Map<String, Object>> UserFunctions(String userID, String authCompanyID, String productID);
 

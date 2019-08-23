@@ -1,12 +1,15 @@
 package com.tahoecn.xkc.service.project.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
+import com.tahoecn.xkc.model.salegroup.BSalesgroupmember;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.service.salegroup.IBSalesgroupmemberService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,8 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
 
     @Autowired
     private IBChanneluserService channeluserService;
+    @Autowired
+    private IBSalesgroupmemberService salesgroupmemberService;
     @Override
     public List<Map<String,Object>> findByOrgID(IPage page,String orgID,String Name) {
         return baseMapper.findByOrgID(page,orgID,Name);
@@ -67,8 +72,29 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     }
 
     @Override
-    public List<Map<String, Object>> ProjectList_Select(String name) {
-        return baseMapper.ProjectList_Select(name);
+    public List<Map<String, Object>> ProjectList_Select(String name,String userID) {
+        List<Map<String, Object>> list = baseMapper.ProjectList_Select(name);
+        if (userID!=null){
+        QueryWrapper<BSalesgroupmember> wrapper=new QueryWrapper<>();
+        wrapper.eq("IsDel",0).eq("Status",1).eq("MemberID",userID)
+                .in("RoleID","48FC928F-6EB5-4735-BF2B-29B1F591A582","0269F35E-B32D-4D12-8496-4E6E4CE597B7");
+        List<BSalesgroupmember> memberList= salesgroupmemberService.list(wrapper);
+        List<Map<String, Object>> tpyeList=new ArrayList<>();
+        //获取已存在项目
+        if (memberList.size()>0) {
+            for (BSalesgroupmember bSalesgroupmember : memberList) {
+                for (Map<String, Object> map : list) {
+                    if (StringUtils.equals((String) map.get("ProjectID"), bSalesgroupmember.getProjectID())) {
+                        tpyeList.add(map);
+                    }
+                }
+            }
+            list.removeAll(tpyeList);
+        }
+            return list;
+        }
+        //没有已存在项目  直接返回
+        return list;
     }
 
     @Override
