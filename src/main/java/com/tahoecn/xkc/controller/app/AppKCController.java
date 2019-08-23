@@ -938,7 +938,7 @@ public class AppKCController extends TahoeBaseController {
             		sb.append(" AND a.ReportUserID='").append(UserID).append("'");
             	}
             	//专员+任务下所有兼职
-            	if(ChannelTaskID != null &&UserID.length() > 0 ) {
+            	if(ChannelTaskID != null &&ChannelTaskID.length() > 0 ) {
             		taskID.append("   AND c.ID='").append(ChannelTaskID).append("'");
             	}
             	if(Filter != null && Filter.length() > 0) {
@@ -955,7 +955,7 @@ public class AppKCController extends TahoeBaseController {
             	}
             }
             else if(AppID.equals("PC")) {
-            	if(ProjectID != null) {
+            	if(ProjectID != null && ProjectID.length() > 0) {
             		sb.append(" AND c.ProjectID='").append(ProjectID).append("'");
             		sb.append(" AND c.Status=2");
             	}
@@ -968,9 +968,11 @@ public class AppKCController extends TahoeBaseController {
            
            map.put("sqlWhere", sqlWhere);
            map.put("ChannelTaskID",ChannelTaskID);
-           map.put("taskID", TaskID);
+           map.put("TaskID", TaskID);
            map.put("PageIndex", PageIndex);
            map.put("PageSize", PageSize);
+           System.out.println(sqlWhere);
+           System.out.println(TaskID);
            Map<String,Object> obj = new HashMap<String,Object>();
            if(JobCode.equals("ZQ") && ChannelTaskID != null && ChannelTaskID.length() > 0) {
         	   
