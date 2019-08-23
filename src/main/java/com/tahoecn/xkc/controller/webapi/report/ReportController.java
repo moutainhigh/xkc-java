@@ -322,7 +322,6 @@ public class ReportController extends TahoeBaseController {
         }else{
             entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
         }
-        entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
         entity.add(new ExcelExportEntity("置业顾问", "saleUserName"));
         entity.add(new ExcelExportEntity("置业顾问所属团队", "saleTeamName"));
         entity.add(new ExcelExportEntity("渠道来源", "sourceType"));
