@@ -326,7 +326,6 @@ public class H5Controller extends TahoeBaseController {
         String UserID=(String) paramMap.get("UserID");
         QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
         wrapper.eq("ID",UserID).eq("IsDel",0).eq("Status",1);
-        wrapper.select("CertificatesName","CertificatesType","CertificatesNo","CertificatesPicFace","CertificatesPicBack");
         BChanneluser one = channeluserService.getOne(wrapper);
         if (one!=null){
             return Result.ok(one);

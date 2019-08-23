@@ -514,7 +514,7 @@ public class LoginAppController extends TahoeBaseController {
                     sb.append(",'IsCaseLinkage':0");
                 }
 
-                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("AllOverdue"))) {    //案场联动
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("AllOverdue"))) {    //全部逾期
                     sb.append(",'IsAllOverdue':1");
                 } else {
                     sb.append(",'IsAllOverdue':0");
