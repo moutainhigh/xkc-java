@@ -16,15 +16,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.utils.NetUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.sys.BAppupgrade;
+import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.service.channel.IBChannelService;
+import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
+import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
+import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
+import com.tahoecn.xkc.service.user.ISAccountusertypeService;
 
 @RestController
 @Api(tags = "ipad-系统接口", value = "ipad-系统接口")
@@ -39,6 +47,14 @@ public class IPadSystemController extends TahoeBaseController{
     private ISFormsessionService iSFormsessionService;
 	@Autowired
     private IBChannelService iBChannelService;
+	@Autowired
+    private IBVerificationcodeService iBVerificationcodeService;
+	@Autowired
+    private IBChanneluserService iBChanneluserService;
+	@Autowired
+    private ISAccountusertypeService iSAccountusertypeService;
+	@Autowired
+    private ISAccountService iISAccountService;
 	
 	@ResponseBody
     @ApiOperation(value = "检查更新", notes = "版本信息")
@@ -130,4 +146,60 @@ public class IPadSystemController extends TahoeBaseController{
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	@ResponseBody
+    @ApiOperation(value = "忘记密码", notes = "忘记密码")
+    @RequestMapping(value = "/mUserForgetPwd_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result mUserForgetPwd_Update(@RequestBody JSONObject jsonParam) {
+    	try{
+    		System.out.println("------------------------------------------"+jsonParam);
+    		JSONObject paramMap = jsonParam.getJSONObject("_param");
+            String Password = (String)paramMap.get("Password");//密码
+            String RePassword = (String)paramMap.get("RePassword");//确认密码
+            String Mobile = (String)paramMap.get("Mobile");//手机号码
+            String AuthCode = (String)paramMap.get("AuthCode");//验证码
+            
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("Mobile", Mobile);
+            map.put("Password", SecureUtil.md5(Password).toUpperCase());
+            //1.校验验证码
+            if(!iBVerificationcodeService.Verification(Mobile,AuthCode)){
+            	return Result.errormsg(1,"验证码验证失败");
+            }
+            if(Password.equals(RePassword)){
+            	//2.是否为兼职
+            	QueryWrapper<BChanneluser> wrapper = new  QueryWrapper<BChanneluser>();
+            	wrapper.eq("Mobile", Mobile);
+            	List<BChanneluser> Channeluser = iBChanneluserService.list(wrapper);
+                if (Channeluser != null && Channeluser.size() > 0){
+                	if(Channeluser.size() > 1){
+                		return Result.errormsg(91, "根据手机号查询存在多个用户，请联系系统管理员");
+                	}else{
+	                    iBChanneluserService.ChannelUserForgetPassWord_Update(map);
+	                    return Result.ok("用户修改密码成功");
+                	}
+                }else{
+                	//3.查询是否为UC用户
+                	QueryWrapper<SAccount> wrapper1 = new  QueryWrapper<SAccount>();
+                	wrapper1.eq("Mobile", Mobile);
+                	List<SAccount> sAccount = iISAccountService.list(wrapper1);
+                	if(sAccount == null || sAccount.size() == 0){
+                		return Result.errormsg(91, "用户信息不正确");
+                	}else if(sAccount != null && sAccount.size() > 1){
+                		return Result.errormsg(91, "根据手机号查询存在多个用户，请联系系统管理员");
+                	}else if(sAccount != null && sAccount.get(0).getAccountType() == 1){
+                		return Result.errormsg(91, "请到泰信重置修改密码");
+                	}else{
+                		//4.UC用户修改密码
+                		iSAccountusertypeService.SalesUserForgetPwdDetail_Update(map);
+                        return Result.ok("用户密码修改成功");
+                	}
+                }
+            }else{
+            	return Result.errormsg(90, "密码与确认密码不一致");
+            }
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		return Result.errormsg(1, "系统异常，请联系管理员");
+    	}
+    }
 }
