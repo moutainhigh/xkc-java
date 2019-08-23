@@ -343,7 +343,13 @@ public class H5Controller extends TahoeBaseController {
         String CertificatesType=(String) paramMap.get("CertificatesType");
         String CertificatesNo=(String) paramMap.get("CertificatesNo");
         String CertificatesPicFace=(String) paramMap.get("CertificatesPicFace");
+        if (!StringUtils.equals(CertificatesPicFace.substring(0,17),"/ncs/uploadfiles/")){
+            CertificatesPicFace="/ncs/uploadfiles/"+CertificatesPicFace;
+        }
         String CertificatesPicBack=(String) paramMap.get("CertificatesPicBack");
+        if (!StringUtils.equals(CertificatesPicBack.substring(0,17),"/ncs/uploadfiles/")){
+            CertificatesPicBack="/ncs/uploadfiles/"+CertificatesPicBack;
+        }
         int i = channeluserService.mBrokerChannelUserCardDetail_Update(UserID, CertificatesName, CertificatesType, CertificatesNo, CertificatesPicFace, CertificatesPicBack);
        if(i==1){
            return Result.ok("成功");
