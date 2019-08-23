@@ -107,15 +107,15 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
 
         //客户状态
         if (StringUtil.isNotNull(Status))
-        {
-            if ("11".equals(Status))//线索（报备）
-                sqlWhere.append(" AND tm.ClueStatus=1 AND tm.OpportunityStatus=0");
-            else if ("12".equals(Status))//线索（确认带看）
-                sqlWhere.append(" AND tm.ClueStatus= 2  AND tm.OpportunityStatus=0");
-            else if ("13".equals(Status))//线索（无效）
-                sqlWhere.append(" AND tm.ClueStatus= 3  AND tm.OpportunityStatus=0");
-            else if ("6".equals(Status))   //机会丢失为6  线索丢失为4
-                sqlWhere.append(" AND tm.ClueStatus= 4 AND tm.OpportunityStatus=6 ");
+        {	
+            if ("1".equals(Status))//报备 --线索报备和确认带看  || 机会 问询
+                sqlWhere.append(" AND ((tm.ClueStatus in (1,2) AND tm.OpportunityStatus=0) or tm.OpportunityStatus =1)");
+            else if ("2".equals(Status))//到访  --机会 到访或认购中
+                sqlWhere.append(" AND tm.OpportunityStatus in (2,3)");
+//            else if ("13".equals(Status))//线索（无效）
+//                sqlWhere.append(" AND tm.ClueStatus= 3  AND tm.OpportunityStatus=0");
+            else if ("6".equals(Status))   //无效   机会丢失为6  线索丢失为4 || 线索 3  机会 0 
+                sqlWhere.append(" AND ((tm.ClueStatus= 4 AND tm.OpportunityStatus=6) or (tm.ClueStatus= 3  AND tm.OpportunityStatus=0)) ");
             else//其余为机会的状态
                 sqlWhere.append(" AND tm.OpportunityStatus='"+Status+"'");
         }
@@ -170,45 +170,45 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         //创建时间
         if (StringUtil.isNotNull(CreateTime_Start))
         {
-            sqlWhere.append(" and  tm.CreateTime>='"+CreateTime_Start+"'");
+            sqlWhere.append(" and  tm.CreateTime>='"+CreateTime_Start+" 00:00:00'");
         }
         //创建时间
         if (StringUtil.isNotNull(CreateTime_End))
         {
-            sqlWhere.append(" and  tm.CreateTime<='"+CreateTime_End+"'");
+            sqlWhere.append(" and  tm.CreateTime<='"+CreateTime_End+" 23:59:59'");
         }
         //首访时间TheFirstVisitDate_Start
         if (StringUtil.isNotNull(TheFirstVisitDate_Start))
         {
-            sqlWhere.append(" and  tm.TheFirstVisitDate>='"+TheFirstVisitDate_Start+"'");
+            sqlWhere.append(" and  tm.TheFirstVisitDate>='"+TheFirstVisitDate_Start+" 00:00:00'");
         }
         //首访时间
         if (StringUtil.isNotNull(TheFirstVisitDate_End))
         {
-            sqlWhere.append(" and  tm.TheFirstVisitDate<='"+TheFirstVisitDate_End+"'");
+            sqlWhere.append(" and  tm.TheFirstVisitDate<='"+TheFirstVisitDate_End+" 23:59:59'");
         }
         //最近到访时间
         if (StringUtil.isNotNull(ZJDF_Start))
         {
-            Where.append(" and  CreateTime>='"+ZJDF_Start+"'");
+            Where.append(" and  CreateTime>='"+ZJDF_Start+" 00:00:00'");
             WhereLast.append("");
         }
         //最近到访时间
         if (StringUtil.isNotNull(ZJDF_End))
         {
-            Where.append(" and  CreateTime<='"+ZJDF_End+"'");
+            Where.append(" and  CreateTime<='"+ZJDF_End+" 23:59:59'");
             WhereLast.append(" AND s.ZJDF IS NOT NULL AND s.ZJDF<>''");
         }
         //跟进时间--开始
         if (StringUtil.isNotNull(TheLatestFollowUpDate_Start))
         {
-            sqlWhere.append(" AND m.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+"' ");
+            sqlWhere.append(" AND m.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+" 00:00:00'' ");
         }
 
         //跟进时间--结束
         if (StringUtil.isNotNull(TheLatestFollowUpDate_End))
         {
-            sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+"' ");
+            sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+" 23:59:59' ");
         }
         if (StringUtil.isNotNull(uType) && uType.equals("1")){
             updateWhere.append(" AND b.Status IN (4,5)");

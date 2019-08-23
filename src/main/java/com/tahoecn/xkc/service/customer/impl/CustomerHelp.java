@@ -95,8 +95,8 @@ public class CustomerHelp implements ICustomerHelp {
 					customerModel.setOpportunityID(CustomerObj.getString("OpportunityID"));
 					customerModel.setClueID(CustomerObj.getString("ClueID"));
 					customerModel.setSpareMobile(CustomerObj.getString("SpareMobile")!=null?CustomerObj.getString("SpareMobile"):"");
-					customerModel.setUseMobile(CustomerObj.getString("UseMobile")!=null?CustomerObj.getString("UseMobile"):"");
 					customerModel.setCustomerMobile(CustomerObj.getString("CustomerMobile")!=null?CustomerObj.getString("CustomerMobile"):"");
+					customerModel.setUseMobile(CustomerObj.getString("UseMobile")!=null?CustomerObj.getString("UseMobile"):customerModel.getCustomerMobile());
 					model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID"));
 					String fieldKey = null;
 					for (DicInfo item : dicList) {
@@ -505,6 +505,7 @@ public class CustomerHelp implements ICustomerHelp {
 		try {
 			if (redisTemplate.hasKey(jsonFile)) {
 				jsonStr = (String) redisTemplate.opsForValue().get(jsonFile);	//YYY:todo
+				redisTemplate.delete(jsonFile);
 			} else {
 				jsonStr = JSONUtil.readJsonFile(jsonFile);
 				redisTemplate.opsForValue().set(jsonFile, jsonStr);
@@ -775,6 +776,7 @@ public class CustomerHelp implements ICustomerHelp {
                 }
                 json.put(dicInfo.getFieldName(),dicInfo.getValue().replaceAll("'", ""));
             }
+            json.put("UseMobile", model.getUseMobile());
             json.put("OpportunityID", model.getOpportunityID());
     		json.put("CustomerID", model.getCustomerID());
     		json.put("ProjectID", model.getProjectID());

@@ -589,25 +589,25 @@
 
     <update id = "updateComeOverdueTimeByDay">
         update B_Clue set ComeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendArriveProDays},ComeOverdueTime),23)
-        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01'
+        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01' and DATEDIFF(DAY,  GETDATE(),ComeOverdueTime) &gt;= 0
         AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 
     <update id = "updateComeOverdueTimeByDate">
         update B_Clue set ComeOverdueTime = #{extendArriveProEndDate}
-        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01'
+        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),ComeOverdueTime) &gt;= 0
         AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 
     <update id = "updateTradeOverdueTimeByDay">
         update B_Clue set TradeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendSigningProDays},TradeOverdueTime),23)
-        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01'
+        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),TradeOverdueTime) &gt;= 0
         AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 
     <update id = "updateTradeOverdueTimeByDate">
         update B_Clue set TradeOverdueTime = #{extendSigningProEndDate}
-        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01'
+        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),TradeOverdueTime) &gt;= 0
         AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
 </mapper>

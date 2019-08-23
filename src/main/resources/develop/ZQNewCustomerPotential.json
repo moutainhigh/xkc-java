@@ -168,6 +168,31 @@
           "Option": [
 
           ]
+        },
+        {
+          "ID": "C7B06191-E032-45F4-A990-DB73450588DE",
+          "Name": "通讯地址",
+          "Placeholder": "",
+          "Type": "OptionCity",
+          "Value": "",
+          "ListIndex": 1,
+          "IsMust": 0,
+          "IsHide": 1,
+          "IsMustShow": 0,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
         }
       ]
     },
@@ -411,81 +436,6 @@
       "Type": "Normal",
       "ListIndex": 3,
       "Child": [
-        {
-          "ID": "C7B06191-E032-45F4-A990-DB73450588DE",
-          "Name": "户籍所在地",
-          "Placeholder": "",
-          "Type": "OptionCity",
-          "Value": "",
-          "ListIndex": 1,
-          "IsMust": 0,
-          "IsHide": 1,
-          "IsMustShow": 0,
-          "IsEdit": 1,
-          "IsMulti": 0,
-          "MaxLength": 50,
-          "MaxSelectedNum": 1,
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
-        {
-          "ID": "39410FA8-101E-40C9-AE48-3415849A96FB",
-          "Name": "居住区域",
-          "Placeholder": "",
-          "Type": "OptionCity",
-          "Value": "",
-          "ListIndex": 2,
-          "IsMust": 0,
-          "IsHide": 1,
-          "IsMustShow": 0,
-          "IsEdit": 1,
-          "IsMulti": 0,
-          "MaxLength": 50,
-          "MaxSelectedNum": 0,
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
-        {
-          "ID": "86D4BA4F-3F3C-4F2E-8FF3-5DDAE8D71921",
-          "Name": "工作区域",
-          "Placeholder": "",
-          "Type": "OptionCity",
-          "Value": "",
-          "ListIndex": 2,
-          "IsMust": 0,
-          "IsHide": 1,
-          "IsMustShow": 0,
-          "IsEdit": 1,
-          "IsMulti": 0,
-          "MaxLength": 50,
-          "MaxSelectedNum": 1,
-          "NormalColor": "#FFFFFF",
-          "SelectedColor": "#FFFFFF",
-          "Partner": "",
-          "SubPartner": "",
-          "Verify": [
-
-          ],
-          "Option": [
-
-          ]
-        },
         {
           "ID": "62AC02D0-C4AB-4EB7-A85F-6E1D509C166B",
           "Name": "婚姻状况",

@@ -63,4 +63,131 @@
             ) T WHERE 1=1
         ]]>
     </select>
+
+    <select id="QuitUserOwnTeamUserList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[
+            SELECT T.*,
+            (CASE WHEN SMobile IS NULL OR SMobile='' THEN (SELECT TelPhone FROM dbo.B_SalesUser WHERE ID=T.ID) ELSE SMobile END) Mobile  FROM (
+            SELECT
+            A.ID,A.EmployeeName AS Name,A.Mobile AS SMobile,A.UserName
+            FROM dbo.B_SalesGroupMember SGM
+            INNER JOIN dbo.S_Account A ON SGM.MemberID=A.ID AND A.IsDel=0 AND A.Status=1
+            WHERE SGM.IsDel=0 AND SGM.Status=1 AND SGM.ReceptionGroupID=#{paramMap.ReceptionGroupID} AND SGM.ProjectID=#{paramMap.ProjectID}
+            ) T
+            ]]>
+    </select>
+
+    <select id="QuitUserOwnTeamCustomerList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+            SELECT T.*,dbo.F_DictName(T.CustomerRank) CustomerRankString  FROM (
+            SELECT
+            C.ID,C.Name,C.Mobile,O.CustomerRank
+            FROM dbo.B_Clue C
+            LEFT JOIN dbo.B_Opportunity O ON C.ID=O.ClueID
+            WHERE C.ReportUserID=#{paramMap.ReportUserID} AND C.IntentProjectID=#{paramMap.ProjectID}
+            <if test="paramMap.Keyword!=null and paramMap.Keyword!=''">
+              AND (C.Name LIKE concat('%',#{paramMap.Keyword},'%') OR C.Mobile LIKE concat('%',#{paramMap.Keyword},'%'))
+            </if>
+            ) T
+    </select>
+
+
+
+
+
+    <select id="QuitUserSalesTeamUserList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+            SELECT T.*,
+            (CASE WHEN SMobile IS NULL OR SMobile='' THEN (SELECT TelPhone FROM dbo.B_SalesUser WHERE ID=T.ID) ELSE SMobile END) Mobile
+            FROM (
+            SELECT
+            A.ID,A.EmployeeName AS Name,A.Mobile AS SMobile,A.UserName
+            FROM dbo.B_SalesGroupMember SGM
+            INNER JOIN dbo.S_Account A ON SGM.MemberID=A.ID AND A.IsDel=0 AND A.Status=1
+            WHERE SGM.IsDel=0 AND SGM.Status=1 AND SGM.ReceptionGroupID=#{paramMap.ReceptionGroupID} AND SGM.ProjectID=#{paramMap.ProjectID}
+            ) T
+    </select>
+
+    <select id="QuitUserSalesTeamCustomerList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+            SELECT T.*,dbo.F_DictName(T.CustomerRank) CustomerRankString  FROM (
+            SELECT
+            O.ID,O.CustomerName Name,O.CustomerMobile Mobile,O.CustomerRank
+            FROM dbo.B_Opportunity O
+            LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
+            WHERE O.SaleUserID=#{paramMap.SaleUserID} AND O.ProjectID=#{paramMap.ProjectID}
+            <if test="paramMap.Keyword!=null and paramMap.Keyword!=''">
+              AND (O.CustomerName LIKE concat('%',#{paramMap.Keyword},'%') OR O.CustomerMobile LIKE concat('%',#{paramMap.Keyword},'%'))
+            </if>
+            ) T
+    </select>
+
+    <select id="QuitUserChannelUserList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+            SELECT * FROM (
+            SELECT ID,Name,Mobile,UserName
+            FROM dbo.B_ChannelUser
+            WHERE IsDel=0 AND ApprovalStatus=1 AND Status=1 AND Job&lt;&gt;0
+            AND ChannelOrgID=(SELECT ChannelOrgID FROM dbo.B_ChannelUser WHERE ID=#{paramMap.ChannelUserID})
+            ) T
+    </select>
+
+    <select id="QuitUserChannelCustomerList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+            SELECT T.*,dbo.F_DictName(T.CustomerRank) CustomerRankString  FROM (
+            SELECT
+            C.ID,C.Name,C.Mobile,O.CustomerRank
+            FROM dbo.B_Clue C
+            LEFT JOIN dbo.B_Opportunity O ON C.ID=O.ClueID
+            WHERE C.ReportUserID=#{paramMap.ReportUserID}
+            <if test="paramMap.Keyword!=null and paramMap.Keyword!=''">
+            AND (C.Name LIKE concat('%',#{paramMap.Keyword},'%') OR C.Mobile LIKE concat('%',#{paramMap.Keyword},'%'))
+            </if>
+            ) T
+    </select>
+
+
+    <select id="getQuitUserOwnTeamMember1" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
+        SELECT su.Name UserName,su.TelPhone UserMobile,sgm.RoleID RoleID FROM dbo.B_SalesGroupMember sgm
+		LEFT JOIN dbo.B_SalesUser su ON sgm.MemberID=su.ID AND su.IsDel=0 AND su.Status=1
+		 WHERE sgm.MemberID=#{userID} AND sgm.IsDel=0 AND sgm.Status=1 AND ProjectID=#{ProjectID}
+    </select>
+
+    <select id="getQuitUserOwnTeamMember3" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
+        SELECT ReportUserID ReportUserID,CustomerPotentialID CustomerPotentialID,Name CustomerPotentialName,Mobile CustomerPotentialMobile FROM  B_Clue where ID=#{clueId}
+    </select>
+
+    <select id="getQuitSalesTeamMember1" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
+        SELECT su.Name UserName,su.TelPhone UserMobile,sgm.RoleID RoleID FROM dbo.B_SalesGroupMember sgm
+		LEFT JOIN dbo.B_SalesUser su ON sgm.MemberID=su.ID AND su.IsDel=0 AND su.Status=1
+		 WHERE sgm.MemberID=#{UserID} AND sgm.IsDel=0 AND sgm.Status=1 AND ProjectID=#{ProjectID}
+    </select>
+
+    <select id="getQuitSalesTeamMember2" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
+        SELECT RoleName RoleName,su.Name User2Name FROM dbo.B_SalesGroupMember sgm
+		 LEFT JOIN dbo.B_SalesUser su ON sgm.MemberID=su.ID AND su.IsDel=0 AND su.Status=1
+		 WHERE MemberID=#{SelectUserID} AND sgm.IsDel=0 AND sgm.Status=1 AND ProjectID=#{ProjectID}
+    </select>
+
+    <select id="getQuitSalesTeamMember3" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
+        SELECT CustomerID CustomerID,CustomerName CustomerName,CustomerMobile CustomerMobile,SaleUserID SaleUser FROM dbo.B_Opportunity WHERE ID=#{oppoId}
+    </select>
+
+    <select id="getQuitSalesTeamMember4" resultType="com.tahoecn.xkc.model.vo.QuitUserUpdateVo">
+        SELECT su.Name UserName2Old, su.TelPhone UserMobile FROM  dbo.B_SalesUser su  WHERE ID=#{SaleUser} AND su.IsDel=0 AND su.Status=1
+    </select>
+
+    <select id="getCustomerCount" resultType="int">
+        SELECT COUNT(1) FROM Clue_List_Select
+        WHERE IntentProjectID=(SELECT ProjectID FROM dbo.B_QuitUser WHERE ID=#{ID})
+        AND ReportUserID=(SELECT UserID FROM dbo.B_QuitUser WHERE ID=#{ID})
+    </select>
+
+    <select id="getOppoCustomerCount" resultType="int">
+        SELECT COUNT(1) FROM dbo.B_Opportunity O
+        LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
+        WHERE O.ProjectID=(SELECT ProjectID FROM dbo.B_QuitUser WHERE ID=#{ID})
+        AND O.SaleUserID=(SELECT UserID FROM dbo.B_QuitUser WHERE ID=#{ID})
+    </select>
+
+    <select id="getChannelCustomerCount" resultType="int">
+        SELECT COUNT(1) FROM Clue_List_Select
+        WHERE ReportUserID=(SELECT UserID FROM dbo.B_QuitUser WHERE ID=#{ID})
+    </select>
+
 </mapper>

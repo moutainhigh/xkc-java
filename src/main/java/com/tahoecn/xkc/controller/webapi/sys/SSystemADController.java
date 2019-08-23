@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
-import com.tahoecn.xkc.model.sys.BSystemad;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
 
@@ -32,6 +32,9 @@ public class SSystemADController extends TahoeBaseController {
 	@Autowired
     private IBAppupgradeService iBAppupgradeService;
 	
+	@Value("${picturePath}")
+	private String path;
+	
 	@ResponseBody
     @ApiOperation(value = "广告配置", notes = "广告配置")
     @RequestMapping(value = "/SystemAD_Insert", method = {RequestMethod.POST})
@@ -39,6 +42,7 @@ public class SSystemADController extends TahoeBaseController {
         try {
         	String ID = UUID.randomUUID().toString();
     		Map<String,Object> map = new HashMap<String,Object>();
+    		PicturePath = path+PicturePath;
     		map.put("ID", ID);
     		map.put("Title", Title);
     		map.put("ShareContent", ShareContent);
@@ -100,7 +104,12 @@ public class SSystemADController extends TahoeBaseController {
     		Map<String,Object> map = new HashMap<String,Object>();
     		map.put("ADType", ADType);
     		List<Map<String,Object>> ataAd = iBSystemadService.SystemAD_Detail_Find(map);//获取一条信息-(默认)
-    		return Result.ok(ataAd!= null && ataAd.size()!=0 ?ataAd.get(0):"");
+    		if(ataAd != null || ataAd.size() != 0){
+    			return Result.ok(ataAd);
+    		}else{
+    			return Result.okm("");
+    		}
+    		
     	}catch (Exception e) {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");

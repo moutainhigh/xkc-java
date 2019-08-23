@@ -328,8 +328,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 	 *
 	 */
 	@Override
-	public List<Map<String,Object>>  mChannelCheckClockTotal_Select(IPage page, String ChannelTaskID, String CheckDate) {
-		return bChanneluserMapper.mChannelCheckClockTotal_Select(page, ChannelTaskID, CheckDate);
+	public List<Map<String,Object>>  mChannelCheckClockTotal_Select(Map<String, Object> map) {
+		return bChanneluserMapper.mChannelCheckClockTotal_Select(map);
 
 	}
 

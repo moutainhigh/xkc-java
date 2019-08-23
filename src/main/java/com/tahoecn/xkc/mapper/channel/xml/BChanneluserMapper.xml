@@ -251,7 +251,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 	</delete>
 
 	<!-- 专员考勤 -->
-	<select id="mChannelCheckClockTotal_Select" parameterType="String" resultType="java.util.Map">
+	<select id="mChannelCheckClockTotal_Select" parameterType="java.util.Map" resultType="java.util.Map">
 		<![CDATA[
 		SELECT
 		SUM((CASE WHEN CheckType=0 THEN 1 ELSE 0 END)) CheckIn,

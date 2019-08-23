@@ -26,7 +26,7 @@
 	    ]]>
 	</select>
 	<!-- 获取认知媒体及媒体子类 -->
-	<select id="SystemDictionaryXSRZTJList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	<select id="SystemDictionaryRZMTList_Select" parameterType="java.util.Map" resultType="java.util.Map">
 		<![CDATA[
 			SELECT  A.ID PID ,
 		        A.Name PName ,

@@ -77,7 +77,7 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	 * 专员考勤
 	 *
 	 */
-	List<Map<String, Object>> mChannelCheckClockTotal_Select(IPage page, String ChannelTaskID, String CheckDate);
+	List<Map<String, Object>> mChannelCheckClockTotal_Select(Map<String, Object> map);
 
 	/*
 	 * 详细考勤

@@ -270,45 +270,58 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
-    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel) {
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel,String isWhole) {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCityName()), CostomerReport::getCityName, report.getCityName());   //城市名
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getIntentProjectName()), CostomerReport::getIntentProjectName, report.getIntentProjectName());    //项目名
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerName()), CostomerReport::getCustomerName, report.getCustomerName());   //客户名
-        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerMobile()), CostomerReport::getCustomerMobile, report.getCustomerMobile()); //客户电话
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerMobile()), CostomerReport::getCustomerMobileWhole, report.getCustomerMobile()); //客户电话
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getSaleUserName()), CostomerReport::getSaleUserName, report.getSaleUserName());   //置业顾问
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getOpportunitySource()), CostomerReport::getOpportunitySource, report.getOpportunitySource());    //客户源
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getFollwUpWayTxt()), CostomerReport::getFollwUpWayTxt, report.getFollwUpWayTxt());    //跟进类型
         wrapper.lambda().eq(report.getDaofangCount() != null, CostomerReport::getDaofangCount, report.getDaofangCount());    //到访次数
-        wrapper.lambda().between(report.getCreateTime() != null, CostomerReport::getCreateTime, report.getCreateTime(),report.getCreateTimeEnd());  //创建时间
-        wrapper.lambda().between(report.getReportTime() != null, CostomerReport::getReportTime, report.getReportTime(),report.getReportTimeEnd());  //宝贝时间
-        wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(),report.getTheFirstVisitDateEnd());  //首访时间
-        wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(),report.getZjdfEnd());  //最近到访
-        wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(),report.getTheLatestFollowUpDateEnd());  //最近跟进
-        wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(),report.getBookingCreateTimeEnd());  //认筹时间
-        wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(),report.getOrderCreateTimeEnd());  //认购时间
-        wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),report.getmYContractCreateTimeEnd());  //签约时间
+        if (report.getCreateTime() != null)
+            wrapper.lambda().between(report.getCreateTime() != null, CostomerReport::getCreateTime, report.getCreateTime(), new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000));  //创建时间
+        if (report.getReportTime() != null)
+            wrapper.lambda().between(report.getReportTime() != null, CostomerReport::getReportTime, report.getReportTime(), new Date(report.getReportTime().getTime() + 60 * 60 * 24 * 1000));  //宝贝时间
+        if (report.getTheFirstVisitDate() != null)
+            wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(), new Date(report.getTheFirstVisitDate().getTime() + 60 * 60 * 24 * 1000));  //首访时间
+        if (report.getZjdf() != null)
+            wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(), new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000));  //最近到访
+        if (report.getTheLatestFollowUpDate() != null)
+            wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(), new Date(report.getTheLatestFollowUpDate().getTime() + 60 * 60 * 24 * 1000));  //最近跟进
+        if (report.getBookingCreateTime() != null)
+            wrapper.lambda().between(report.getBookingCreateTime() != null, CostomerReport::getBookingCreateTime, report.getBookingCreateTime(), new Date(report.getBookingCreateTime().getTime() + 60 * 60 * 24 * 1000));  //认筹时间
+        if (report.getOrderCreateTime() != null)
+            wrapper.lambda().between(report.getOrderCreateTime() != null, CostomerReport::getOrderCreateTime, report.getOrderCreateTime(), new Date(report.getOrderCreateTime().getTime() + 60 * 60 * 24 * 1000));  //认购时间
+        if (report.getmYContractCreateTime() != null)
+            wrapper.lambda().between(report.getmYContractCreateTime() != null, CostomerReport::getmYContractCreateTime, report.getmYContractCreateTime(),new Date(report.getmYContractCreateTime().getTime() + 60*60*24*1000));  //签约时间
         if (StringUtils.isNotEmpty(isExcel)){
             page = new Page(1,-1);
         }
         IPage<CostomerReport> list=costomerReportService.page(page,wrapper);
         if (StringUtils.isNotEmpty(isExcel)){
-            SetExcel_costomerReport(list);
+            SetExcel_costomerReport(list,isWhole);
             return null;
         }
         return Result.ok(list);
     }
 
-    private void SetExcel_costomerReport(IPage<CostomerReport> result) {
+    private void SetExcel_costomerReport(IPage<CostomerReport> result,String isWhole) {
         List<ExcelExportEntity> entity = new ArrayList<>();
         entity.add(new ExcelExportEntity("区域", "areaName"));
         entity.add(new ExcelExportEntity("城市公司", "cityName"));
         entity.add(new ExcelExportEntity("项目名称", "intentProjectName"));
         entity.add(new ExcelExportEntity("客户姓名", "customerName"));
+        if (StringUtils.isNotEmpty(isWhole)){
+            entity.add(new ExcelExportEntity("客户电话", "customerMobileWhole"));
+        }else{
+            entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
+        }
         entity.add(new ExcelExportEntity("客户电话", "customerMobile"));
         entity.add(new ExcelExportEntity("置业顾问", "saleUserName"));
         entity.add(new ExcelExportEntity("置业顾问所属团队", "saleTeamName"));

@@ -471,7 +471,7 @@
 		FROM    dbo.B_ChannelUser a
 		        INNER JOIN dbo.B_ChannelTask_ChannelUser b ON a.ID = b.ChannelUserID
 		        INNER JOIN dbo.B_ChannelTask c ON b.ChannelTaskID = c.ID
-		                                          AND c.IsDel = 0  ${taskID}
+		                                          AND c.IsDel = 0  ${TaskID}
 		WHERE   1 = 1 AND a.Isdel = 0  ${sqlWhere}
 		GROUP BY a.ID ,a.Name , a.Mobile ,a.HeadImg ,b.IsDel
 		) a
