@@ -236,11 +236,16 @@ public class H5Controller extends TahoeBaseController {
             user.put("ChannelorgList",list);
         }
         BChannelorg channelOrg = channelorgService.getById((String) user.get("ChannelOrgID"));
-        if (StringUtils.equals(channelOrg.getMobile(),(String)user.get("Mobile"))){
-            user.put("position","负责人");
-        }else {
+        if(channelOrg != null){
+            if (StringUtils.equals(channelOrg.getMobile(),(String)user.get("Mobile"))){
+                user.put("position","负责人");
+            }else {
+                user.put("position","经纪人");
+            }
+        }else{
             user.put("position","经纪人");
         }
+
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
 //        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);

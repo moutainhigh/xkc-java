@@ -123,7 +123,7 @@ public class BChannelorgServiceImpl extends ServiceImpl<BChannelorgMapper, BChan
         for (String s : list) {
             sb.append("'").append(s).append("'").append(",");
         }
-        if (sb==null){
+        if (sb.length() == 0){
             return null;
         }
         String substring = sb.substring(0, sb.length() - 1);
