@@ -528,7 +528,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                         iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
                                     }
                                     //增加跟进记录
-                                    if (StringUtils.isEmpty(FollwUpType)){
+                                    if (!StringUtils.isEmpty(FollwUpType)){
                                     	JSONObject obj = new JSONObject();
                                         obj.put("FollwUpType", FollwUpType);
                                         obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
