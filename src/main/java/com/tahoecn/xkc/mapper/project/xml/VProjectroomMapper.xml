@@ -22,7 +22,7 @@
 			FROM    [V_ProjectRoom]
 			WHERE   BuildingID = #{BuildingID} ${sqlWhere}
 			ORDER BY RoomUnit ,
-			        FloorIndex DESC ,
+			        FloorIndex*1 DESC ,
 			        RoomIndex
     ]]>
 	</select>
