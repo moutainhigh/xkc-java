@@ -571,9 +571,15 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             wrapper.eq("JobID",jobID);
             wrapper.eq("IsDel",0);
             List<SCommonjobsmenurel> commonjobsmenurels = commonjobsmenurelService.list(wrapper);
+
             for (SCommonjobsmenurel commonjobsmenurel : commonjobsmenurels) {
-                commonjobsmenurel.setIsDel(1);
-                commonjobsmenurelService.updateById(commonjobsmenurel);
+                //如果在原menu表中 不删除
+                String menuID = commonjobsmenurel.getMenuID();
+                SMenus byId = menusService.getById(menuID);
+                if (byId==null){
+                    commonjobsmenurel.setIsDel(1);
+                    commonjobsmenurelService.updateById(commonjobsmenurel);
+                }
             }
             QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
             queryWrapper.eq("JobID",jobID);
@@ -592,13 +598,15 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
                 commonjobsmenurel.setIsDel(0);
                 commonjobsmenurelService.save(commonjobsmenurel);
             }
-            String[] sonIDs = sonID.split(",");
-            for (String id : sonIDs) {
-                SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
-                commonjobsfunctionsrel.setFuncID(id);
-                commonjobsfunctionsrel.setJobID(jobID);
-                commonjobsfunctionsrel.setIsDel(0);
-                commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
+            if (sonID!=null){
+                String[] sonIDs = sonID.split(",");
+                for (String id : sonIDs) {
+                    SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
+                    commonjobsfunctionsrel.setFuncID(id);
+                    commonjobsfunctionsrel.setJobID(jobID);
+                    commonjobsfunctionsrel.setIsDel(0);
+                    commonjobsfunctionsrelService.save(commonjobsfunctionsrel);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
