@@ -70,11 +70,14 @@ public class SAccountController extends TahoeBaseController {
         QueryWrapper<SAccount> wrapper=new QueryWrapper();
         wrapper.eq("Mobile",mobile).eq("IsDel",0);
         int count = accountService.count(wrapper);
-        QueryWrapper<BChanneluser> queryWrapper=new QueryWrapper();
-        queryWrapper.eq("Mobile",mobile).eq("IsDel",0);
-        int count1 = channeluserService.count(queryWrapper);
-        if (count>0||count1>0) {
+        if (count>0) {
             return Result.errormsg(500, "电话号码已存在,请使用其他号码");
+        }
+        QueryWrapper<SAccount> wrapperName=new QueryWrapper();
+        wrapperName.eq("UserName",userName).eq("IsDel",0);
+        int countName = accountService.count(wrapperName);
+        if (countName>0) {
+            return Result.errormsg(500, "登录账号名已存在,请使用其他账号名");
         }
 
 //        QueryWrapper<SAccount> wrapper1=new QueryWrapper();
@@ -100,11 +103,18 @@ public class SAccountController extends TahoeBaseController {
     public Result SystemUser_Update(@RequestBody SAccount account) {
         //手机号不可重复
         String mobile = account.getMobile();
+        String userName = account.getUserName();
         QueryWrapper<SAccount> wrapper=new QueryWrapper();
         wrapper.eq("Mobile",mobile).eq("IsDel",0).ne("ID",account.getId());
         int count = accountService.count(wrapper);
         if (count>0) {
             return Result.errormsg(500, "电话号码已存在,请使用其他号码");
+        }
+        QueryWrapper<SAccount> wrapperName=new QueryWrapper();
+        wrapperName.eq("UserName",userName).eq("IsDel",0).ne("ID",account.getId());
+        int countName = accountService.count(wrapperName);
+        if (countName>0) {
+            return Result.errormsg(500, "登录账号名已存在,请使用其他账号名");
         }
         account.setEditor(ThreadLocalUtils.getUserName());
         account.setEditTime(new Date());
