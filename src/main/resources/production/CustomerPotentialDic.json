@@ -1,0 +1,234 @@
+[
+  {
+    "DicID": "AEC5E071-B01F-4B41-942B-8BDC2112E06A",
+    "DicName": "姓名",
+    "Value": "",
+    "FieldName": "CustomerName",
+    "TableName": "B_CustomerPotential",
+    "Type": ""
+  },
+  {
+    "DicID": "149F778D-4244-46F6-908F-D33A363A5B58",
+    "DicName": "姓",
+    "Value": "",
+    "FieldName": "LastName",
+    "TableName": "B_CustomerPotential",
+    "Type": ""
+  },
+  {
+    "DicID": "7F298EE2-2B58-4C57-A0FF-FD2CDDF32BC6",
+    "DicName": "名",
+    "Value": "",
+    "FieldName": "FirstName",
+    "TableName": "B_CustomerPotential",
+    "Type": ""
+  },
+  {
+    "DicID": "21685728-54C5-4268-8371-62413CE42841",
+    "DicName": "电话",
+    "Value": "",
+    "FieldName": "Mobile",
+    "TableName": "B_CustomerPotential",
+    "Type": ""
+  },
+  {
+    "DicID": "E72C340D-4092-467A-9B8F-5138DBDCA43B",
+    "DicName": "性别",
+    "Value": "",
+    "FieldName": "Gender",
+    "TableName": "B_CustomerPotential",
+    "Type": "Option"
+  },
+  {
+    "DicID": "848EBE45-2C03-40C5-AE91-EC72533539BD",
+    "DicName": "证件类型",
+    "Value": "",
+    "FieldName": "CardType",
+    "TableName": "B_CustomerPotential",
+    "Type": "Option"
+  },
+  {
+    "DicID": "56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37",
+    "DicName": "证件号码",
+    "Value": "",
+    "FieldName": "CardID",
+    "TableName": "B_CustomerPotential",
+    "Type": ""
+  },
+  {
+    "DicID": "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602",
+    "DicName": "渠道来源",
+    "Value": "",
+    "FieldName": "SourceType",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "475D020E-DEC6-413C-898E-BC1A52511067",
+    "DicName": "年龄段",
+    "Value": "",
+    "FieldName": "AgeGroup",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "47A4BAF0-F946-4A8A-81F1-D675BEED6DE2",
+    "DicName": "客户标签",
+    "Value": "",
+    "FieldName": "CustomerTag",
+    "TableName": "",
+    "Type": ""
+  },
+  {
+    "DicID": "C4FBE218-B26A-48A0-88FF-F6CB2DCD1A72",
+    "DicName": "归属任务",
+    "Value": "",
+    "FieldName": "ChannelTaskID",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D",
+    "DicName": "意向项目",
+    "Value": "",
+    "FieldName": "IntentProjectID",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0",
+    "DicName": "认知媒体",
+    "Value": "",
+    "FieldName": "CognitiveChannel",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "0BFD0AEF-2C16-4A91-94D3-9CBF114DC78A",
+    "DicName": "媒体子类",
+    "Value": "",
+    "FieldName": "CognitiveChannelSub",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "D9199E8F-D1E0-49C1-A9C6-EE11CA7D5ECD",
+    "DicName": "最认可因素",
+    "Value": "",
+    "FieldName": "AcceptFactor",
+    "TableName": "B_CustomerPotential",
+    "Type": "Option"
+  },
+  {
+    "DicID": "4D35ABCF-E61C-4650-9F55-0D2D66548CF0",
+    "DicName": "备注",
+    "Value": "",
+    "FieldName": "Remark",
+    "TableName": "B_Clue",
+    "Type": ""
+  },
+  {
+    "DicID": "C7B06191-E032-45F4-A990-DB73450588DE",
+    "DicName": "户籍所在地",
+    "Value": "",
+    "FieldName": "DomicilePlace",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "8C57AF66-F8ED-4414-8DCC-8097E0F124CF",
+    "DicName": "现居住地址",
+    "Value": "",
+    "FieldName": "HomeAddress",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "39410FA8-101E-40C9-AE48-3415849A96FB",
+    "DicName": "居住区域",
+    "Value": "",
+    "FieldName": "HomeArea",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "86D4BA4F-3F3C-4F2E-8FF3-5DDAE8D71921",
+    "DicName": "工作区域",
+    "Value": "",
+    "FieldName": "WorkArea",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "62AC02D0-C4AB-4EB7-A85F-6E1D509C166B",
+    "DicName": "婚姻状况",
+    "Value": "",
+    "FieldName": "Marriage",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "6438B845-441C-4A53-AB17-96ECF291955F",
+    "DicName": "家庭结构",
+    "Value": "",
+    "FieldName": "Family",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "4124D302-0E37-47C7-A9CA-A7D5774A5361",
+    "DicName": "所属行业",
+    "Value": "",
+    "FieldName": "Industry",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "1A006C4D-B010-44CD-B09A-355E8A4328E3",
+    "DicName": "置业次数",
+    "Value": "",
+    "FieldName": "PropertyNum",
+    "TableName": "B_CustomerPotentialAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "08289FD5-999A-4A9F-94D5-B85507575404",
+    "DicName": "意向级别",
+    "Value": "",
+    "FieldName": "CustomerLevel",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "61C9B9E1-B2DE-4112-B9B3-C87E23E581BC",
+    "DicName": "客户级别",
+    "Value": "",
+    "FieldName": "CustomerRank",
+    "TableName": "B_Clue",
+    "Type": "Option"
+  },
+  {
+    "DicID": "480B60B2-1EE1-4A31-A810-072184A1E9D7",
+    "DicName": "跟进方式",
+    "Value": "",
+    "FieldName": "FollwUpWay",
+    "TableName": "B_CustomerPotentialFollowUp",
+    "Type": "Option"
+  },
+  {
+    "DicID": "600DEB36-F5E0-4BA3-B7FA-1A244F0773AB",
+    "DicName": "跟进内容",
+    "Value": "",
+    "FieldName": "FollowUpContent",
+    "TableName": "B_CustomerPotentialFollowUp",
+    "Type": "Option"
+  },
+  {
+    "DicID": "7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10",
+    "DicName": "下次跟进",
+    "Value": "",
+    "FieldName": "NextFollowUpDate",
+    "TableName": "B_CustomerPotentialFollowUp",
+    "Type": ""
+  }
+]
