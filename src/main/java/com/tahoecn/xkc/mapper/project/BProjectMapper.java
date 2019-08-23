@@ -19,7 +19,10 @@ import java.util.Map;
  */
 public interface BProjectMapper extends BaseMapper<BProject> {
 
-    List<Map<String,Object>> findByOrgID(IPage page,@Param("OrgID") String orgID,@Param("Name") String Name);
+    List<Map<String,Object>> findByOrgID(@Param("OrgID") String orgID,@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize);
+
+    int findByOrgID_count(@Param("OrgID") String orgID,@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize);
+
 
     List<Map<String,Object>> ProjectInfoList_SelectN(IPage page,@Param("Name")String Name, @Param("CityID")String cityID);
 

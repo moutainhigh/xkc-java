@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,8 +35,13 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     @Autowired
     private IBSalesgroupmemberService salesgroupmemberService;
     @Override
-    public List<Map<String,Object>> findByOrgID(IPage page,String orgID,String Name) {
-        return baseMapper.findByOrgID(page,orgID,Name);
+    public Map<String,Object> findByOrgID(String orgID,String Name,int PageIndex,int PageSize) {
+        List<Map<String, Object>> byOrgID = baseMapper.findByOrgID(orgID, Name, PageIndex, PageSize);
+        int byOrgID_count = baseMapper.findByOrgID_count(orgID, Name, PageIndex, PageSize);
+        Map<String,Object> map=new HashMap<>();
+        map.put("List",byOrgID);
+        map.put("total",byOrgID_count);
+        return map;
     }
 
     @Override

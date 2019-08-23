@@ -122,30 +122,31 @@ public class H5Controller extends TahoeBaseController {
         int PageSize=(int) paramMap.get("PageSize");
         //获取是否是机构的人
         //不为空表示登录进来的肯定是机构的人
-        List<Map<String, Object>> list;
-        IPage page=new Page(PageIndex,PageSize);
+        Map<String,Object> list;
+
         if (StringUtils.isNotBlank(OrgID)) {
-            list = projectService.findByOrgID(page,OrgID,Name);
+            list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
         } else {
-            list = projectService.ProjectInfoList_SelectN(page,Name, CityID);
+//            list = projectService.ProjectInfoList_SelectN(page,Name, CityID);
+            list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
         }
-        List<Map<String, Object>> resultList=projectService.addName(list);
-        Map<String, Object> map=new HashMap<>();
-        map.put("List",resultList);
-        Result result = new Result();
-        result.setErrcode(0);
-        result.setErrmsg("成功");
-        result.setData(map);
-        return result;
+//        List<Map<String, Object>> resultList=projectService.addName(list);
+//        Map<String, Object> map=new HashMap<>();
+//        map.put("List",resultList);
+//        Result result = new Result();
+//        result.setErrcode(0);
+//        result.setErrmsg("成功");
+//        result.setData(map);
+        return Result.ok(list);
     }
 
     //已测   BrokerProjectID=90DCFD49-0AE6-4F1E-A0CB-0EAC1151600E       ChannelOrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
         @ApiOperation(value = "首页-房源详情列表", notes = "首页-房源详情列表")
     @RequestMapping(value = "/mBrokerProjectDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerProjectDetail_Select(@RequestBody JSONObject jsonParam) {
-            Map paramMap = (HashMap)jsonParam.get("_param");
-            String BrokerProjectID=(String) paramMap.get("BrokerProjectID");
-            String ChannelOrgID=(String) paramMap.get("ChannelOrgID");
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String BrokerProjectID=(String) paramMap.get("BrokerProjectID");
+        String ChannelOrgID=(String) paramMap.get("ChannelOrgID");
         HashMap<String, Object> map = brokerprojectService.mBrokerProjectDetail_Select(BrokerProjectID, ChannelOrgID);
         Result result = new Result();
         result.setErrcode(GlobalConstants.S_CODE);
@@ -245,7 +246,12 @@ public class H5Controller extends TahoeBaseController {
         }else{
             user.put("position","经纪人");
         }
-
+        Object channelType = user.get("ChannelType");
+        if (channelType!=null){
+            if (StringUtils.equals((String)channelType,"中介同行")){
+                user.put("ChannelType","分销中介");
+            }
+        }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
 //        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
