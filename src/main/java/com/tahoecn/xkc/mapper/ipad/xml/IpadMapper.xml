@@ -154,10 +154,10 @@
 		                                              AND cc.Status <= 2        
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
-		                    INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{pmap.UserID})
 		          WHERE     o.ProjectID = #{pmap.ProjectID}
 		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		                    AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
 		        ) n WHERE 1=1 ${pmap.WHERE}
 		        ) a WHERE   a.num > (#{pmap.PageIndex}-1) * #{pmap.PageSize}
         AND a.num <= #{pmap.PageIndex} * #{pmap.PageSize}
@@ -186,10 +186,10 @@
 		                                              AND cc.Status <= 2        
 		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
 		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
-		                    INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{pmap.UserID})
 		          WHERE     o.ProjectID = #{pmap.ProjectID}
 		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		                    AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
 		          ) n WHERE 1=1 ${pmap.WHERE}
 		          ]]>
 		          <!-- UNION ALL
@@ -338,13 +338,13 @@
 		            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
 		            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
 		            LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
-		            INNER JOIN B_CustomerFollowUp f ON (f.OpportunityID = o.ID AND f.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND f.FollwUpUserID=#{pmap.FollwUpUserID})
 		    WHERE o.IsDel = 0
 		        AND o.Status > 0
 		        AND o.Status <> 6
 		        AND o.SaleUserID IS NOT NULL AND o.SaleUserID ! = ''
 		        AND o.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		        AND o.ProjectID = #{pmap.ProjectID}
+		        AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
 		        AND (o.SaleUserID = #{pmap.SaleUserID} OR o.SalePartnerID = #{pmap.SaleUserID}) ${pmap.WHERE}
 		    ORDER BY ca.VisitTime DESC    
 	    ]]>
