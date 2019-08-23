@@ -418,7 +418,8 @@ public class LoginAppController extends TahoeBaseController {
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("IsMineCustomer")) ||
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("IsMineEvaluate")) ||
                     MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("IsShareSmallProgram")) ||
-                    MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("IsPosterShare"))){
+                    MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("IsPosterShare"))||
+                    MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("AllOverdue"))){
 				sb.append("{'Name': '我的','Categroy': 'Mine','NormalImage': '','SelectedImage': '','ChildRole': {'CustomerMobileHide':0");
 
                 if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").equals("MineCare"))) {
@@ -511,6 +512,12 @@ public class LoginAppController extends TahoeBaseController {
                     sb.append(",'IsCaseLinkage':1");
                 } else {
                     sb.append(",'IsCaseLinkage':0");
+                }
+
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("AllOverdue"))) {    //案场联动
+                    sb.append(",'IsAllOverdue':1");
+                } else {
+                    sb.append(",'IsAllOverdue':0");
                 }
                 sb.append(",'CaseLinkageUrl':'").append(CaseLinkageUrl).append("'");
 
