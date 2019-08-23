@@ -917,6 +917,10 @@ public class AppKCController extends TahoeBaseController {
             String UserID = (String)paramMap.get("UserID").toString();//
             String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//
             String Filter = (String)paramMap.get("Filter").toString();//
+            String ReportUserID = "";
+            if(paramMap.get("ReportUserID") != null) {
+            	ReportUserID = (String)paramMap.get("ReportUserID").toString();//
+            }
             String AppID = "";
             if(paramMap.get("AppID") != null) {
             	AppID =(String)paramMap.get("AppID").toString();
@@ -948,7 +952,7 @@ public class AppKCController extends TahoeBaseController {
             else if(JobCode.equals("ZQFZR")) {
             	//专员下所有兼职
             	if(UserID != null && UserID.length() > 0){
-            		sb.append(" AND a.ReportUserID='").append(UserID).append("'");
+            		sb.append(" AND a.ReportUserID='").append(ReportUserID).append("'");
             	}
             	if(Filter != null && Filter.length() > 0) {
             		sb.append(" AND (a.Name LIKE '%").append(Filter).append("%' OR a.Mobile LIKE '%").append(Filter).append("%')");
