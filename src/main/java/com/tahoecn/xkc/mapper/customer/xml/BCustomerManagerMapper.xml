@@ -432,15 +432,13 @@ FROM    dbo.B_Opportunity A
     </select>
 
     <select id="SetExcelToCustomerChange_BakList" parameterType="java.util.Map" resultType="java.util.Map">
-        <![CDATA[
 
   SELECT
-                    m.num,
 					m.CustomerID,
 					m.CustomerName,
 					m.CustomerMobile,
-					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
-					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile2,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) &lt;&gt; '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
 					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,<!--原因-->
 					CASE WHEN m.ComeOverdueTime ='1900-01-01' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,<!--到访逾期时间-->
@@ -459,7 +457,7 @@ FROM    dbo.B_Opportunity A
 					m.OpportunityID,
 					dbo.F_GetZJDF(m.OpportunityID) ZJDF<!--最近到访时间-->
 					 FROM (
-					 SELECT ROW_NUMBER() OVER(ORDER BY t.ReportTime DESC) num,* FROM (
+					 SELECT * FROM (
 						SELECT
                                 b.ID ClueID ,
                                 b.CustomerPotentialID CustomerID ,<!--客户ID-->
@@ -488,12 +486,11 @@ FROM    dbo.B_Opportunity A
 								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
                       WHERE     b.IsDel = 0
                                 AND b.IntentProjectID = #{paramMap.ProjectID}
-                                AND b.Status<>3
+                                AND b.Status&lt;&gt;3
 								) t  WHERE 1=1 ${paramMap.sqlWhere}
                                 ) m
 
 								WHERE 1=1
 
-  ]]>
     </select>
 </mapper>

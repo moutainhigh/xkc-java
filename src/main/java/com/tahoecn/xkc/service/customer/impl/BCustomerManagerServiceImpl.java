@@ -224,7 +224,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
 
         if (StringUtil.isNotNull(IsExcel) && IsExcel.equals("1"))
         {
-            return bCustomerManagerMapper.SetExcelToCustomerChange_BakList(map,sqlWhere);
+            return bCustomerManagerMapper.SetExcelToCustomerChange_BakList(page,map);
         }
         return bCustomerManagerMapper.CustomerManagePageList_Select(page,map);
     }

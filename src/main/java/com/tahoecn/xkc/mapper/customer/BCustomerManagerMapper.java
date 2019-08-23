@@ -29,7 +29,7 @@ public interface BCustomerManagerMapper extends BaseMapper<BCustomer> {
 
     List<Map<String,Object>> CustomerNEWPayInfo_Select(@Param("paramMap") Map<String, Object> map);
 
-    IPage<Map<String,Object>> SetExcelToCustomerChange_BakList(@Param("paramMap") Map<String, Object> map, StringBuilder sqlWhere);
+    IPage<Map<String,Object>> SetExcelToCustomerChange_BakList(IPage page,@Param("paramMap") Map<String, Object> map);
 
     List<Map<String,Object>> CustomerPayMentsList_Select(@Param("tradeGUID") String tradeGUID);
 }
