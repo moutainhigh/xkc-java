@@ -234,7 +234,7 @@
 		                                                            AND sgm.Status = 1
 		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
 		                                                            AND sgm.ProjectID = #{pmap.ProjectID}
-		                    LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		                    LEFT JOIN dbo.B_SalesGroup sg ON (sgm.ReceptionGroupID = sg.ID AND sg.IsDel=0)
 		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
 		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
 		                                                            AND sgm1.IsDel=0 
