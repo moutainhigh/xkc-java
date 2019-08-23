@@ -1,0 +1,434 @@
+[
+  {
+    "DicID": "AEC5E071-B01F-4B41-942B-8BDC2112E06A",
+    "DicName": "����",
+    "Value": "",
+    "FieldName": "CustomerName",
+    "TableName": "B_Customer",
+    "Type": ""
+  },
+  {
+    "DicID": "149F778D-4244-46F6-908F-D33A363A5B58",
+    "DicName": "��",
+    "Value": "",
+    "FieldName": "LastName",
+    "TableName": "B_Customer",
+    "Type": ""
+  },
+  {
+    "DicID": "7F298EE2-2B58-4C57-A0FF-FD2CDDF32BC6",
+    "DicName": "��",
+    "Value": "",
+    "FieldName": "FirstName",
+    "TableName": "B_Customer",
+    "Type": ""
+  },
+  {
+    "DicID": "21685728-54C5-4268-8371-62413CE42841",
+    "DicName": "�绰",
+    "Value": "",
+    "FieldName": "Mobile",
+    "TableName": "B_Customer",
+    "Type": ""
+  },{
+    "DicID": "21685728-54C5-4268-8371-62413CE42832",
+    "DicName": "�绰",
+    "Value": "",
+    "FieldName": "SpareMobile",
+    "TableName": "B_Customer",
+    "Type": ""
+  },
+  {
+    "DicID": "E72C340D-4092-467A-9B8F-5138DBDCA43B",
+    "DicName": "�Ա�",
+    "Value": "",
+    "FieldName": "Gender",
+    "TableName": "B_Customer",
+    "Type": "Option"
+  },
+  {
+    "DicID": "848EBE45-2C03-40C5-AE91-EC72533539BD",
+    "DicName": "֤������",
+    "Value": "",
+    "FieldName": "CardType",
+    "TableName": "B_Customer",
+    "Type": "Option"
+  },
+  {
+    "DicID": "56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37",
+    "DicName": "֤������",
+    "Value": "",
+    "FieldName": "CardID",
+    "TableName": "B_Customer",
+    "Type": ""
+  },
+  {
+    "DicID": "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602",
+    "DicName": "������Դ",
+    "Value": "",
+    "FieldName": "OpportunitySource",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "5e7e5171-9a10-41a7-b713-4db83b2f36f0",
+    "DicName": "����",
+    "Value": "",
+    "FieldName": "ChannelName",
+    "TableName": "B_ChannelOrg",
+    "Type": ""
+  },
+  {
+    "DicID": "1FA31185-3B00-47AA-8F5E-7AA3D53205A5",
+    "DicName": "��ҵ����",
+    "Value": "",
+    "FieldName": "SaleUserID",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "03CD5B13-4A47-43AF-BCAE-93DD393DD771",
+    "DicName": "��ҵ�������",
+    "Value": "",
+    "FieldName": "SaleUserName",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "9134B1C9-B300-41CA-9FCD-D119661CB5F6",
+    "DicName": "��������",
+    "Value": "",
+    "FieldName": "AttendNum",
+    "TableName": "B_ClueAllocation",
+    "Type": "Option"
+  },
+  {
+    "DicID": "50F96B8D-78F7-4ED6-924A-02EF5069CC9F",
+    "DicName": "���÷�ʽ",
+    "Value": "",
+    "FieldName": "VisitType",
+    "TableName": "B_ClueAllocation",
+    "Type": "Option"
+  },
+  {
+    "DicID": "8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36",
+    "DicName": "����ʱ��",
+    "Value": "",
+    "FieldName": "VisitTime",
+    "TableName": "B_ClueAllocation",
+    "Type": ""
+  },
+  {
+    "DicID": "DC48D7A7-C086-408F-A68D-63C423A13F92",
+    "DicName": "���õص�",
+    "Value": "",
+    "FieldName": "VisitAddress",
+    "TableName": "B_ClueAllocation",
+    "Type": ""
+  },
+  {
+    "DicID": "475D020E-DEC6-413C-898E-BC1A52511067",
+    "DicName": "�����",
+    "Value": "",
+    "FieldName": "AgeGroup",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "47A4BAF0-F946-4A8A-81F1-D675BEED6DE2",
+    "DicName": "�ͻ���ǩ",
+    "Value": "",
+    "FieldName": "CustomerTag",
+    "TableName": "",
+    "Type": ""
+  },
+  {
+    "DicID": "7B44EDBA-FCB7-4040-A5FF-DDED0F01C76D",
+    "DicName": "������Ŀ",
+    "Value": "",
+    "FieldName": "IntentProjectID",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "BFD616A1-118F-4C9F-986F-BAA32A1A7EA3",
+    "DicName": "������Ŀ����",
+    "Value": "",
+    "FieldName": "StageIntentProjectID",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "BDDBD5B0-C1D2-4D76-96B4-C88C51C46AC0",
+    "DicName": "��֪ý��",
+    "Value": "",
+    "FieldName": "CognitiveChannel",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "0BFD0AEF-2C16-4A91-94D3-9CBF114DC78A",
+    "DicName": "ý������",
+    "Value": "",
+    "FieldName": "CognitiveChannelSub",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "D9199E8F-D1E0-49C1-A9C6-EE11CA7D5ECD",
+    "DicName": "���Ͽ�����",
+    "Value": "",
+    "FieldName": "AcceptFactor",
+    "TableName": "B_Customer",
+    "Type": "Option"
+  },
+  {
+    "DicID": "8741C05C-86DA-4952-8BC3-5C9CB669CCF9",
+    "DicName": "������ҵĿ��",
+    "Value": "",
+    "FieldName": "PropertyIntention",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "96F8FC2D-9AF2-413B-8628-85BC2040DC72",
+    "DicName": "ҵ̬����",
+    "Value": "",
+    "FieldName": "Commercial",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "4D35ABCF-E61C-4650-9F55-0D2D66548CF0",
+    "DicName": "��ע",
+    "Value": "",
+    "FieldName": "Remark",
+    "TableName": "B_Customer",
+    "Type": ""
+  },
+  {
+    "DicID": "C7B06191-E032-45F4-A990-DB73450588DE",
+    "DicName": "�������ڵ�",
+    "Value": "",
+    "FieldName": "DomicilePlace",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "8C57AF66-F8ED-4414-8DCC-8097E0F124CF",
+    "DicName": "�־�ס��ַ",
+    "Value": "",
+    "FieldName": "HomeAddress",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "39410FA8-101E-40C9-AE48-3415849A96FB",
+    "DicName": "��ס����",
+    "Value": "",
+    "FieldName": "HomeArea",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "86D4BA4F-3F3C-4F2E-8FF3-5DDAE8D71921",
+    "DicName": "��������",
+    "Value": "",
+    "FieldName": "WorkArea",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "62AC02D0-C4AB-4EB7-A85F-6E1D509C166B",
+    "DicName": "����״��",
+    "Value": "",
+    "FieldName": "Marriage",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "6438B845-441C-4A53-AB17-96ECF291955F",
+    "DicName": "��ͥ�ṹ",
+    "Value": "",
+    "FieldName": "Family",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "4124D302-0E37-47C7-A9CA-A7D5774A5361",
+    "DicName": "������ҵ",
+    "Value": "",
+    "FieldName": "Industry",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "1A006C4D-B010-44CD-B09A-355E8A4328E3",
+    "DicName": "��ҵ����",
+    "Value": "",
+    "FieldName": "PropertyNum",
+    "TableName": "B_CustomerAttribute",
+    "Type": "Option"
+  },
+  {
+    "DicID": "480B60B2-1EE1-4A31-A810-072184A1E9D7",
+    "DicName": "���ʽ",
+    "Value": "",
+    "FieldName": "FollwUpWay",
+    "TableName": "B_CustomerFollowUp",
+    "Type": "Option"
+  },
+  {
+    "DicID": "08289FD5-999A-4A9F-94D5-B85507575404",
+    "DicName": "���򼶱�",
+    "Value": "",
+    "FieldName": "CustomerLevel",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "61C9B9E1-B2DE-4112-B9B3-C87E23E581BC",
+    "DicName": "�ͻ�����",
+    "Value": "",
+    "FieldName": "CustomerRank",
+    "TableName": "B_Opportunity",
+    "Type": "Option"
+  },
+  {
+    "DicID": "600DEB36-F5E0-4BA3-B7FA-1A244F0773AB",
+    "DicName": "�������",
+    "Value": "",
+    "FieldName": "FollowUpContent",
+    "TableName": "B_CustomerFollowUp",
+    "Type": "Option"
+  },
+  {
+    "DicID": "7E6CAE73-F032-4E3A-9551-C6F7DA2AEC10",
+    "DicName": "�´θ��",
+    "Value": "",
+    "FieldName": "NextFollowUpDate",
+    "TableName": "B_CustomerFollowUp",
+    "Type": ""
+  },
+  {
+    "DicID": "292026B9-FB64-4391-9782-A86A025A7399",
+    "DicName": "�Ϲ���",
+    "Value": "",
+    "FieldName": "SubscriberCustomer",
+    "TableName": "B_Customer",
+    "Type": "Option"
+  },
+  {
+    "DicID": "F9EDFEB5-BD8E-4237-9979-2CB7104EB1F1",
+    "DicName": "�ͻ�����",
+    "Value": "",
+    "FieldName": "SaleUserName",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "9D31553D-7A60-4518-B5EC-8667CA44FB02",
+    "DicName": "���۹켣����",
+    "Value": "",
+    "FieldName": "TrackType",
+    "TableName": "B_CustomerTrack",
+    "Type": ""
+  },
+  {
+    "DicID": "1506e066-152b-4746-af56-2bfd13fa29dc",
+    "DicName": "���۹켣����",
+    "Value": "",
+    "FieldName": "Status",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "7FFDA0F6-6DEA-4CA5-86B6-C76D400702E3",
+    "DicName": "����̩��Ա�������",
+    "Value": "",
+    "FieldName": "IsEmployee",
+    "TableName": "B_Customer",
+    "Type": "OptionRadio"
+  },
+  {
+    "DicID": "A977C068-98A9-4184-AD39-5E645778CB5D",
+    "DicName": "�Ƿ���С��",
+    "Value": "",
+    "FieldName": "IsLittleBooking",
+    "TableName": "B_Opportunity",
+    "Type": "OptionRadio"
+  },
+  {
+    "DicID": "BB66EE25-E48E-4A7B-BA1D-DB03FBC87500",
+    "DicName": "�ǼǱ�ע",
+    "Value": "",
+    "FieldName": "ClueAllocationRemark",
+    "TableName": "B_ClueAllocation",
+    "Type": ""
+  },
+  {
+    "DicID": "5B3EA885-C8D6-4890-A75E-88904575D46C",
+    "DicName": "����",
+    "Value": "",
+    "FieldName": "Birthday",
+    "TableName": "B_CustomerAttribute",
+    "Type": ""
+  },
+  {
+    "DicID": "9036F3E4-2EB7-4E7A-849D-FFF39EEB093D",
+    "DicName": "ͨѶ��ַ",
+    "Value": "",
+    "FieldName": "Address",
+    "TableName": "B_CustomerAttribute",
+    "Type": ""
+  },
+  {
+    "DicID": "24435169-D54C-4FA2-AE6F-1233861420B2",
+    "DicName": "�״ε���ʱ��",
+    "Value": "",
+    "FieldName": "FirstVisitDate",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "8D5F984D-1315-4F1D-AED1-F4009B831674",
+    "DicName": "�����ʱ��",
+    "Value": "",
+    "FieldName": "TheLatestFollowUpDate",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "2E2E3DE0-A38E-4D33-A547-E79B4781D1E9",
+    "DicName": "�׷õص�",
+    "Value": "",
+    "FieldName": "FirstVisitAddress",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "673D9211-D4FE-4B0D-95DB-E094E04D4E96",
+    "DicName": "���õص�",
+    "Value": "",
+    "FieldName": "ReVisitAddress",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "5E2C2209-4EB5-4BE3-BF53-AC469B78848B",
+    "DicName": "Э����ID",
+    "Value": "",
+    "FieldName": "SalePartnerID",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  },
+  {
+    "DicID": "79F2C394-8152-49EC-BEB6-E5F8883B65CE",
+    "DicName": "Э��������",
+    "Value": "",
+    "FieldName": "SalePartnerName",
+    "TableName": "B_Opportunity",
+    "Type": ""
+  }
+
+]
