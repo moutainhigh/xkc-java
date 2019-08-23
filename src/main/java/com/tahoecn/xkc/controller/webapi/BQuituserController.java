@@ -74,10 +74,16 @@ public class BQuituserController extends TahoeBaseController {
         map.put("TeamName",TeamName);
         map.put("IsDispose",IsDispose);
 
+
+
+        if (StringUtils.isNotEmpty(IsExcel)){
+            QuitUserOwnTeamListAll_Select(map);
+            return null;
+        }
+
         IPage page = new Page();
         page.setSize(Integer.valueOf(PageSize));
         page.setCurrent(Integer.valueOf(PageIndex));
-
         result.put("List", iBQuituserService.QuitUserOwnTeamList_Select(page,map));
 
         return Result.ok(result);
@@ -95,7 +101,7 @@ public class BQuituserController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("是否处理","IsDispose"));
         entity.add(new ExcelExportEntity("处理时间","EditeTime"));
         IPage page = new Page();
-        page.setSize(Integer.valueOf(99999));
+        page.setSize(Integer.valueOf(999999999));
         page.setCurrent(Integer.valueOf(1));
         IPage<Map<String,Object>> result = iBQuituserService.QuitUserOwnTeamList_Select(page,map);
 

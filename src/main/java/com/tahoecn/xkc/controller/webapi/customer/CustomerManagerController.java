@@ -267,7 +267,7 @@ public class CustomerManagerController extends TahoeBaseController {
     @Transactional(rollbackFor = Exception.class)
     @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
     public Result UpdateCustBaseInfo(String oppoId,String custId,String userId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
-        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg,String homeAddressOrg,String homeAddress,String attrId) {
+        String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg,String AddressOrg,String Address,String attrId) {
         UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
         BOpportunity oppo = new BOpportunity();
         oppo.setCustomerName(customerName);
@@ -289,7 +289,7 @@ public class CustomerManagerController extends TahoeBaseController {
         if(StringUtil.isNotNull(attrId))
             custAttr.setId(attrId);
         custAttr.setCustomerID(custId);
-        custAttr.setHomeAddress(homeAddress);
+        custAttr.setAddress(Address);
         iBCustomerattributeService.saveOrUpdate(custAttr);
 
 
@@ -311,8 +311,8 @@ public class CustomerManagerController extends TahoeBaseController {
             log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
         if(StringUtil.isNotNull(customerName))
             log.setCustomerName(customerNameOrg + "->" + customerName);
-        if(StringUtil.isNotNull(homeAddress))
-            log.setHomeAddress(homeAddressOrg + "->" + homeAddress);
+        if(StringUtil.isNotNull(Address))
+            log.setHomeAddress(AddressOrg + "->" + Address);
         log.setCreateTime(new Date());
         iUpdateCustinfoLogService.save(log);
         return Result.ok("修改成功");
