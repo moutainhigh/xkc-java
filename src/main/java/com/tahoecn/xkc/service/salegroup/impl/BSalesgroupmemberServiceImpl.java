@@ -149,7 +149,6 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                             "'8100EAF4-FBCE-408B-A51D-B7247A3ADB19'," + //销管组
                             "'97F5E202-2D3B-4935-BA91-4AFD5C5578FC'," + //策划组
 
-
                             "'938935B7-4131-4E61-A811-4323A7F193A2')";  //案场销售负责人
                 }
                 else if(RoleID.equals("8100EAF4-FBCE-408B-A51D-B7247A3ADB19"))//销支组

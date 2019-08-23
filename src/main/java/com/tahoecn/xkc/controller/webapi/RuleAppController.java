@@ -363,6 +363,16 @@ public class RuleAppController extends TahoeBaseController {
                 iBClueService.updateTradeOverdueTimeByDate(bCluerule.getExtendSigningProEndDate(),bCluerule.getId());
             }
 
+            //延长保护期extendProDays 更新 TRADEOVERDUETIME 成交逾期时间
+            if(bCluerule.getExtendProDays()!=null && bCluerule.getExtendProDays()!= 0){
+                iBClueService.updateTradeOverdueTimeByDay(bCluerule.getExtendProDays(),bCluerule.getId());
+            }
+
+            //延长保护期截止日extendProEndDate 更新 TRADEOVERDUETIME 成交逾期时间
+            if(bCluerule.getExtendProEndDate()!=null){
+                iBClueService.updateTradeOverdueTimeByDate(bCluerule.getExtendProEndDate(),bCluerule.getId());
+            }
+
             if(StringUtil.isNotNull(changeProtectDays)) {
                 List<BClueruleGourpVo> clueruleGourpVoList = new ArrayList<>();
                 if (protectSource == 2) {//2.分销

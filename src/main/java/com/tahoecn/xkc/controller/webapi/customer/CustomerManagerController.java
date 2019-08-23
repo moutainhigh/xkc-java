@@ -190,7 +190,7 @@ public class CustomerManagerController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("认筹时间","RCTime"));
         entity.add(new ExcelExportEntity("认购时间","RGTime"));
         entity.add(new ExcelExportEntity("签约时间","QYTime"));
-        IPage page = new Page(1,99999);
+        IPage page = new Page(1,999999999);
         IPage<Map<String,Object>> result = customerManagerService.CustomerManagePageList_Select(page,map);
 
         try {

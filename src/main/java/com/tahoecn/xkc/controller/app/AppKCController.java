@@ -348,6 +348,13 @@ public class AppKCController extends TahoeBaseController {
             map.put("CheckDate", CheckDate);
             int AllCount=iBChanneluserService.mChannelCheckClockPerson_SelectAllCount(map);
     		List<Map<String,Object>> a = iBChanneluserService.mChannelCheckClockPerson_Select(page, UserID, CheckDate);
+    		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            for(int x=0;x<a.size();x++) {
+            	
+            	String sd1 = sdf.format(a.get(x).get("CreateTime"));
+            	a.get(x).put("CreateTime", sd1);
+            	
+            }
     		result.put("List", a);
     		result.put("AllCount", AllCount);
     		result.put("PageSize", PageSize);
