@@ -123,6 +123,9 @@ public class BChannelorgServiceImpl extends ServiceImpl<BChannelorgMapper, BChan
         for (String s : list) {
             sb.append("'").append(s).append("'").append(",");
         }
+        if (sb==null){
+            return null;
+        }
         String substring = sb.substring(0, sb.length() - 1);
         List<Map<String,Object>> childList=new ArrayList<>();
         //如果查询结果为0 则没有可选机构 返回null
