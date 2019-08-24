@@ -1220,6 +1220,39 @@
 		select @dt=getdate()
 		SELECT A.ID
 		INTO #tempOID
+		FROM dbo.B_Opportunity A
+		INNER JOIN B_SalesCenterRule b ON a.ProjectID=b.ProjectID AND b.IsDel=0 AND b.Status=1
+		INNER JOIN dbo.B_SalesGroupMember c ON a.SaleUserID=c.MemberID AND c.IsDel=0 AND c.Status=1 
+			AND c.ProjectID=#{ProjectID} AND c.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		INNER JOIN dbo.B_SalesGroup d ON c.ReceptionGroupID=d.ID AND d.IsDel=0 AND d.Status=1
+		WHERE   A.ProjectID = #{ProjectID} AND A.IsDel = 0 AND A.Status< 4
+		        AND A.TheLatestFollowUpDate IS NOT NULL AND LEN(A.SaleUserID) >0
+				AND (CASE d.Nature WHEN 1 THEN DATEADD(DAY,b.OwnerReleasePeriod,a.TheLatestFollowUpDate)
+						ELSE DATEADD(DAY,b.AgentReleasePeriod,a.TheLatestFollowUpDate) END)< GETDATE()
+		
+		DELETE FROM S_Message where BizType='Opportunity' and BizID in (select ID from #tempOID) 
+		
+		insert into B_CustomerPublicPool(ID,ClueID,OpportunityID,CustomerID,Name,Mobile,CustomerLevel,Reason
+			,TheFirstVisitDate,SaleUserID,SaleUserName,SaleTeamID,SaleTeamName,Creator,CreateTime)
+		select newid(),ClueID,a.ID,CustomerID,CustomerName,CustomerMobile,CustomerLevel,#{Reason}
+			,TheFirstVisitDate,SaleUserID,SaleUserName,c.id as SaleTeamID,c.name as SaleTeamName,'sys',@dt
+		from B_Opportunity a
+		inner join B_SalesGroupMember b on a.saleuserid=b.memberid and b.isdel=0 and b.status=1
+		inner join B_SalesGroup c on a.projectid=c.projectid and b.ReceptionGroupID=c.id and c.isdel=0 and c.status=1
+		where a.id in ( select ID from #tempOID )
+		
+		update B_Opportunity set SaleUserID=NULL,SaleUserName=NULL where id in ( select ID from #tempOID )
+		
+		drop table #tempOID
+	]]>
+	</update>
+	
+	<update id="RreclaimFollowup_Update1">
+	<![CDATA[
+		declare @dt datetime
+		select @dt=getdate()
+		SELECT A.ID
+		INTO #tempOID
 		FROM      dbo.B_Opportunity A
 		INNER JOIN B_SalesCenterRule b ON a.ProjectID=b.ProjectID AND b.IsDel=0 AND b.Status=1
 		INNER JOIN dbo.B_SalesGroupMember c ON a.SaleUserID=c.MemberID AND c.IsDel=0 AND c.Status=1 
