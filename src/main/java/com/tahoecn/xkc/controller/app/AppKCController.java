@@ -322,10 +322,10 @@ public class AppKCController extends TahoeBaseController {
     		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     		if(a.size() != 0) {
+    			String sd1 = sdf.format(a.get(0).get("LastCheckTime"));
+    			a.get(0).put("LastCheckTime", sd1);
     			b = a.get(0);
     		}
-    		String sd1 = sdf.format(a.get(0).get("LastCheckTime"));
-        	a.get(0).put("LastCheckTime", sd1);
     		return re.ok(b);
     	}catch (Exception e) {
 			e.printStackTrace();
