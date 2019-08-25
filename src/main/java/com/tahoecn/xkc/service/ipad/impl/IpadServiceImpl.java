@@ -1375,7 +1375,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(re_ja);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
