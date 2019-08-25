@@ -30,6 +30,7 @@
         AND ProductID = #{ProductID}
         AND JobOrgID = #{OrgID}
         AND IsDel = 0
+        and JobName like '%_2.0'
         ORDER BY LEN(JobName),JobName
     </select>
 
