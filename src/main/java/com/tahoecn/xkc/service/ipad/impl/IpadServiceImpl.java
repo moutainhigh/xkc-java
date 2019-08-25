@@ -1335,6 +1335,11 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
+        JSONObject j_data = new JSONObject();
+    	j_data.put("List", null);
+    	j_data.put("AllCount", 0);
+    	j_data.put("PageSize", 1);
+    	re.setData(j_data);
         re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
