@@ -18,6 +18,7 @@
 		<if test="JobName != null and JobName != ''">
 			AND JobName LIKE  '%'+ #{JobName} +'%'
 		</if>		
+		AND JobName LIKE  '%_2.0'
       ORDER BY JobName 
   </select>
   
@@ -28,6 +29,7 @@
               [Status]
       FROM    [S_CommonJobs]
         WHERE  IsDel = 0
+        AND JobName LIKE  '%_2.0'
         ORDER BY JobName
   </select>
   

@@ -165,7 +165,7 @@
         FROM
         dbo.S_CommonJobs s
         WHERE
-        Creator = '100'
+        Creator = '100' and JobName like '%_2.0'
 
     </select>
 
