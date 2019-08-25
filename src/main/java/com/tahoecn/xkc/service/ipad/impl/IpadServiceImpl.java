@@ -284,10 +284,10 @@ public class IpadServiceImpl implements IIpadService {
 	        	CustomerObj = re_j.getJSONObject("CustomerObj");
 	            saleUserID = CustomerObj.getString("SaleUserID");
 	            salePartnerID =CustomerObj.getString("SalePartnerID");
-	            if ((saleUserID.length() > 0 && "C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID))){//为无  CustomerModeType.分接_老机会_老客户_未分配
+	            if ((saleUserID != null && !"".equals(saleUserID) && saleUserID.length() > 0 && "C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID))){//为无  CustomerModeType.分接_老机会_老客户_未分配
 	                isNew = 0;
 	                isAlloc = 0;
-	            }if ((saleUserID.length() > 0 && !"C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID)) || !"".equals(salePartnerID)){//不为无  CustomerModeType.分接_老机会_老客户
+	            }if ((saleUserID != null && !"".equals(saleUserID) && saleUserID.length() > 0 && !"C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID)) || !"".equals(salePartnerID)){//不为无  CustomerModeType.分接_老机会_老客户
 	                isNew = 0;
 	                isAlloc = 1;
 	            }
