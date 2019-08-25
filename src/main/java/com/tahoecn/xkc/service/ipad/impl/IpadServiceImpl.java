@@ -312,7 +312,7 @@ public class IpadServiceImpl implements IIpadService {
 	                	//如果首访地址为空，客户到访异地案场
 	                    isReAlloc = 1;
 	                }
-	                if (!"".equals(FirstVisitAddress) && !FirstVisitAddress.equals(VisitAddress) && "".equals(salePartnerID)){
+	                if (!"".equals(FirstVisitAddress) && FirstVisitAddress != null && !FirstVisitAddress.equals(VisitAddress) && "".equals(salePartnerID)){
 	                	//如果首访地址不为空，是否异地根据首访地址判断
 	                    isReAlloc = 1;
 	                }
