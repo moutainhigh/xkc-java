@@ -249,6 +249,7 @@
 		                    AND o.Status <> 6
 		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
 		                    AND o.ProjectID = #{pmap.ProjectID}
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
 		                    ${pmap.WHERE}
 		                    ) a where a.SaleUserID!='' and a.SaleUserID is not null and a.GroupName is not null and a.GroupName!=''
 		        GROUP BY a.SaleUserID,a.SaleUserName,a.GroupName,a.SaleHeadImg,a.TelPhone

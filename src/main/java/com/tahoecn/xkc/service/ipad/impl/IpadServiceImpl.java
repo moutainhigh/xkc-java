@@ -1260,7 +1260,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1275,7 +1275,7 @@ public class IpadServiceImpl implements IIpadService {
         }
         if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
             String time = paramAry.getString("ReceptTime");
-            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) = '"+time+"'");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) = '"+time+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
         paramAry.put("SiteUrl", SiteUrl);
@@ -1295,7 +1295,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1308,9 +1308,14 @@ public class IpadServiceImpl implements IIpadService {
         if (!StringUtils.isEmpty(model.getKeyWord())){
             whereSb.append(" AND (o.CustomerName LIKE '%"+model.getKeyWord()+"%' OR c.Mobile LIKE '%"+model.getKeyWord()+"%')");
         }
-        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
+/*        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
             String time = paramAry.getString("ReceptTime");
             whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,120) = '"+time+"'");
+        }*/
+        if (!StringUtils.isEmpty(paramAry.getString("BeginReceptTime")) && !StringUtils.isEmpty(paramAry.getString("EndReceptTime")) ){
+            String begintime = paramAry.getString("BeginReceptTime");
+            String endtime = paramAry.getString("EndReceptTime");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) BETWEEN '"+begintime+"' AND '"+endtime+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
         paramAry.put("SiteUrl", SiteUrl);
@@ -1330,7 +1335,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1342,7 +1347,7 @@ public class IpadServiceImpl implements IIpadService {
         if (!StringUtils.isEmpty(paramAry.getString("BeginReceptTime")) && !StringUtils.isEmpty(paramAry.getString("EndReceptTime")) ){
             String begintime = paramAry.getString("BeginReceptTime");
             String endtime = paramAry.getString("EndReceptTime");
-            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) BETWEEN '"+begintime+"' AND '"+endtime+"'");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) BETWEEN '"+begintime+"' AND '"+endtime+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
         paramAry.put("SiteUrl", SiteUrl);
