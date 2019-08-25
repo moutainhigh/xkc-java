@@ -659,7 +659,7 @@ public class IpadServiceImpl implements IIpadService {
                                 	//如果首访地址为空，客户到访异地案场
                                     isReAlloc = 1;
                                 }
-                                if (!"".equals(FirstVisitAddress) && !FirstVisitAddress.equals(VisitAddress) && "".equals(SalePartnerID)){
+                                if (FirstVisitAddress != null && !"".equals(FirstVisitAddress) && !FirstVisitAddress.equals(VisitAddress) && "".equals(SalePartnerID)){
                                 	//如果首访地址不为空，是否异地根据首访地址判断
                                     isReAlloc = 1;
                                 }
@@ -752,7 +752,7 @@ public class IpadServiceImpl implements IIpadService {
                             FollwUpWay = "A79A1057-D4DC-497C-8C81-8F93E422C819";
                         }
                         String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(FollwUpWay);
-                        if (SaleUserID.length() > 0){
+                        if (SaleUserID != null && !"".equals(SaleUserID) && SaleUserID.length() > 0){
                         	 parameter.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
                              Map<String,Object> pmap =JSONObject.parseObject(parameter.toJSONString(), Map.class);
                              if (pmap.get("ClueID")==null){
