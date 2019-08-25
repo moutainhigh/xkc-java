@@ -342,7 +342,7 @@
 		SELECT  *
 		FROM    dbo.V_Clue
 		WHERE   IsDel = 0
-		        AND ID = (select ClueID from B_Opportunity where ID = #{ClueID} and IsDel = 0 and Status <> 6)
+		        AND  ID in (select ClueID from B_Opportunity where ID = #{ClueID} and IsDel = 0 and Status <> 6 UNION SELECT #{ClueID})
 		 ]]>
 	</select>
 	
