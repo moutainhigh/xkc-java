@@ -358,16 +358,20 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     @Override
     public String getMessage(int invalidType, Map<String, Object> map) {
         String msg=new String();
+        if(map == null){
+        	map.put("RuleType", "0");
+        	map.put("RuleType", "0");
+        }
         if(map.get("RuleType") == null || "".equals(map.get("RuleType"))){
         	map.put("RuleType", "0");
         }
         if(map.get("ValidationMode") == null || "".equals(map.get("ValidationMode"))){
-        	map.put("ValidationMode", "0");
+        	map.put("RuleType", "0");
         }
         switch (invalidType)
         {
             case 0:
-                msg = (int)map.get("RuleType") == 1 && (int)map.get("ValidationMode") == 1 ? "报备成功，现场确认" : "报备成功，实时验证";
+                msg = "1".equals(map.get("RuleType") ) && "1".equals(map.get("ValidationMode") ) ? "报备成功，现场确认" : "报备成功，实时验证";
                 break;
             case 1:
                 msg = "老业主";
