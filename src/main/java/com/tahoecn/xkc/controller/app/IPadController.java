@@ -79,6 +79,8 @@ public class IPadController extends TahoeBaseController{
 				//更新置业过问列表顺序
 				iIpadService.updateSortCodeAndTime(param.getString("UserID"),param.getString("SalesUserID"));
 			}
+			re.setErrcode(0);
+			re.setErrmsg("登记成功！");
 		} catch (Exception e) {
 			re.setErrcode(1);
 			re.setErrmsg("系统异常");
