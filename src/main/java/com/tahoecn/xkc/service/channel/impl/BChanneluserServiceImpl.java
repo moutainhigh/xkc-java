@@ -29,6 +29,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -503,7 +504,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public IPage<Map<String, Object>> AgenList_SelectN(IPage page,int PageType,String ProjectID,String ChannelTypeID,String Name,String PassStatu
-                                                        ,Date CreateStartTime,Date CreateEndTime,String ApprovalUserID) {
+                                                        ,Date CreateStartTime,Date CreateEndTime,String ApprovalUserID
+                                                        ,String Mobile,String CertificatesNo,String ChannelOrgName, String Status,Date effectiveStartTime,Date effectiveEndTime
+    ) {
         StringBuilder where=new StringBuilder();
         if (PageType==0){
             where.append(" and cu.ChannelTypeID IN ('32C92DA0-DA13-4C21-A55E-A1D16955882C','E55FC76C-4696-40F9-8640-EF18572822CD') AND Job<>0");
@@ -519,15 +522,45 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         if (StringUtils.isNotBlank(Name)){
             where.append(" and cu.Name like '%" + Name + "%'");
         }
+        if (StringUtils.isNotBlank(Name)){
+            where.append(" and cu.Mobile like '%" + Mobile + "%'");
+        }
+        if (StringUtils.isNotBlank(Name)){
+            where.append(" and cu.CertificatesNo like '%" + CertificatesNo + "%'");
+        }
+        if (StringUtils.isNotBlank(Name)){
+            where.append(" and cu.ChannelOrgName like '%" + ChannelOrgName + "%'");
+        }
+        if (StringUtils.isNotBlank(Name)){
+            where.append(" and cu.Status like '%" + Status + "%'");
+        }
         if (StringUtils.isNotBlank(PassStatu)&&!StringUtils.equals("-1",PassStatu)){
             where.append(" and cu.ApprovalStatus= '" + PassStatu + "'");
         }
         if (CreateStartTime!=null){
-            where.append(" and cu.CreateTime > '" + CreateStartTime + "'");
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String startStr = sf.format(CreateStartTime);
+            where.append(" and cu.CreateTime > '" + startStr + "'");
         }
         if (CreateEndTime!=null){
-            where.append(" and cu.CreateTime < '" + CreateEndTime + "'");
+            CreateEndTime = new Date(CreateEndTime.getTime() + 60 * 60 * 24 * 1000);
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String endstr = sf.format(CreateEndTime);
+            where.append(" and cu.CreateTime < '" + endstr + "'");
         }
+
+        if (effectiveStartTime!=null){
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String startStr = sf.format(effectiveStartTime);
+            where.append(" and cu.ApprovalDate > '" + startStr + "'");
+        }
+        if (effectiveEndTime!=null){
+            effectiveEndTime = new Date(effectiveEndTime.getTime() + 60 * 60 * 24 * 1000);
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String endstr = sf.format(effectiveEndTime);
+            where.append(" and cu.ApprovalDate < '" + endstr + "'");
+        }
+
         if (StringUtils.isNotBlank(ApprovalUserID)){
             where.append(" and cu.Approver = '" +ApprovalUserID + "'");
         }
