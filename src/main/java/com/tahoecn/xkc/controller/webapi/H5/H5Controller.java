@@ -97,7 +97,6 @@ public class H5Controller extends TahoeBaseController {
     @Autowired
     private PotentialCustomerServiceImpl potentialCustomerService;
 
-    //已测  AppID=5D4D7079-D294-4204-BD51-C3AB420C6C2F
     @ApiOperation(value = "获取城市", notes = "获取城市")
     @RequestMapping(value = "/mBrokerCityList_Select", method = {RequestMethod.POST})
     public Result mBrokerCityList_Select(@RequestBody JSONObject jsonParam) {
@@ -110,7 +109,6 @@ public class H5Controller extends TahoeBaseController {
         return result;
         //前两条空,数据问题
     }
-    //已测 OrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
     @ApiOperation(value = "获取房源项目列表", notes = "获取房源项目列表")
     @RequestMapping(value = "/mBrokerProjectList_SelectN", method = {RequestMethod.POST})
     public Result mBrokerProjectList_SelectN(@RequestBody JSONObject jsonParam) {
@@ -140,7 +138,6 @@ public class H5Controller extends TahoeBaseController {
         return Result.ok(list);
     }
 
-    //已测   BrokerProjectID=90DCFD49-0AE6-4F1E-A0CB-0EAC1151600E       ChannelOrgID=16c92dc7-2eca-4397-aa2d-7a38c5671201
         @ApiOperation(value = "首页-房源详情列表", notes = "首页-房源详情列表")
     @RequestMapping(value = "/mBrokerProjectDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerProjectDetail_Select(@RequestBody JSONObject jsonParam) {
@@ -156,7 +153,6 @@ public class H5Controller extends TahoeBaseController {
     }
 
     @CrossOrigin
-    //已测 ProjectID     UserID
     @ApiOperation(value = "当前项目是否被收藏", notes = "当前项目是否被收藏")
     @RequestMapping(value = "/mBrokerProjectCollectionIsExist_Select", method = {RequestMethod.POST})
     public Result mBrokerProjectCollectionIsExist_Select(@RequestBody JSONObject jsonParam) {
@@ -273,7 +269,6 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
-    //已测
     @Deprecated
     @ApiOperation(value = "获取个人中心的统计数据", notes = "获取个人中心的统计数据")
     @RequestMapping(value = "/mBrokerMyCenter_Select", method = {RequestMethod.POST})
@@ -299,7 +294,6 @@ public class H5Controller extends TahoeBaseController {
     }
 
 
-    //已测
     @ApiOperation(value = "获取我的客户列表", notes = "获取我的客户列表")
     @RequestMapping(value = "/mGetMyCustomers_Select", method = {RequestMethod.POST})
     public Result mGetMyCustomers_Select(@RequestBody JSONObject jsonParam) {
@@ -311,12 +305,14 @@ public class H5Controller extends TahoeBaseController {
         int PageIndex=(int) paramMap.get("PageIndex");
         int PageSize=(int) paramMap.get("PageSize");
         IPage page = new Page(PageIndex, PageSize);
+        if (StringUtils.equals(Filter,"到访")){
+            Filter="来访";
+        }
         IPage<Map<String, Object>> list = mycustomersService.mGetMyCustomers_Select(page, Sort, Filter, CustomerInfo, BrokerID);
 
         return Result.ok(list);
     }
 
-    //已测
     @ApiOperation(value = "获取渠道人员", notes = "获取渠道人员")
     @RequestMapping(value = "/mBrokerChannelUserDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerChannelUserDetail_Select(@RequestBody JSONObject jsonParam) {
@@ -344,7 +340,6 @@ public class H5Controller extends TahoeBaseController {
         return Result.errormsg(1,"加载用户个人信息失败");
     }
 
-    //已测
     @ApiOperation(value = "修改个人证件信息", notes = "修改个人证件信息")
     @RequestMapping(value = "/mBrokerChannelUserCardDetail_Update", method = {RequestMethod.POST})
     public Result mBrokerChannelUserCardDetail_Update(@RequestBody JSONObject jsonParam) {
@@ -368,7 +363,6 @@ public class H5Controller extends TahoeBaseController {
         return Result.errormsg(1,"修改失败");
     }
 
-    //已测
     @ApiOperation(value = "消息列表", notes = "消息列表")
     @RequestMapping(value = "/mMessageAllList_Select", method = {RequestMethod.POST})
     public Result mMessageAllList_Select(@RequestBody JSONObject jsonParam) {
@@ -400,7 +394,6 @@ public class H5Controller extends TahoeBaseController {
         return Result.ok(list);
     }
 
-    //未测
     @ApiOperation(value = "修改个人银行卡信息", notes = "修改个人银行卡信息")
     @RequestMapping(value = "/mBrokerChannelUserBankCardDetail_Update", method = {RequestMethod.POST})
     public Result mBrokerChannelUserBankCardDetail_Update(@RequestBody JSONObject jsonParam) {
@@ -563,7 +556,6 @@ public class H5Controller extends TahoeBaseController {
         return re;
     }
 
-    //已测
     @ApiOperation(value = "获取客户详情", notes = "获取客户详情")
     @RequestMapping(value = "/mBrokerCustomerDetail_Select", method = {RequestMethod.POST})
     public Result mBrokerCustomerDetail_Select(@RequestBody JSONObject jsonParam) {
@@ -582,7 +574,6 @@ public class H5Controller extends TahoeBaseController {
         return result;
     }
 
-    //未测  两个修改不知道哪个是
     @ApiOperation(value = "修改个人基本信息", notes = "修改个人基本信息")
     @RequestMapping(value = "/mBrokerChannelUserDetail_Upate", method = {RequestMethod.POST})
     public Result mBrokerChannelUserDetail_Upate(@RequestBody JSONObject jsonParam) {
@@ -624,7 +615,6 @@ public class H5Controller extends TahoeBaseController {
         return Result.ok(path);
     }
 
-    //已测
     @ApiOperation(value = "项目收藏", notes = "项目收藏")
     @RequestMapping(value = "/BrokerProjectCollection_Insert", method = {RequestMethod.POST})
     public Result BrokerProjectCollection_Insert(@RequestBody JSONObject jsonParam) {
@@ -655,7 +645,6 @@ public class H5Controller extends TahoeBaseController {
         }
     }
 
-    //已测
     @ApiOperation(value = "取消项目收藏", notes = "取消项目收藏")
     @RequestMapping(value = "/mBrokerProjectCollection_Delete", method = {RequestMethod.POST})
     public Result mBrokerProjectCollection_Delete(@RequestBody JSONObject jsonParam) {
@@ -707,7 +696,6 @@ public class H5Controller extends TahoeBaseController {
         }
     }
 
-    //未测
     @ApiOperation(value = "拓客人员与全民经济人同一注册接口", notes = "拓客人员与全民经济人同一注册接口")
     @RequestMapping(value = "/mLoginTKUser_InsertN", method = {RequestMethod.POST})
     public Result mLoginTKUser_InsertN(@RequestBody JSONObject jsonParam) {
@@ -750,7 +738,6 @@ public class H5Controller extends TahoeBaseController {
 
     }
 
-    //以下都已测
     @ApiOperation(value = "修改密码", notes = "修改密码")
     @RequestMapping(value = "/mBrokerChannelUserPassWord_Update", method = {RequestMethod.POST})
     public Result mBrokerChannelUserPassWord_Update(@RequestBody JSONObject jsonParam) {
