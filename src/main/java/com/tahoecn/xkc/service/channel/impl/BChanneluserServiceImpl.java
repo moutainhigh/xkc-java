@@ -522,16 +522,16 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         if (StringUtils.isNotBlank(Name)){
             where.append(" and cu.Name like '%" + Name + "%'");
         }
-        if (StringUtils.isNotBlank(Name)){
+        if (StringUtils.isNotBlank(Mobile)){
             where.append(" and cu.Mobile like '%" + Mobile + "%'");
         }
-        if (StringUtils.isNotBlank(Name)){
+        if (StringUtils.isNotBlank(CertificatesNo)){
             where.append(" and cu.CertificatesNo like '%" + CertificatesNo + "%'");
         }
-        if (StringUtils.isNotBlank(Name)){
+        if (StringUtils.isNotBlank(ChannelOrgName)){
             where.append(" and cu.ChannelOrgName like '%" + ChannelOrgName + "%'");
         }
-        if (StringUtils.isNotBlank(Name)){
+        if (StringUtils.isNotBlank(Status)){
             where.append(" and cu.Status like '%" + Status + "%'");
         }
         if (StringUtils.isNotBlank(PassStatu)&&!StringUtils.equals("-1",PassStatu)){
