@@ -2,6 +2,7 @@ package com.tahoecn.xkc.controller.webapi;
 
 
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -60,13 +61,13 @@ public class ProtectConfLogController extends TahoeBaseController {
             wrapper.like("EditorName",EditorName);
         }
         if (ProtectSource!=null){
-            wrapper.ge("ProtectSource",ProtectSource);
+            wrapper.eq("ProtectSource",ProtectSource);
         }
         if (Start!=null){
-            wrapper.ge("CreateTime",Start);
+            wrapper.ge("CreateTime", DateUtil.beginOfDay(Start));
         }
         if (End!=null){
-            wrapper.le("CreateTime",End);
+            wrapper.le("CreateTime",DateUtil.endOfDay(End));
         }
         if (StringUtils.isNotBlank(IsExcel)){
             SetExcelN(ProjectName,  GroupDictName, ProtectSource,  RuleName,  EditorName,  Start, End);
@@ -77,7 +78,7 @@ public class ProtectConfLogController extends TahoeBaseController {
     }
 
     private void SetExcelN(String ProjectName, String GroupDictName,Integer ProtectSource, String RuleName, String EditorName, Date Start,Date End) {
-        List<Map<String,Object>> list=protectConfLogService.getProtectConfLogList(ProjectName,GroupDictName,ProtectSource,RuleName,EditorName,Start,End);
+        List<Map<String,Object>> list=protectConfLogService.getProtectConfLogList(ProjectName,GroupDictName,ProtectSource,RuleName,EditorName,DateUtil.beginOfDay(Start),DateUtil.endOfDay(End));
         String ExcelName;
         List<ExcelExportEntity> entity;
 
