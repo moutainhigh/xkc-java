@@ -568,7 +568,7 @@ public class CustomerController extends TahoeBaseController {
         	sqlWhere.append(" AND dbo.F_GetSaleUserName(clr.Creator) like '%").append(SaleUserName).append("%'");
         }
         if (StringUtils.isNotEmpty(RoomCode)) {
-        	sqlWhere.append(" AND c.RoomCode like '%").append(RoomCode).append("%'");
+        	sqlWhere.append(" AND r.RoomCode like '%").append(RoomCode).append("%'");
         }
 
         if (StringUtils.isNotEmpty(IsExcel)) {
