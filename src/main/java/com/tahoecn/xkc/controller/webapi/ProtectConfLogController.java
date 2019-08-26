@@ -69,6 +69,7 @@ public class ProtectConfLogController extends TahoeBaseController {
         if (End!=null){
             wrapper.le("CreateTime",DateUtil.endOfDay(End));
         }
+        wrapper.orderByDesc("CreateTime");
         if (StringUtils.isNotBlank(IsExcel)){
             SetExcelN(ProjectName,  GroupDictName, ProtectSource,  RuleName,  EditorName,  Start, End);
             return null;

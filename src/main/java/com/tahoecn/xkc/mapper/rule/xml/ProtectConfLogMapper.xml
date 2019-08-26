@@ -49,5 +49,6 @@
                 AND  CreateTime &lt;=#{end}
             </if>
         </where>
+        Order By CreateTime DESC
     </select>
 </mapper>

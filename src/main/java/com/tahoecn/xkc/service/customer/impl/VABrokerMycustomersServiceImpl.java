@@ -40,7 +40,13 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
         } else {
             where = " where ReportUserID='" + brokerID + "' and StatusText='" + filter + "'";
         }
-        return baseMapper.mGetMyCustomers_Select(page, where, order, search);
+        IPage<Map<String, Object>> mapIPage = baseMapper.mGetMyCustomers_Select(page, where, order, search);
+        for (Map<String, Object> record : mapIPage.getRecords()) {
+            if (StringUtils.equals((String)record.get("StatusText"),"来访")) {
+                record.put("StatusText","到访");
+            }
+        }
+        return mapIPage;
     }
 
     @Override
