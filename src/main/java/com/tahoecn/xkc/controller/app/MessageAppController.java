@@ -1739,8 +1739,11 @@ public class MessageAppController extends TahoeBaseController {
 	@RequestMapping(value = "/mMessageCalendar_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mMessageCalendar_Select(@RequestBody JSONObject jsonParam) {
 		try{
+			System.out.println("jsonParam===========================>"+jsonParam);
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			return Result.ok(iSystemMessageService.mMessageCalendar_Select(paramMap));
+			Map<String,List<String>> result = iSystemMessageService.mMessageCalendar_Select(paramMap);
+			System.out.println("result===========================>"+result);
+			return Result.ok(result);
 		}catch(Exception e){
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
