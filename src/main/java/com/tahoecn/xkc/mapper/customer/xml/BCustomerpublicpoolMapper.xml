@@ -53,7 +53,7 @@
 		<![CDATA[
 			SELECT  COUNT(1) recordCount
 		    FROM    dbo.B_CustomerPublicPool B
-		            LEFT JOIN dbo.B_Opportunity A ON A.ID = B.OpportunityID AND B.IsDel = 0
+		            LEFT JOIN dbo.B_Opportunity A ON A.ID = B.OpportunityID AND B.IsDel = 0 and A.Status <> 6
 		    WHERE   A.ProjectID = #{ProjectID}
 		            AND ISNULL(A.SaleUserID,'') = ''
 		            AND A.IsDel = 0

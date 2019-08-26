@@ -284,10 +284,10 @@ public class IpadServiceImpl implements IIpadService {
 	        	CustomerObj = re_j.getJSONObject("CustomerObj");
 	            saleUserID = CustomerObj.getString("SaleUserID");
 	            salePartnerID =CustomerObj.getString("SalePartnerID");
-	            if ((saleUserID.length() > 0 && "C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID))){//为无  CustomerModeType.分接_老机会_老客户_未分配
+	            if ((saleUserID != null && !"".equals(saleUserID) && saleUserID.length() > 0 && "C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID))){//为无  CustomerModeType.分接_老机会_老客户_未分配
 	                isNew = 0;
 	                isAlloc = 0;
-	            }if ((saleUserID.length() > 0 && !"C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID)) || !"".equals(salePartnerID)){//不为无  CustomerModeType.分接_老机会_老客户
+	            }if ((saleUserID != null && !"".equals(saleUserID) && saleUserID.length() > 0 && !"C4C09951-FA39-4982-AAD1-E72D9D4C3899".equals(saleUserID)) || !"".equals(salePartnerID)){//不为无  CustomerModeType.分接_老机会_老客户
 	                isNew = 0;
 	                isAlloc = 1;
 	            }
@@ -312,7 +312,7 @@ public class IpadServiceImpl implements IIpadService {
 	                	//如果首访地址为空，客户到访异地案场
 	                    isReAlloc = 1;
 	                }
-	                if (!"".equals(FirstVisitAddress) && !FirstVisitAddress.equals(VisitAddress) && "".equals(salePartnerID)){
+	                if (!"".equals(FirstVisitAddress) && FirstVisitAddress != null && !FirstVisitAddress.equals(VisitAddress) && "".equals(salePartnerID)){
 	                	//如果首访地址不为空，是否异地根据首访地址判断
 	                    isReAlloc = 1;
 	                }
@@ -659,7 +659,7 @@ public class IpadServiceImpl implements IIpadService {
                                 	//如果首访地址为空，客户到访异地案场
                                     isReAlloc = 1;
                                 }
-                                if (!"".equals(FirstVisitAddress) && !FirstVisitAddress.equals(VisitAddress) && "".equals(SalePartnerID)){
+                                if (FirstVisitAddress != null && !"".equals(FirstVisitAddress) && !FirstVisitAddress.equals(VisitAddress) && "".equals(SalePartnerID)){
                                 	//如果首访地址不为空，是否异地根据首访地址判断
                                     isReAlloc = 1;
                                 }
@@ -752,7 +752,7 @@ public class IpadServiceImpl implements IIpadService {
                             FollwUpWay = "A79A1057-D4DC-497C-8C81-8F93E422C819";
                         }
                         String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(FollwUpWay);
-                        if (SaleUserID.length() > 0){
+                        if (SaleUserID != null && !"".equals(SaleUserID) && SaleUserID.length() > 0){
                         	 parameter.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
                              Map<String,Object> pmap =JSONObject.parseObject(parameter.toJSONString(), Map.class);
                              if (pmap.get("ClueID")==null){
@@ -1260,7 +1260,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1275,7 +1275,7 @@ public class IpadServiceImpl implements IIpadService {
         }
         if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
             String time = paramAry.getString("ReceptTime");
-            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) = '"+time+"'");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) = '"+time+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
         paramAry.put("SiteUrl", SiteUrl);
@@ -1295,7 +1295,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1308,9 +1308,14 @@ public class IpadServiceImpl implements IIpadService {
         if (!StringUtils.isEmpty(model.getKeyWord())){
             whereSb.append(" AND (o.CustomerName LIKE '%"+model.getKeyWord()+"%' OR c.Mobile LIKE '%"+model.getKeyWord()+"%')");
         }
-        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
+/*        if (!StringUtils.isEmpty(paramAry.getString("ReceptTime"))){
             String time = paramAry.getString("ReceptTime");
             whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,120) = '"+time+"'");
+        }*/
+        if (!StringUtils.isEmpty(paramAry.getString("BeginReceptTime")) && !StringUtils.isEmpty(paramAry.getString("EndReceptTime")) ){
+            String begintime = paramAry.getString("BeginReceptTime");
+            String endtime = paramAry.getString("EndReceptTime");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) BETWEEN '"+begintime+"' AND '"+endtime+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
         paramAry.put("SiteUrl", SiteUrl);
@@ -1330,7 +1335,12 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(j_data);
             return re;
         }
-        re.setErrcode(1);
+        JSONObject j_data = new JSONObject();
+    	j_data.put("List", null);
+    	j_data.put("AllCount", 0);
+    	j_data.put("PageSize", 1);
+    	re.setData(j_data);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}
@@ -1342,7 +1352,7 @@ public class IpadServiceImpl implements IIpadService {
         if (!StringUtils.isEmpty(paramAry.getString("BeginReceptTime")) && !StringUtils.isEmpty(paramAry.getString("EndReceptTime")) ){
             String begintime = paramAry.getString("BeginReceptTime");
             String endtime = paramAry.getString("EndReceptTime");
-            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,111) BETWEEN '"+begintime+"' AND '"+endtime+"'");
+            whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) BETWEEN '"+begintime+"' AND '"+endtime+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
         paramAry.put("SiteUrl", SiteUrl);
@@ -1375,7 +1385,7 @@ public class IpadServiceImpl implements IIpadService {
         	re.setData(re_ja);
             return re;
         }
-        re.setErrcode(1);
+        re.setErrcode(0);
         re.setErrmsg("暂无数据");
         return re;
 	}

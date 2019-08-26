@@ -293,7 +293,6 @@
 					m.num,
 					m.CustomerID,
 					m.CustomerName,
-					m.CustomerMobile,
 					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
 
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
