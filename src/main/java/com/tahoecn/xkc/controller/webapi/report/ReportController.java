@@ -291,7 +291,7 @@ public class ReportController extends TahoeBaseController {
         if (report.getTheFirstVisitDate() != null)
             wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(), new Date(report.getTheFirstVisitDate().getTime() + 60 * 60 * 24 * 1000));  //首访时间
         if (report.getZjdf() != null)
-            wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(), new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000));  //最近到访
+            wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(), new Date(report.getZjdf().getTime() + 60 * 60 * 24 * 1000));  //最近到访
         if (report.getTheLatestFollowUpDate() != null)
             wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(), new Date(report.getTheLatestFollowUpDate().getTime() + 60 * 60 * 24 * 1000));  //最近跟进
         if (report.getBookingCreateTime() != null)
