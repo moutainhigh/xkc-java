@@ -47,7 +47,7 @@
 
     <select id="findByOrgID_count" resultType="int" parameterType="string">
         SELECT
-        count(1)
+        count(DISTINCT p.ID)
         FROM
         [B_Project] AS p
         LEFT JOIN B_PojectChannelOrgRel AS pj ON p.ID= pj.ProjectID
