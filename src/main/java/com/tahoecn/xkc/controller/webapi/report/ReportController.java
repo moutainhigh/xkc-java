@@ -276,9 +276,9 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCityName()), CostomerReport::getCityName, report.getCityName());   //城市名
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getIntentProjectName()), CostomerReport::getIntentProjectName, report.getIntentProjectName());    //项目名
-        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerName()), CostomerReport::getCustomerName, report.getCustomerName());   //客户名
-        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerMobile()), CostomerReport::getCustomerMobileWhole, report.getCustomerMobile()); //客户电话
-        wrapper.lambda().eq(StringUtils.isNotBlank(report.getSaleUserName()), CostomerReport::getSaleUserName, report.getSaleUserName());   //置业顾问
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getCustomerName()), CostomerReport::getCustomerName, report.getCustomerName());   //客户名
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getCustomerMobile()), CostomerReport::getCustomerMobileWhole, report.getCustomerMobile()); //客户电话
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getSaleUserName()), CostomerReport::getSaleUserName, report.getSaleUserName());   //置业顾问
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getOpportunitySource()), CostomerReport::getOpportunitySource, report.getOpportunitySource());    //客户源
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
@@ -291,7 +291,7 @@ public class ReportController extends TahoeBaseController {
         if (report.getTheFirstVisitDate() != null)
             wrapper.lambda().between(report.getTheFirstVisitDate() != null, CostomerReport::getTheFirstVisitDate, report.getTheFirstVisitDate(), new Date(report.getTheFirstVisitDate().getTime() + 60 * 60 * 24 * 1000));  //首访时间
         if (report.getZjdf() != null)
-            wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(), new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000));  //最近到访
+            wrapper.lambda().between(report.getZjdf() != null, CostomerReport::getZjdf, report.getZjdf(), new Date(report.getZjdf().getTime() + 60 * 60 * 24 * 1000));  //最近到访
         if (report.getTheLatestFollowUpDate() != null)
             wrapper.lambda().between(report.getTheLatestFollowUpDate() != null, CostomerReport::getTheLatestFollowUpDate, report.getTheLatestFollowUpDate(), new Date(report.getTheLatestFollowUpDate().getTime() + 60 * 60 * 24 * 1000));  //最近跟进
         if (report.getBookingCreateTime() != null)

@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -82,34 +83,39 @@ public class ChannelController extends TahoeBaseController {
 
         StringBuilder sqlWhere = new StringBuilder();
         if (StringUtils.isNotBlank(OrgName)) {
-            sqlWhere.append("AND a.OrgName like '%" + OrgName + "%'");
+            sqlWhere.append(" AND a.OrgName like '%" + OrgName + "%'");
         }
         if (StringUtils.isNotBlank(OrgLeaderMobile)) {
-            sqlWhere.append("AND b.Mobile like '%" + OrgLeaderMobile + "%'");
+            sqlWhere.append(" AND b.Mobile like '%" + OrgLeaderMobile + "%'");
         }
         if (StringUtils.isNotBlank(OrgLeaderName)) {
-            sqlWhere.append("AND b.Name like '%" + OrgLeaderName + "%'");
+            sqlWhere.append(" AND b.Name like '%" + OrgLeaderName + "%'");
         }
         if (StringUtils.isNotBlank(OrgLeaderUserName)) {
-            sqlWhere.append("AND b.UserName like '%"+OrgLeaderUserName+"%'");
+            sqlWhere.append(" AND b.UserName like '%"+OrgLeaderUserName+"%'");
         }
         if (StringUtils.isNotBlank(UserName)) {
-            sqlWhere.append("AND b.UserName like '%" + UserName + "%'");
+            sqlWhere.append(" AND b.UserName like '%" + UserName + "%'");
         }
         if (StringUtils.isNotBlank(Status)) {
             if (Objects.equals(Status, "0") || Objects.equals(Status, "1")){
-                sqlWhere.append("AND b.Status = '" + Status + "'");
+                sqlWhere.append(" AND b.Status = '" + Status + "'");
             }
         }
         if (begin != null) {
-            sqlWhere.append("AND a.CreateTime > '" + begin + "'");
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String beginstr = sf.format(begin);
+            sqlWhere.append(" AND a.CreateTime > '" + beginstr + "'");
         }
         if (end != null) {
-            sqlWhere.append("AND a.CreateTime <  '" + end + "'");
+            end = new Date(end.getTime() + 60 * 60 * 24 * 1000);
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String endstr = sf.format(end);
+            sqlWhere.append(" AND a.CreateTime <  '" + endstr + "'");
         }
         //CreatorName不确定表和字段名
         if (StringUtils.isNotBlank(CreatorName)) {
-            sqlWhere.append("AND sa.EmployeeName like '%" + CreatorName + "%'");
+            sqlWhere.append(" AND sa.EmployeeName like '%" + CreatorName + "%'");
         }
         map.put("sqlWhere", sqlWhere.toString());
 
@@ -569,13 +575,16 @@ public class ChannelController extends TahoeBaseController {
     @ApiOperation(value = "分销/推荐渠道列表PageType=0分销,PageType=1推荐渠道", notes = "推荐渠道列表")
     @RequestMapping(value = "/AgenList_SelectN", method = {RequestMethod.GET})
     public Result AgenList_SelectN(Integer PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
-            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,@RequestParam(defaultValue = "1") Integer Pageindex, @RequestParam(defaultValue = "10") Integer Pagesize,String IsExcel){
+            , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,@RequestParam(defaultValue = "1") Integer Pageindex, @RequestParam(defaultValue = "10") Integer Pagesize,String IsExcel
+            ,String Mobile,String CertificatesNo,String ChannelOrgName, String Status,Date effectiveStartTime,Date effectiveEndTime){
         if (StringUtils.isNotEmpty(IsExcel)) {
             Pagesize = -1;
         }
         IPage page=new Page(Pageindex,Pagesize);
         IPage<Map<String,Object>> list=channeluserService.AgenList_SelectN(page,PageType,ProjectID,ChannelTypeID,Name,PassStatu
-                ,CreateStartTime,CreateEndTime,ApprovalUserID);
+                ,CreateStartTime,CreateEndTime,ApprovalUserID
+                , Mobile, CertificatesNo, ChannelOrgName,  Status, effectiveStartTime, effectiveEndTime
+        );
 
         if (StringUtils.isNotEmpty(IsExcel)) {
             SetExcelN(list.getRecords(),PageType);
