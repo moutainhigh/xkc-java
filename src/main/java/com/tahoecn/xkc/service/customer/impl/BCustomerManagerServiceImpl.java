@@ -74,7 +74,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
 
 
         //渠道类型
-        if (StringUtil.isNotNull(SaleTeamID) && StringUtil.isNotNull(SourceType))
+        if (StringUtil.isNotNull(type) && StringUtil.isNotNull(SourceType))
         {
             if ("one".equals(type))//选中一级菜单（自有渠道）
             {
@@ -130,7 +130,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         //渠道人所属机构
         if (StringUtil.isNotNull(ChannelName))
         {
-            sqlWhere.append(" AND m.ChannelName = '"+ChannelName+"'");
+            sqlWhere.append(" AND tm.ChannelName = '"+ChannelName+"'");
         }
         //客户姓名
         if (StringUtil.isNotNull(CustomerName))
@@ -197,18 +197,18 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         if (StringUtil.isNotNull(ZJDF_End))
         {
             Where.append(" and  CreateTime<='"+ZJDF_End+" 23:59:59'");
-            WhereLast.append(" AND s.ZJDF IS NOT NULL AND s.ZJDF<>''");
+            WhereLast.append(" AND ts.ZJDF IS NOT NULL AND ts.ZJDF<>''");
         }
         //跟进时间--开始
         if (StringUtil.isNotNull(TheLatestFollowUpDate_Start))
         {
-            sqlWhere.append(" AND m.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+" 00:00:00'' ");
+            sqlWhere.append(" AND tm.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+" 00:00:00'' ");
         }
 
         //跟进时间--结束
         if (StringUtil.isNotNull(TheLatestFollowUpDate_End))
         {
-            sqlWhere.append(" AND m.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+" 23:59:59' ");
+            sqlWhere.append(" AND tm.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+" 23:59:59' ");
         }
         if (StringUtil.isNotNull(uType) && uType.equals("1")){
             updateWhere.append(" AND b.Status IN (4,5)");

@@ -440,8 +440,8 @@ FROM    dbo.B_Opportunity A
   SELECT
 					m.CustomerID,
 					m.CustomerName,
-					m.CustomerMobile,
-					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile2,
+					<!-- m.CustomerMobile, -->
+					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
 					CASE WHEN dbo.F_DictName(m.CustomerRank) &lt;&gt; '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
 					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,<!--原因-->

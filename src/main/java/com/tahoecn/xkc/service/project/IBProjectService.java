@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public interface IBProjectService extends IService<BProject> {
 
-    List<Map<String,Object>> findByOrgID(IPage page,String orgID,String Name);
+    Map<String,Object> findByOrgID(String orgID,String Name,int PageIndex,int PageSize);
 
     List<Map<String,Object>> ProjectInfoList_SelectN(IPage page,String name, String cityID);
 

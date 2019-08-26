@@ -31,22 +31,22 @@
                 ProjectName like  concat('%',#{projectName},'%')
             </if>
             <if test="groupDictName!=null and groupDictName!=''">
-                groupDictName like  concat('%',#{groupDictName},'%')
+              AND  groupDictName like  concat('%',#{groupDictName},'%')
             </if>
             <if test="protectSource!=null and protectSource!=''">
-                protectSource =#{protectSource}
+                AND  protectSource =#{protectSource}
             </if>
             <if test="ruleName!=null and ruleName!=''">
-                ruleName =#{ruleName}
+                AND  ruleName =#{ruleName}
             </if>
             <if test="editorName!=null and editorName!=''">
-                editorName =#{editorName}
+                AND   editorName =#{editorName}
             </if>
-            <if test="start!=null and start!=''">
-                CreateTime >=#{start}
+            <if test="start!=null ">
+                AND  CreateTime >=#{start}
             </if>
-            <if test="end!=null and end!=''">
-                CreateTime &lt;=#{end}
+            <if test="end!=null ">
+                AND  CreateTime &lt;=#{end}
             </if>
         </where>
     </select>

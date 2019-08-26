@@ -259,18 +259,18 @@
 		        c.[ReportUserOrg] ,
 		        c.[RuleID] ,
 		        c.[InvalidType] ,
-		        c.[InvalidTime] ,
+		        CONVERT(VARCHAR(16), c.[InvalidTime], 20) AS [InvalidTime] ,
 		        c.[InvalidReason] ,
-		        c.[ComeOverdueTime] ,
-		        c.[TradeOverdueTime] ,
+		        CONVERT(VARCHAR(16), c.[ComeOverdueTime], 20) AS [ComeOverdueTime] ,
+		        CONVERT(VARCHAR(16), c.[TradeOverdueTime], 20) AS [TradeOverdueTime] ,
 		        c.[UserBehaviorID] ,
 		        c.[AdviserGroupID] ,
 		        c.[IsSelect] ,
-		        c.[ConfirmTime] ,
+		        CONVERT(VARCHAR(16), c.[ConfirmTime], 20) AS [ConfirmTime] ,
 		        c.[Creator] ,
 		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
 		        c.[Editor] ,
-		        c.[EditeTime] ,
+		        CONVERT(VARCHAR(16), c.[EditeTime], 20) AS [EditeTime] ,
 		        c.[IsDel] ,
 		        c.[Status] ,
 		        c.[ConfirmUserId] ,
@@ -286,7 +286,7 @@
 		        dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) CustomerTag ,
 		        
 		        co.OrgName AS SourceTypeName ,
-		        TheFirstVisitDate FirstComeTime ,
+		        CONVERT(VARCHAR(16), TheFirstVisitDate, 20) FirstComeTime ,
 		        o.FirstVisitAddress VisitAddress
 			FROM    [B_Clue] AS c
 		        LEFT JOIN B_ChannelUser u ON c.reportuserid = u.id
