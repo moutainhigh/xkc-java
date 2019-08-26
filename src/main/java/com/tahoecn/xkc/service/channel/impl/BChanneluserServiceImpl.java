@@ -466,9 +466,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         Integer count = bChanneluserMapper.getB_PojectChannelOrgRel(orgID,projectID);
         if (count == 0){
             bChanneluserMapper.ChannelOrgImport_Insert_B_PojectChannelOrgRel(orgID, projectID, userID);
-        }else{
-            bChanneluserMapper.ChannelOrgImport_Insert_B_ClueRule_AdviserGroup(RuleIDs==null?"":RuleIDs, orgID, userID);
         }
+        if (StringUtils.isNotEmpty(orgID))
+            bChanneluserMapper.ChannelOrgImport_Insert_B_ClueRule_AdviserGroup(RuleIDs==null?"":RuleIDs, orgID, userID);
     }
 
     /**
