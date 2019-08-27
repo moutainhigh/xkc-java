@@ -529,7 +529,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             where.append(" and cu.CertificatesNo like '%" + CertificatesNo + "%'");
         }
         if (StringUtils.isNotBlank(ChannelOrgName)){
-            where.append(" and cu.ChannelOrgName like '%" + ChannelOrgName + "%'");
+            where.append(" and o.OrgName like '%" + ChannelOrgName + "%'");
         }
         if (StringUtils.isNotBlank(Status)){
             where.append(" and cu.Status like '%" + Status + "%'");
