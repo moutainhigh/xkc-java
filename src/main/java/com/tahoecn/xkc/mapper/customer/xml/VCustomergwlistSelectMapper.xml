@@ -2748,5 +2748,39 @@ VALUES  ( #{OpportunityID},
 	<select id="verifyOpportunityMobile" resultType="java.util.HashMap">
 		SELECT * FROM B_Opportunity WHERE CustomerMobile=#{SpareMobile} OR SpareMobile=#{SpareMobile}
 	</select>
+	
+	
+	<insert id="CustomerLockRoomDetail_Insert" parameterType="java.util.Map">
+	<![CDATA[
+        INSERT INTO dbo.B_CustomerLockRoom
+        ( ID ,
+          ProjectID ,
+          OpportunityID ,
+          CustomerID ,
+          RoomID ,
+          ImgUrl ,
+          Creator ,
+          CreateTime ,
+          Editor ,
+          EditTime ,
+          IsDel ,
+          Status
+        )
+		VALUES  ( NEWID(),
+          #{ProjectID},
+          #{OpportunityID},
+          #{CustomerID},
+          #{RoomID},
+          #{ImgUrl},
+          #{UserID},
+          GETDATE(),
+          '',
+          GETDATE(),
+          0,
+          1
+        )
+    ]]>
+		
+	</insert>
 
 </mapper>

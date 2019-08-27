@@ -26,6 +26,7 @@
         tr.ReportUserID ,
         tr.ReportUserName ,
         tr.ReportUserMobile ,
+        tr.ChannelId ,
         tr.ChannelName ,
         tr.ReportTime ,
         dbo.F_DictName(tr.Gender) GenderTxt,
@@ -66,6 +67,7 @@
                                 d.CreateTime AS ReportTime ,
                                 d.Status ClueStatus,
                                 SM.ReceptionGroupID SaleTeamID,
+                                CO.ID ChannelId,
                                 CO.OrgName ChannelName,
                                 d.ReportUserOrg,
                                 G.CreateTime  ZJDF,
@@ -145,6 +147,7 @@
                                 b.CreateTime AS ReportTime ,
                                 b.Status ClueStatus,
                                 '' SaleTeamID,
+                                CO.ID ChannelId,
                                 CO.OrgName ChannelName,
                                 b.ReportUserOrg,
                                 '' ZJDF,
@@ -457,6 +460,7 @@ FROM    dbo.B_Opportunity A
 					m.ReportUserID ,
 					m.ReportUserName ,
 					m.ReportUserMobile ,
+                    m.ID ChannelID,
 					m.ChannelName,
 					m.OpportunityID,
 					dbo.F_GetZJDF(m.OpportunityID) ZJDF<!--最近到访时间-->
@@ -483,6 +487,7 @@ FROM    dbo.B_Opportunity A
                                 b.ReportUserMobile ,
                                 b.CreateTime AS ReportTime , <!--报备时间-->
 								o.TheFirstVisitDate , <!--首访时间-->
+                                CO.ID ChannelID,
                                 CO.OrgName ChannelName,
 								o.ID OpportunityID
                       FROM      B_Clue b

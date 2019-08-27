@@ -1939,21 +1939,19 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                             CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
                             this.CustomerFollowUp_Insert(customerActionVo);
                         }
-                        //同步明源客户和机会数据
-                        //customerTemplate.SyncCustomer(opportunityID, 0);
                         entity.setErrcode(0);
                         entity.setErrmsg("成功");
                     }
                     //省去图片生成处理
-                   /* if (!StringUtils.isEmpty(paramAry.getString("RoomID"))){
+                    if (!StringUtils.isEmpty(paramAry.getString("RoomID"))){
                         Map<String,Object> objParam = new HashMap<String, Object>();
                         objParam.put("ProjectID",paramAry.getString("ProjectID"));
                         objParam.put("OpportunityID", paramAry.getString("OpportunityID"));
                         objParam.put("CustomerID",paramAry.getString("CustomerID"));
                         objParam.put("RoomID",paramAry.getString("RoomID"));
                         objParam.put("UserID", paramAry.getString("UserID"));
-                        entity = new CustomerLockRoomRepository().CustomerLockRoomDetail_Insert(objParam, context, debug);
-                    }*/
+                        vCustomergwlistSelectMapper.CustomerLockRoomDetail_Insert(objParam);
+                    }
                 }
             }
         }catch (Exception e){
@@ -2042,8 +2040,10 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 		        log.setOpportunityID(OpportunityID);
 		        log.setCustomerID(CustomerID);
 		        log.setEditorId(userId);
-		        log.setEditorName(ThreadLocalUtils.getRealName());
-		        
+		        try {
+		        	log.setEditorName(ThreadLocalUtils.getRealName());
+				} catch (Exception e) {
+				}
 		        Boolean change = false;
 				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
 				if(!"".equals(newCustomerName)){

@@ -79,7 +79,7 @@ public class CustomerManagerController extends TahoeBaseController {
 
     @ApiOperation(value = "客户管理列表")
     @RequestMapping(value = "/CustomerManagePageList_Select", method = {RequestMethod.GET})
-    public Result CustomerChangePageList_Select(String ProjectID,
+    public Result CustomerManagePageList_Select(String ProjectID,
                                                     String IsExcel,
                                                     Long PageSize,
                                                     Long PageIndex,

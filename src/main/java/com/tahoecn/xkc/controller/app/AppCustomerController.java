@@ -946,6 +946,7 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerGGCList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerGGCList_Select(@RequestBody JSONObject jsonParam) {
 		try{
+			System.out.println("==========================>>>>>"+jsonParam);
 			JSONObject paramMap = jsonParam.getJSONObject("_param");
 			String KeyWord = (String) paramMap.get("KeyWord");
 			List<FilterItem> Filter = JSON.parseArray(paramMap.getString("Filter"),FilterItem.class);
@@ -1003,7 +1004,7 @@ public class AppCustomerController extends TahoeBaseController {
         	
         	if (tagId == true){//Filter.contains("EB4DEEF7-26E2-412E-B946-1695742A6704")){
             	paramMap.put("GroupID", Filter.get(0).getChild().get(0));
-                String filterstr = mGetFilterGroupList_Select(GroupID);
+                String filterstr = mGetFilterGroupList_Select(paramMap.getString("GroupID"));
                 if (filterstr != null && !filterstr.equals("")){
                 	List<FilterItem> filter = JSONObject.parseArray(filterstr, FilterItem.class);
                     Filter = filter;

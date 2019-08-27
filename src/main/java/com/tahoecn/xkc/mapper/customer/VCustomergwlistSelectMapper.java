@@ -537,6 +537,7 @@ public interface VCustomergwlistSelectMapper {
 	void mCustomerSubscribeDetail_Insert_step7(Map<String,Object> map);
 	void mCustomerSubscribeDetail_Insert_step8(Map<String,Object> map);
 	
+	void CustomerLockRoomDetail_Insert(Map<String,Object> map);
 	/**
 	 * 获取客户关联权益人列表
 	 * @param map

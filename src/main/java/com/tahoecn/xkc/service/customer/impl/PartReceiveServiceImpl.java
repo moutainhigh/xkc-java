@@ -104,6 +104,22 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
 	    	
 	    	IPage<VCustomerfjlistSelect> data = vCustomerfjlistSelectMapper.sCustomerFJList_Select(page,pmap);
+	    	if(data!=null && data.getRecords()!=null && data.getRecords().size()>0){
+	    		for(VCustomerfjlistSelect vCustomerfjlistSelect : data.getRecords()){
+	    			String customerMobile = vCustomerfjlistSelect.getCustomerMobile();
+	    			if(!StringUtils.isEmpty(customerMobile)){
+	    				String a = customerMobile.substring(0, 3);
+	    				String b = customerMobile.substring(7);
+	    				vCustomerfjlistSelect.setCustomerMobile(a+"****"+b);
+	    			}
+	    			String adviserMobile = vCustomerfjlistSelect.getAdviserMobile();
+	    			if(!StringUtils.isEmpty(adviserMobile)){
+	    				String a = adviserMobile.substring(0, 3);
+	    				String b = adviserMobile.substring(7);
+	    				vCustomerfjlistSelect.setAdviserMobile(a+"****"+b);
+	    			}
+	    		}
+	    	}
 	    	JSONObject j_data = new JSONObject();
 	    	j_data.put("List", data.getRecords());
 	    	j_data.put("AllCount", data.getTotal());
@@ -922,4 +938,11 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
         return re;
 	}
 
+	public static void main(String[] args) {
+		String customerMobile = "15812345678";
+		
+		String a = customerMobile.substring(0, 3);
+		String b = customerMobile.substring(7);
+		System.out.println(a+"****"+b);
+	}
 }

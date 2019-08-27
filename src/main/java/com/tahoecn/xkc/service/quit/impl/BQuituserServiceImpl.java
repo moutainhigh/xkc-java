@@ -252,8 +252,11 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
             followup.setCustomerPotentialName(vo3.getCustomerPotentialName());
             followup.setClueID(ClueIDsArr[i]);
             followup.setFollwUpUserID(UserID);
-            followup.setFollwUpUserName(vo1.getUserName());
-            followup.setFollwUpUserMobile(vo1.getUserMobile());
+            if(vo1!=null) {
+                followup.setFollwUpUserName(vo1.getUserName());
+                followup.setFollwUpUserMobile(vo1.getUserMobile());
+                followup.setFollwUpUserRole(vo1.getRoleID());
+            }
             followup.setFollwUpType("C1E26493-7D4E-4BFC-9238-725180DFC7AE");
             followup.setFollwUpWay("C1E26493-7D4E-4BFC-9238-725180DFC7AE");
             followup.setFollowUpContent("渠道经理重分配渠道专员");
@@ -266,7 +269,6 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
             followup.setEditeTime(null);
             followup.setIsDel(0);
             followup.setStatus(1);
-            followup.setFollwUpUserRole(vo1.getRoleID());
             followup.setCustomerRank("");
             followup.setProjectID(ProjectID);
             iBCustomerpotentialfollowupService.save(followup);

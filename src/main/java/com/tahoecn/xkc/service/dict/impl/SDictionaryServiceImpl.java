@@ -470,7 +470,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     dict.put(IDAlias,bSalesgroup.getId());
                     dict.put(DictNameAlias,bSalesgroup.getName());
                     dict.put(ChildAlias,new ArrayList<>());
-                    pk.add(dictTop);
+                    pk.add(dict);
                 }
                 res.put("FPGWSXGZFJ",pk);
             }
