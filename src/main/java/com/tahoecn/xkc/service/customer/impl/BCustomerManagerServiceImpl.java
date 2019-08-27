@@ -95,6 +95,9 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
             {
                 ClueWhere.append(" AND b.ReportUserOrg='"+SourceType+"'");
                 OppWhere.append(" AND d.ReportUserOrg='"+SourceType+"'");
+            }else  if ("0".equals(type) && "0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals("SourceType")){
+                ClueWhere.append(" AND b.SourceType =''");
+                OppWhere.append(" AND d.SourceType =''");
             }
             else if ("0".equals(type))
             {
@@ -202,7 +205,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
         //跟进时间--开始
         if (StringUtil.isNotNull(TheLatestFollowUpDate_Start))
         {
-            sqlWhere.append(" AND tm.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+" 00:00:00'' ");
+            sqlWhere.append(" AND tm.TheLatestFollowUpDate >= '"+TheLatestFollowUpDate_Start+" 00:00:00' ");
         }
 
         //跟进时间--结束

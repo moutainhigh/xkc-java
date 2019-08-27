@@ -215,9 +215,9 @@
       dbo.F_GetSaleUserName(O.SaleUserID) SaleUserName,<!--置业顾问-->
       dbo.F_DictName(O.CustomerLevel) CustomerLevel,<!--意向等级-->
       dbo.F_DictName(O.PropertyIntention) PropertyIntention,<!--置业目的-->
-      dbo.F_DictName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
-        dbo.F_DictName(A.HomeArea) HomeArea,<!--居住区域-->
-        dbo.F_DictName(A.WorkArea) WorkArea,<!--工作区域-->
+      dbo.F_CityName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
+      dbo.F_CityName(A.HomeArea) HomeArea,<!--居住区域-->
+      dbo.F_CityName(A.WorkArea) WorkArea,<!--工作区域-->
       dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
       A.Birthday,<!--生日-->
       A.HomeAddress,<!--现居住地址-->
@@ -267,9 +267,9 @@
       '' CustomerLevel,<!--意向等级-->
       <!--dbo.F_DictName(O.PropertyIntention) PropertyIntention,置业目的-->
       '' PropertyIntention,<!--置业目的-->
-      dbo.F_DictName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
-      dbo.F_DictName(A.HomeArea) HomeArea,<!--居住区域-->
-      dbo.F_DictName(A.WorkArea) WorkArea,<!--工作区域-->
+      dbo.F_CityName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
+      dbo.F_CityName(A.HomeArea) HomeArea,<!--居住区域-->
+      dbo.F_CityName(A.WorkArea) WorkArea,<!--工作区域-->
       dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
       ''Birthday,<!--生日-->
       A.HomeAddress,<!--现居住地址-->

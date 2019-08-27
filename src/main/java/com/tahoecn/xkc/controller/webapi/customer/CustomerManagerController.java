@@ -236,7 +236,7 @@ public class CustomerManagerController extends TahoeBaseController {
         //查询客户跟进记录
         List customerFollowList = bCustomerManagerMapper.CustomerNEWFollowUp_Select(map);
         result.put("customerFollowList",customerFollowList);
-        //查询客户签约信息
+        //查询客户签约信息 成交记录
         List signInfoList = bCustomerManagerMapper.CustomerNEWSignInfo_Select(map);
         result.put("signInfoList",signInfoList);
         //查询客户付款信息
