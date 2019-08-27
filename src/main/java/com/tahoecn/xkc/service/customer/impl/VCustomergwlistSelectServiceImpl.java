@@ -968,7 +968,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	String opportunityID = paramAry.getString("OpportunityID");
         	String userID = paramAry.getString("UserID");
         	Map<String,Object> obj = vCustomergwlistSelectMapper.CustomerAttachDetail_Select(customerID, projectID, intentProjectID, opportunityID);
-            if (obj!=null && obj.size() == 0){
+            if (obj==null || obj.size() == 0){
             	vCustomergwlistSelectMapper.CustomerAttachDetail_Insert(customerID, projectID, intentProjectID, opportunityID, userID);
                 //同步明源客户数据
             	customerTemplate.SyncCustomer(opportunityID, 0);
