@@ -27,6 +27,7 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
@@ -2019,7 +2020,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 		try {
 			String OpportunityID = pmap.get("OpportunityID").toString();
 			String CustomerID = pmap.get("CustomerID").toString();
-			
+			String userId =  pmap.get("UserID")!=null?pmap.get("UserID").toString():"";
 			Map<String, Object> customerData = vCustomergwlistSelectMapper.selectCustomerByID(CustomerID);
 			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
 			if(customerData!=null && customerData.size()>0 && OpportunityData!=null && OpportunityData.size()>0){
@@ -2040,6 +2041,9 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				
 		        log.setOpportunityID(OpportunityID);
 		        log.setCustomerID(CustomerID);
+		        log.setEditorId(userId);
+		        log.setEditorName(ThreadLocalUtils.getRealName());
+		        
 		        Boolean change = false;
 				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
 				if(!"".equals(newCustomerName)){
