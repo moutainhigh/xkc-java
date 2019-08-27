@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.date.DateTime;
@@ -10,6 +11,7 @@ import com.tahoecn.xkc.converter.ResponseMessage;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.sys.BAppupgrade;
 import com.tahoecn.xkc.model.sys.BSystemad;
+import com.tahoecn.xkc.model.sys.SCity;
 import com.tahoecn.xkc.model.sys.SFormsession;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
@@ -17,6 +19,7 @@ import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.IBAppupgradeService;
 import com.tahoecn.xkc.service.sys.IBSystemadService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
+import com.tahoecn.xkc.service.sys.ISCityService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISLogsService;
 import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
@@ -24,8 +27,10 @@ import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -77,6 +82,9 @@ public class AppSystemController extends TahoeBaseController {
     private IBSalesuserService iBSalesuserService;
     @Autowired
     private ISDictionaryService dictionaryService;
+    @Autowired
+    private ISCityService cityService;
+    
 	@ResponseBody
     @ApiOperation(value = "广告接口", notes = "广告接口")
     @RequestMapping(value = "/SystemAD_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -244,5 +252,83 @@ public class AppSystemController extends TahoeBaseController {
         HashMap<String,Object> param=(HashMap)jsonParam.get("_param");
         Result result=dictionaryService.SystemDictionaryDetail(param);
         return result;
+    }
+    @ApiOperation(value = "城市处理", notes = "户籍所在地")
+    @RequestMapping(value = "/mSystemCity_Select", method = {RequestMethod.POST})
+    public Result mSystemCity_Select(@RequestBody JSONObject jsonParam) {
+    	String IDAlias = "ID";
+        String ChildAlias = "Child";
+        String DictNameAlias = "DictName";
+        Map<String,Object> res=new HashMap<>();
+    	//region 城市处理
+        QueryWrapper<SCity> wrapper=new QueryWrapper<>();
+        wrapper.eq("Status",1).le("Levels",4).orderByAsc("Levels","StandardIndex");
+        List<SCity> list =  cityService.list(wrapper);
+        Map<String,Map<String,Object>> province = new LinkedHashMap<>();
+        Map<String,Map<String,Object>> city = new LinkedHashMap<>();
+        for (SCity sCity : list) {
+	        String PID=sCity.getPid();
+	        int Levels=sCity.getLevels();
+	        if (Levels==2){
+	            String ID=sCity.getId();
+	            Map<String,Object> dict = new HashMap<>();
+	            dict.put(IDAlias,ID);
+	            dict.put(DictNameAlias,sCity.getDispName());
+	            dict.put(ChildAlias,new ArrayList<>());
+	            province.put(ID,dict);
+	        }
+            if (Levels==3){
+                if (province.get(PID) != null)
+                {
+                    String ID=sCity.getId();
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,ID);
+                    dict.put(DictNameAlias,sCity.getDispName());
+                    dict.put(ChildAlias,new ArrayList<>());
+                    dict.put("PID",PID);
+                    city.put(ID,dict);
+                }
+            }
+            if (Levels == 4)
+            {
+                if (city.get(PID)!= null)
+                {
+                    String ID=sCity.getId();
+                    Map<String,Object> dict = new HashMap<>();
+                    dict.put(IDAlias,ID);
+                    dict.put(DictNameAlias,sCity.getDispName());
+                    Map<String,Object> pid = city.get(PID);
+                    ArrayList  childAlias = (ArrayList) pid.get(ChildAlias);
+                    childAlias.add(dict);
+                }
+            }
+        }
+        if (province.size()>0){
+            List resJa=new ArrayList();
+            for (String key : city.keySet()) {
+                String PID= (String) city.get(key).get("PID");
+                if (province.get(PID)!=null){
+                    city.get(key).remove("PID");
+                    ArrayList  arrayList= (ArrayList) province.get(PID).get(ChildAlias);
+                    arrayList.add(city.get(key));
+                }
+            }
+            for (String key : province.keySet()) {
+                resJa.add(province.get(key));
+            }
+            res.put("City",resJa);
+        }
+    	List data=new ArrayList();
+        if (res.size() == 1){
+        	for (String key : res.keySet()) {
+                data = (List) res.get(key);
+            }
+        }
+        if (res.size() > 1){
+            for (String key : res.keySet()) {
+                data.add(res.get(key));
+            }
+        }
+        return Result.ok(data);
     }
 }
