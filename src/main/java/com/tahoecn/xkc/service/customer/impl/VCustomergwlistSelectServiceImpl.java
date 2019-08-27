@@ -2040,8 +2040,10 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 		        log.setOpportunityID(OpportunityID);
 		        log.setCustomerID(CustomerID);
 		        log.setEditorId(userId);
-		        log.setEditorName(ThreadLocalUtils.getRealName());
-		        
+		        try {
+		        	log.setEditorName(ThreadLocalUtils.getRealName());
+				} catch (Exception e) {
+				}
 		        Boolean change = false;
 				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
 				if(!"".equals(newCustomerName)){
