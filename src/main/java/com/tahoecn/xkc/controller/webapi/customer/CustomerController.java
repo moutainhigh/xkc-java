@@ -107,7 +107,7 @@ public class CustomerController extends TahoeBaseController {
             else if ("2".equals(type))
                 sqlWhere.append(" AND t.ReportUserOrg='").append(SourceType).append("' ");
             else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && !"0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)&& !"86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType))
-                sqlWhere.append(" AND t.ChannelId = '").append(SourceType).append("' ");
+                sqlWhere.append(" AND (t.ChannelId = '").append(SourceType).append("' OR t.SourceTypeID = '"+SourceType+"') ");
             else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && ("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)|| "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType)))
                 sqlWhere.append(" AND (t.SourceTypeID = '' or t.SourceTypeID is null) ");
                 else if ("0".equals(type))
@@ -116,19 +116,19 @@ public class CustomerController extends TahoeBaseController {
 
         //报备时间
         if (StringUtils.isNotEmpty(ReportTime_Start)) {
-            sqlWhere.append(" and  t.ReportTime>='").append(ReportTime_Start).append("'");
+            sqlWhere.append(" and  t.ReportTime>='").append(ReportTime_Start).append(" 00:00:00'");
         }
         //报备时间
         if (StringUtils.isNotEmpty(ReportTime_End)) {
-            sqlWhere.append(" and  t.ReportTime<='").append(ReportTime_End).append("'");
+            sqlWhere.append(" and  t.ReportTime<='").append(ReportTime_End).append(" 23:59:59'");
         }
         //首次到访
         if (StringUtils.isNotEmpty(TheFirstVisitDate_Start)) {
-            sqlWhere.append(" and  t.TheFirstVisitDate>='").append(TheFirstVisitDate_Start).append("'");
+            sqlWhere.append(" and  t.TheFirstVisitDate>='").append(TheFirstVisitDate_Start).append(" 00:00:00'");
         }
         //首次到访
         if (StringUtils.isNotEmpty(TheFirstVisitDate_End)) {
-            sqlWhere.append(" and  t.TheFirstVisitDate<='").append(TheFirstVisitDate_End).append("'");
+            sqlWhere.append(" and  t.TheFirstVisitDate<='").append(TheFirstVisitDate_End).append(" 23:59:59'");
         }
 
         IPage page = new Page(pageNum,pageSize);
