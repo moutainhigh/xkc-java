@@ -266,7 +266,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         String password = (String) paramMap.get("Password");
         String name = (String) paramMap.get("Name");
         String gender = (String) paramMap.get("Gender");
-        String channelOrgCode = (String) paramMap.get("ChannelOrgCode");
+//        String channelOrgCode = (String) paramMap.get("ChannelOrgCode");
         String channelTypeID = (String) paramMap.get("ChannelTypeID");
         String userID = (String) paramMap.get("UserID");
         int job = 3;

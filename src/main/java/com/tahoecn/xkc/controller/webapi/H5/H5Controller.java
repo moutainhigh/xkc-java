@@ -43,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -217,6 +218,20 @@ public class H5Controller extends TahoeBaseController {
         }
         String id= (String) map.get("ID");
         Map<String,Object> user=channeluserService.ChannelUser_Detail_FindByIdN(id);
+        Object ChannelOrgID=user.get("ChannelOrgID");
+        if (ChannelOrgID==null){
+            //非分销中介 自由经纪正常登陆
+            //是老业主
+            if (user.get("ChannelTypeID")!=null&&StringUtils.equals((String)user.get("ChannelTypeID"),"EB4AD331-F4AD-46D6-889A-D45575ECEE66")){
+                return Result.errormsg(1,"认证失败!老业主请前往泰禾客户服务中心微信公众号推荐客户");
+            }
+            //是泰禾员工   为泰禾员工的 有ChannelOrgID
+            if (user.get("ChannelTypeID")!=null&&StringUtils.equals((String)user.get("ChannelTypeID"),"725FA5F6-EC92-4DC6-8D47-A8E74B7829AD")){
+                return Result.errormsg(1,"认证失败!泰禾员工请前往泰信员工推荐中推荐客户");
+            }
+        }
+
+
         //获取机构及其下属所有机构名和机构id
         if (user==null){
             //获取出数据，需要修改其中的SQL语句??? what??
@@ -247,6 +262,8 @@ public class H5Controller extends TahoeBaseController {
             if (StringUtils.equals((String)channelType,"中介同行")){
                 user.put("ChannelType","分销中介");
             }
+        }else {
+            return Result.errormsg(1,"请前往");
         }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
@@ -688,6 +705,8 @@ public class H5Controller extends TahoeBaseController {
             parameter.put("Mobile", Mobile);
             parameter.put("VerificationCode", String.valueOf(verificationCode));
             iBVerificationcodeService.Detail_Add(parameter);
+            //redis缓存验证码
+//            redisTemplate.opsForValue().set(key, value , 10 , TimeUnit.MINUTES);
             csSendSmsLogService.sendSms(Mobile,"【泰禾集团】验证码："+String.valueOf(verificationCode)+"，5分钟内有效","");
             return Result.ok(String.valueOf(verificationCode));
         }catch (Exception e) {
