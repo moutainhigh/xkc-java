@@ -101,7 +101,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
             }
             else if ("0".equals(type) && StringUtil.isNotNull(SourceType) && ("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)|| "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType))){
                 ClueWhere.append(" AND (b.SourceType ='' or b.SourceType is null)");
-                OppWhere.append(" AND (d.SourceType ='' or b.SourceType is null)");
+                OppWhere.append(" AND (d.SourceType ='' or d.SourceType is null)");
             }
             else if ("0".equals(type))
             {
