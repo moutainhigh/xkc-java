@@ -137,7 +137,7 @@
         m.IsDel = 0
         AND m.[Status] = 1
         AND jmr.JobID=#{JobID}
-        AND jmr.MenuID IS NOT IN(${ID})
+        AND jmr.MenuID  NOT IN(${ID})
         AND m.FullPath NOT LIKE '%App菜单%'
         ORDER BY m.Levels,m.ListIndex;
 
