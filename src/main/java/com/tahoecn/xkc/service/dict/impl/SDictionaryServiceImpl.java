@@ -724,20 +724,20 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     data.add(res.get(key));
                 }
             }
-            System.out.println("1===================>>>>>>>"+data);
+            /*System.out.println("1===================>>>>>>>"+data);
             for(Object list : data){
             	Map<String,Object> map = (Map<String, Object>) list;
             	if("客户状态".equals(map.get("DictName"))){
             		List<Map<String,Object>> Child = (List<Map<String, Object>>) map.get("Child");
             		//修改---客户状态改字段名称
-            		List<String> id = new ArrayList<String>();
+            		String id = "";
             		for(Map<String,Object> c: Child){
             			if("询问".equals(c.get("DictName"))){
             				c.put(DictNameAlias,"报备");
             			}
             			if("看房".equals(c.get("DictName"))
             					|| "认购中".equals(c.get("DictName"))){
-            				id.add((String)c.get("ID"));
+            				id += (String) c.get("ID")+",";
             				c.put(DictNameAlias,"到访");
             			}
             			if("丢失".equals(c.get("DictName"))){
@@ -754,7 +754,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
         			Child.addAll(h);
             	}
             }
-            System.out.println("2==================>>>>>>>"+data);
+            System.out.println("2==================>>>>>>>"+data);*/
             return Result.ok(data);
             
         }catch (Exception e){
