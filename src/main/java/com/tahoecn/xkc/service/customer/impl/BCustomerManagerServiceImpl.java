@@ -218,7 +218,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
             sqlWhere.append(" AND tm.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+" 23:59:59' ");
         }
         if (StringUtil.isNotNull(uType) && uType.equals("1")){
-            updateWhere.append(" AND b.Status IN (4,5)");
+            updateWhere.append(" where clueStatus <> 3 and OpportunityStatus in (4,5) ");
         }
 
 

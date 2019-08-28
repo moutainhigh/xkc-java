@@ -10,6 +10,8 @@
         tr.CustomerName ,
         STUFF(tr.CustomerMobile ,4,4,'****') CustomerMobile ,
         CASE dbo.F_DictName(tr.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(tr.CustomerRank) END  CustomerRankName ,
+        tr.ClueStatus clueStatus,
+        tr.OpportunityStatus OpportunityStatus,
         dbo.F_GetClueStatusName_xkc(tr.ClueStatus, tr.OpportunityStatus) CustomerStatus ,
         dbo.F_GetProjectName(tr.ProjectID) AS IntentProjectName ,
         dbo.F_DictName(tr.OpportunitySource) OpportunitySource ,
@@ -89,7 +91,7 @@
 	   AND ProjectID=#{paramMap.ProjectID} ${paramMap.Where}
 	  GROUP BY OpportunityID
 								) G ON G.OpportunityID=b.ID
-                      WHERE     b.ProjectID=#{paramMap.ProjectID} ${paramMap.updateWhere}
+                      WHERE     b.ProjectID=#{paramMap.ProjectID}
 								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
         SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
@@ -196,7 +198,7 @@
                     ) ts where 1=1 ${paramMap.WhereLast}) tab
 									WHERE tab.OpportunityID=b.ID
 									)
-                    ) tr
+                    ) tr ${paramMap.updateWhere}
         ]]>
     </select>
 
