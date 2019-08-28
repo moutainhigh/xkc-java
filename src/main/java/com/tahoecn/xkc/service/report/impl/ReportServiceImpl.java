@@ -55,6 +55,7 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
 
     @Override
     public IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, Date startTime, Date endTime, String projectID, String checkDate, String name, String mobile, String taskName, String reportName) {
+        endTime = new Date(endTime.getTime() + 60 * 60 * 24 * 1000);
         IPage<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Select(page, startTime, endTime, projectID, checkDate, name, mobile, taskName, reportName);
         List<Map<String, Object>> result=new ArrayList<>();
         for (Map<String, Object> map : list.getRecords()) {
