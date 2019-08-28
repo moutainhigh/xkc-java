@@ -52,7 +52,7 @@
 
     <select id="SalesGroupTeamNoAddedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
         <![CDATA[
-          SELECT DISTINCT a.[ID] UserID,a.[UserName],a.[EmployeeName] Name,b.FullPath OrgName,a.AccountType AccountType,a.Mobile Mobile,
+          SELECT DISTINCT a.[ID] UserID,a.[UserName],a.[EmployeeName] Name,b.FullPath OrgName,a.AccountType AccountType,a.Mobile Mobile,a.Status Status,
             FROM S_Account a
             --left JOIN dbo.S_JobsUserRel jur ON a.IsDel = 0 AND a.ID = jur.AccountID
             --left JOIN dbo.S_Jobs j ON jur.JobID = j.ID AND j.IsDel = 0
@@ -69,7 +69,7 @@
 
     <select id="SalesGroupTeamAlreadyAddedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
         <![CDATA[
-            SELECT DISTINCT a.ID UserID,b.UserName,b.EmployeeName Name,o.FullPath OrgName,b.AccountType AccountType,b.Mobile Mobile,
+            SELECT DISTINCT a.ID UserID,b.UserName,b.EmployeeName Name,o.FullPath OrgName,b.AccountType AccountType,b.Mobile Mobile,b.Status Status,
             CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN '0'
             WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN '0'
             WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN '1'
