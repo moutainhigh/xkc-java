@@ -461,7 +461,7 @@ FROM    dbo.B_Opportunity A
 					m.ReportUserID ,
 					m.ReportUserName ,
 					m.ReportUserMobile ,
-                    m.ID ChannelID,
+                    m.ChannelID ChannelID,
 					m.ChannelName,
 					m.OpportunityID,
 					dbo.F_GetZJDF(m.OpportunityID) ZJDF<!--最近到访时间-->
