@@ -108,10 +108,12 @@ public class CustomerController extends TahoeBaseController {
                 sqlWhere.append(" AND t.ReportUserOrg='").append(SourceType).append("' ");
             else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && !"0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)&& !"86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType))
                 sqlWhere.append(" AND (t.ChannelId = '").append(SourceType).append("' OR t.SourceTypeID = '"+SourceType+"') ");
-            else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && ("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)|| "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType)))
+            else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && "0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType))
                 sqlWhere.append(" AND (t.SourceTypeID = '' or t.SourceTypeID is null or t.SourceType ='"+SourceType+"') ");
-                else if ("0".equals(type))
-            sqlWhere.append(" AND t.SourceTypeID = '").append(SourceType).append("' ");
+            else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType))
+                sqlWhere.append(" AND t.SourceType ='"+SourceType+"' ");
+            else if ("0".equals(type))
+                sqlWhere.append(" AND t.SourceTypeID = '").append(SourceType).append("' ");
         }
 
         //报备时间

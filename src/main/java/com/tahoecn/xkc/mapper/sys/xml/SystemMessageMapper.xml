@@ -246,7 +246,12 @@
 		                    CustomerTag ,
 		                    dbo.F_FormatDate(A.TheLatestFollowUpDate) TheLatestFollowUpDate ,
 		                    A.TheLatestFollowUpContent ,
-		                    OpportunityStatus ,
+		                    case OpportunityStatus
+								when '询问' then '报备'
+								when '看房' then '到访'
+								when '认购中' then '到访'
+								when '丢失' then '无效'
+								else OpportunityStatus end as OpportunityStatus,
 		                    OpportunityStatusValue ,
 		                    IsCare ,
 		                    AdviserID ,
