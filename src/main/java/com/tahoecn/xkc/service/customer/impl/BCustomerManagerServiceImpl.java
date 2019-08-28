@@ -99,9 +99,13 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
                 ClueWhere.append(" AND (CO.ID='"+SourceType+"' OR b.SourceType ='"+SourceType+"')");
                 OppWhere.append(" AND (CO.ID='"+SourceType+"' OR d.SourceType ='"+SourceType+"')");
             }
-            else if ("0".equals(type) && StringUtil.isNotNull(SourceType) && ("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)|| "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType))){
+            else if ("0".equals(type) && StringUtil.isNotNull(SourceType) && "0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)){//0390CD8C-D6D4-4C92-995B-08C7E18E6EC2 自然访客
                 ClueWhere.append(" AND (b.SourceType ='' or b.SourceType is null or b.SourceType ='"+SourceType+"')");
                 OppWhere.append(" AND (d.SourceType ='' or d.SourceType is null or d.SourceType ='"+SourceType+"')");
+            }
+            else if ("0".equals(type) && StringUtil.isNotNull(SourceType) && "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType)){//86D702BC-F30F-4091-B520-CA0909CADCDD 案场联动
+                ClueWhere.append(" AND b.SourceType ='"+SourceType+"'");
+                OppWhere.append(" AND d.SourceType ='"+SourceType+"'");
             }
             else if ("0".equals(type))
             {
@@ -218,7 +222,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
             sqlWhere.append(" AND tm.TheLatestFollowUpDate <= '"+TheLatestFollowUpDate_End+" 23:59:59' ");
         }
         if (StringUtil.isNotNull(uType) && uType.equals("1")){
-            updateWhere.append(" AND b.Status IN (4,5)");
+            updateWhere.append(" where clueStatus <> 3 and OpportunityStatus in (4,5) ");
         }
 
 
