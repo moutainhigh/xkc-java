@@ -251,16 +251,16 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	}
         	
         	if(!StringUtils.isEmpty(model.getSort())){
-        		if (model.getSort() == "F5F8788E-EB27-E49D-86D6-BCFAFC181493"){//最新跟进
+        		if (model.getSort().equals("F5F8788E-EB27-E49D-86D6-BCFAFC181493")){//最新跟进
                     orderSb.append(" ORDER BY  TheLatestFollowUpDate desc ");
                 }
-                if (model.getSort() == "7A5EDE88-5EBB-D5EB-C3F3-45959B855B14"){//最早跟进
+                if (model.getSort().equals("7A5EDE88-5EBB-D5EB-C3F3-45959B855B14")){//最早跟进
                     orderSb.append(" ORDER BY  TheLatestFollowUpDate  asc ");
                 }
-                if (model.getSort() == "CC0DE53C-A4A7-FB72-36EE-6BFAA4820B5C"){//最新创建
+                if (model.getSort().equals("CC0DE53C-A4A7-FB72-36EE-6BFAA4820B5C")){//最新创建
                     orderSb.append(" ORDER BY  CreateTime desc ");
                 }
-                if (model.getSort() == "47C99D99-FBB2-F7DC-2384-5DE728E9D657"){//最早创建
+                if (model.getSort().equals("47C99D99-FBB2-F7DC-2384-5DE728E9D657")){//最早创建
                     orderSb.append(" ORDER BY CreateTime asc ");
                 }
         	}else{
@@ -2019,6 +2019,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			String OpportunityID = pmap.get("OpportunityID").toString();
 			String CustomerID = pmap.get("CustomerID").toString();
 			String userId =  pmap.get("UserID")!=null?pmap.get("UserID").toString():"";
+			String UserTrueName = pmap.get("UserTrueName")!=null?pmap.get("UserTrueName").toString():"";
 			Map<String, Object> customerData = vCustomergwlistSelectMapper.selectCustomerByID(CustomerID);
 			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
 			if(customerData!=null && customerData.size()>0 && OpportunityData!=null && OpportunityData.size()>0){
@@ -2040,10 +2041,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 		        log.setOpportunityID(OpportunityID);
 		        log.setCustomerID(CustomerID);
 		        log.setEditorId(userId);
-		        try {
-		        	log.setEditorName(ThreadLocalUtils.getRealName());
-				} catch (Exception e) {
-				}
+		        log.setEditorName(UserTrueName);
 		        Boolean change = false;
 				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
 				if(!"".equals(newCustomerName)){

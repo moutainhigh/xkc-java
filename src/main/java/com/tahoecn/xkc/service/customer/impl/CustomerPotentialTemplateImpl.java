@@ -71,14 +71,17 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                 customerModel.setOrgID(model.getOrgID());
                 //查询当前项目信息
                 Result project = iProjectService.Detail_FindById(model.getProjectID());
-                JSONObject projectData = (JSONObject)project.getData();
-                int IsNoMobileVerify = projectData.getIntValue("IsNoMobileVerify");
-                int IsNoCustomerRank = projectData.getIntValue("IsNoCustomerRank");
+                Integer IsNoMobileVerify = null;
+                Integer IsNoCustomerRank = null;
+                if(project.getErrcode()==0){
+                	 JSONObject projectData = (JSONObject)project.getData();
+                     IsNoMobileVerify = projectData.getIntValue("IsNoMobileVerify");
+                     IsNoCustomerRank = projectData.getIntValue("IsNoCustomerRank");
+                }
                 DicInfo dicInfo = null;
                 int panelIndex = 0;
                 Map<String,ChildItem> deleteItem = new HashMap<String,ChildItem>();
                 for(PanelItem panelItem : customerModel.getPanel()){
-                    int childIndex = 0;
                     for(ChildItem childItem : panelItem.getChild()){
                         //处理选项项目
                         if ("Option".equals(childItem.getType()) || "OptionTag".equals(childItem.getType()) || "OptionCity".equals(childItem.getType()) || "OptionRadio".equals(childItem.getType()) || "OptionTextArea".equals(childItem.getType())){ 
@@ -195,7 +198,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                                 }
                             }
                             if ("21685728-54C5-4268-8371-62413CE42841".equals(childItem.getID())){//电话
-                                if (IsNoMobileVerify == 1){
+                                if (IsNoMobileVerify!=null && IsNoMobileVerify == 1){
                                     childItem.setType("Text");
                                 }
                                 if (StringUtils.isEmpty(childItem.getValue())){
@@ -203,7 +206,7 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                                 }
                             }
                             if ("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC".equals(childItem.getID())){//客户级别
-                                if (IsNoCustomerRank == 1){
+                                if (IsNoCustomerRank!=null && IsNoCustomerRank == 1){
                                     deleteItem.put(childItem.getID() + "_" + panelIndex, childItem);
                                 }
                             }
@@ -243,7 +246,6 @@ public class CustomerPotentialTemplateImpl implements ICustomerPotentialTemplate
                          //childItem.Value = "";
                          //childItem.ValueID = "";
                         }
-                        childIndex++;
                     }
                     panelIndex++;
                 }
