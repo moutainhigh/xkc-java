@@ -119,7 +119,7 @@
                                                  FROM   B_Opportunity d
                                                  WHERE  d.IsDel = 0
                                                         AND d.ProjectID = #{paramMap.ProjectID}
-                                                        AND d.ClueID = b.ID )
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
                                ${paramMap.ClueWhere}
                     ) tm  where 1=1 ${paramMap.sqlWhere}
                     ) ts where 1=1 ${paramMap.WhereLast}) tab WHERE tab.OpportunityID=b.ID)
@@ -190,13 +190,12 @@
                                                  FROM   B_Opportunity d
                                                  WHERE  d.IsDel = 0
                                                         AND d.ProjectID = #{paramMap.ProjectID}
-                                                        AND d.ClueID = b.ID )
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
                                ${paramMap.ClueWhere}
                     ) tm  where 1=1 ${paramMap.sqlWhere}
                     ) ts where 1=1 ${paramMap.WhereLast}) tab
 									WHERE tab.OpportunityID=b.ID
 									)
-
                     ) tr
         ]]>
     </select>

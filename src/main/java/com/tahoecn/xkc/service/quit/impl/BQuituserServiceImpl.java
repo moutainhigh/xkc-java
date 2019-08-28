@@ -332,8 +332,11 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
             followup.setCustomerName(vo3.getCustomerName());
             followup.setOpportunityID(oppoIdArr[i]);
             followup.setFollwUpUserID(UserID);
-            followup.setFollwUpUserName(vo1.getUserName());
-            followup.setFollwUpUserMobile(vo1.getUserMobile());
+            if(vo1!=null) {
+                followup.setFollwUpUserName(vo1.getUserName());
+                followup.setFollwUpUserMobile(vo1.getUserMobile());
+                followup.setFollwUpUserRole(vo1.getRoleID());
+            }
             followup.setFollwUpType("69331990-DBF4-0A2F-80CD-7BC424AA8912");
             followup.setFollwUpWay("69331990-DBF4-0A2F-80CD-7BC424AA8912");
             followup.setFollowUpContent("从原顾问( '"+vo4.getUserName2Old()+"')分配给新顾问('"+vo2.getUserName2()+"')  ");
@@ -346,7 +349,6 @@ public class BQuituserServiceImpl extends ServiceImpl<BQuituserMapper, BQuituser
             followup.setEditeTime(null);
             followup.setIsDel(0);
             followup.setStatus(1);
-            followup.setFollwUpUserRole(vo1.getRoleID());
             followup.setCustomerRank("");
             followup.setProjectID(ProjectID);
             iBCustomerfollowupService.save(followup);

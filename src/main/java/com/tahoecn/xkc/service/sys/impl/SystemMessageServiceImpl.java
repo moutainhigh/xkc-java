@@ -190,7 +190,7 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
             Object id = map.get("ID");
             systemMessageMapper.mMessageAllList_Updata(id.toString());
         }
-        return systemMessageMapper.mMessageAllList_Select(page, userID);
+        return list;
     }
 
 	@Override
