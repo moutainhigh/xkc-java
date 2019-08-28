@@ -219,7 +219,7 @@ public class H5Controller extends TahoeBaseController {
         String id= (String) map.get("ID");
         Map<String,Object> user=channeluserService.ChannelUser_Detail_FindByIdN(id);
         Object ChannelOrgID=user.get("ChannelOrgID");
-        if (ChannelOrgID==null){
+        if (ChannelOrgID==null||ChannelOrgID.equals("")){
             //非分销中介 自由经纪正常登陆
             //是老业主
             if (user.get("ChannelTypeID")!=null&&StringUtils.equals((String)user.get("ChannelTypeID"),"EB4AD331-F4AD-46D6-889A-D45575ECEE66")){
@@ -540,6 +540,8 @@ public class H5Controller extends TahoeBaseController {
         CustomerValidate.put("Message",msg);
         String reMsg = iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
         re.setErrmsg(reMsg);
+        //允许报备
+        if ((int)CustomerValidate.get("InvalidType")==0){
 //        ruleValidate.put("Message",msg);
 //        String errMsg=clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),userRule);
         //通过有效验证
@@ -568,9 +570,16 @@ public class H5Controller extends TahoeBaseController {
         if (b){
             re.setErrcode(0);
             return re;
+        }else {
+            re.setErrcode(1);
+            re.setErrmsg("存储错误,请联系管理员");
+            return re;
         }
-        re.setErrcode(1);
-        return re;
+
+        }else {//不允许报备
+            re.setErrcode(1);
+            return re;
+        }
     }
 
     @ApiOperation(value = "获取客户详情", notes = "获取客户详情")
