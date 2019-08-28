@@ -294,9 +294,9 @@ public class CustomerController extends TahoeBaseController {
         }
 
         List<Map<String,Object>> result = customerService.SourceTypeChangeList_Select(Mobile,projectID,sqlWhere.toString(),ClueID);
-        if (!"自然到访".equals(SourceType)){
+        if (!"自然访客".equals(SourceType)){
             Map<String,Object> map = new HashMap<>();
-            map.put("ChannelName","自然到访");
+            map.put("ChannelName","自然访客");
             map.put("ClueID","111111");
             result.add(map);
         }
