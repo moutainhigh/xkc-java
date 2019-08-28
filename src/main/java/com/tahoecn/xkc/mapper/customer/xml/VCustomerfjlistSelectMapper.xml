@@ -6,6 +6,7 @@
 		<![CDATA[
 			SELECT * FROM V_CustomerFJList_Select   
 	      	WHERE IsDel = 0    AND Assignor = #{pa.UserID}  AND ProjectID = #{pa.ProjectID} 
+	      	AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = OpportunityID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pa.UserID}) IS NOT NULL
 	      	${pa.WHERE}
 	      	${pa.ORDER}
 		]]>

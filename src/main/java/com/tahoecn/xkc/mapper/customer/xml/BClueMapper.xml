@@ -442,6 +442,7 @@
 		        )
 		        AND c.status = 2
 		        AND c.IsDel = 0
+		        AND (select top 1 bc.ID from B_CustomerFollowUp bc WHERE bc.OpportunityID = o.ID AND bc.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND bc.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
 		        AND c.IntentProjectID = #{ProjectID}
 		        AND ( CASE WHEN r.IsPreIntercept = 1
 		                   THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
