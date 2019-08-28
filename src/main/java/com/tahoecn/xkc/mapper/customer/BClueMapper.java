@@ -61,7 +61,8 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	/**
 	 * 待分配
 	 */
-	IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, @Param("ProjectID")String ProjectID, @Param("sqlWhere")String sqlWhere);
+	IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, @Param("ProjectID")String ProjectID,
+			@Param("UserID")String UserID, @Param("sqlWhere")String sqlWhere);
 	/**
 	 * 报备信息列表
 	 */

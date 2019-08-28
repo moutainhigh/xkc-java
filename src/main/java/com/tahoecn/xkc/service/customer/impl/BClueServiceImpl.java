@@ -674,8 +674,8 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	 * 待分配
 	 */
 	@Override
-	public IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID, String sqlWhere) {
-		return baseMapper.CaseFieDistributionList_Select(page,ProjectID,sqlWhere);
+	public IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID,String UserID, String sqlWhere) {
+		return baseMapper.CaseFieDistributionList_Select(page,ProjectID,UserID,sqlWhere);
 	}
 	/**
 	 * 报备信息列表
