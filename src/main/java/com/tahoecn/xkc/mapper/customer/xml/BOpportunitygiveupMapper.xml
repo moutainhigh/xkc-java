@@ -301,23 +301,36 @@
 	<select id="mCustomerXSJLList_Select_GJKH_count" parameterType="java.util.Map" resultType="java.lang.Integer">
 		<![CDATA[
 		SELECT  COUNT(1) recordCount
-		FROM    ( SELECT    o.ProjectID ,
+		FROM ( SELECT    * , ROW_NUMBER() OVER ( ${ORDER} ) num
+				FROM ( SELECT    o.ProjectID ,
+							o.ID OpportunityID ,
+							o.CustomerID ,
 							o.CustomerName ,
 							o.CustomerMobile ,
+							o.OpportunitySource ,
 							o.CustomerLevel CustomerLevelValue ,
 							o.FollowupCount FollowupCountValue ,
+							ISNULL(o.TheLatestFollowUpDate, '') TheLatestFollowUpDateTime ,
+							o.SaleUserID AdviserID ,
 							dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
 							o.Status OpportunityStatusValue ,
-							o.SaleUserID AdviserID ,
+							'' RecoveryCreateTime ,
 							'' RecoveryID ,
-							'' LostID
-				  FROM      dbo.B_Opportunity AS o
-				  WHERE     o.ProjectID = #{ProjectID}
-							AND o.IsDel = 0
-							AND o.Status <> 6
-		      AND LEN(o.SaleUserID) > 0
-				) A
-		WHERE   ProjectID = #{ProjectID}  ${WHERE}
+							'' LostID ,
+							'' LostReason ,
+							'' LostTime ,
+							'' LostCreateTime ,
+							0 IsYJ ,
+							'' YJTime ,
+		            (CASE WHEN ISNULL(o.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
+							  FROM      dbo.B_Opportunity AS o
+							  WHERE     o.ProjectID = #{ProjectID}
+										AND o.IsDel = 0
+										AND o.Status <> 6
+		            AND LEN(o.SaleUserID) > 0
+							) A
+				  WHERE     ProjectID = #{ProjectID}  ${WHERE}
+				) t
 		]]>
 	</select>
 	<select id="mCustomerXSJLList_Select" parameterType="java.util.Map" resultType="java.util.Map">

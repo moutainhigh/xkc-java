@@ -791,12 +791,12 @@ public class AppCustomerController extends TahoeBaseController {
                                     case "691CC268-51A0-4D45-9266-516926C3DD55"://客户状态
                                         for (int i = 0; i < filterItem.getChild().size(); i++){
                                             switch (filterItem.getChild().get(i)){
-                                                case "05867891-C4B0-43F7-896F-FBB48C340147": filterItem.getChild().get(i).equals("1"); break;//问询
-                                                case "A53F17C1-A9F7-46FA-A185-E3242B8BDBB4": filterItem.getChild().get(i).equals("2"); break;//看房
-                                                case "114B5471-EA83-4A6E-B038-E7304ACA5C8C": filterItem.getChild().get(i).equals("3"); break;//认购中
-                                                case "B2761972-56A1-4759-9A94-D8256D377D88": filterItem.getChild().get(i).equals("4"); break;//认购
-                                                case "519E5657-4CC4-44B5-A547-B479689670F5": filterItem.getChild().get(i).equals("5"); break;//签约
-                                                case "ED2E370A-21B2-40C7-B7AF-C299D23A2077": filterItem.getChild().get(i).equals("7"); break;//退房
+                                                case "05867891-C4B0-43F7-896F-FBB48C340147": filterItem.getChild().set(i, "1"); break;//问询
+                                                case "A53F17C1-A9F7-46FA-A185-E3242B8BDBB4": filterItem.getChild().set(i, "2"); break;//看房
+                                                case "114B5471-EA83-4A6E-B038-E7304ACA5C8C": filterItem.getChild().set(i, "3"); break;//认购中
+                                                case "B2761972-56A1-4759-9A94-D8256D377D88": filterItem.getChild().set(i, "4"); break;//认购
+                                                case "519E5657-4CC4-44B5-A547-B479689670F5": filterItem.getChild().set(i, "5"); break;//签约
+                                                case "ED2E370A-21B2-40C7-B7AF-C299D23A2077": filterItem.getChild().set(i, "7"); break;//退房
                                             }
                                         }
                                         whereSb.append(" and OpportunityStatusValue in('" + String.join("','", filterItem.getChild()) + "')");
@@ -804,11 +804,11 @@ public class AppCustomerController extends TahoeBaseController {
                                     case "087DF0A6-F8D6-4F59-9D1F-F4679CF5607C"://意向等级
                                         for (int i = 0; i < filterItem.getChild().size(); i++){
                                             switch (filterItem.getChild().get(i)){
-                                                case "D32508DC-4192-4275-AD55-BD1DF0790C5B": filterItem.getChild().get(i).equals("2A357E4A-90D7-5D69-C209-E26CFA5839FA"); break;//必买
-                                                case "FA5364B5-7A31-43AB-834D-9E1F11278BFF": filterItem.getChild().get(i).equals("DF2057E2-303B-1F14-4075-069668D3A3BE"); break;//较高
-                                                case "8F09F3E0-5181-4310-83E1-5FC72FFB9A18": filterItem.getChild().get(i).equals("FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D"); break;//低
-                                                case "CD396C52-11F6-4385-B033-148B41679F1E": filterItem.getChild().get(i).equals("9CEA46E8-A3ED-409E-646C-F38A5EAC383E"); break;//一般
-                                                case "692BD4F1-6445-4271-AC83-0A1002303523": filterItem.getChild().get(i).equals("84640879-F4A7-CB87-E39B-F18070BCA568"); break;//无
+                                                case "D32508DC-4192-4275-AD55-BD1DF0790C5B": filterItem.getChild().set(i, "2A357E4A-90D7-5D69-C209-E26CFA5839FA"); break;//必买
+                                                case "FA5364B5-7A31-43AB-834D-9E1F11278BFF": filterItem.getChild().set(i, "DF2057E2-303B-1F14-4075-069668D3A3BE"); break;//较高
+                                                case "8F09F3E0-5181-4310-83E1-5FC72FFB9A18": filterItem.getChild().set(i, "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D"); break;//低
+                                                case "CD396C52-11F6-4385-B033-148B41679F1E": filterItem.getChild().set(i, "9CEA46E8-A3ED-409E-646C-F38A5EAC383E"); break;//一般
+                                                case "692BD4F1-6445-4271-AC83-0A1002303523": filterItem.getChild().set(i, "84640879-F4A7-CB87-E39B-F18070BCA568"); break;//无
                                             }
                                         }
                                         whereSb.append(" and CustomerLevelValue in('" + String.join("','", filterItem.getChild()) + "')");

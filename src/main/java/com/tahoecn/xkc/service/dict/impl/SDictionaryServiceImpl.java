@@ -730,14 +730,14 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             	if("客户状态".equals(map.get("DictName"))){
             		List<Map<String,Object>> Child = (List<Map<String, Object>>) map.get("Child");
             		//修改---客户状态改字段名称
-            		String id = "";
+            		List<String> id = new ArrayList<String>();
             		for(Map<String,Object> c: Child){
             			if("询问".equals(c.get("DictName"))){
             				c.put(DictNameAlias,"报备");
             			}
             			if("看房".equals(c.get("DictName"))
             					|| "认购中".equals(c.get("DictName"))){
-            				id += (String) c.get("ID")+",";
+            				id.add((String)c.get("ID"));
             				c.put(DictNameAlias,"到访");
             			}
             			if("丢失".equals(c.get("DictName"))){
