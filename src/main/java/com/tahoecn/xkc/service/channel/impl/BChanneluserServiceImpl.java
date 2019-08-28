@@ -271,7 +271,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         String name = (String) paramMap.get("Name");
         String gender = (String) paramMap.get("Gender");
 //        String channelOrgCode = (String) paramMap.get("ChannelOrgCode");
-        String channelTypeID = (String) paramMap.get("ChannelTypeID");
+            //自由经纪
+        String channelTypeID = "46830C26-0E01-4041-8054-3865CCDD26AD";
         String userID = (String) paramMap.get("UserID");
         int job = 3;
         int approvalStatus = 1;
