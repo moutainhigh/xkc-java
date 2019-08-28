@@ -39,10 +39,10 @@ public class WebSSOConfig extends WebMvcConfigurerAdapter {
 		// 多个拦截器组成一个拦截器链
 		// addPathPatterns 用于添加拦截规则
 		// excludePathPatterns 用户排除拦截
-//		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
-//		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").addPathPatterns("/H5/**").excludePathPatterns("/app/login/**","/app/system/mSystemAppVersion_Select","/app/system/mVerificationCode_Select","/app/login/mChannelRegistJZ_Insert",
-//				"/app/system/SystemAD_Select","/app/user/mUserForgetPwd_Update","/app/partReceive/mCustomerFJSearch_Select","/H5/mVerificationCode_Select","/H5/mLoginTK_SelectN","/H5/mLoginTKUser_InsertN","/H5/#/teamMemberRegister","/H5/mBrokerLoginForgetPwd_Update","/H5/getRqCode",
-//				"/app/potenCust/mCustomerPotentialZQDetail_Insert","/app/system/mSystemCity_Select");
+		registry.addInterceptor(ssoInterceptor()).addPathPatterns("/webapi/**");
+		registry.addInterceptor(applInterceptor()).addPathPatterns("/app/**").addPathPatterns("/H5/**").excludePathPatterns("/app/login/**","/app/system/mSystemAppVersion_Select","/app/system/mVerificationCode_Select","/app/login/mChannelRegistJZ_Insert",
+				"/app/system/SystemAD_Select","/app/user/mUserForgetPwd_Update","/app/partReceive/mCustomerFJSearch_Select","/H5/mVerificationCode_Select","/H5/mLoginTK_SelectN","/H5/mLoginTKUser_InsertN","/H5/#/teamMemberRegister","/H5/mBrokerLoginForgetPwd_Update","/H5/getRqCode",
+				"/app/potenCust/mCustomerPotentialZQDetail_Insert","/app/system/mSystemCity_Select");
 
 	}
 
