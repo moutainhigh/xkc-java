@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sun.org.apache.regexp.internal.RE;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
@@ -16,6 +15,14 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,15 +30,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -98,7 +96,7 @@ public class CustomerController extends TahoeBaseController {
             sqlWhere.append("  AND t.OpportunityStatus= ").append(OpportunityStatus);
         }
 
-        //渠道类型
+        //渠道类型0390CD8C-D6D4-4C92-995B-08C7E18E6EC2  自然访客;86D702BC-F30F-4091-B520-CA0909CADCDD 案场联动
         if (StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(SourceType)) {
             if ("one".equals(type))//选中一级菜单（自有渠道）
                 sqlWhere.append(" AND t.SourceTypeID IN ('80D2A7B1-115A-4F3A-BB7D-F227F641C5F1','266E0F4F-2EE1-4305-9115-49DDE2186D57','B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2','3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7','709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF')");//外展、外呼、拦截、圈层、外拓
@@ -108,25 +106,29 @@ public class CustomerController extends TahoeBaseController {
                 sqlWhere.append(" AND t.SourceTypeID IN ('7F4E0089-E21D-0F97-DC48-0DBF0740367D','BA06AE1D-E29A-4BC7-A811-A26E103B5E7E','798A45A6-9169-4E5C-BEE3-1CDB158F5D69')");//老业主、员工推荐、自由经纪
             else if ("2".equals(type))
                 sqlWhere.append(" AND t.ReportUserOrg='").append(SourceType).append("' ");
+            else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && !"0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)&& !"86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType))
+                sqlWhere.append(" AND (t.ChannelId = '").append(SourceType).append("' OR t.SourceTypeID = '"+SourceType+"') ");
+            else if ("0".equals(type) && StringUtils.isNotEmpty(SourceType) && ("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2".equals(SourceType)|| "86D702BC-F30F-4091-B520-CA0909CADCDD".equals(SourceType)))
+                sqlWhere.append(" AND (t.SourceTypeID = '' or t.SourceTypeID is null) ");
                 else if ("0".equals(type))
             sqlWhere.append(" AND t.SourceTypeID = '").append(SourceType).append("' ");
         }
 
         //报备时间
         if (StringUtils.isNotEmpty(ReportTime_Start)) {
-            sqlWhere.append(" and  t.ReportTime>='").append(ReportTime_Start).append("'");
+            sqlWhere.append(" and  t.ReportTime>='").append(ReportTime_Start).append(" 00:00:00'");
         }
         //报备时间
         if (StringUtils.isNotEmpty(ReportTime_End)) {
-            sqlWhere.append(" and  t.ReportTime<='").append(ReportTime_End).append("'");
+            sqlWhere.append(" and  t.ReportTime<='").append(ReportTime_End).append(" 23:59:59'");
         }
         //首次到访
         if (StringUtils.isNotEmpty(TheFirstVisitDate_Start)) {
-            sqlWhere.append(" and  t.TheFirstVisitDate>='").append(TheFirstVisitDate_Start).append("'");
+            sqlWhere.append(" and  t.TheFirstVisitDate>='").append(TheFirstVisitDate_Start).append(" 00:00:00'");
         }
         //首次到访
         if (StringUtils.isNotEmpty(TheFirstVisitDate_End)) {
-            sqlWhere.append(" and  t.TheFirstVisitDate<='").append(TheFirstVisitDate_End).append("'");
+            sqlWhere.append(" and  t.TheFirstVisitDate<='").append(TheFirstVisitDate_End).append(" 23:59:59'");
         }
 
         IPage page = new Page(pageNum,pageSize);

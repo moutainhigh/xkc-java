@@ -27,6 +27,7 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
@@ -968,7 +969,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	String opportunityID = paramAry.getString("OpportunityID");
         	String userID = paramAry.getString("UserID");
         	Map<String,Object> obj = vCustomergwlistSelectMapper.CustomerAttachDetail_Select(customerID, projectID, intentProjectID, opportunityID);
-            if (obj!=null && obj.size() == 0){
+            if (obj==null || obj.size() == 0){
             	vCustomergwlistSelectMapper.CustomerAttachDetail_Insert(customerID, projectID, intentProjectID, opportunityID, userID);
                 //同步明源客户数据
             	customerTemplate.SyncCustomer(opportunityID, 0);
@@ -1938,21 +1939,19 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                             CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
                             this.CustomerFollowUp_Insert(customerActionVo);
                         }
-                        //同步明源客户和机会数据
-                        //customerTemplate.SyncCustomer(opportunityID, 0);
                         entity.setErrcode(0);
                         entity.setErrmsg("成功");
                     }
                     //省去图片生成处理
-                   /* if (!StringUtils.isEmpty(paramAry.getString("RoomID"))){
+                    if (!StringUtils.isEmpty(paramAry.getString("RoomID"))){
                         Map<String,Object> objParam = new HashMap<String, Object>();
                         objParam.put("ProjectID",paramAry.getString("ProjectID"));
                         objParam.put("OpportunityID", paramAry.getString("OpportunityID"));
                         objParam.put("CustomerID",paramAry.getString("CustomerID"));
                         objParam.put("RoomID",paramAry.getString("RoomID"));
                         objParam.put("UserID", paramAry.getString("UserID"));
-                        entity = new CustomerLockRoomRepository().CustomerLockRoomDetail_Insert(objParam, context, debug);
-                    }*/
+                        vCustomergwlistSelectMapper.CustomerLockRoomDetail_Insert(objParam);
+                    }
                 }
             }
         }catch (Exception e){
@@ -2019,7 +2018,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 		try {
 			String OpportunityID = pmap.get("OpportunityID").toString();
 			String CustomerID = pmap.get("CustomerID").toString();
-			
+			String userId =  pmap.get("UserID")!=null?pmap.get("UserID").toString():"";
 			Map<String, Object> customerData = vCustomergwlistSelectMapper.selectCustomerByID(CustomerID);
 			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
 			if(customerData!=null && customerData.size()>0 && OpportunityData!=null && OpportunityData.size()>0){
@@ -2040,6 +2039,11 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				
 		        log.setOpportunityID(OpportunityID);
 		        log.setCustomerID(CustomerID);
+		        log.setEditorId(userId);
+		        try {
+		        	log.setEditorName(ThreadLocalUtils.getRealName());
+				} catch (Exception e) {
+				}
 		        Boolean change = false;
 				String newCustomerName = pmap.get("Name")!=null?pmap.get("Name").toString():"";
 				if(!"".equals(newCustomerName)){

@@ -529,7 +529,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             where.append(" and cu.CertificatesNo like '%" + CertificatesNo + "%'");
         }
         if (StringUtils.isNotBlank(ChannelOrgName)){
-            where.append(" and cu.ChannelOrgName like '%" + ChannelOrgName + "%'");
+            where.append(" and o.OrgName like '%" + ChannelOrgName + "%'");
         }
         if (StringUtils.isNotBlank(Status)){
             where.append(" and cu.Status like '%" + Status + "%'");
@@ -564,9 +564,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         if (StringUtils.isNotBlank(ApprovalUserID)){
             where.append(" and cu.Approver = '" +ApprovalUserID + "'");
         }
-        if (CreateEndTime!=null){
-            where.append(" and cu.CreateTime < '" + CreateEndTime + "'");
-        }
+//        if (CreateEndTime!=null){
+//            where.append(" and cu.CreateTime < '" + CreateEndTime + "'");
+//        }
         //是否有机构和//项目ID没判断 貌似不需要了
         IPage<Map<String,Object>> list=baseMapper.AgenList_SelectN(page,where.toString());
 

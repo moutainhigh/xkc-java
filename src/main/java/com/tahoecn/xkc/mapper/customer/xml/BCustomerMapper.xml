@@ -123,6 +123,7 @@
             b.ReportUserMobile,
             b.CreateTime AS             ReportTime,
             o.TheFirstVisitDate,
+            CO.id                       ChannelId,
             CO.OrgName                  ChannelName,
             b.ReportUserOrg,
             o.ID                        OpportunityID,

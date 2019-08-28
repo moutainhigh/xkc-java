@@ -26,6 +26,7 @@
         tr.ReportUserID ,
         tr.ReportUserName ,
         tr.ReportUserMobile ,
+        tr.ChannelId ,
         tr.ChannelName ,
         tr.ReportTime ,
         dbo.F_DictName(tr.Gender) GenderTxt,
@@ -66,6 +67,7 @@
                                 d.CreateTime AS ReportTime ,
                                 d.Status ClueStatus,
                                 SM.ReceptionGroupID SaleTeamID,
+                                CO.ID ChannelId,
                                 CO.OrgName ChannelName,
                                 d.ReportUserOrg,
                                 G.CreateTime  ZJDF,
@@ -117,7 +119,7 @@
                                                  FROM   B_Opportunity d
                                                  WHERE  d.IsDel = 0
                                                         AND d.ProjectID = #{paramMap.ProjectID}
-                                                        AND d.ClueID = b.ID )
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
                                ${paramMap.ClueWhere}
                     ) tm  where 1=1 ${paramMap.sqlWhere}
                     ) ts where 1=1 ${paramMap.WhereLast}) tab WHERE tab.OpportunityID=b.ID)
@@ -145,6 +147,7 @@
                                 b.CreateTime AS ReportTime ,
                                 b.Status ClueStatus,
                                 '' SaleTeamID,
+                                CO.ID ChannelId,
                                 CO.OrgName ChannelName,
                                 b.ReportUserOrg,
                                 '' ZJDF,
@@ -187,13 +190,12 @@
                                                  FROM   B_Opportunity d
                                                  WHERE  d.IsDel = 0
                                                         AND d.ProjectID = #{paramMap.ProjectID}
-                                                        AND d.ClueID = b.ID )
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
                                ${paramMap.ClueWhere}
                     ) tm  where 1=1 ${paramMap.sqlWhere}
                     ) ts where 1=1 ${paramMap.WhereLast}) tab
 									WHERE tab.OpportunityID=b.ID
 									)
-
                     ) tr
         ]]>
     </select>
@@ -215,9 +217,9 @@
       dbo.F_GetSaleUserName(O.SaleUserID) SaleUserName,<!--置业顾问-->
       dbo.F_DictName(O.CustomerLevel) CustomerLevel,<!--意向等级-->
       dbo.F_DictName(O.PropertyIntention) PropertyIntention,<!--置业目的-->
-      dbo.F_DictName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
-        dbo.F_DictName(A.HomeArea) HomeArea,<!--居住区域-->
-        dbo.F_DictName(A.WorkArea) WorkArea,<!--工作区域-->
+      dbo.F_CityName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
+      dbo.F_CityName(A.HomeArea) HomeArea,<!--居住区域-->
+      dbo.F_CityName(A.WorkArea) WorkArea,<!--工作区域-->
       dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
       A.Birthday,<!--生日-->
       A.HomeAddress,<!--现居住地址-->
@@ -267,9 +269,9 @@
       '' CustomerLevel,<!--意向等级-->
       <!--dbo.F_DictName(O.PropertyIntention) PropertyIntention,置业目的-->
       '' PropertyIntention,<!--置业目的-->
-      dbo.F_DictName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
-      dbo.F_DictName(A.HomeArea) HomeArea,<!--居住区域-->
-      dbo.F_DictName(A.WorkArea) WorkArea,<!--工作区域-->
+      dbo.F_CityName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
+      dbo.F_CityName(A.HomeArea) HomeArea,<!--居住区域-->
+      dbo.F_CityName(A.WorkArea) WorkArea,<!--工作区域-->
       dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
       ''Birthday,<!--生日-->
       A.HomeAddress,<!--现居住地址-->
@@ -457,6 +459,7 @@ FROM    dbo.B_Opportunity A
 					m.ReportUserID ,
 					m.ReportUserName ,
 					m.ReportUserMobile ,
+                    m.ID ChannelID,
 					m.ChannelName,
 					m.OpportunityID,
 					dbo.F_GetZJDF(m.OpportunityID) ZJDF<!--最近到访时间-->
@@ -483,6 +486,7 @@ FROM    dbo.B_Opportunity A
                                 b.ReportUserMobile ,
                                 b.CreateTime AS ReportTime , <!--报备时间-->
 								o.TheFirstVisitDate , <!--首访时间-->
+                                CO.ID ChannelID,
                                 CO.OrgName ChannelName,
 								o.ID OpportunityID
                       FROM      B_Clue b

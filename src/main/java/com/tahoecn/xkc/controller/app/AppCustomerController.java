@@ -946,6 +946,7 @@ public class AppCustomerController extends TahoeBaseController {
 	@RequestMapping(value = "/mCustomerGGCList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public Result mCustomerGGCList_Select(@RequestBody JSONObject jsonParam) {
 		try{
+			System.out.println("==========================>>>>>"+jsonParam);
 			JSONObject paramMap = jsonParam.getJSONObject("_param");
 			String KeyWord = (String) paramMap.get("KeyWord");
 			List<FilterItem> Filter = JSON.parseArray(paramMap.getString("Filter"),FilterItem.class);
@@ -959,49 +960,9 @@ public class AppCustomerController extends TahoeBaseController {
             if (!StringUtils.isEmpty(KeyWord)){
                 whereSb.append(" and (CustomerName Like'%"+KeyWord+"%' or CustomerMobile Like'%"+KeyWord+"%') ");
             }
-            if (Filter != null && Filter.size() > 0){
-                if (Filter.contains("EB4DEEF7-26E2-412E-B946-1695742A6704")){
-                	paramMap.put("GroupID", Filter.get(0).getChild().get(0));
-                    String filterstr = mGetFilterGroupList_Select(GroupID);
-                    if (filterstr != null && !filterstr.equals("")){
-                    	List<FilterItem> filter = JSONObject.parseArray(filterstr, FilterItem.class);
-                        Filter = filter;
-                    }else{
-                        Filter = null;
-                    }
-                }
-                for (FilterItem filterItem : Filter){
-                    if (filterItem != null && filterItem.getTagID() != null){
-                        //客储等级
-                        if ("EB4DEEF7-26E2-412E-B946-1695742A6702".equals(filterItem.getTagID())){
-                            if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
-                                for (int i = 0; i < filterItem.getChild().size(); i++){
-                                    switch (filterItem.getChild().get(i)){
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6706": "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA".equals(filterItem.getChild().get(i)); break;//1级
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6707": "FC420696-6F6C-40B1-BE17-96FCEC75B0F2".equals(filterItem.getChild().get(i)); break;//1.5级
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6708": "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42".equals(filterItem.getChild().get(i)); break;//2级
-                                    }
-                                }
-                                whereSb.append(" and A.CustomerRank in('" + String.join("','", filterItem.getChild()) + "')");
-                            }
-                        }
-                        //意向级别
-                        if ("EB4DEEF7-26E2-412E-B946-1695742A6703".equals(filterItem.getTagID())){
-                            if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
-                                for (int i = 0; i < filterItem.getChild().size(); i++){
-                                    switch (filterItem.getChild().get(i)){
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6709": "2A357E4A-90D7-5D69-C209-E26CFA5839FA".equals(filterItem.getChild().get(i)); break;//A级
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6710": "DF2057E2-303B-1F14-4075-069668D3A3BE".equals(filterItem.getChild().get(i)); break;//B级
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6711": "9CEA46E8-A3ED-409E-646C-F38A5EAC383E".equals(filterItem.getChild().get(i)); break;//C级
-                                        case "EB4DEEF7-26E2-412E-B946-1695742A6712": "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D".equals(filterItem.getChild().get(i)); break;//D级
-                                    }
-                                }
-                                whereSb.append(" and A.CustomerLevel in('" + String.join("','", filterItem.getChild()) + "')");
-                            }
-                        }
-                    }
-                }
-            }
+            //筛选条件
+            paramMap = whereScreen(whereSb,Filter,paramMap);
+            
             //排序字段
             if ("BB4DEEF7-26E2-412E-B946-1695742A6702".equals(Sort) || "AB4DEEF7-26E2-412E-B946-1695742A6702".equals(Sort))
             {//创建时间正序
@@ -1019,7 +980,7 @@ public class AppCustomerController extends TahoeBaseController {
                 orderSb.append(" ORDER BY  A.TheLatestFollowUpDate desc ");
             }
 			
-            paramMap.put("WHERE", whereSb.toString());
+//            paramMap.put("WHERE", whereSb.toString());
             paramMap.put("ORDER", orderSb.toString());
             Map<String,Object> data = iBCustomerpublicpoolService.mCustomerGGCList_Select(paramMap);
             data = iBCustomerpublicpoolService.mCustomerGGCGrabDetail_Select(data, paramMap);
@@ -1028,6 +989,118 @@ public class AppCustomerController extends TahoeBaseController {
 			e.printStackTrace();
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
+	}
+	private JSONObject whereScreen(StringBuilder whereSb, List<FilterItem> Filter, JSONObject paramMap) {
+		String GroupID = (String) paramMap.get("GroupID");
+		if (Filter != null && Filter.size() > 0){
+        	boolean tagId = false;
+            for(FilterItem filterItem : Filter){
+            	if("EB4DEEF7-26E2-412E-B946-1695742A6704".equals(filterItem.getTagID())
+            			|| "CB4DEEF7-26E2-412E-B946-1695742A6704".equals(filterItem.getTagID())){
+            		tagId = true;
+            		break;
+            	}
+            }
+        	
+        	if (tagId == true){//Filter.contains("EB4DEEF7-26E2-412E-B946-1695742A6704")){
+            	paramMap.put("GroupID", Filter.get(0).getChild().get(0));
+                String filterstr = mGetFilterGroupList_Select(paramMap.getString("GroupID"));
+                if (filterstr != null && !filterstr.equals("")){
+                	List<FilterItem> filter = JSONObject.parseArray(filterstr, FilterItem.class);
+                    Filter = filter;
+                }else{
+                    Filter = null;
+                }
+            }
+            for (FilterItem filterItem : Filter){
+                if (filterItem != null && filterItem.getTagID() != null){
+                    //客储等级-顾问
+                    if ("EB4DEEF7-26E2-412E-B946-1695742A6702".equals(filterItem.getTagID())){
+                        if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                            for (int i = 0; i < filterItem.getChild().size(); i++){
+                                switch (filterItem.getChild().get(i)){
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6706": 
+                                    	filterItem.getChild().set(i, "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA"); 
+                                    	break;//1级
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6707": 
+                                    	filterItem.getChild().set(i, "FC420696-6F6C-40B1-BE17-96FCEC75B0F2"); 
+                                    	break;//1.5级
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6708": 
+                                    	filterItem.getChild().set(i, "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42"); 
+                                    	break;//2级
+                                }
+                            }
+                            whereSb.append(" and A.CustomerRank in('" + String.join("','", filterItem.getChild()) + "')");
+                        }
+                    }
+                    //客储等级-自渠
+                    if ("CB4DEEF7-26E2-412E-B946-1695742A6702".equals(filterItem.getTagID())){
+                    	if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                    		for (int i = 0; i < filterItem.getChild().size(); i++){
+                    			switch (filterItem.getChild().get(i)){
+                    				case "CB4DEEF7-26E2-412E-B946-1695742A6706": 
+                    					filterItem.getChild().set(i, "41FA0234-F8AE-434F-8BCD-6E9BE1D059DA"); 
+                    					break;//1级
+                    				case "CB4DEEF7-26E2-412E-B946-1695742A6707": 
+                    					filterItem.getChild().set(i, "FC420696-6F6C-40B1-BE17-96FCEC75B0F2"); 
+                    					break;//1.5级
+                    				case "CB4DEEF7-26E2-412E-B946-1695742A6708": 
+                    					filterItem.getChild().set(i, "ED0AD9E6-AF72-424C-9EE0-9884FF31FA42");
+                    					break;//2级
+                    			}
+                    		}
+                    		whereSb.append(" and A.CustomerRank in('" + String.join("','", filterItem.getChild()) + "')");
+                    	}
+                    }
+                    //意向级别-顾问
+                    if ("EB4DEEF7-26E2-412E-B946-1695742A6703".equals(filterItem.getTagID())){
+                        if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                            for (int i = 0; i < filterItem.getChild().size(); i++){
+                                switch (filterItem.getChild().get(i)){
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6709": 
+                                    	filterItem.getChild().set(i, "2A357E4A-90D7-5D69-C209-E26CFA5839FA"); 
+                                    	break;//A级
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6710": 
+                                    	filterItem.getChild().set(i, "DF2057E2-303B-1F14-4075-069668D3A3BE"); 
+                                    	break;//B级
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6711": 
+                                    	filterItem.getChild().set(i, "9CEA46E8-A3ED-409E-646C-F38A5EAC383E"); 
+                                    	break;//C级
+                                    case "EB4DEEF7-26E2-412E-B946-1695742A6712": 
+                                    	filterItem.getChild().set(i, "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D"); 
+                                    	break;//D级
+                                }
+                            }
+                            whereSb.append(" and A.CustomerLevel in('" + String.join("','", filterItem.getChild()) + "')");
+                        }
+                    }
+                    //意向级别-自渠
+                    if ("CB4DEEF7-26E2-412E-B946-1695742A6703".equals(filterItem.getTagID())){
+                    	if (filterItem.getChild() != null && filterItem.getChild().size() > 0){
+                    		for (int i = 0; i < filterItem.getChild().size(); i++){
+                    			switch (filterItem.getChild().get(i)){
+                    			case "CB4DEEF7-26E2-412E-B946-1695742A6709": 
+                    				filterItem.getChild().set(i, "2A357E4A-90D7-5D69-C209-E26CFA5839FA");
+                    				break;//A级
+                    			case "CB4DEEF7-26E2-412E-B946-1695742A6710": 
+                    				filterItem.getChild().set(i, "DF2057E2-303B-1F14-4075-069668D3A3BE"); 
+                    				break;//B级
+                    			case "CB4DEEF7-26E2-412E-B946-1695742A6711": 
+                    				filterItem.getChild().set(i, "9CEA46E8-A3ED-409E-646C-F38A5EAC383E"); 
+                    				break;//C级
+                    			case "CB4DEEF7-26E2-412E-B946-1695742A6712": 
+                    				filterItem.getChild().set(i, "FA35879A-CCE4-D332-0FAB-ADB57EBCAC9D"); 
+                    				break;//D级
+                    			}
+                    		}
+                    		whereSb.append(" and A.CustomerLevel in('" + String.join("','", filterItem.getChild()) + "')");
+                    	}
+                    }
+                }
+            }
+        }
+		paramMap.put("WHERE", whereSb.toString());
+		return paramMap;
 	}
 	private String mGetFilterGroupList_Select(String groupID) {
 		QueryWrapper<BCustomerfiltergroup> wrapper = new QueryWrapper<BCustomerfiltergroup>();
