@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.RqCodeUtils;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
@@ -182,6 +183,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             String channelTypeID = (String) paramMap.get("ChannelTypeID");
             String userID = (String) paramMap.get("UserID");
             BVerificationcode vc = verificationcodeService.checkAuthCode(mobile);
+            if (PhoneUtil.isNotValidChinesePhone(mobile)){
+                result.setErrcode(1);
+                result.setErrmsg("手机号格式不正确");
+                return result;
+            }
 
             if (vc == null || !StringUtils.equals(authCode, vc.getVerificationCode())) {
                 result.setErrcode(1);
@@ -271,6 +277,12 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         String userID = (String) paramMap.get("UserID");
         int job = 3;
         int approvalStatus = 1;
+            if (PhoneUtil.isNotValidChinesePhone(mobile)){
+                result.setErrcode(1);
+                result.setErrmsg("手机号格式不正确");
+                return result;
+            }
+
         BVerificationcode vc = verificationcodeService.checkAuthCode(mobile);
 
         if (vc == null || !StringUtils.equals(authCode, vc.getVerificationCode())) {
