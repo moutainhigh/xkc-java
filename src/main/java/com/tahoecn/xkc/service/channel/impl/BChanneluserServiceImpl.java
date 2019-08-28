@@ -31,10 +31,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -226,6 +223,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             String orgId = channelorgs.get(0).getId();
             //保存人员信息   组建人员信息参数
             BChanneluser channeluser = new BChanneluser();
+            channeluser.setId(UUID.randomUUID().toString().toUpperCase());
             channeluser.setMobile(mobile);
             channeluser.setUserName(mobile);
             channeluser.setPassword(SecureUtil.md5(password));
@@ -273,7 +271,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         String name = (String) paramMap.get("Name");
         String gender = (String) paramMap.get("Gender");
 //        String channelOrgCode = (String) paramMap.get("ChannelOrgCode");
-        String channelTypeID = (String) paramMap.get("ChannelTypeID");
+            //自由经纪
+        String channelTypeID = "46830C26-0E01-4041-8054-3865CCDD26AD";
         String userID = (String) paramMap.get("UserID");
         int job = 3;
         int approvalStatus = 1;
@@ -300,6 +299,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         }
         SDictionary channelType = dictionaryService.getById(channelTypeID);
         BChanneluser channeluser = new BChanneluser();
+        channeluser.setId(UUID.randomUUID().toString().toUpperCase());
         channeluser.setMobile(mobile);
         channeluser.setUserName(mobile);
         channeluser.setPassword(SecureUtil.md5(password));

@@ -11,6 +11,8 @@ public class CGWDetailModel implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String UserID;
+	
+	private String UserTrueName;
 
 	private String ProjectID;
 
@@ -59,6 +61,16 @@ public class CGWDetailModel implements Serializable{
 
 	public void setUserID(String userID) {
 		UserID = userID;
+	}
+
+
+	public String getUserTrueName() {
+		return UserTrueName;
+	}
+
+
+	public void setUserTrueName(String userTrueName) {
+		UserTrueName = userTrueName;
 	}
 
 

@@ -10,6 +10,7 @@ import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.common.utils.JwtTokenUtil;
 import com.tahoecn.xkc.common.utils.NetUtil;
+import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -494,6 +495,10 @@ public class H5Controller extends TahoeBaseController {
         if (StringUtils.isBlank(formSessionID)){
             return Result.errormsg(1,"FormSessionID不可为null");
         }
+        //验证手机号格式
+        if (PhoneUtil.isNotValidChinesePhone(mobile)){
+            Result.errormsg(1,"手机号格式错误");
+        }
         //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
         int RowCount =iSFormsessionService.checkFormSessionID(formSessionID);
         if (RowCount==1){
@@ -707,6 +712,9 @@ public class H5Controller extends TahoeBaseController {
         try{
             Map paramMap = (HashMap)jsonParam.get("_param");
             String Mobile = (String)paramMap.get("Mobile").toString();
+            if (PhoneUtil.isNotValidChinesePhone(Mobile)){
+                return Result.errormsg(1,"手机号格式错误");
+            }
             Random ran = new Random();
             int verificationCode = ran.nextInt(899999)+100000;
             //写入数据,并调取短信接口

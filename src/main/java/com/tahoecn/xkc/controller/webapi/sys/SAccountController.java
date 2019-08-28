@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
@@ -89,7 +90,7 @@ public class SAccountController extends TahoeBaseController {
 //        if (count>0||count1>0) {
 //            return Result.errormsg(500, "电话号码已存在,请使用其他号码");
 //        }
-
+        account.setId(UUID.randomUUID().toString().toUpperCase());
         account.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");
         account.setCreator(ThreadLocalUtils.getUserName());
         account.setCreateTime(new Date());

@@ -22,8 +22,18 @@ public class ProjectService implements IProjectService {
 	@Override
 	public Result Detail_FindById(String ID) {
 		Result re = new Result();
-        Map<String,Object> map = vCustomergwlistSelectMapper.Project_Detail_FindById(ID);
-        re.setData(new JSONObject(map));
+		try {
+			Map<String,Object> map = vCustomergwlistSelectMapper.Project_Detail_FindById(ID);
+			if(map!=null && map.size()>0){
+				re.setData(new JSONObject(map));
+				re.setErrcode(0);
+			}else{
+				re.setErrcode(1);
+			}
+		} catch (Exception e) {
+			re.setErrcode(1);
+			e.printStackTrace();
+		}
         return re;
 	}
 

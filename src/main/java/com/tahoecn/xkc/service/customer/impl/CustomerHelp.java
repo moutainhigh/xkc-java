@@ -114,10 +114,15 @@ public class CustomerHelp implements ICustomerHelp {
 				//
 				// 查询当前项目信息
 				Result project_r = iProjectService.Detail_FindById(model.getProjectID());
-				JSONObject project = (JSONObject) project_r.getData();
-				int IsNoAllotRole = project.getIntValue("IsNoAllotRole");
-				int IsNoMobileVerify = project.getIntValue("IsNoMobileVerify");
-				int IsNoCustomerRank = project.getIntValue("IsNoCustomerRank");
+				Integer IsNoAllotRole = null;
+				Integer IsNoMobileVerify = null;
+	            Integer IsNoCustomerRank = null;
+	            if(project_r.getErrcode()==0){
+		            JSONObject projectData = (JSONObject)project_r.getData();
+		            IsNoMobileVerify = projectData.getIntValue("IsNoMobileVerify");
+		            IsNoCustomerRank = projectData.getIntValue("IsNoCustomerRank");
+		            IsNoAllotRole = projectData.getIntValue("IsNoAllotRole");
+	            }
 				String jobCode = model.getJobCode();
 				DicInfo dicInfo = new DicInfo();
 				int panelIndex = 0;
@@ -191,7 +196,7 @@ public class CustomerHelp implements ICustomerHelp {
 							case "480B60B2-1EE1-4A31-A810-072184A1E9D7":{// 跟进方式
 								List<OptionItem> itemList = GetOptionList(childItem.getID(), false);
 								if (itemList != null && jobCode.equals("GW")
-										&& IsNoAllotRole == 0) {// 开启分接置业顾问只能录入来电、去电、问询、外展接待
+										&& IsNoAllotRole!=null && IsNoAllotRole == 0) {// 开启分接置业顾问只能录入来电、去电、问询、外展接待
 									List<String> followIdList = new ArrayList<String>();
 									followIdList.add("A79A1057-D4DC-497C-8C81-8F93E422C819");
 									followIdList.add("F0942939-A90E-4915-81D7-7752919B0F72");
@@ -233,7 +238,7 @@ public class CustomerHelp implements ICustomerHelp {
 								}
 							}
 							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42841")) {// 主电话
-								if (IsNoMobileVerify == 1) {
+								if (IsNoMobileVerify!=null && IsNoMobileVerify == 1) {
 									childItem.setType("Text");
 								}
 								if (StringUtils.isEmpty(childItem.getValue())) {
@@ -241,17 +246,17 @@ public class CustomerHelp implements ICustomerHelp {
 								}
 							}
 							if (childItem.getID().equals("21685728-54C5-4268-8371-62413CE42832")) {// 副电话
-								if (IsNoMobileVerify == 1) {
+								if (IsNoMobileVerify!=null && IsNoMobileVerify == 1) {
 									childItem.setType("Text");
 								}
 							}
 							if (childItem.getID().equals("61C9B9E1-B2DE-4112-B9B3-C87E23E581BC")) {// 客户级别
-								if (IsNoCustomerRank == 1) {
+								if (IsNoCustomerRank!=null && IsNoCustomerRank == 1) {
 									deleteItem.put(childItem.getID() + "_"+ panelIndex, childItem);
 								}
 							}
 							if (childItem.getID().equals("A977C068-98A9-4184-AD39-5E645778CB5D")) {// 是否收小筹
-								if (IsNoCustomerRank == 1) {
+								if (IsNoCustomerRank!=null && IsNoCustomerRank == 1) {
 									deleteItem.put(childItem.getID() + "_"+ panelIndex, childItem);
 								}
 							}
@@ -1162,5 +1167,4 @@ public class CustomerHelp implements ICustomerHelp {
         }
         return true;
 	}
-
 }
