@@ -281,7 +281,7 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().like(StringUtils.isNotBlank(report.getSaleUserName()), CostomerReport::getSaleUserName, report.getSaleUserName());   //置业顾问
 
         //wrapper.lambda().eq(StringUtils.isNotBlank(report.getOpportunitySource()), CostomerReport::getOpportunitySource, report.getOpportunitySource());    //客户源
-        wrapper.lambda().and(rolewrapper -> rolewrapper.eq(CostomerReport::getOpportunitySource, report.getOpportunitySource()).or().eq(CostomerReport::getChannelName,report.getOpportunitySource()));
+        wrapper.lambda().and(StringUtils.isNotBlank(report.getOpportunitySource()),rolewrapper -> rolewrapper.eq(StringUtils.isNotBlank(report.getOpportunitySource()),CostomerReport::getOpportunitySource, report.getOpportunitySource()).or().eq(StringUtils.isNotBlank(report.getOpportunitySource()),CostomerReport::getChannelName,report.getOpportunitySource()));
 
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
