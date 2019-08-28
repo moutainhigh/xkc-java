@@ -10,6 +10,7 @@ import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.common.utils.LocalDateTimeUtils;
+import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.customer.IBCustomerService;
@@ -296,7 +297,7 @@ public class CustomerController extends TahoeBaseController {
         }
 
         List<Map<String,Object>> result = customerService.SourceTypeChangeList_Select(Mobile,projectID,sqlWhere.toString(),ClueID);
-        if (!"自然访客".equals(SourceType)){
+        if (!"自然访客".equals(SourceType) && result.size() == 0){
             Map<String,Object> map = new HashMap<>();
             map.put("ChannelName","自然访客");
             map.put("ClueID","111111");
@@ -330,6 +331,7 @@ public class CustomerController extends TahoeBaseController {
     @ApiOperation(value = "变更渠道来源")
     @RequestMapping(value = "/ChangeSourceTypeDetail_Update", method = {RequestMethod.POST})
     public Result ChangeSourceTypeDetail_Update(String clueID, String SourceType, String reason, String enclosure,String userID,String type){
+        userID = ThreadLocalUtils.getUserId();
         customerService.ChangeSourceTypeDetail_Update(clueID, SourceType, reason, enclosure,userID,type);
         return Result.ok("成功");
     }
@@ -337,6 +339,7 @@ public class CustomerController extends TahoeBaseController {
     @ApiOperation(value = "变更认知媒体")
     @RequestMapping(value = "/ChangeCognitiveChannelDetail_Update", method = {RequestMethod.POST})
     public Result ChangeCognitiveChannelDetail_Update(String clueID, String CognitiveChannel, String reason, String enclosure,String userID,String type){
+        userID = ThreadLocalUtils.getUserId();
         customerService.ChangeCognitiveChannelDetail_Update(clueID, CognitiveChannel, reason, enclosure,userID,type);
         return Result.ok("成功");
     }

@@ -229,6 +229,7 @@
 					m.CustomerID,
 					m.CustomerName,
                     STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+                    m.CustomerMobile CustomerMobileWhole,
 					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
 					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
 					m.InvalidReason,
@@ -695,11 +696,12 @@
         <![CDATA[
           {call	 [dbo].[P_ChangeSourceTypeDetail_Update](
                                                   #{clueID,mode=IN},
-                                                  #{SourceType,mode=IN},
                                                   #{reason,mode=IN},
+                                                  #{SourceType,mode=IN},
+                                                   #{type,mode=IN},
                                                   #{enclosure,mode=IN},
-                                                  #{userID,mode=IN},
-                                                  #{type,mode=IN}
+                                                  #{userID,mode=IN}
+
           )}
         ]]>
     </select>
