@@ -71,7 +71,7 @@ public interface IBClueService extends IService<BClue> {
 	/**
 	 * 待分配
 	 */
-	IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID, String sqlWhere);
+	IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID,String UserID, String sqlWhere);
 	/**
 	 * 报备信息列表
 	 */

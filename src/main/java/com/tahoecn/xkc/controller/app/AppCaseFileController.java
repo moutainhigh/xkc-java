@@ -124,7 +124,8 @@ public class AppCaseFileController extends TahoeBaseController {
 			Map paramMap = (HashMap)jsonParam.get("_param");
 			int PageIndex = (int)paramMap.get("PageIndex");//页面索引
             int PageSize = (int)paramMap.get("PageSize");//每页数量
-            String ProjectID = (String)paramMap.get("ProjectID");//每页数量
+            String ProjectID = (String)paramMap.get("ProjectID");
+            String UserID = (String)paramMap.get("UserID");
 			//查询
 			String where = "";
 			if (!StringUtils.isEmpty(paramMap.get("Condition"))){
@@ -132,7 +133,7 @@ public class AppCaseFileController extends TahoeBaseController {
 			}
 //			paramMap.put("sqlWhere", where);
 			IPage page = new Page(PageIndex, PageSize);
-			IPage<Map<String, Object>> ob = iBClueService.CaseFieDistributionList_Select(page,ProjectID,where);
+			IPage<Map<String, Object>> ob = iBClueService.CaseFieDistributionList_Select(page,ProjectID,UserID,where);
 			Map<String, Object> map = new HashMap<String,Object>();
 			map.put("List", ob.getRecords());
 			map.put("AllCount", ob.getTotal());
