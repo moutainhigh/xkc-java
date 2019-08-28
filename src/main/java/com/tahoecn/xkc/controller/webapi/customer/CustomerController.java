@@ -221,6 +221,7 @@ public class CustomerController extends TahoeBaseController {
         }
         //报备时间
         if (StringUtils.isNotEmpty(ReportTime_End)) {
+            ReportTime_End = ReportTime_End + " 23:59:59";
             sqlWhere.append(" and  t.ReportTime<='").append(ReportTime_End).append("'");
         }
 
