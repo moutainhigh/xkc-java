@@ -19,7 +19,7 @@
 			        RoomPrice ,
 			        RoomTotal ,
 			        RoomType
-			FROM    [V_ProjectRoom]
+			FROM    [V_ProjectRoom_xkc]
 			WHERE   BuildingID = #{BuildingID} ${sqlWhere}
 			ORDER BY RoomUnit ,
 			        FloorIndex*1 DESC ,
