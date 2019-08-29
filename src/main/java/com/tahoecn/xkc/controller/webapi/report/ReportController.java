@@ -398,9 +398,9 @@ public class ReportController extends TahoeBaseController {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CustomerBook> wrapper=new QueryWrapper<>();
         wrapper.lambda().like(StringUtils.isNotBlank(report.getName()), CustomerBook::getName, report.getName());
-        wrapper.lambda().eq(StringUtils.isNotBlank(report.getMobile()), CustomerBook::getMobile, report.getMobile());
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getMobile()), CustomerBook::getMobile, report.getMobile());
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCardType()), CustomerBook::getCardType, report.getCardType());
-        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCardID()), CustomerBook::getCardID, report.getCardID());
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getCardID()), CustomerBook::getCardID, report.getCardID());
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getGender()), CustomerBook::getGender, report.getGender());
         wrapper.lambda().like(StringUtils.isNotBlank(report.getAddress()), CustomerBook::getAddress, report.getAddress());
 
