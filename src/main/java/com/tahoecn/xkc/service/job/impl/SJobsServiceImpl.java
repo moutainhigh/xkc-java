@@ -122,6 +122,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
                 SJobsuserrel one = jobsuserrelService.getOne(wrapper);
                 if (one==null){
                     SJobsuserrel jobsuserrel=new SJobsuserrel();
+                    jobsuserrel.setId(UUID.randomUUID().toString().toUpperCase());
                     jobsuserrel.setJobID(jobID);
                     jobsuserrel.setAccountID(userID);
                     jobsuserrelService.save(jobsuserrel);
@@ -165,6 +166,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             if (menusSplit.length!=0){
                 for (String s : menusSplit) {
                     SJobsmenurel jobsmenurel=new SJobsmenurel();
+                    jobsmenurel.setId(UUID.randomUUID().toString().toUpperCase());
                     jobsmenurel.setJobID(jobID);
                     jobsmenurel.setMenuID(s);
                      save = jobsmenurelService.save(jobsmenurel);
@@ -239,6 +241,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             }
             for (String s : IDs) {
                 BProjectjobrel projectjobrel=new BProjectjobrel();
+                projectjobrel.setId(UUID.randomUUID().toString().toUpperCase());
                 projectjobrel.setCreator(ThreadLocalUtils.getUserName());
                 projectjobrel.setJobID(jobID);
                 projectjobrel.setProjectID(s);
@@ -593,6 +596,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
             String[] mainIDs = mainID.split(",");
             for (String id : mainIDs) {
                 SCommonjobsmenurel commonjobsmenurel=new SCommonjobsmenurel();
+                commonjobsmenurel.setId(UUID.randomUUID().toString().toUpperCase());
                 commonjobsmenurel.setMenuID(id);
                 commonjobsmenurel.setJobID(jobID);
                 commonjobsmenurel.setIsDel(0);
@@ -602,6 +606,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
                 String[] sonIDs = sonID.split(",");
                 for (String id : sonIDs) {
                     SCommonjobsfunctionsrel commonjobsfunctionsrel=new SCommonjobsfunctionsrel();
+                    commonjobsfunctionsrel.setId(UUID.randomUUID().toString().toUpperCase());
                     commonjobsfunctionsrel.setFuncID(id);
                     commonjobsfunctionsrel.setJobID(jobID);
                     commonjobsfunctionsrel.setIsDel(0);

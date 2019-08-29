@@ -24,6 +24,7 @@ import com.tahoecn.xkc.controller.TahoeBaseController;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
@@ -66,6 +67,7 @@ public class SJobsController extends TahoeBaseController {
     @ApiOperation(value = "新增Jobs信息", notes = "新增Jobs信息")
     @RequestMapping(value = "/SystemJob_Insert", method = {RequestMethod.POST})
     public Result SystemJob_Insert(@RequestBody SJobs jobs){
+        jobs.setId(UUID.randomUUID().toString().toUpperCase());
         jobs.setCreator(ThreadLocalUtils.getUserName());
         jobs.setStatus(1);
         jobs.setCreateTime(new Date());
