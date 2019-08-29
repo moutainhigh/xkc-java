@@ -72,7 +72,7 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 }else {
                     bMedialarge.setCreateTime(new Date());
                     bMedialarge.setCreator(ThreadLocalUtils.getUserName());
-                    bMedialarge.setId(UUID.randomUUID().toString());
+                    bMedialarge.setId(UUID.randomUUID().toString().toUpperCase());
                     bMedialarge.setStatus(1);
                     baseMapper.MediaLargeSave(bMedialarge);
                 }
@@ -97,7 +97,7 @@ public class BMedialargeServiceImpl extends ServiceImpl<BMedialargeMapper, BMedi
                 }else {
                     bMediachild.setCreateTime(new Date());
                     bMediachild.setCreator(ThreadLocalUtils.getUserName());
-                    bMediachild.setId(UUID.randomUUID().toString());
+                    bMediachild.setId(UUID.randomUUID().toString().toUpperCase());
                     bMediachild.setStatus(1);
                     mediachildService.MediaChildSave(bMediachild);
                 }

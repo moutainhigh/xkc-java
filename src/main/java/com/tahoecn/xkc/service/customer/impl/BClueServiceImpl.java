@@ -14,6 +14,7 @@ import com.tahoecn.xkc.mapper.customer.BCustomerpotentialfollowupMapper;
 import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
+import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.clue.BCustomerpotentialfollowup;
 import com.tahoecn.xkc.model.clue.CStatus;
@@ -29,6 +30,7 @@ import com.tahoecn.xkc.model.vo.Customer;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
 import com.tahoecn.xkc.model.vo.CustomerStatus;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
@@ -103,6 +105,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
 	@Autowired
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
+
+	@Autowired
+    private IBChannelorgService channelorgService;
 
 
 	@Value("${mobilesale.ruleid}")
@@ -477,6 +482,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         List<BCustomerpotential> list = customerpotentialService.list(wrapper);
         BCustomerpotential cp=new BCustomerpotential();
         if (list.size()==0){
+            cp.setId(UUID.randomUUID().toString().toUpperCase());
             cp.setName((String) paramMap.get("Name"));
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
@@ -513,7 +519,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         //获取报备人信息以及适配的规则
         Map<String,Object> map=channeluserService.GetReportUserInfo_Select((String)paramMap.get("UserID"),(String)paramMap.get("IntentProjectID"),ChannelIdentify);
         BClue clue=new BClue();
-        clue.setId(UUID.randomUUID().toString());
+        clue.setId(UUID.randomUUID().toString().toUpperCase());
         clue.setCustomerPotentialID(customerPotentialID);
         clue.setName((String) paramMap.get("Name"));
         clue.setLastName((String) paramMap.get("Name"));
@@ -527,10 +533,20 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setReportUserName((String) map.get("ReportUserName"));
         clue.setReportUserMobile((String) map.get("ReportUserMobile"));
         //如果参数有 直接设置为参数值  如果参数为空 取ReportUserOrg
-        if (paramMap.get("newReportUserOrg")==null){
-            clue.setReportUserOrg((String) map.get("ReportUserOrg"));
-        }else {
-            clue.setReportUserOrg((String) paramMap.get("newReportUserOrg"));
+//        if (paramMap.get("newReportUserOrg")==null){
+//            clue.setReportUserOrg((String) map.get("ReportUserOrg"));
+//        }else {
+//            clue.setReportUserOrg((String) paramMap.get("newReportUserOrg"));
+//        }
+        //如果有上级机构,填入上级机构的id 如果没有 直接填登录人orgid
+        if (map.get("ReportUserOrg")!=null){
+            String ReportUserOrg= (String) map.get("ReportUserOrg");
+            BChannelorg byId = channelorgService.getById(ReportUserOrg);
+            if (StringUtils.isNotBlank(byId.getNewPID())){
+                clue.setReportUserOrg(byId.getNewPID());
+            }else {
+                clue.setReportUserOrg(ReportUserOrg);
+            }
         }
         clue.setRuleID((String) map.get("RuleID"));
         clue.setInvalidType((int) ruleValidate.get("InvalidType"));

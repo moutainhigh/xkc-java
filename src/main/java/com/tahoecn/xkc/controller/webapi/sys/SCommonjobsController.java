@@ -1,10 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.sys;
 
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -117,6 +114,7 @@ public class SCommonjobsController extends TahoeBaseController {
         commonjobs.setCreator(ThreadLocalUtils.getUserName());
         commonjobs.setCreateTime(new Date());
 	   	commonjobs.setIsDel(0);
+	   	commonjobs.setId(UUID.randomUUID().toString().toUpperCase());
        boolean save = ISCommonjobsService.save(commonjobs);
        if (save){
            return Result.okm("成功");

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
@@ -101,6 +102,7 @@ public class SDictionaryController extends TahoeBaseController {
             dictionary.setCreateTime(new Date());
             dictionary.setIsDel(0);
             dictionary.setStatus(1);
+            dictionary.setId(UUID.randomUUID().toString().toUpperCase());
             boolean save = dictionaryService.save(dictionary);
             if (save) {
                 return Result.okm("成功");
