@@ -151,6 +151,24 @@ public class CostomerReport implements Serializable {
     @TableField("SaleTeamName")
     private String saleTeamName;
 
+    private String reportOrgShortName;
+    private String reportOrgName;
+
+    public String getReportOrgShortName() {
+        return reportOrgShortName;
+    }
+
+    public void setReportOrgShortName(String reportOrgShortName) {
+        this.reportOrgShortName = reportOrgShortName;
+    }
+
+    public String getReportOrgName() {
+        return reportOrgName;
+    }
+
+    public void setReportOrgName(String reportOrgName) {
+        this.reportOrgName = reportOrgName;
+    }
 
     public String getCustomerMobileWhole() {
         return customerMobileWhole;
