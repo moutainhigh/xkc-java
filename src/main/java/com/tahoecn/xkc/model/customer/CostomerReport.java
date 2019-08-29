@@ -151,7 +151,9 @@ public class CostomerReport implements Serializable {
     @TableField("SaleTeamName")
     private String saleTeamName;
 
+    @TableField("ReportOrgShortName")
     private String reportOrgShortName;
+    @TableField("ReportOrgName")
     private String reportOrgName;
 
     public String getReportOrgShortName() {
