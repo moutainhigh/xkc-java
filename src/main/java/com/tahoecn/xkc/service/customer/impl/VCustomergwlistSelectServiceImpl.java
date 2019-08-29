@@ -196,7 +196,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 										filterItem.getChild().set(i, "1");
 										break;
 									case "6A91A1AB-FC05-2BC0-8C08-0C3FCB07D865":
-										filterItem.getChild().set(i, "2");
+										filterItem.getChild().set(i, "2','3");
 										break;
 									case "3962D6C3-1141-F62F-2181-9F6AA82E0A6C":
 										filterItem.getChild().set(i, "3");
