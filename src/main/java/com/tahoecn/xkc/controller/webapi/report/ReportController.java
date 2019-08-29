@@ -410,4 +410,18 @@ public class ReportController extends TahoeBaseController {
         }
         return Result.ok(list);
     }
+
+    @ApiOperation(value = "客户台账详情", notes = "客户台账详情")
+    @RequestMapping(value = "/costomerBookDetail", method = {RequestMethod.GET})
+    public Result costomerBookDetail(String ID) {
+        List<Map<String,Object>> listOpp = customerBookService.listOpp(ID);
+        List<Map<String,Object>> listClue = customerBookService.listClue(ID);
+        List<Map<String,Object>> payInfoList = customerBookService.customerPayInfo(ID);
+        Map<String,List<Map<String,Object>>> result = new HashMap<>();
+        result.put("listOpp",listOpp);
+        result.put("listClue",listClue);
+        result.put("payInfoList",payInfoList);
+        return Result.ok(result);
+    }
+
 }

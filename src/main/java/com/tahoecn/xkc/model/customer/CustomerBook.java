@@ -18,6 +18,7 @@ public class CustomerBook implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String id;
     @TableField("Name")
     private String name;
 
@@ -35,6 +36,14 @@ public class CustomerBook implements Serializable {
 
     @TableField("Address")
     private String address;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
