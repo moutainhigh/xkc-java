@@ -251,8 +251,8 @@ public class AppKCController extends TahoeBaseController {
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("ChannelTaskID", ChannelTaskID);
     		map.put("CheckDate", CheckDate);
-    		List<Map<String, Object>> obj = iBChanneluserService.mChannelCheckClockTotal_Select(map);
-    		if(obj != null && obj.size() > 0 && obj.get(0) != null) {
+    		Map<String, Object> obj = iBChanneluserService.mChannelCheckClockTotal_Select(map);
+    		if(obj != null && obj.size() > 0) {
     			return re.ok(obj);
     		}
     		else {
