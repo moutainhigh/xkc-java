@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +19,9 @@ public class UnitVo implements Serializable {
     @JsonProperty("RoomMaxCount")
     private int RoomMaxCount;
     @JsonProperty("RoomFloorList")
-    private List<FrVo> RoomFloorList;
+    private LinkedList<FrVo> RoomFloorList;
     @JsonProperty("RoomFloorObj")
-    private Map<String, FrVo> RoomFloorObj;
+    private LinkedHashMap<String, FrVo> RoomFloorObj;
 
     public String getRoomUnit() {
         return RoomUnit;
@@ -41,7 +43,7 @@ public class UnitVo implements Serializable {
         return RoomFloorList;
     }
 
-    public void setRoomFloorList(List<FrVo> roomFloorList) {
+    public void setRoomFloorList(LinkedList<FrVo> roomFloorList) {
         RoomFloorList = roomFloorList;
     }
 
@@ -49,7 +51,7 @@ public class UnitVo implements Serializable {
         return RoomFloorObj;
     }
 
-    public void setRoomFloorObj(Map<String, FrVo> roomFloorObj) {
+    public void setRoomFloorObj(LinkedHashMap<String, FrVo> roomFloorObj) {
         RoomFloorObj = roomFloorObj;
     }
 

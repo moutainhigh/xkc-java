@@ -1,8 +1,10 @@
 package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.vo.FrVo;
 import com.tahoecn.xkc.model.vo.UnitVo;
 import com.tahoecn.xkc.service.project.IBProjectService;
@@ -15,6 +17,8 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +59,8 @@ public class ProjectAppController extends TahoeBaseController {
     	try{
             Map paramMap = (HashMap)jsonParam.get("_param");
             String BuildingID = (String) paramMap.get("BuildingID");
-    		
+            String ProjectID = (String) paramMap.get("ProjectID");
+            String UserID = (String) paramMap.get("UserID");
             List<Map<String,Object>> projectObject = null;
             if (StringUtils.isEmpty(BuildingID)){
                 projectObject = iVProjectbuildingService.BuildingDetailByProjectIDTop_Select(paramMap);//楼栋信息查询
@@ -66,9 +71,13 @@ public class ProjectAppController extends TahoeBaseController {
                 projectObject = iVProjectbuildingService.BuildingDetail_Select(paramMap);//楼栋信息查询
             }
             List<Map<String,Object>> roomArray = iVProjectroomService.RoomList_Select(paramMap);//获取项目房间列表信息
-            Map<String,Object> project = new HashMap<String,Object>();
-            Map<String,Object> floor = new HashMap<String,Object>();
-            Map<String,UnitVo> unit = new HashMap<String,UnitVo>();
+            Map<String,Object> project = new LinkedHashMap<String,Object>();
+            Map<String,Object> floor = new LinkedHashMap<String,Object>();
+            Map<String,UnitVo> unit = new LinkedHashMap<String,UnitVo>();
+            //根据项目id查询是否需要隐藏金额
+            QueryWrapper<BProject> wrapper = new QueryWrapper<BProject>();
+            wrapper.eq("ID", ProjectID);
+            BProject isHide = projectService.getOne(wrapper);
             for (Map<String,Object> item : roomArray){
                 String RoomFloorName = (String) item.get("RoomFloorName");
                 String RoomUnit = (String) item.get("RoomUnit");
@@ -78,8 +87,8 @@ public class ProjectAppController extends TahoeBaseController {
                 	UnitVo ut = new UnitVo();
                     ut.setRoomUnit(item.get("RoomUnit").toString());
                     ut.setRoomMaxCount(0);
-                    ut.setRoomFloorList(new ArrayList<FrVo>());
-                    ut.setRoomFloorObj(new HashMap<String,FrVo>());
+                    ut.setRoomFloorList(new LinkedList<FrVo>());
+                    ut.setRoomFloorObj(new LinkedHashMap<String,FrVo>());
                     unit.put(RoomUnit, ut);
                 }
                 //房间处理
@@ -88,15 +97,21 @@ public class ProjectAppController extends TahoeBaseController {
                 room.put("RoomID", item.get("RoomID"));
                 room.put("RoomName", item.get("RoomName"));
                 room.put("RoomArea", item.get("RoomArea"));
-                String UserID = (String) paramMap.get("UserID");
-                String ProjectID = (String) paramMap.get("ProjectID");
+                
                 if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
                 		&& UserID.toUpperCase().equals("06C66C64-B490-4A44-B928-98009CD671F4")){
                     room.put("RoomPrice", "****/㎡");
                     room.put("RoomTotal", "****");
                 }else{
-                    room.put("RoomPrice", item.get("RoomPrice"));
-                    room.put("RoomTotal", item.get("RoomTotal"));
+                	//xkc修改---根据PC端配置
+                	//b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
+                	if(isHide.getHouseList() == 1){
+                		room.put("RoomPrice", "****/㎡");
+                        room.put("RoomTotal", "****");
+                	}else{
+                		room.put("RoomPrice", item.get("RoomPrice"));
+                		room.put("RoomTotal", item.get("RoomTotal"));
+                	}
                 }
                 room.put("RoomType", item.get("RoomType"));
                 room.put("RoomFloorName", item.get("RoomFloorName"));
@@ -135,7 +150,7 @@ public class ProjectAppController extends TahoeBaseController {
                     }
                 }
             }
-			List<UnitVo> unitArray = new ArrayList<UnitVo>();
+			List<UnitVo> unitArray = new LinkedList<UnitVo>();
             for(String key : unit.keySet()){
             	UnitVo item = unit.get(key);
                 int RoomMaxCount = item.getRoomMaxCount();
@@ -162,7 +177,7 @@ public class ProjectAppController extends TahoeBaseController {
                         }
                         item.getRoomFloorList().add(RoomFloor);
                     }else{
-                    	List<Map<String,Object>> rl = new ArrayList<Map<String,Object>>();
+                    	List<Map<String,Object>> rl = new LinkedList<Map<String,Object>>();
                         for (int i = 0; i < RoomMaxCount; i++)
                         {
                         	Map<String,Object> room = new HashMap<String,Object>();
@@ -216,9 +231,20 @@ public class ProjectAppController extends TahoeBaseController {
     		List<Map<String,Object>> re = iBRoomService.RoomDetail_Select(paramMap);
             String UserID = (String) paramMap.get("UserID");
             String ProjectID = (String) paramMap.get("ProjectID");
+            //根据项目id查询是否需要隐藏金额
+            QueryWrapper<BProject> wrapper = new QueryWrapper<BProject>();
+            wrapper.eq("ID", ProjectID);
+            BProject isHide = projectService.getOne(wrapper);
             if(re != null && re.size() > 0){
             	if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
             			&& UserID.toUpperCase().equals("06C66C64-B490-4A44-B928-98009CD671F4")){
+            		re.get(0).put("BldPrice","****元");
+            		re.get(0).put("TnPrice","****元");
+            		re.get(0).put("Total","****元"); 
+            	}
+            	//xkc修改---根据PC端配置
+            	//b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
+            	if(isHide.getHouseList() == 1){
             		re.get(0).put("BldPrice","****元");
             		re.get(0).put("TnPrice","****元");
             		re.get(0).put("Total","****元"); 
@@ -301,8 +327,8 @@ public class ProjectAppController extends TahoeBaseController {
                 	UnitVo ut = new UnitVo();
                     ut.setRoomUnit(item.get("RoomUnit").toString());
                     ut.setRoomMaxCount(0);
-                    ut.setRoomFloorList(new ArrayList<FrVo>());
-                    ut.setRoomFloorObj(new HashMap<String,FrVo>());
+                    ut.setRoomFloorList(new LinkedList<FrVo>());
+                    ut.setRoomFloorObj(new LinkedHashMap<String,FrVo>());
                     unit.put(RoomUnit, ut);
                 }
                 //房间处理
