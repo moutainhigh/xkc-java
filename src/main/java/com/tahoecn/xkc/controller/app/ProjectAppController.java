@@ -460,7 +460,34 @@ public class ProjectAppController extends TahoeBaseController {
     	try{
     		@SuppressWarnings("unchecked")
 			Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
-            return Result.ok(iBRoomService.RoomDetailYXJL_Select(paramMap).get(0));
+    		String ProjectID = (String) paramMap.get("ProjectID");
+    		List<Map<String,Object>> re = iBRoomService.RoomDetailYXJL_Select(paramMap);
+          //根据项目id查询是否需要隐藏金额
+            QueryWrapper<BProject> wrapper = new QueryWrapper<BProject>();
+            wrapper.eq("ID", ProjectID);
+            BProject isHide = projectService.getOne(wrapper);
+            if(re != null && re.size() > 0){
+            	//xkc修改---根据PC端配置
+                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
+                if(isHide.getHouseList() == 1){
+                	re.get(0).put("BldPrice","****");
+            		re.get(0).put("TnPrice","****");
+            		re.get(0).put("Total","****");
+                }else{
+                	if(re.get(0).get("BldPrice") == null || "".equals(re.get(0).get("BldPrice"))){
+                		re.get(0).put("BldPrice", "--");
+                	}
+                	if(re.get(0).get("TnPrice") == null || "".equals(re.get(0).get("TnPrice"))){
+                		re.get(0).put("TnPrice", "--");
+                	}
+                	if(re.get(0).get("Total") == null || "".equals(re.get(0).get("Total"))){
+                		re.get(0).put("Total", "--");
+                	}
+                }
+            	return Result.ok(re.get(0));
+            }else{
+            	return Result.ok("");
+            }
     	}catch(Exception e){
     		e.printStackTrace();
     		return Result.errormsg(1, "系统异常，请联系管理员");
