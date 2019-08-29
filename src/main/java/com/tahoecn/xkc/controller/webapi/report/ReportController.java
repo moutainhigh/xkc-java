@@ -339,6 +339,8 @@ public class ReportController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("所属机构", "channelName"));
         entity.add(new ExcelExportEntity("渠道人员", "reportUserName"));
         entity.add(new ExcelExportEntity("渠道人员电话", "reportUserMobile"));
+        entity.add(new ExcelExportEntity("报备人归属", "reportOrgName"));
+        entity.add(new ExcelExportEntity("机构简称", "reportOrgShortName"));
         entity.add(new ExcelExportEntity("客户状态", "customerStatus"));
         entity.add(new ExcelExportEntity("客户级别", "customerRankName"));
         entity.add(new ExcelExportEntity("创建时间", "createTime"));
@@ -356,8 +358,7 @@ public class ReportController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("签约套数", "mYContractCount"));
         entity.add(new ExcelExportEntity("签约总额(元)", "contractAccount"));
         entity.add(new ExcelExportEntity("首次签约", "mYContractCreateTime"));
-        entity.add(new ExcelExportEntity("报备人归属", "reportOrgName"));
-        entity.add(new ExcelExportEntity("机构简称", "reportOrgShortName"));
+
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map<String,Object>> resultMap = new ArrayList<>();
