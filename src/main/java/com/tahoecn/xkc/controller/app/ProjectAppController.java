@@ -98,21 +98,29 @@ public class ProjectAppController extends TahoeBaseController {
                 room.put("RoomName", item.get("RoomName"));
                 room.put("RoomArea", item.get("RoomArea"));
                 
-                if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
-                		&& UserID.toUpperCase().equals("06C66C64-B490-4A44-B928-98009CD671F4")){
-                    room.put("RoomPrice", "****/㎡");
-                    room.put("RoomTotal", "****");
+                //xkc修改---根据PC端配置
+                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
+                if(isHide.getHouseList() == 1){
+                	room.put("RoomPrice", "****/㎡");
+                	room.put("RoomTotal", "****");
                 }else{
-                	//xkc修改---根据PC端配置
-                	//b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                	if(isHide.getHouseList() == 1){
-                		room.put("RoomPrice", "****/㎡");
-                        room.put("RoomTotal", "****");
-                	}else{
-                		room.put("RoomPrice", item.get("RoomPrice"));
-                		room.put("RoomTotal", item.get("RoomTotal"));
+                	room.put("RoomPrice", item.get("RoomPrice"));
+                	room.put("RoomTotal", item.get("RoomTotal"));
+                	if(item.get("RoomPrice") == null || "".equals(item.get("RoomPrice"))){
+                		room.put("RoomPrice", "--/㎡");
+                	}
+                	if(item.get("RoomTotal") == null || "".equals(item.get("RoomTotal"))){
+                		room.put("RoomTotal", "--");
                 	}
                 }
+//                if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
+//                		&& UserID.toUpperCase().equals("06C66C64-B490-4A44-B928-98009CD671F4")){
+//                    room.put("RoomPrice", "***㎡");
+//                    room.put("RoomTotal", "****");
+//                }else{
+//                		room.put("RoomPrice", item.get("RoomPrice"));
+//                		room.put("RoomTotal", item.get("RoomTotal"));
+//                	}
                 room.put("RoomType", item.get("RoomType"));
                 room.put("RoomFloorName", item.get("RoomFloorName"));
                 room.put("RoomStatus", item.get("RoomStatus"));
@@ -236,19 +244,29 @@ public class ProjectAppController extends TahoeBaseController {
             wrapper.eq("ID", ProjectID);
             BProject isHide = projectService.getOne(wrapper);
             if(re != null && re.size() > 0){
-            	if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
+            	/*if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
             			&& UserID.toUpperCase().equals("06C66C64-B490-4A44-B928-98009CD671F4")){
             		re.get(0).put("BldPrice","****元");
             		re.get(0).put("TnPrice","****元");
             		re.get(0).put("Total","****元"); 
-            	}
+            	}*/
             	//xkc修改---根据PC端配置
-            	//b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-            	if(isHide.getHouseList() == 1){
-            		re.get(0).put("BldPrice","****元");
+                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
+                if(isHide.getHouseList() == 1){
+                	re.get(0).put("BldPrice","****元");
             		re.get(0).put("TnPrice","****元");
-            		re.get(0).put("Total","****元"); 
-            	}
+            		re.get(0).put("Total","****元");
+                }else{
+                	if(re.get(0).get("BldPrice") == null || "".equals(re.get(0).get("BldPrice"))){
+                		re.get(0).put("BldPrice", "--元");
+                	}
+                	if(re.get(0).get("TnPrice") == null || "".equals(re.get(0).get("TnPrice"))){
+                		re.get(0).put("TnPrice", "--元");
+                	}
+                	if(re.get(0).get("Total") == null || "".equals(re.get(0).get("Total"))){
+                		re.get(0).put("Total", "--元");
+                	}
+                }
             	return Result.ok(re.get(0));
             }else{
             	return Result.ok("");
