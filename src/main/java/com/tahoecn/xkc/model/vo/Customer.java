@@ -24,6 +24,8 @@ public class Customer {
 	private String statusText;
 	@ApiModelProperty(value="备注")
 	private String remark;
+	@ApiModelProperty(value="进度")
+	private String TractSort;
 	@ApiModelProperty(value="状态列表")
 	private List<CustomerStatus> cs;
 	
@@ -82,5 +84,10 @@ public class Customer {
 	public void setStatusText(String statusText) {
 		this.statusText = statusText;
 	}
-	
+	public String getTractSort() {
+		return TractSort;
+	}
+	public void setTractSort(String tractSort) {
+		this.TractSort = tractSort;
+	}
 }
