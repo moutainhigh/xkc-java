@@ -275,7 +275,7 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
-    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel,String isWhole) {
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel,String isWhole,String wholeStatus) {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
@@ -289,6 +289,9 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().and(StringUtils.isNotBlank(report.getOpportunitySource()),rolewrapper -> rolewrapper.eq(StringUtils.isNotBlank(report.getOpportunitySource()),CostomerReport::getOpportunitySource, report.getOpportunitySource()).or().eq(StringUtils.isNotBlank(report.getOpportunitySource()),CostomerReport::getChannelName,report.getOpportunitySource()));
 
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
+        if(StringUtils.isNotEmpty(wholeStatus)){
+            wrapper.lambda().ne(CostomerReport::getCustomerStatus, "无效");
+        }
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getFollwUpWayTxt()), CostomerReport::getFollwUpWayTxt, report.getFollwUpWayTxt());    //跟进类型
         wrapper.lambda().eq(report.getDaofangCount() != null, CostomerReport::getDaofangCount, report.getDaofangCount());    //到访次数
