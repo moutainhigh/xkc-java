@@ -17,6 +17,7 @@ import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.channel.BPojectchannelorgrel;
 import com.tahoecn.xkc.model.customer.CostomerReport;
+import com.tahoecn.xkc.model.customer.CustomerBook;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
@@ -26,6 +27,7 @@ import com.tahoecn.xkc.service.channel.IBPojectchannelorgrelService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.report.ICbFyService;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
+import com.tahoecn.xkc.service.report.ICustomerBookService;
 import com.tahoecn.xkc.service.report.ReportService;
 import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -64,6 +66,9 @@ public class ReportController extends TahoeBaseController {
 
     @Autowired
     ICbFyService iCbFyService;
+
+    @Autowired
+    private ICustomerBookService customerBookService;
 
 
     @ApiOperation(value = "客储动态监测表", notes = "客储动态监测表")
@@ -270,7 +275,7 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
-    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel,String isWhole) {
+    public Result costomerReportDetail(int PageIndex,int PageSize,CostomerReport report,String isExcel,String isWhole,String wholeStatus) {
         IPage page=new Page(PageIndex,PageSize);
         QueryWrapper<CostomerReport> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getAreaName()), CostomerReport::getAreaName, report.getAreaName());   //区域名
@@ -284,6 +289,9 @@ public class ReportController extends TahoeBaseController {
         wrapper.lambda().and(StringUtils.isNotBlank(report.getOpportunitySource()),rolewrapper -> rolewrapper.eq(StringUtils.isNotBlank(report.getOpportunitySource()),CostomerReport::getOpportunitySource, report.getOpportunitySource()).or().eq(StringUtils.isNotBlank(report.getOpportunitySource()),CostomerReport::getChannelName,report.getOpportunitySource()));
 
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerStatus()), CostomerReport::getCustomerStatus, report.getCustomerStatus()); //客户状态
+        if(StringUtils.isNotEmpty(wholeStatus)){
+            wrapper.lambda().ne(CostomerReport::getCustomerStatus, "无效");
+        }
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getCustomerRankName()), CostomerReport::getCustomerRankName, report.getCustomerRankName());   //客户级别
         wrapper.lambda().eq(StringUtils.isNotBlank(report.getFollwUpWayTxt()), CostomerReport::getFollwUpWayTxt, report.getFollwUpWayTxt());    //跟进类型
         wrapper.lambda().eq(report.getDaofangCount() != null, CostomerReport::getDaofangCount, report.getDaofangCount());    //到访次数
@@ -380,6 +388,43 @@ public class ReportController extends TahoeBaseController {
     public Result test(String ProjectID, Date StartTime,Date EndTime) {
         iCbFyService.save1();
         return null;
+    }
+
+    @ApiOperation(value = "客户台账", notes = "客户台账")
+    @RequestMapping(value = "/costomerBook", method = {RequestMethod.GET})
+    public Result costomerBook(int PageIndex,int PageSize,CustomerBook report,String isExcel) {
+        IPage page=new Page(PageIndex,PageSize);
+        QueryWrapper<CustomerBook> wrapper=new QueryWrapper<>();
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getName()), CustomerBook::getName, report.getName());
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getMobile()), CustomerBook::getMobile, report.getMobile());
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCardType()), CustomerBook::getCardType, report.getCardType());
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getCardID()), CustomerBook::getCardID, report.getCardID());
+        wrapper.lambda().eq(StringUtils.isNotBlank(report.getGender()), CustomerBook::getGender, report.getGender());
+        wrapper.lambda().like(StringUtils.isNotBlank(report.getAddress()), CustomerBook::getAddress, report.getAddress());
+
+        if (StringUtils.isNotEmpty(isExcel)){
+            page = new Page(1,-1);
+        }
+
+        IPage<CustomerBook> list=customerBookService.page(page,wrapper);
+        if (StringUtils.isNotEmpty(isExcel)){
+            //SetExcel_costomerReport(list,isWhole);
+            return null;
+        }
+        return Result.ok(list);
+    }
+
+    @ApiOperation(value = "客户台账详情", notes = "客户台账详情")
+    @RequestMapping(value = "/costomerBookDetail", method = {RequestMethod.GET})
+    public Result costomerBookDetail(String ID) {
+        List<Map<String,Object>> listOpp = customerBookService.listOpp(ID);
+        List<Map<String,Object>> listClue = customerBookService.listClue(ID);
+        List<Map<String,Object>> payInfoList = customerBookService.customerPayInfo(ID);
+        Map<String,List<Map<String,Object>>> result = new HashMap<>();
+        result.put("listOpp",listOpp);
+        result.put("listClue",listClue);
+        result.put("payInfoList",payInfoList);
+        return Result.ok(result);
     }
 
 }

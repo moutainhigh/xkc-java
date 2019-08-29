@@ -792,7 +792,7 @@ public class AppCustomerController extends TahoeBaseController {
                                         for (int i = 0; i < filterItem.getChild().size(); i++){
                                             switch (filterItem.getChild().get(i)){
                                                 case "05867891-C4B0-43F7-896F-FBB48C340147": filterItem.getChild().set(i, "1"); break;//问询
-                                                case "A53F17C1-A9F7-46FA-A185-E3242B8BDBB4": filterItem.getChild().set(i, "2"); break;//看房
+                                                case "A53F17C1-A9F7-46FA-A185-E3242B8BDBB4": filterItem.getChild().set(i, "2','3"); break;//看房
                                                 case "114B5471-EA83-4A6E-B038-E7304ACA5C8C": filterItem.getChild().set(i, "3"); break;//认购中
                                                 case "B2761972-56A1-4759-9A94-D8256D377D88": filterItem.getChild().set(i, "4"); break;//认购
                                                 case "519E5657-4CC4-44B5-A547-B479689670F5": filterItem.getChild().set(i, "5"); break;//签约

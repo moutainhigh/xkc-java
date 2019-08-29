@@ -52,7 +52,7 @@
 
     <select id="SalesGroupTeamNoAddedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
         <![CDATA[
-          SELECT DISTINCT a.[ID] UserID,a.[UserName],a.[EmployeeName] Name,b.FullPath OrgName,a.AccountType AccountType,a.Mobile Mobile,a.Status Status,
+          SELECT DISTINCT a.[ID] UserID,a.[UserName],a.[EmployeeName] Name,b.FullPath OrgName,a.AccountType AccountType,a.Mobile Mobile,a.Status Status
             FROM S_Account a
             --left JOIN dbo.S_JobsUserRel jur ON a.IsDel = 0 AND a.ID = jur.AccountID
             --left JOIN dbo.S_Jobs j ON jur.JobID = j.ID AND j.IsDel = 0
