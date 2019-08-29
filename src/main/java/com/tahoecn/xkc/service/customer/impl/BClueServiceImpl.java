@@ -717,7 +717,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customer.setIntentProjectName(clue.getIntentProjectName());
 		customer.setMobile(clue.getMobile());
 		customer.setName(clue.getCustomerName());
-		customer.setStatusText(clue.getStatusText());
+		if(clue.getStatusText().equals("来访")) {
+			customer.setStatusText("到访");
+		}
+		else {
+			customer.setStatusText(clue.getStatusText());
+		}
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
 
@@ -761,7 +766,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 				customer.setMobile(cus.getMobile());
 				customer.setName(cus.getCustomerName());
 				customer.setIntentProjectName(cus.getIntentProjectName());
-				customer.setStatusText(cus.getStatusText());
+				
+				if(cus.getStatusText().equals("来访")) {
+					customer.setStatusText("到访");
+				}
+				else {
+					customer.setStatusText(cus.getStatusText());
+				}
 				customer.setCreateTime(dateFormat.format(cus.getReportTime()));
 				customer.setQrUrl("");
 				customer.setRemark("");
