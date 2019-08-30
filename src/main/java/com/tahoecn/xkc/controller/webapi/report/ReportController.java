@@ -371,7 +371,7 @@ public class ReportController extends TahoeBaseController {
                     if (beanMap.get(key) != null)
                         map.put(key + "", sdf.format((Date)beanMap.get(key)));
                 }else{
-                    if(("channelName").equals(key)){
+                    if(("sourceType").equals(key)){
                         if (beanMap.get(key) == null || "".equals(beanMap.get(key)))
                             map.put(key + "", "自然访客");
                         else
