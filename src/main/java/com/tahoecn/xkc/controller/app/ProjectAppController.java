@@ -252,7 +252,7 @@ public class ProjectAppController extends TahoeBaseController {
             	}*/
             	//xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseList() == 1){
+                if(isHide.getHouseDetail() == 1){
                 	re.get(0).put("BldPrice","****元");
             		re.get(0).put("TnPrice","****元");
             		re.get(0).put("Total","****元");
@@ -469,7 +469,7 @@ public class ProjectAppController extends TahoeBaseController {
             if(re != null && re.size() > 0){
             	//xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseList() == 1){
+                if(isHide.getHouseDetail() == 1){
                 	re.get(0).put("BldPrice","****");
             		re.get(0).put("TnPrice","****");
             		re.get(0).put("Total","****");
