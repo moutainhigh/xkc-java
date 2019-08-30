@@ -163,17 +163,17 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	                    return entity;
 	                }
 	            }
-	            if (SaleUserID.length() == 0 ){//登记公共客户
+	            if (SaleUserID==null || SaleUserID.length() == 0 ){//登记公共客户
 	                jsonFile = "FJNewCustomer.json";
 	                customerModeType = CustomerModeType.分接_老机会_老客户_公共客户.getTypeID();
 	                isNew = 0;
 	            }
-	            if (SaleUserID.length() > 0 && !SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//不为无
+	            if (SaleUserID!=null && SaleUserID.length() > 0 && !SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//不为无
 	                jsonFile = "FJOldCustomer.json";
 	                customerModeType = CustomerModeType.分接_老机会_老客户.getTypeID();
 	                isNew = 0;
 	            }
-	            if (SaleUserID.length() > 0 && SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//为无
+	            if (SaleUserID!=null && SaleUserID.length() > 0 && SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//为无
 	                jsonFile = "FJNewCustomer.json";
 	                customerModeType = CustomerModeType.分接_老机会_老客户_未分配.getTypeID();
 	                isNew = 1;
@@ -780,7 +780,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
         try{
         	Map<String,Object> pmap =JSONObject.parseObject(Parameter.toJSONString(), Map.class);
         	
-        	String UnionID="";
+        	//String UnionID="";
         	String UserID="";
         	String AdviserGroupID ="";
         	String ShareProjectID="";

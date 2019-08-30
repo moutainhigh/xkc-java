@@ -732,7 +732,7 @@ public class IpadServiceImpl implements IIpadService {
                             JSONObject OpporSource = GetOpportunitySource(parameter);
                             if(OpporSource.size()>0){
                             	ClueID = OpporSource.getString("clueID");
-                            	parameter.put("OpportunitySource",  OpporSource.getString("opportunitySource"));
+                            	parameter.put("OpportunitySource",  OpporSource.getString("opportunitySourceID"));
                             }
                             if (!StringUtils.isEmpty(ClueID)){
                                 parameter.put("ClueID",ClueID);
