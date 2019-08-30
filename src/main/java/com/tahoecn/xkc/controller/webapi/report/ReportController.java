@@ -370,8 +370,15 @@ public class ReportController extends TahoeBaseController {
                 ("theLatestFollowUpDate").equals(key) || ("bookingCreateTime").equals(key) || ("orderCreateTime").equals(key)|| ("mYContractCreateTime").equals(key)){
                     if (beanMap.get(key) != null)
                         map.put(key + "", sdf.format((Date)beanMap.get(key)));
-                }else
-                    map.put(key + "", beanMap.get(key));
+                }else{
+                    if(("channelName").equals(key)){
+                        if (beanMap.get(key) == null || "".equals(beanMap.get(key)))
+                            map.put(key + "", "自然访客");
+                        else
+                            map.put(key + "", beanMap.get(key));
+                    }else
+                        map.put(key + "", beanMap.get(key));
+                }
             }
             resultMap.add(map);
         }
