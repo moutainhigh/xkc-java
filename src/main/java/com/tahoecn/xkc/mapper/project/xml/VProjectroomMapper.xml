@@ -19,11 +19,11 @@
 			        RoomPrice ,
 			        RoomTotal ,
 			        RoomType
-			FROM    [V_ProjectRoom]
+			FROM    [V_ProjectRoom_xkc]
 			WHERE   BuildingID = #{BuildingID} ${sqlWhere}
 			ORDER BY RoomUnit ,
 			        FloorIndex*1 DESC ,
-			        RoomIndex
+			        RoomIndex*1
     ]]>
 	</select>
 	<!-- 获取项目房间列表信息(营销经理) -->

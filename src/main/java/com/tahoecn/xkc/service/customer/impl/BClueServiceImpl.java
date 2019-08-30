@@ -717,7 +717,35 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customer.setIntentProjectName(clue.getIntentProjectName());
 		customer.setMobile(clue.getMobile());
 		customer.setName(clue.getCustomerName());
-		customer.setStatusText(clue.getStatusText());
+		if(clue.getStatusText().equals("来访")) {
+			customer.setStatusText("到访");
+		}
+		else {
+			customer.setStatusText(clue.getStatusText());
+		}
+		switch(customer.getStatusText()) {
+		case "报备成功":
+			customer.setTractSort("1");
+			break;
+		case "报备":
+			customer.setTractSort("1");
+			break;
+		case "到访":
+			customer.setTractSort("2");
+			break;
+		case "认购":
+			customer.setTractSort("3");
+			break;
+		case "签约":
+			customer.setTractSort("4");
+			break;
+		case "退房":
+			customer.setTractSort("5");
+			break;
+		case "无效":
+			customer.setTractSort("6");
+			break;
+		}
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
 
@@ -761,7 +789,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 				customer.setMobile(cus.getMobile());
 				customer.setName(cus.getCustomerName());
 				customer.setIntentProjectName(cus.getIntentProjectName());
-				customer.setStatusText(cus.getStatusText());
+				
+				if(cus.getStatusText().equals("来访")) {
+					customer.setStatusText("到访");
+				}
+				else {
+					customer.setStatusText(cus.getStatusText());
+				}
 				customer.setCreateTime(dateFormat.format(cus.getReportTime()));
 				customer.setQrUrl("");
 				customer.setRemark("");

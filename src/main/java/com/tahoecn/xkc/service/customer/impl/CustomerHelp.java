@@ -810,6 +810,7 @@ public class CustomerHelp implements ICustomerHelp {
     		json.put("JobID", model.getJobID());
     		json.put("OrgID", model.getOrgID());
     		json.put("UserID", model.getUserID());
+    		json.put("UserTrueName", model.getUserTrueName());
     		json.put("Editor", model.getUserID());
             return json;
         }else{
