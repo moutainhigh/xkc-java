@@ -282,6 +282,7 @@ public class IpadServiceImpl implements IIpadService {
 	        String theFirstVisitDate = ""; //首访日期
 	        String customerTag = ""; //顾客标签
 	        String salePartnerID = ""; //协作人ID
+	        int DayTotalCount =0;
 
 	        //验证是否为老机会老客户
 	        JSONObject re_j = customerTemplate.CustomerOpportunityExist(model.getProjectID(), model.getMobile());
@@ -341,6 +342,11 @@ public class IpadServiceImpl implements IIpadService {
 		            theFirstVisitDate = lfCustomerDetailObj.get("TheFirstVisitDate")!=null?lfCustomerDetailObj.get("TheFirstVisitDate").toString():""; //首访日期
 		            customerTag = lfCustomerDetailObj.get("CustomerTag")!=null?lfCustomerDetailObj.get("CustomerTag").toString():"";//顾客标签
 		            SaleUserMoblie = lfCustomerDetailObj.get("SaleUserMoblie")!=null?lfCustomerDetailObj.get("SaleUserMoblie").toString():"";
+		            
+		            if(lfCustomerDetailObj.get("DayTotalCount")!=null){
+		            	Number DayTotalCountn = (Number) lfCustomerDetailObj.get("DayTotalCount");
+		            	DayTotalCount = DayTotalCountn.intValue();
+		            }
 	            }
 
 	            model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID")); //潜在客户ID
@@ -434,19 +440,12 @@ public class IpadServiceImpl implements IIpadService {
 	            isAlloc = 1;
 	            isReAlloc = 0;
 	        }
-	        int jdnum = 0;
 	        String SStatus="KX";
 	        if(!StringUtils.isEmpty(saleUserID)){
 	        	Map<String,Object> pp = new HashMap<String, Object>();
-		        //获取接待数
 	        	pp.put("UserID", paramAry.getString("UserID"));
 	        	pp.put("ProjectID", paramAry.getString("ProjectID"));
 	        	pp.put("SaleUserID", saleUserID);
-	        	Map<String, Object> pn = ipadMapper.mLFReceptRecordList_Select_forSaleUser_ByID(pmap);
-	        	if(pn!=null && pn.size()>0){
-	        		Number snum = (Number) pn.get("Num");
-	        		jdnum = snum.intValue();
-	        	}
 		        //获取状态
 		        String StatusDate = DateUtil.format(new Date(), "yyyy-MM-dd");
 		        pp.put("StatusDate", StatusDate);
@@ -455,7 +454,7 @@ public class IpadServiceImpl implements IIpadService {
 		        	SStatus = pd.get("Status").toString();
 		        }
 	        }
-	        returnDataObj.put("SaleUserNum", jdnum);
+	        returnDataObj.put("SaleUserNum", DayTotalCount);
 	        returnDataObj.put("SaleUserStatus", SStatus); //是否分配
 	        returnDataObj.put("IsNew", isNew); //是否新客户 0否 1是
 	        returnDataObj.put("IsAlloc", isAlloc); //是否分配

@@ -73,6 +73,7 @@
 	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
 				      #{SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
 	            o.VisitsCount ,
+	            dbo.F_GetDayProjectTotalCount(CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END, o.ProjectID) AS DayTotalCount,
 	            c.Remark,
 	            cc.CreateTime ReportTime,
 	            o.TheFirstVisitDate,
