@@ -139,4 +139,26 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @return
 	 */
 	Map<String,Object> selectByDateAndSaleUserID(Map<String,Object> pmap);
+	
+	/**
+	 * 获取置业顾问当天的状态信息
+	 * @param pmap
+	 * @return
+	 */
+	Map<String,Object> selectSaleUserStatus(Map<String,Object> pmap);
+	
+	/**
+	 * 添加置业顾问当天的状态信息
+	 * @param pmap
+	 */
+	void insertSaleUserStatus(Map<String,Object> pmap);
+	
+	/**
+	 * 修改置业顾问当天的状态信息
+	 * @param pmap
+	 */
+	void updateSaleUserStatus(Map<String,Object> pmap);
+	
+	Map<String,Object> mLFReceptRecordList_Select_forSaleUser_ByID(Map<String,Object> pmap);
+	
 }

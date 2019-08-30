@@ -95,4 +95,11 @@ public interface IIpadService {
 	 * @return
 	 */
 	public Result sortSaleUser(String saleUserIDs,String userID);
+	
+	/**
+	 * 设置置业顾问状态
+	 * @param paramAry
+	 * @return
+	 */
+	public Result SetSaleUserStatus(JSONObject paramAry);
 }

@@ -69,6 +69,7 @@
 	            dbo.F_DictName(o.OpportunitySource) AS OpportunitySourceName ,
 	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
 	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.TelPhone ELSE su1.TelPhone END) SaleUserMoblie ,
 	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
 				      #{SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
 	            o.VisitsCount ,
@@ -256,6 +257,43 @@
 		]]>
 	</select>
 	
+	<select id="mLFReceptRecordList_Select_forSaleUser_ByID"  parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+				SELECT a.*,count(1) Num	from( SELECT
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.TelPhone ELSE su1.TelPhone END) TelPhone,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+					        (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg 
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
+		                                                            AND sgm.IsDel = 0
+		                                                            AND sgm.Status = 1
+		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm.ProjectID = #{ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg ON (sgm.ReceptionGroupID = sg.ID AND sg.IsDel=0)
+		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                            AND sgm1.IsDel=0 
+		                                                            AND sgm1.Status=1 
+		                                                            AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm1.ProjectID = #{ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		                    LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		          WHERE     o.IsDel = 0
+		                    AND o.Status > 0
+		                    AND o.Status <> 6
+		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND o.ProjectID = #{ProjectID}
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{UserID}) IS NOT NULL
+		                    ) a where a.SaleUserID=#{SaleUserID} and a.GroupName is not null and a.GroupName!=''
+		        GROUP BY a.SaleUserID,a.SaleUserName,a.GroupName,a.SaleHeadImg,a.TelPhone
+		]]>
+	</select>
+	
 	<select id="mLFReceptRecordList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
 		SELECT
@@ -396,5 +434,15 @@
 		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
 	</select>
 	
+	<select id="selectSaleUserStatus" parameterType="java.util.Map" resultType="java.util.HashMap">
+		SELECT * FROM Sale_User_Status WHERE StatusDate=#{StatusDate} AND SaleUserID=#{SaleUserID}
+	</select>
 	
+	<insert id="insertSaleUserStatus" parameterType="java.util.Map">
+		INSERT INTO Sale_User_Status (ID,StatusDate,Status,SaleUserID) VALUES (#{ID},#{StatusDate},#{Status},#{SaleUserID})
+	</insert>
+	
+	<update id="updateSaleUserStatus" parameterType="java.util.Map">
+		UPDATE Sale_User_Status SET Status=#{Status} WHERE ID=#{ID}
+	</update>
 </mapper>
