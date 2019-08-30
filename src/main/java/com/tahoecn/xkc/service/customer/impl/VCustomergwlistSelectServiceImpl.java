@@ -1261,26 +1261,35 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                             String projectID = parameter.getString("ProjectID");
                             if(!"".equals(ClueID)){
                             	Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(ClueID);
-                                String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
-                                Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
-                                
-                                String ReportUserID = "";
-                                ClueID = "";
-                                Number number = (Number)re_map_step2.get("AllotRemind");
-                                if(number.intValue()>0){
-                                	if(re_map_step1.get("ReportUserID")!=null){
-                                		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
-                                	}
-                                	if(re_map_step1.get("ClueID")!=null){
-                                		ClueID = String.valueOf(re_map_step1.get("ClueID"));
-                                	}
-                                }
-                                if (!"".equals(ClueID) && !"".equals(ReportUserID)){
-                                    String UserID = parameter.getString("UserID");
-                                    String ProjectID = parameter.getString("ProjectID");
-                                    String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
-                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
-                                }
+                            	if(re_map_step1!=null && re_map_step1.size()>0){
+                            		String protectSource = re_map_step1.get("ProtectSource")!=null?re_map_step1.get("ProtectSource").toString():"";
+                            		if(!StringUtils.isEmpty(protectSource)){
+                            			Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                            			if(re_map_step2!=null && re_map_step2.size()>0){
+                            				int AllotRemind=0;
+                            				if(re_map_step2.get("AllotRemind")!=null){
+                            					Number number = (Number)re_map_step2.get("AllotRemind");
+                            					AllotRemind = number.intValue();
+                            				}
+                            				String ReportUserID = "";
+                                            ClueID = "";
+                                            if(AllotRemind>0){
+                                            	if(re_map_step1.get("ReportUserID")!=null){
+                                            		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                            	}
+                                            	if(re_map_step1.get("ClueID")!=null){
+                                            		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                            	}
+                                            }
+                                            if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                String UserID = parameter.getString("UserID");
+                                                String ProjectID = parameter.getString("ProjectID");
+                                                String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
+                                                iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                            }
+                            			}
+                            		}
+                            	}
                             }
                             if (parameter.getString("FollwUpWay").equals("E30825AA-B894-4A5F-AF55-24CAC34C8F1F")){
                             	//跟进方式为到访时 机会状态设置为到访(2),其他情况为问询(1)
