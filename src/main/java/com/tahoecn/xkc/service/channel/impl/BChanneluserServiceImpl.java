@@ -64,6 +64,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     @Autowired
     private IVABrokerMycustomersService mycustomersService;
 
+
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
 
@@ -235,6 +236,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             channeluser.setApprovalStatus(approvalStatus);
             channeluser.setApprovalDate(new Date());
             channeluser.setChannelTypeID(channelTypeID);
+            SDictionary byId = dictionaryService.getById(channelTypeID);
+            channeluser.setChannelType(byId.getDictName());
             channeluser.setCreator(userID);
             channeluser.setCreateTime(new Date());
             channeluser.setIsDel(0);

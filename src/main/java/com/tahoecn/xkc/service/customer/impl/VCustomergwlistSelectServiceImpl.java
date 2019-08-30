@@ -27,7 +27,6 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.enums.MessageType;
-import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
@@ -386,16 +385,25 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 	@Override
 	public Result mCustomerFollowUpList_Select(JSONObject paramAry) {
 		Result re = new Result();
-    	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
-    	List<Map<String,Object>> data = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select(pmp);
-    	Long AllCount = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select_Count(pmp);
-    	JSONObject j_data = new JSONObject();
-    	j_data.put("List", data);
-    	j_data.put("AllCount", AllCount);
-    	j_data.put("PageSize", paramAry.getInteger("PageSize"));
-    	re.setData(j_data);
-        re.setErrmsg("成功");
-        re.setErrcode(0);
+		try {
+			Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+			if(paramAry.getString("OpportunityID")==null){
+				pmp.put("OpportunityID", paramAry.getString("ClueID"));
+			}
+	    	List<Map<String,Object>> data = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select(pmp);
+	    	Long AllCount = vCustomergwlistSelectMapper.mCustomerFollowUpList_Select_Count(pmp);
+	    	JSONObject j_data = new JSONObject();
+	    	j_data.put("List", data);
+	    	j_data.put("AllCount", AllCount);
+	    	j_data.put("PageSize", paramAry.getInteger("PageSize"));
+	    	re.setData(j_data);
+	        re.setErrmsg("成功");
+	        re.setErrcode(0);
+		} catch (Exception e) {
+			re.setErrcode(1);
+			re.setErrmsg("系统异常！");
+			e.printStackTrace();
+		}
         return re;
 	}
 
@@ -1871,10 +1879,10 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                 String Mobile = parameter.getString("Mobile");
                 if (!StringUtils.isEmpty(Mobile)){//验证手机号码
                     //手机号码+项目ID验证是否存在机会客户
-                	JSONObject CustomerObj = new JSONObject();
+                	//JSONObject CustomerObj = new JSONObject();
                 	JSONObject re = customerTemplate.CustomerOpportunityExist(model.getProjectID(), Mobile);
                     if (re.getBoolean("status")){//客户信息已存在
-                    	CustomerObj = re.getJSONObject("CustomerObj");
+                    	//CustomerObj = re.getJSONObject("CustomerObj");
                         Map<String,Object> pmap = JSONObject.parseObject(parameter.toJSONString(),Map.class);
                         pmap.put("Name", parameter.getString("LastName")+parameter.getString("FirstName"));
                         vCustomergwlistSelectMapper.mCustomerSubscribeDetail_Insert_step1(pmap);
