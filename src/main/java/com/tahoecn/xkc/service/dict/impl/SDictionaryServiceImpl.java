@@ -725,7 +725,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                 }
             }
             System.out.println("1===================>>>>>>>"+data);
-            for(Object list : data){
+            /*for(Object list : data){
             	Map<String,Object> map = (Map<String, Object>) list;
             	if("客户状态".equals(map.get("DictName"))){
             		List<Map<String,Object>> Child = (List<Map<String, Object>>) map.get("Child");
@@ -748,7 +748,7 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
             			}
             		}
             	}
-            }
+            }*/
             System.out.println("2==================>>>>>>>"+data);
             return Result.ok(data);
             
