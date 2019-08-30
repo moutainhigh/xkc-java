@@ -85,7 +85,7 @@ public class LoginIpadController extends TahoeBaseController {
             if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
                 return Result.errormsg(1, "验证码验证失败");
             }
-            paramMap.put("Mobile",SecureUtil.md5(MobileNum));
+            paramMap.put("Mobile",MobileNum);
         }
 
 

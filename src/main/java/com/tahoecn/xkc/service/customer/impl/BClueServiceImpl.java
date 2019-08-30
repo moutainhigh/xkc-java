@@ -487,7 +487,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
             cp.setMobile((String) paramMap.get("Mobile"));
-            cp.setCreator("99");
+            cp.setCreator((String)paramMap.get("UserID"));
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
@@ -498,7 +498,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
             cp.setMobile((String) paramMap.get("Mobile"));
-            cp.setCreator("99");
+            cp.setCreator((String)paramMap.get("UserID"));
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
@@ -569,7 +569,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setSourceType(sourceType);
         clue.setIsSelect(IsSelect);
         clue.setConfirmTime(new Date());
-        clue.setCreator("99");
+        clue.setCreator((String)paramMap.get("UserID"));
         clue.setCreateTime(new Date());
         clue.setIsDel(0);
         clue.setStatus(status);
