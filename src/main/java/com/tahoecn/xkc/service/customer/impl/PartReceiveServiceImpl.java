@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import cn.hutool.core.date.DateUtil;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
@@ -777,6 +780,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	    	page.setCurrent(paramAry.getLongValue("PageIndex"));
             
             Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+            String StatusDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+            pmap.put("StatusDate", StatusDate);
             IPage<Map<String, Object>> data = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select(page,pmap);
             JSONObject j_data = new JSONObject();
 	    	j_data.put("List", data.getRecords());

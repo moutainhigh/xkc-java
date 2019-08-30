@@ -20,7 +20,7 @@
           "IsMustShow": 0,
           "IsEdit": 1,
           "IsMulti": 0,
-          "MaxLength": 50,
+          "MaxLength": 100,
           "MaxSelectedNum": 1,
           "NormalColor": "#FFFFFF",
           "SelectedColor": "#FFFFFF",
