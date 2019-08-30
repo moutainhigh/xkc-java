@@ -28,7 +28,7 @@ public interface VCustomerfjlistSelectMapper extends BaseMapper<VCustomerfjlistS
 	
 	List<Map<String,Object>> sCustomerFJAdviserList_Select(@Param("pmap")Map<String, Object> pmap);
 	
-	IPage<Map<String,Object>> sCustomerFJAdviserList_Select(IPage<Map<String,Object>> page,@Param("pmap")Map<String, Object> pmap);
+	IPage<Map<String,Object>> sCustomerFJAdviserList_Select_part(IPage<Map<String,Object>> page,@Param("pmap")Map<String, Object> pmap);
 	
 	List<Map<String,Object>> sCustomerFJAdviserList_Select_Sort(Map<String, Object> pmap);
 	

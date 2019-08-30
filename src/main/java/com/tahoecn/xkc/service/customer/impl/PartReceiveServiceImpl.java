@@ -782,7 +782,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
             Map<String,Object> pmap =JSONObject.parseObject(paramAry.toJSONString(), Map.class);
             String StatusDate = DateUtil.format(new Date(), "yyyy-MM-dd");
             pmap.put("StatusDate", StatusDate);
-            IPage<Map<String, Object>> data = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select(page,pmap);
+            IPage<Map<String, Object>> data = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select_part(page,pmap);
             JSONObject j_data = new JSONObject();
 	    	j_data.put("List", data.getRecords());
 	    	j_data.put("AllCount", data.getTotal());
