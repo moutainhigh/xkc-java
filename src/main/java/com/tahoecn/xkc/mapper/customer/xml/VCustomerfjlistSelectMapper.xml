@@ -15,7 +15,7 @@
 	<select id="sCustomerFJAdviserList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
 	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator,ISNULL(us.Status,'KX') Status  FROM CustomerFJAdviserList_Select c
-	    LEFT JOIN Sale_User_Status us ON (us.SaleUserID = c.ID AND us.StatusDate=#{StatusDate})
+	    LEFT JOIN Sale_User_Status us ON (us.SaleUserID = c.ID AND us.StatusDate=#{pmap.StatusDate})
 	    WHERE c.RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and c.ProjectID=#{pmap.ProjectID}
 	    ${pmap.WHERE}
 	    ${pmap.ORDER}
