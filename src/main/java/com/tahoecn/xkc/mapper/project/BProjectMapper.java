@@ -89,4 +89,8 @@ public interface BProjectMapper extends BaseMapper<BProject> {
     List<Map<String, Object>> ProjectList_Select(@Param("name") String name);
 
     Map<String, Object> addName(@Param("projectID")String projectID);
+
+    List<Map<String, Object>> findAllProject(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize);
+
+    int findAllProject_count(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize);
 }

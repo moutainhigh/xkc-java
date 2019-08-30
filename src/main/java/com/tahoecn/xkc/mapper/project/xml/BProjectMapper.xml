@@ -1571,4 +1571,66 @@
         quyu,
         OrgName
     </select>
+
+    <select id="findAllProject" resultType="java.util.Map">
+        WITH
+        selectTemp AS
+        (
+        SELECT TOP 100 PERCENT ROW_NUMBER() OVER (ORDER BY  quyu,
+        OrgName) AS ID1516 , * FROM (
+        SELECT
+        DISTINCT p.ID AS ProjectID,
+        p.Name AS ProjectName,
+        o.OrgName AS OrgName,
+        s.OrgName AS quyu
+        FROM
+        [B_Project] AS p
+        LEFT JOIN S_Organization o ON o.ID= p.BUGUID
+        LEFT JOIN S_Organization s ON o.PID = s.ID
+        AND s.IsDel= 0
+        AND s.Status= 1
+        WHERE
+        p.IsDel= 0
+        AND p.Status= 1
+        <if test="Name!=null and Name!=''">
+            AND p.Name like CONCAT('%',#{Name},'%')
+        </if>
+        AND o.IsDel= 0
+        AND o.Status= 1
+        AND p.[Level]=1
+        )s  ORDER BY quyu, OrgName )
+        <![CDATA[  SELECT
+        *
+        FROM
+        selectTemp
+        WHERE
+        ID1516 > ( ${PageIndex} - 1 ) * ${PageSize}
+        AND ID1516 <= ${PageIndex} * ${PageSize}
+        ORDER BY
+        ID1516
+        ]]>
+    </select>
+
+
+    <select id="findAllProject_count" resultType="int">
+        SELECT
+        count(DISTINCT p.ID)
+        FROM
+        [B_Project] AS p
+        LEFT JOIN S_Organization o ON o.ID= p.BUGUID
+        LEFT JOIN S_Organization s ON o.PID = s.ID
+        AND s.IsDel= 0
+        AND s.Status= 1
+        WHERE
+        p.IsDel= 0
+        AND p.Status= 1
+        <if test="Name!=null and Name!=''">
+            AND p.Name like CONCAT('%',#{Name},'%')
+        </if>
+        AND o.IsDel= 0
+        AND o.Status= 1
+        AND p.[Level]=1
+
+
+    </select>
 </mapper>
