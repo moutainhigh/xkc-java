@@ -157,13 +157,13 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
 	            String SaleUserID = CustomerObj.getString("SaleUserID");
 	            String JobCode = paramAry.getString("JobCode");
 	            if (!"XSZC".equals(JobCode)){
-	                if (SaleUserID.length() == 0){
+	                if (StringUtils.isEmpty(SaleUserID)){
 	                    entity.setErrcode(1);
 	        	        entity.setErrmsg("不能跟进公共客户！");
 	                    return entity;
 	                }
 	            }
-	            if (SaleUserID==null || SaleUserID.length() == 0 ){//登记公共客户
+	            if (StringUtils.isEmpty(SaleUserID) ){//登记公共客户
 	                jsonFile = "FJNewCustomer.json";
 	                customerModeType = CustomerModeType.分接_老机会_老客户_公共客户.getTypeID();
 	                isNew = 0;
