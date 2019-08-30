@@ -117,7 +117,7 @@ public class H5Controller extends TahoeBaseController {
         Map paramMap = (HashMap)jsonParam.get("_param");
         String OrgID=(String) paramMap.get("OrgID");
         String Name=(String) paramMap.get("Name");
-        String CityID=(String) paramMap.get("CityID");
+//        String CityID=(String) paramMap.get("CityID");
         int PageIndex=(int) paramMap.get("PageIndex");
         int PageSize=(int) paramMap.get("PageSize");
         //获取是否是机构的人
@@ -128,7 +128,8 @@ public class H5Controller extends TahoeBaseController {
             list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
         } else {
 //            list = projectService.ProjectInfoList_SelectN(page,Name, CityID);
-            list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
+//            list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
+            list =projectService.findAllProject(Name,PageIndex,PageSize);
         }
 //        List<Map<String, Object>> resultList=projectService.addName(list);
 //        Map<String, Object> map=new HashMap<>();

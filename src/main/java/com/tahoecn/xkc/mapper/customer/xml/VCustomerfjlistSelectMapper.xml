@@ -14,16 +14,18 @@
 	
 	<select id="sCustomerFJAdviserList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-	    SELECT ID,RoleID,ProjectID,Name,Mobile,#{pmap.SiteUrl}+HeadImg HeadImg,GroupName,GroupID,DayTotalCount,Creator   FROM CustomerFJAdviserList_Select
-	    WHERE RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and ProjectID=#{pmap.ProjectID}
+	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator,ISNULL(us.Status,'KX') Status  FROM CustomerFJAdviserList_Select c
+	    LEFT JOIN Sale_User_Status us ON (us.SaleUserID = c.ID AND us.StatusDate=#{pmap.StatusDate})
+	    WHERE c.RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and c.ProjectID=#{pmap.ProjectID}
 	    ${pmap.WHERE}
 	    ${pmap.ORDER}
 	    ]]>
 	</select>
 	
 	<select id="sCustomerFJAdviserList_Select_Sort" parameterType="java.util.Map" resultType="java.util.HashMap">
-	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator  FROM CustomerFJAdviserList_Select c
-		LEFT JOIN Sale_User_Sign s ON s.SaleUserID = c.ID
+	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator,ISNULL(us.Status,'KX') Status  FROM CustomerFJAdviserList_Select c
+		LEFT JOIN Sale_User_Sign s ON (s.SaleUserID = c.ID AND s.SignInDate=#{SignInDate})
+		LEFT JOIN Sale_User_Status us ON (us.SaleUserID = c.ID AND us.StatusDate=#{SignInDate})
 	    WHERE c.RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and c.ProjectID=#{ProjectID} 
 	    ${WHERE}
 	    <if test="SourceRange=='all'">

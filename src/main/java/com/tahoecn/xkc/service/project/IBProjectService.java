@@ -30,4 +30,6 @@ public interface IBProjectService extends IService<BProject> {
     List<Map<String, Object>> ProjectList_Select(String name,String userID);
 
     List<Map<String, Object>> addName(List<Map<String, Object>> list);
+
+    Map<String, Object> findAllProject(String name, int pageIndex, int pageSize);
 }

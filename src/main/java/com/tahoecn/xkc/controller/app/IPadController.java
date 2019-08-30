@@ -1,14 +1,13 @@
 package com.tahoecn.xkc.controller.app;
 
-import javax.annotation.Resource;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -132,8 +131,19 @@ public class IPadController extends TahoeBaseController{
 	@ResponseBody
     @ApiOperation(value = "置业顾问列表自定义排序", notes = "置业顾问列表自定义排序")
     @RequestMapping(value = "/sortSaleUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Result sortSaleUser(@RequestParam("saleUserIDs")String saleUserIDs,@RequestParam("userID")String userID) {
+    public Result sortSaleUser(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		String saleUserIDs = json.getString("SaleUserIDs");
+		String userID = json.getString("UserID");
 		return iIpadService.sortSaleUser(saleUserIDs,userID);
+    }
+	
+	@ResponseBody
+    @ApiOperation(value = "设置置业顾问状态", notes = "置业顾问列表自定义排序")
+    @RequestMapping(value = "/SetSaleUserStatus", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result SetSaleUserStatus(@RequestBody JSONObject paramAry) {
+		JSONObject json = paramAry.getJSONObject("_param");
+		return iIpadService.SetSaleUserStatus(json);
     }
 	
 }

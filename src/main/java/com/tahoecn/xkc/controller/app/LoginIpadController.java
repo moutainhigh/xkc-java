@@ -8,10 +8,15 @@ import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.utils.JwtTokenUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.org.SOrganization;
+import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SAppdevice;
+import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
+import com.tahoecn.xkc.service.org.ISOrganizationService;
+import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.salegroup.IBSalesuserService;
 import com.tahoecn.xkc.service.sys.*;
 import io.swagger.annotations.Api;
@@ -48,6 +53,12 @@ public class LoginIpadController extends TahoeBaseController {
     @Autowired
     private IBVerificationcodeService verificationcodeService;
 
+    @Autowired
+    private IBProjectService projectService;
+
+    @Autowired
+    private ISOrganizationService organizationService;
+
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
 
@@ -63,8 +74,8 @@ public class LoginIpadController extends TahoeBaseController {
     @Value("${uc_priv_key}")
     private String privKey;
 
-    @Value("${ImgSiteUrl}")
-    private String imgSiteUrl;
+    @Value("${picturePath}")
+    private String picturePath;
 
     @ApiOperation(value = "ipad移动端来访登录", notes = "ipad移动端来访登录")
     @RequestMapping(value = "/mLFLogin_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -85,7 +96,7 @@ public class LoginIpadController extends TahoeBaseController {
             if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
                 return Result.errormsg(1, "验证码验证失败");
             }
-            paramMap.put("Mobile",SecureUtil.md5(MobileNum));
+            paramMap.put("Mobile",MobileNum);
         }
 
 
@@ -113,6 +124,11 @@ public class LoginIpadController extends TahoeBaseController {
         short accountType = (short) res.get("AccountType");
         String password = (String) paramMap.get("Password");
         String projectID = (String) res.get("ProjectID");
+
+        BProject byId = projectService.getById(projectID);
+        SOrganization organization = organizationService.getById(byId.getBuguid());
+        res.put("OrgPath",organization.getOrgName());
+        res.put("DynatownCarousel",byId.getDynatownCarousel());
 
         // 0.禁用 1.开启
         short accountStatus = (short) res.get("AccountStatus");
@@ -155,7 +171,8 @@ public class LoginIpadController extends TahoeBaseController {
             paramMap.put("UserID",res.get("UserID"));
         }
         String headImg = (String) res.get("HeadImg");
-        String newHeadImg=imgSiteUrl+headImg;
+
+        String newHeadImg=picturePath+"/ncs/uploadfiles"+headImg;
         res.put("HeadImg",newHeadImg);
 
         //登录成功日志记录

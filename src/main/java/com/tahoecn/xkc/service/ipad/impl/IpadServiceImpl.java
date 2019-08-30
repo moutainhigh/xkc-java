@@ -166,13 +166,15 @@ public class IpadServiceImpl implements IIpadService {
             StringBuilder whereSb = new StringBuilder();
             StringBuilder OrderSb = new StringBuilder();
             if (!StringUtils.isEmpty(model.getKeyWord())){
-                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%' OR Mobile LIKE '%"+model.getKeyWord()+"%')");
+                whereSb.append(" and (c.Name LIKE '%"+model.getKeyWord()+"%' OR c.GroupName LIKE '%"+model.getKeyWord()+"%' OR c.Mobile LIKE '%"+model.getKeyWord()+"%')");
             }
             paramAry.put("WHERE", whereSb.toString());
             paramAry.put("ORDER", OrderSb.toString());
             paramAry.put("SiteUrl", SiteUrl);
             //顾问列表
             Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+            String StatusDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+            pmap.put("StatusDate", StatusDate);
             List<Map<String, Object>> allGwJArray = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select(pmap);
             //去重复 取组集合
             List<Map<String, Object>> groupList = new ArrayList<>();
@@ -271,6 +273,7 @@ public class IpadServiceImpl implements IIpadService {
 	        String remark = ""; //备注
 	        String saleUserID = ""; //顾问ID
 	        String saleUserName = "";//顾问姓名
+	        String SaleUserMoblie = "";//置业顾问电话
 	        String groupName = "";//顾问所在组
 	        String headImg = ""; //顾问头像
 	        String reportTime = ""; //报备时间
@@ -335,6 +338,7 @@ public class IpadServiceImpl implements IIpadService {
 		            reportTime = lfCustomerDetailObj.get("ReportTime")!=null?lfCustomerDetailObj.get("ReportTime").toString():""; //报备时间
 		            theFirstVisitDate = lfCustomerDetailObj.get("TheFirstVisitDate")!=null?lfCustomerDetailObj.get("TheFirstVisitDate").toString():""; //首访日期
 		            customerTag = lfCustomerDetailObj.get("CustomerTag")!=null?lfCustomerDetailObj.get("CustomerTag").toString():"";//顾客标签
+		            SaleUserMoblie = lfCustomerDetailObj.get("SaleUserMoblie")!=null?lfCustomerDetailObj.get("SaleUserMoblie").toString():"";
 	            }
 
 	            model.setCustomerPotentialID(CustomerObj.getString("CustomerPotentialID")); //潜在客户ID
@@ -428,6 +432,29 @@ public class IpadServiceImpl implements IIpadService {
 	            isAlloc = 1;
 	            isReAlloc = 0;
 	        }
+	        int jdnum = 0;
+	        String SStatus="KX";
+	        if(!StringUtils.isEmpty(saleUserID)){
+	        	Map<String,Object> pp = new HashMap<String, Object>();
+		        //获取接待数
+	        	pp.put("UserID", paramAry.getString("UserID"));
+	        	pp.put("ProjectID", paramAry.getString("ProjectID"));
+	        	pp.put("SaleUserID", saleUserID);
+	        	Map<String, Object> pn = ipadMapper.mLFReceptRecordList_Select_forSaleUser_ByID(pmap);
+	        	if(pn!=null && pn.size()>0){
+	        		Number snum = (Number) pn.get("Num");
+	        		jdnum = snum.intValue();
+	        	}
+		        //获取状态
+		        String StatusDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+		        pp.put("StatusDate", StatusDate);
+		        Map<String, Object> pd = ipadMapper.selectSaleUserStatus(pp);
+		        if(pd!=null && pd.size()>0){
+		        	SStatus = pd.get("Status").toString();
+		        }
+	        }
+	        returnDataObj.put("SaleUserNum", jdnum);
+	        returnDataObj.put("SaleUserStatus", SStatus); //是否分配
 	        returnDataObj.put("IsNew", isNew); //是否新客户 0否 1是
 	        returnDataObj.put("IsAlloc", isAlloc); //是否分配
 	        returnDataObj.put("IsReAlloc", isReAlloc); //是否允许再次分配 0否 1是
@@ -446,6 +473,7 @@ public class IpadServiceImpl implements IIpadService {
 	        returnDataObj.put("ReportTime", reportTime); //报备日期
 	        returnDataObj.put("FirstComeTime", theFirstVisitDate); //首访日期
 	        returnDataObj.put("CustomerTag", customerTag); //顾客标签
+	        returnDataObj.put("SaleUserMoblie", SaleUserMoblie);
 	        
 	        entity.setData(returnDataObj);
 	        entity.setErrcode(0);
@@ -732,7 +760,7 @@ public class IpadServiceImpl implements IIpadService {
                             JSONObject OpporSource = GetOpportunitySource(parameter);
                             if(OpporSource.size()>0){
                             	ClueID = OpporSource.getString("clueID");
-                            	parameter.put("OpportunitySource",  OpporSource.getString("opportunitySource"));
+                            	parameter.put("OpportunitySource",  OpporSource.getString("opportunitySourceID"));
                             }
                             if (!StringUtils.isEmpty(ClueID)){
                                 parameter.put("ClueID",ClueID);
@@ -845,30 +873,36 @@ public class IpadServiceImpl implements IIpadService {
                                         if(!StringUtils.isEmpty(ClueID)){
                                         	Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(ClueID);
                                         	if(re_map_step1!=null && re_map_step1.size()>0){
-                                        		String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
-                                                String projectID = parameter.getString("ProjectID");
-                                                Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
-                                                
-                                                String ReportUserID = "";
-                                                ClueID = "";
-                                                
-                                                Number AllotRemind = (Number)re_map_step2.get("AllotRemind");
-                                                if(AllotRemind.intValue()>0){
-                                                	if(re_map_step1.get("ReportUserID")!=null){
-                                                		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
-                                                	}
-                                                	if(re_map_step1.get("ClueID")!=null){
-                                                		ClueID = String.valueOf(re_map_step1.get("ClueID"));
-                                                	}
-                                                }
-                                                if (!"".equals(ClueID) && !"".equals(ReportUserID)){
-                                                	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
-                                                		String UserID = parameter.getString("UserID");
-                                                        String ProjectID = parameter.getString("ProjectID");
-                                                        String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
-                                                        iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
-                                                	}
-                                                }
+                                        		String protectSource = re_map_step1.get("ProtectSource")!=null?re_map_step1.get("ProtectSource").toString():"";
+                                        		if(!StringUtils.isEmpty(protectSource)){
+                                        			String projectID = parameter.getString("ProjectID");
+                                                    Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                                    if(re_map_step2!=null && re_map_step2.size()>0){
+                                                    	int AllotRemind=0;
+                                        				if(re_map_step2.get("AllotRemind")!=null){
+                                        					Number number = (Number)re_map_step2.get("AllotRemind");
+                                        					AllotRemind = number.intValue();
+                                        				}
+                                                    	String ReportUserID = "";
+                                                        ClueID = "";
+                                                        if(AllotRemind>0){
+                                                        	if(re_map_step1.get("ReportUserID")!=null){
+                                                        		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                                        	}
+                                                        	if(re_map_step1.get("ClueID")!=null){
+                                                        		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                                        	}
+                                                        }
+                                                        if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                        	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
+                                                        		String UserID = parameter.getString("UserID");
+                                                                String ProjectID = parameter.getString("ProjectID");
+                                                                String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
+                                                                iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                                        	}
+                                                        }
+                                                    }
+                                        		}
                                         	}
                                         }
                                         //客户到访
@@ -999,26 +1033,36 @@ public class IpadServiceImpl implements IIpadService {
                                             String ClueID = parameter.getString("ClueID");
                                             if(!StringUtils.isEmpty(ClueID)){
                                                 Map<String,Object> re_map_step1 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step1(ClueID);
-                                                String protectSource = String.valueOf(re_map_step1.get("ProtectSource"));
-                                                String projectID = parameter.getString("ProjectID");
-                                                Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
-                                                String ReportUserID = "";
-                                                ClueID = "";
-                                                Number AllotRemindN = (Number)re_map_step2.get("AllotRemind");
-                                                if(AllotRemindN.intValue()>0){
-                                                	if(re_map_step1.get("ReportUserID")!=null){
-                                                		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
-                                                	}
-                                                	if(re_map_step1.get("ClueID")!=null){
-                                                		ClueID = String.valueOf(re_map_step1.get("ClueID"));
-                                                	}
-                                                }
-                                                if (!"".equals(ClueID) && !"".equals(ReportUserID)){
-                                                	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
-                                                		String UserID = parameter.getString("UserID");
-                                                        String ProjectID = parameter.getString("ProjectID");
-                                                        String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
-                                                        iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                                if(re_map_step1!=null && re_map_step1.size()>0){
+                                                	String protectSource = re_map_step1.get("ProtectSource")!=null?re_map_step1.get("ProtectSource").toString():"";
+                                                	if(!StringUtils.isEmpty(protectSource)){
+                                                		String projectID = parameter.getString("ProjectID");
+                                                        Map<String,Object> re_map_step2 = vCustomergwlistSelectMapper.RemindRuleAllotDetail_Select_step2(projectID, protectSource);
+                                                        if(re_map_step2!=null && re_map_step2.size()>0){
+                                                        	int AllotRemindN=0;
+                                            				if(re_map_step2.get("AllotRemind")!=null){
+                                            					Number number = (Number)re_map_step2.get("AllotRemind");
+                                            					AllotRemindN = number.intValue();
+                                            				}
+                                                        	String ReportUserID = "";
+                                                            ClueID = "";
+                                                            if(AllotRemindN>0){
+                                                            	if(re_map_step1.get("ReportUserID")!=null){
+                                                            		ReportUserID = String.valueOf(re_map_step1.get("ReportUserID"));
+                                                            	}
+                                                            	if(re_map_step1.get("ClueID")!=null){
+                                                            		ClueID = String.valueOf(re_map_step1.get("ClueID"));
+                                                            	}
+                                                            }
+                                                            if (!"".equals(ClueID) && !"".equals(ReportUserID)){
+                                                            	if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){
+                                                            		String UserID = parameter.getString("UserID");
+                                                                    String ProjectID = parameter.getString("ProjectID");
+                                                                    String Content = "客户" + parameter.getString("LastName") + parameter.getString("FirstName") + "、" + parameter.getString("Mobile") + "(客户分配提醒)";
+                                                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, ClueID, "Clue", "客户分配提醒", Content, ReportUserID, MessageType.系统通知.getTypeID(), true);
+                                                            	}
+                                                            }
+                                                        }
                                                 	}
                                                 }
                                             }
@@ -1430,12 +1474,14 @@ public class IpadServiceImpl implements IIpadService {
             CPageModel model = JSONObject.parseObject(paramAry.toJSONString(), CPageModel.class);
             StringBuilder whereSb = new StringBuilder();
             if (!StringUtils.isEmpty(model.getKeyWord())){
-                whereSb.append(" and (Name LIKE '%"+model.getKeyWord()+"%' OR GroupName LIKE '%"+model.getKeyWord()+"%'  OR Mobile LIKE '%"+model.getKeyWord()+"%')");
+                whereSb.append(" and (c.Name LIKE '%"+model.getKeyWord()+"%' OR c.GroupName LIKE '%"+model.getKeyWord()+"%'  OR c.Mobile LIKE '%"+model.getKeyWord()+"%')");
             }
             paramAry.put("WHERE", whereSb.toString());
             paramAry.put("SiteUrl", SiteUrl);
             //顾问列表
             Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
+            String SignInDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+            pmap.put("SignInDate", SignInDate);
             List<Map<String, Object>> allGwJArray = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select_Sort(pmap);
           
             entity.setData(allGwJArray);
@@ -1504,7 +1550,39 @@ public class IpadServiceImpl implements IIpadService {
 		}
 		return re;
 	}
-	
+
+	@Override
+	public Result SetSaleUserStatus(JSONObject paramAry) {
+		Result re = new Result();
+		try {
+			String SaleUserID = paramAry.getString("SaleUserID");
+			if(StringUtils.isEmpty(SaleUserID)){
+				re.setErrcode(1);
+	            re.setErrmsg("参数异常");
+	            return re;
+			}
+			Map<String,Object> pmap = new HashMap<>();
+			String StatusDate = DateUtil.format(new Date(), "yyyy-MM-dd");
+			pmap.put("StatusDate", StatusDate);
+			pmap.put("SaleUserID", SaleUserID);
+			pmap.put("Status", paramAry.getString("Status"));
+			Map<String, Object> data = ipadMapper.selectSaleUserStatus(pmap);
+			if(data!=null && data.size()>0){
+				pmap.put("ID", data.get("ID"));
+				ipadMapper.updateSaleUserStatus(pmap);
+			}else{
+				pmap.put("ID",UUID.randomUUID().toString());
+				ipadMapper.insertSaleUserStatus(pmap);
+			}
+			re.setErrcode(0);
+            re.setErrmsg("成功");
+		} catch (Exception e) {
+			re.setErrcode(1);
+            re.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return re;
+	}
 	
 
 }
