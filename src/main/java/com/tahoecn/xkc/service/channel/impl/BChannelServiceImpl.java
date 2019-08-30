@@ -341,79 +341,82 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
     }
 	private RegisterRuleBaseModel loadModel(Map<String, Object> obj) {
 		ImmissionRule imm = new ImmissionRule();
-		if(obj.get("IsOnlyAllowNew")!=null){
-			Number IsOnlyAllowNew = (Number) obj.get("IsOnlyAllowNew");
-			imm.setIsOnlyAllowNew(IsOnlyAllowNew.intValue());
+		if(obj != null){
+			if(obj.get("IsOnlyAllowNew")!=null){
+				Number IsOnlyAllowNew = (Number) obj.get("IsOnlyAllowNew");
+				imm.setIsOnlyAllowNew(IsOnlyAllowNew.intValue());
+			}
+			if(obj.get("OverdueTime")!=null){
+				Number OverdueTime = (Number) obj.get("OverdueTime");
+				imm.setOverdueTime(OverdueTime.intValue());
+			}
+			if(obj.get("ProtectTypeID")!=null){
+				Number ProtectTypeID = (Number) obj.get("ProtectTypeID");
+				imm.setProtectTypeID(ProtectTypeID.intValue());
+			}
+			if(obj.get("ValidationMode")!=null){
+				Number ValidationMode = (Number) obj.get("ValidationMode");
+				imm.setValidationMode(ValidationMode.intValue());
+			}
+			if(obj.get("OldOwnerLimit")!=null){
+				Number OldOwnerLimit = (Number) obj.get("OldOwnerLimit");
+				imm.setOldOwnerLimit(OldOwnerLimit.intValue());
+			}
+			
+			ProtectRule pro = new ProtectRule();
+			
+			if(obj.get("IsPreIntercept")!=null){
+				Number IsPreIntercept = (Number) obj.get("IsPreIntercept");
+				pro.setIsPreIntercept(IsPreIntercept.intValue());
+			}
+			if(obj.get("PreInterceptTime")!=null){
+				Number PreInterceptTime = (Number) obj.get("PreInterceptTime");
+				pro.setPreInterceptTime(PreInterceptTime.intValue());
+			}
+			if(obj.get("IsProtect")!=null){
+				Number IsProtect = (Number) obj.get("IsProtect");
+				pro.setIsProtect(IsProtect.intValue());
+			}
+			if(obj.get("IsProtectVisit")!=null){
+				Number IsProtectVisit = (Number) obj.get("IsProtectVisit");
+				pro.setIsProtectVisit(IsProtectVisit.intValue());
+			}
+			if(obj.get("IsSelect")!=null){
+				Number IsSelect = (Number) obj.get("IsSelect");
+				pro.setIsSelect(IsSelect.intValue());
+			}
+			if(obj.get("ProtectTime")!=null){
+				Number ProtectTime = (Number) obj.get("ProtectTime");
+				pro.setProtectTime(ProtectTime.intValue());
+			}
+			if(obj.get("ProtectVisitTime")!=null){
+				Number ProtectVisitTime = (Number) obj.get("ProtectVisitTime");
+				pro.setProtectVisitTime(ProtectVisitTime.intValue());	
+			}
+			pro.setUserBehaviorID(obj.get("UserBehaviorID")==null|| "".equals(obj.get("UserBehaviorID")) ?0:Integer.parseInt(obj.get("UserBehaviorID").toString()));
+			if(obj.get("IsPermanent")!=null){
+				Number IsPermanent = (Number) obj.get("IsPermanent");
+				pro.setIsPermanent(IsPermanent.intValue());
+			}
+			RegisterRuleBaseModel UserRule = new RegisterRuleBaseModel();
+			UserRule.setRuleID(obj.get("ID").toString());
+			if(obj.get("CalMode")!=null){
+				Number CalMode = (Number) obj.get("CalMode");
+				UserRule.setCalMode(CalMode.intValue());
+			}
+			if(obj.get("RuleType")!=null){
+				Number RuleType = (Number) obj.get("RuleType");
+				UserRule.setRuleType(RuleType.intValue());
+			}
+			if(obj.get("ProtectSource")!=null){
+				Number ProtectSource = (Number) obj.get("ProtectSource");
+				UserRule.setProtectSource(ProtectSource.intValue());
+			}
+			UserRule.setImmissionRule(imm);
+			UserRule.setProtectRule(pro);
+			return UserRule;
 		}
-		if(obj.get("OverdueTime")!=null){
-			Number OverdueTime = (Number) obj.get("OverdueTime");
-	        imm.setOverdueTime(OverdueTime.intValue());
-		}
-		if(obj.get("ProtectTypeID")!=null){
-			Number ProtectTypeID = (Number) obj.get("ProtectTypeID");
-	        imm.setProtectTypeID(ProtectTypeID.intValue());
-		}
-		if(obj.get("ValidationMode")!=null){
-			Number ValidationMode = (Number) obj.get("ValidationMode");
-	        imm.setValidationMode(ValidationMode.intValue());
-		}
-		if(obj.get("OldOwnerLimit")!=null){
-			Number OldOwnerLimit = (Number) obj.get("OldOwnerLimit");
-	        imm.setOldOwnerLimit(OldOwnerLimit.intValue());
-		}
-
-        ProtectRule pro = new ProtectRule();
-        
-        if(obj.get("IsPreIntercept")!=null){
-        	Number IsPreIntercept = (Number) obj.get("IsPreIntercept");
-            pro.setIsPreIntercept(IsPreIntercept.intValue());
-        }
-        if(obj.get("PreInterceptTime")!=null){
-        	Number PreInterceptTime = (Number) obj.get("PreInterceptTime");
-            pro.setPreInterceptTime(PreInterceptTime.intValue());
-        }
-        if(obj.get("IsProtect")!=null){
-        	Number IsProtect = (Number) obj.get("IsProtect");
-            pro.setIsProtect(IsProtect.intValue());
-        }
-        if(obj.get("IsProtectVisit")!=null){
-        	Number IsProtectVisit = (Number) obj.get("IsProtectVisit");
-            pro.setIsProtectVisit(IsProtectVisit.intValue());
-        }
-        if(obj.get("IsSelect")!=null){
-        	Number IsSelect = (Number) obj.get("IsSelect");
-            pro.setIsSelect(IsSelect.intValue());
-        }
-        if(obj.get("ProtectTime")!=null){
-        	Number ProtectTime = (Number) obj.get("ProtectTime");
-            pro.setProtectTime(ProtectTime.intValue());
-        }
-        if(obj.get("ProtectVisitTime")!=null){
-        	 Number ProtectVisitTime = (Number) obj.get("ProtectVisitTime");
-             pro.setProtectVisitTime(ProtectVisitTime.intValue());	
-        }
-        pro.setUserBehaviorID(obj.get("UserBehaviorID")==null|| "".equals(obj.get("UserBehaviorID")) ?0:Integer.parseInt(obj.get("UserBehaviorID").toString()));
-        if(obj.get("IsPermanent")!=null){
-        	Number IsPermanent = (Number) obj.get("IsPermanent");
-            pro.setIsPermanent(IsPermanent.intValue());
-        }
-        RegisterRuleBaseModel UserRule = new RegisterRuleBaseModel();
-        UserRule.setRuleID(obj.get("ID").toString());
-        if(obj.get("CalMode")!=null){
-        	Number CalMode = (Number) obj.get("CalMode");
-            UserRule.setCalMode(CalMode.intValue());
-        }
-        if(obj.get("RuleType")!=null){
-        	Number RuleType = (Number) obj.get("RuleType");
-            UserRule.setRuleType(RuleType.intValue());
-        }
-        if(obj.get("ProtectSource")!=null){
-        	Number ProtectSource = (Number) obj.get("ProtectSource");
-            UserRule.setProtectSource(ProtectSource.intValue());
-        }
-        UserRule.setImmissionRule(imm);
-        UserRule.setProtectRule(pro);
-		return UserRule;
+		return new RegisterRuleBaseModel();
 	}
 	
 	/**
