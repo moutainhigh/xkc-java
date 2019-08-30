@@ -207,6 +207,7 @@ public class IpadServiceImpl implements IIpadService {
                     gwObj.put("Mobile",gwItem.get("Mobile"));
                     gwObj.put("ReceptCount",gwItem.get("DayTotalCount"));
                     gwObj.put("IsSigned", 0);
+                    gwObj.put("Status", gwItem.get("Status"));
                     gwJarry1.add(gwObj);
                 }
                 totalGroupObj.put("SaleUserList", gwJarry1);
@@ -230,6 +231,7 @@ public class IpadServiceImpl implements IIpadService {
                         gwObj.put("Mobile",gwItem.get("Mobile"));
                         gwObj.put("ReceptCount",gwItem.get("DayTotalCount")); //接待数量
                         gwObj.put("IsSigned", 0);
+                        gwObj.put("Status", gwItem.get("Status"));
                         gwJarry.add(gwObj);
                     }
                 }
