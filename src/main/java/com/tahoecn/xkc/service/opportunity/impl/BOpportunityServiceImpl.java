@@ -295,6 +295,25 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 		List<List<?>> result = baseMapper.mCustomerGJList_Select(paramMap);
 		List<?> list = result.get(0);
 		List<?> recordCount = result.get(1);
+		//客户状态修改
+		for(Object l : list){
+			Map<String,Object> map = (Map<String, Object>) l;
+			String OpportunityStatus = (String) map.get("OpportunityStatus");
+			if(OpportunityStatus != null && !"".equals(OpportunityStatus)){
+				if("询问".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","报备");
+				}
+				if("看房".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","到访");
+				}
+				if("认购中".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","到访");
+				}
+				if("丢失".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","无效");
+				}
+			}
+		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("List", list);
 		map.put("AllCount", recordCount.get(0));
@@ -347,6 +366,25 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 		List<List<?>> result = baseMapper.mCustomerGGList_Select(paramMap);
 		List<?> list = result.get(0);
 		List<?> recordCount = result.get(1);
+		//客户状态修改
+		for(Object l : list){
+			Map<String,Object> map = (Map<String, Object>) l;
+			String OpportunityStatus = (String) map.get("OpportunityStatus");
+			if(OpportunityStatus != null && !"".equals(OpportunityStatus)){
+				if("询问".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","报备");
+				}
+				if("看房".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","到访");
+				}
+				if("认购中".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","到访");
+				}
+				if("丢失".equals(OpportunityStatus)){
+					map.put("OpportunityStatus","无效");
+				}
+			}
+		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("List", list);
 		map.put("AllCount", recordCount.get(0));
