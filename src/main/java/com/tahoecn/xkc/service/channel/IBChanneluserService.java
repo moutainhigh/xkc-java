@@ -82,7 +82,7 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 	/*
 	 * 详细考勤
 	 */
-	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, String ChannelTaskID, String CheckDate);
+	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, String ChannelTaskID, String CheckDate, String where);
 
 	/*
 	 * 打卡状态查询

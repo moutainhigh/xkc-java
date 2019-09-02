@@ -82,7 +82,7 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
 	 * 详细考勤
 	 *
 	 */
-	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, @Param("ChannelTaskID")String ChannelTaskID, @Param("CheckDate")String CheckDate);
+	List<Map<String, Object>> mChannelTaskCheckClockList_Select(IPage page, @Param("ChannelTaskID")String ChannelTaskID, @Param("CheckDate")String CheckDate, @Param("where")String where);
 
 	/*
 	 * 详细考勤数量

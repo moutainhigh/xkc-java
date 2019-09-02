@@ -748,7 +748,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		}
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
-
+		customer.setCustomerRank(_clue.getCustomerRank());
 		List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
 		List<CustomerStatus> customerStatuses = new ArrayList<>();
 		for (CStatus cs : statuses) {
@@ -799,6 +799,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 				customer.setCreateTime(dateFormat.format(cus.getReportTime()));
 				customer.setQrUrl("");
 				customer.setRemark("");
+				customer.setCustomerRank(cus.getCustomerRank());
 				customers.add(customer);
 			}
 		}

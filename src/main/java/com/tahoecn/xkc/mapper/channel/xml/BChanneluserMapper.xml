@@ -292,7 +292,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
 	                        AND ChannelTaskID = #{ChannelTaskID}
 	                        AND CheckDate = #{CheckDate}
 	               GROUP BY Creator) oc ON a.ChannelUserID = oc.Creator AND oc.CheckOutTime > ic.CheckInTime
-	    WHERE a.IsDel = 0  AND ChannelTaskID = #{ChannelTaskID}
+	    WHERE a.IsDel = 0  AND ChannelTaskID = #{ChannelTaskID} ${where}
 	    ]]>
 	</select>
 
