@@ -73,7 +73,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 		log.info("=====================================================================");
 
 		RequestWrapper requestWrapper = new RequestWrapper(request);
-		String body = requestWrapper.getBody();
+		/*String body = requestWrapper.getBody();
 		try {
 			Map<String,Object> logMap = new HashMap<String,Object>();
 			logMap.put("BizID", "xkc");
@@ -88,7 +88,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 			iSLogsService.SystemLogsDetail_Insert(logMap, request);
 		}catch (Exception e){
 			e.printStackTrace();
-		}
+		}*/
 		return true;
 	}
 
