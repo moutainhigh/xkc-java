@@ -275,17 +275,28 @@ public class AppKCController extends TahoeBaseController {
     		// 直接将json信息打印出来
     		System.out.println(jsonParam.toJSONString());
     		Map paramMap = (HashMap)jsonParam.get("_param");
+    		String KeyWord = "";
+    		StringBuilder whereSb = new StringBuilder();
+    		if(paramMap.get("KeyWord") != null) {
+    			KeyWord = (String)paramMap.get("KeyWord").toString();
+            }
+    		
     		String ChannelTaskID = (String)paramMap.get("ChannelTaskID").toString();//任务ID
             String CheckDate = (String)paramMap.get("CheckDate").toString();//
             int PageIndex = 1;//页面索引
             int PageSize = 99999;//每页数量
-            
+            if(KeyWord != null && KeyWord.length() > 0) {
+            	whereSb.append(" AND (a.ChannelUserName LIKE '%"+KeyWord+"%' or a.ChannelUserMobile  LIKE '%"+KeyWord+"%')");
+            }
+            String where = whereSb.toString();
             IPage page = new Page(PageIndex, PageSize);
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("ChannelTaskID", ChannelTaskID);
     		map.put("CheckDate", CheckDate);
+    		map.put("where", where);
+    		
     		int AllCount=iBChanneluserService.mChannelTaskCheckClockList_SelectAllCount(map);
-    		List<Map<String,Object>> obj = iBChanneluserService.mChannelTaskCheckClockList_Select(page, ChannelTaskID,CheckDate);
+    		List<Map<String,Object>> obj = iBChanneluserService.mChannelTaskCheckClockList_Select(page, ChannelTaskID,CheckDate,where);
     		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             for(int x=0;x<obj.size();x++) {
             	if(obj.get(x).get("CheckInTime") != null) {
