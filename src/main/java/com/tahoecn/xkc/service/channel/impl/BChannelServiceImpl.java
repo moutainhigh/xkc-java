@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import cn.hutool.core.collection.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -526,7 +527,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
             }else{
                 //验证是否是本项目老业主
             	List<Map<String, Object>> a1 = bCustomerMapper.IsProjectOwner_Select(projectId, phone);
-                if (a1 == null || a1.size() == 0 ){
+                if (CollectionUtil.isNotEmpty(a1)){
                 	msg.put("Tag", false);
                     msg.put("InvalidType", 11);
                     return msg;

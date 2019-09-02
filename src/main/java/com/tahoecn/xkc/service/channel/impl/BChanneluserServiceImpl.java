@@ -731,8 +731,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Override
     public Map<String, Object> getUserInfo(Map<String, Object> map) {
-	    String username= (String) map.get("UserName");
-	    QueryWrapper<BChanneluser> query=new QueryWrapper<>();
+        String username= (String) map.get("UserName");
+        String name= (String) map.get("Name");
+        String mobile= (String) map.get("Mobile");
+        int gender1= (int) map.get("Gender");
+        String channelTypeID= (String) map.get("ChannelTypeID");
+        String sign = (String) map.get("sign");
+        QueryWrapper<BChanneluser> query=new QueryWrapper<>();
 	    query.eq("IsDel",0).eq("Status",1).eq("UserName",username);
         Map<String, Object> map1 = this.getMap(query);
         //channelUser表里有 直接返回信息
@@ -741,13 +746,54 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         }else {//channelUser表里没有 查询saccount表
             QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
             wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
-            Map<String, Object> map2 = accountService.getMap(wrapper);
-            if (CollectionUtil.isNotEmpty(map2)){
-                //如果有 在channelUser表里创建新用户 用saccount信息
+            SAccount one = accountService.getOne(wrapper);
 
+            if (one!=null){
+                //如果有 在channelUser表里创建新用户 用saccount信息
+                BChanneluser channeluser = new BChanneluser();
+                channeluser.setId(UUID.randomUUID().toString().toUpperCase());
+                channeluser.setMobile(one.getMobile());
+                channeluser.setUserName(one.getUserName());
+                channeluser.setPassword(SecureUtil.md5("123321"));
+                channeluser.setName(one.getEmployeeName());
+                Integer gender = one.getGender();
+                if (gender==1){
+                    channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
+                }else {
+                    channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
+                }
+                channeluser.setJob(3);
+                channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
+                channeluser.setChannelTypeID(channelTypeID);
+                SDictionary channelType = dictionaryService.getById(channelTypeID);
+                channeluser.setChannelType(channelType.getDictName());
+                channeluser.setCreator("99");
+                channeluser.setCreateTime(new Date());
+                channeluser.setIsDel(0);
+                channeluser.setStatus(1);
             }else {
                 //saccount表没有 直接创建新用户
-
+                BChanneluser channeluser = new BChanneluser();
+                channeluser.setId(UUID.randomUUID().toString().toUpperCase());
+                channeluser.setMobile(mobile);
+                channeluser.setUserName(username);
+                channeluser.setPassword(SecureUtil.md5("123321"));
+                channeluser.setName(name);
+                Integer gender = gender1;
+                if (gender==1){
+                    channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
+                }else {
+                    channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
+                }
+                channeluser.setJob(3);
+                channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
+                channeluser.setChannelTypeID(channelTypeID);
+                SDictionary channelType = dictionaryService.getById(channelTypeID);
+                channeluser.setChannelType(channelType.getDictName());
+                channeluser.setCreator("99");
+                channeluser.setCreateTime(new Date());
+                channeluser.setIsDel(0);
+                channeluser.setStatus(1);
             }
 
         }
