@@ -263,6 +263,7 @@
 		                    A.MessageType ,
 		                    A.MessageTypeName ,
 		                    A.IsCustomerFirstEdit ,
+		                    A.CustomerRankName ,
 		                    ROW_NUMBER() OVER ( ORDER BY A.YJTimeValue , A.EditTime DESC , A.SendTime DESC ) num
 		          FROM      V_MessageOpportunity A
 		          WHERE     A.Receiver = #{UserID}
@@ -430,6 +431,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					'487F2C39-779D-097B-455B-799AC0B3CBB4' MessageType,
 					dbo.F_DictName ('487F2C39-779D-097B-455B-799AC0B3CBB4') MessageTypeName,
 					o.IsCustomerFirstEdit,
+					CASE dbo.F_DictName(o.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(o.CustomerRank) END  CustomerRankName ,
 					ROW_NUMBER() OVER ( ORDER BY o.AllotTime DESC ) num
 					FROM
 					(
@@ -457,7 +459,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					MAX(CONVERT(VARCHAR(10), a.NextFollowUpDate, 120)) MaxFollowUpDate 
 				FROM B_CustomerFollowUp a 
 				WHERE
-					AND a.FollwUpUserID = #{UserID} 
+					a.FollwUpUserID = #{UserID} 
 					AND a.ProjectID = #{ProjectID}
 				GROUP BY
 					a.OpportunityID 
@@ -494,6 +496,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					'B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E' MessageType,
 					dbo.F_DictName ('B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E') MessageTypeName,
 					o.IsCustomerFirstEdit,
+					CASE dbo.F_DictName(o.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(o.CustomerRank) END  CustomerRankName ,
 					ROW_NUMBER() OVER ( ORDER BY D.BgnDate  DESC ) num
 				FROM
 								dbo.B_Opportunity o
@@ -554,6 +557,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					'12D36558-A8A1-20D4-58E5-612338026AE7' MessageType,
 					dbo.F_DictName ('12D36558-A8A1-20D4-58E5-612338026AE7') MessageTypeName,
 					o.IsCustomerFirstEdit,
+					CASE dbo.F_DictName(o.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(o.CustomerRank) END  CustomerRankName ,
 					ROW_NUMBER() OVER ( ORDER BY DATEADD( d, c.OwnerReleasePeriod, o.TheLatestFollowUpDate ) DESC ) num
 				FROM
 					dbo.B_Opportunity o
@@ -612,7 +616,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 						ELSE 1
 				  END IsAlloc,
 					dbo.F_DictName ( a.CustomerLevel ) IntentionLevel,
-					dbo.F_DictName ( ISNULL( a.CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA' ) ) AS CustomerRank,
+					CASE dbo.F_DictName(o.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(o.CustomerRank) END  CustomerRankName ,
 					ROW_NUMBER ( ) OVER ( ORDER BY DATEADD( d, c.FollowUpOverdueDays, a.TheLatestFollowUpDate ) DESC ) num 
 				FROM
 					dbo.B_Clue a
@@ -677,6 +681,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					'BE78B012-2536-DFDC-0D20-A5A86DD3470F' MessageType,
 					dbo.F_DictName ( 'BE78B012-2536-DFDC-0D20-A5A86DD3470F' ) MessageTypeName,
 					A.IsCustomerFirstEdit,
+					CASE dbo.F_DictName(A.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(A.CustomerRank) END  CustomerRankName ,
 					ROW_NUMBER ( ) OVER ( ORDER BY D.JhqyDate DESC ) num 
 				FROM
 					dbo.s_order D
@@ -739,6 +744,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					'0F9709DD-A8FC-6106-99FC-688E10C760B1' MessageType,
 					dbo.F_DictName ( '0F9709DD-A8FC-6106-99FC-688E10C760B1' ) MessageTypeName,
 					OP.IsCustomerFirstEdit,
+					CASE dbo.F_DictName(OP.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(OP.CustomerRank) END  CustomerRankName ,
 					ROW_NUMBER ( ) OVER ( ORDER BY B.lastDate DESC ) num 
 				FROM
 					dbo.C_MYContract ( NOLOCK ) A
