@@ -64,7 +64,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/app/customer")
 public class AppCustomerController extends TahoeBaseController {
 	
-	@Value("${SiteUrl}")
+	@Value("${SiteUrl1}")
     private String SiteUrl;
     @Autowired
     private IBCustomerpotentialfiltergroupService iBCustomerpotentialfiltergroupService;
