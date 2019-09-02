@@ -53,7 +53,10 @@ public class VABrokerMycustomers implements Serializable {
     @TableField("CustomerName")
     private String CustomerName;
 
-    @TableField("ReportTime")
+    @TableField("CustomerRank")
+    private String CustomerRank;
+    
+	@TableField("ReportTime")
     private Date ReportTime;
 
     public String getClueID() {
@@ -140,6 +143,14 @@ public class VABrokerMycustomers implements Serializable {
     public void setReportTime(Date ReportTime) {
         this.ReportTime = ReportTime;
     }
+    
+    public String getCustomerRank() {
+		return CustomerRank;
+	}
+
+	public void setCustomerRank(String customerRank) {
+		this.CustomerRank = customerRank;
+	}
 
     @Override
     public String toString() {

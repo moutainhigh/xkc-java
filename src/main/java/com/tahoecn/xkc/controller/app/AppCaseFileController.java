@@ -39,8 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "APP-案场助手", value = "APP-案场助手")
 @RequestMapping("/app/casefile")
 public class AppCaseFileController extends TahoeBaseController {
-	@Value("${SiteUrl}")
-    private String SiteUrl;
     @Autowired
     private IBClueService iBClueService;
     @Autowired

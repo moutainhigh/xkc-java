@@ -54,12 +54,14 @@ public class BClueruleAdvisergroupServiceImpl extends ServiceImpl<BClueruleAdvis
             else {
                 BClueruleAdvisergroup clueruleAdvisergroup = new BClueruleAdvisergroup();
                 clueruleAdvisergroup.setEditor(UserID);
+                clueruleAdvisergroup.setCreator(UserID);
                 clueruleAdvisergroup.setEditTime(new Date());
+                clueruleAdvisergroup.setCreateTime(new Date());
                 clueruleAdvisergroup.setAdviserGroupID(OrgID);
                 clueruleAdvisergroup.setClueRuleID(ClueRuleID);
                 clueruleAdvisergroup.setIsDel(0);
                 clueruleAdvisergroup.setStatus(1);
-                baseMapper.updateById(clueruleAdvisergroup);
+                baseMapper.insert(clueruleAdvisergroup);
             }
             return true;
         /*} catch (Exception e) {

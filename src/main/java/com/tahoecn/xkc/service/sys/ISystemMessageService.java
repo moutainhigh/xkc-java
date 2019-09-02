@@ -199,6 +199,6 @@ public interface ISystemMessageService {
 	/**
 	 * 消息日历
 	 */
-	Map<String,List<String>> mMessageCalendar_Select(Map<String, Object> paramMap);
+	Map<String,Object> mMessageCalendar_Select(Map<String, Object> paramMap);
 	
 }

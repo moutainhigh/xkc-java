@@ -1,11 +1,13 @@
 package com.tahoecn.xkc.interceptor;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tahoecn.xkc.service.sys.ISLogsService;
 import com.tahoecn.xkc.service.uc.CsUcUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,6 +34,9 @@ public class GlobalInterceptor implements HandlerInterceptor {
 	@Autowired
 	RedisTemplate redisTemplate;
 
+	@Autowired
+	private ISLogsService iSLogsService;
+
 	/**
 	 * 在处理请求之前要做的动作
 	 * 
@@ -46,13 +51,14 @@ public class GlobalInterceptor implements HandlerInterceptor {
 		log.info("【1】在处理请求之前要做的动作");
 
 		Map<String, String> map = Maps.newHashMap();
-		log.info("url:" + request.getRequestURL().toString());
+		String url = request.getRequestURL().toString();
+		log.info("url:" + url);
 
 		// headers
 		Enumeration<String> headers = request.getHeaderNames();
 		while (headers.hasMoreElements()) {
 			String parameter = headers.nextElement();
-			map.put(parameter, request.getHeader(parameter));
+			//map.put(parameter, request.getHeader(parameter));
 			log.info(parameter + ":" + request.getHeader(parameter));
 		}
 
@@ -66,6 +72,23 @@ public class GlobalInterceptor implements HandlerInterceptor {
 
 		log.info("=====================================================================");
 
+		RequestWrapper requestWrapper = new RequestWrapper(request);
+		String body = requestWrapper.getBody();
+		try {
+			Map<String,Object> logMap = new HashMap<String,Object>();
+			logMap.put("BizID", "xkc");
+			logMap.put("BizType", "FuncRequestData");
+			logMap.put("BizDesc", "方法请求数据");
+			logMap.put("Ext1", url.substring(url.lastIndexOf("/"),url.length()));
+			logMap.put("Ext2", url);
+			if (map.size() == 0)
+				logMap.put("Data", body);
+			else
+				logMap.put("Data", map.toString()+"-"+body);
+			iSLogsService.SystemLogsDetail_Insert(logMap, request);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return true;
 	}
 

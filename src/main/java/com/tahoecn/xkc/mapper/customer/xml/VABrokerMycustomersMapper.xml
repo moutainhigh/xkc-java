@@ -7,11 +7,37 @@
     </select>
     
     <select id="selectClue" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
-		select * from V_A_Broker_MyCustomers where ClueID = #{clueId}
+		select ClueID, 
+				CustomerName, 
+				Mobile, 
+				IntentProjectName, 
+				ReportTime, 
+				InvalidType, 
+				Status, 
+				OppID, 
+				StatusText, 
+				ReportUserID, 
+				isvisit, 
+				dbo.F_DictName(CustomerRank) CustomerRank, 
+				ReportMethod 
+		from V_A_Broker_MyCustomers where ClueID = #{clueId}
 	</select>
 	
 	<select id="selectMyCustomer" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
-		select * from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} 
+		select ClueID, 
+				CustomerName, 
+				Mobile, 
+				IntentProjectName, 
+				ReportTime, 
+				InvalidType, 
+				Status, 
+				OppID, 
+				StatusText, 
+				ReportUserID, 
+				isvisit, 
+				dbo.F_DictName(CustomerRank) CustomerRank, 
+				ReportMethod 
+				from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} 
 		<choose>
 		<when test="nameOrMobile!=null and nameOrMobile != ''">
     		 and (Mobile=#{nameOrMobile} or CustomerName=#{nameOrMobile})

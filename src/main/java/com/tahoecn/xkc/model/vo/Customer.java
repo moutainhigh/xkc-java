@@ -24,6 +24,8 @@ public class Customer {
 	private String statusText;
 	@ApiModelProperty(value="备注")
 	private String remark;
+	@ApiModelProperty(value="客户等级")
+	private String CustomerRank;
 	@ApiModelProperty(value="进度")
 	private String TractSort;
 	@ApiModelProperty(value="状态列表")
@@ -89,5 +91,11 @@ public class Customer {
 	}
 	public void setTractSort(String tractSort) {
 		this.TractSort = tractSort;
+	}
+	public String getCustomerRank() {
+		return CustomerRank;
+	}
+	public void setCustomerRank(String customerRank) {
+		this.CustomerRank = customerRank;
 	}
 }

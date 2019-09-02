@@ -457,13 +457,13 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					MAX(CONVERT(VARCHAR(10), a.NextFollowUpDate, 120)) MaxFollowUpDate 
 				FROM B_CustomerFollowUp a 
 				WHERE
-					CONVERT(VARCHAR(10), a.NextFollowUpDate, 120) = #{CurDate} 
 					AND a.FollwUpUserID = #{UserID} 
 					AND a.ProjectID = #{ProjectID}
 				GROUP BY
 					a.OpportunityID 
 				) b
 			LEFT JOIN B_Opportunity o ON o.id = b.OpportunityID 
+			WHERE CONVERT ( VARCHAR (10), MaxFollowUpDate, 120 ) = #{CurDate}
 		]]>		        
     </select>
 	<!-- 当日认购逾期列表 -->
