@@ -35,7 +35,7 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
     /**
      * 验证是否是本项目老业主
      */
-    List<Map<String, Object>> IsProjectOwner_Select(String projectId, String phone);
+    List<Map<String, Object>> IsProjectOwner_Select(@Param("ProjectID")String projectId, @Param("Mobile")String phone);
 
     Map<String, Object> CustomerChangeDetailAll_Select(@Param("projectID") String projectID, @Param("customerID") String customerID, @Param("clueID") String clueID, @Param("CustomerID") String CustomerID);
 

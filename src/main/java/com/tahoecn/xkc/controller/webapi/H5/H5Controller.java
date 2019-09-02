@@ -524,16 +524,14 @@ public class H5Controller extends TahoeBaseController {
             Result.errormsg(1,"所属机构在禁用状态，不能报备");
         }
         //获取报备用户所适用的规则
-        //未测 目前map无值
+
 //        Map<String,Object> userRule=clueruleService.getRegisterRule(projectId,adviserGroupID);
         ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userID, adviserGroupID, projectId);
-
-
+        if (org.springframework.util.StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
+            return Result.errormsg(21, "报备失败！所选项目未配置报备规则，请联系管理员！");
+        }
 
 //        if (userRule.get("RuleID")==null){
-        if (channelRegisterModel.getUserRule()==null){
-            Result.errormsg(1,"未找到该渠道的报备规则");
-        }
         //验证报备客户是否有效
         Map<String, Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
 
@@ -897,4 +895,14 @@ public class H5Controller extends TahoeBaseController {
         }
         return Result.ok(list);
     }
+
+    @ApiOperation(value = "获取用户信息或创建", notes = "获取用户信息或创建")
+    @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
+    public Result getUserInfo(@RequestBody JSONObject jsonParam) {
+        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+        Map<String, Object> user=channeluserService.getUserInfo(paramMap);
+        return Result.ok(user);
+    }
+
+
 }

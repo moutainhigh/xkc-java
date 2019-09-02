@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.channel.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,10 +16,12 @@ import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
+import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
+import com.tahoecn.xkc.service.sys.ISAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
@@ -63,6 +66,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Autowired
     private IVABrokerMycustomersService mycustomersService;
+
+    @Autowired
+    private ISAccountService accountService;
 
 
     @Value("${tahoe.application.physicalPath}")
@@ -721,6 +727,31 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             return Result.errormsg(1,"生成失败");
         }
         return Result.okm("成功");
+    }
+
+    @Override
+    public Map<String, Object> getUserInfo(Map<String, Object> map) {
+	    String username= (String) map.get("UserName");
+	    QueryWrapper<BChanneluser> query=new QueryWrapper<>();
+	    query.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+        Map<String, Object> map1 = this.getMap(query);
+        //channelUser表里有 直接返回信息
+        if (CollectionUtil.isNotEmpty(map1)){
+        return map1;
+        }else {//channelUser表里没有 查询saccount表
+            QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
+            wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+            Map<String, Object> map2 = accountService.getMap(wrapper);
+            if (CollectionUtil.isNotEmpty(map2)){
+                //如果有 在channelUser表里创建新用户 用saccount信息
+
+            }else {
+                //saccount表没有 直接创建新用户
+
+            }
+
+        }
+        return null;
     }
 
     @Override
