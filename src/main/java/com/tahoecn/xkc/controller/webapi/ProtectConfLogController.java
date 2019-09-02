@@ -79,7 +79,12 @@ public class ProtectConfLogController extends TahoeBaseController {
     }
 
     private void SetExcelN(String ProjectName, String GroupDictName,Integer ProtectSource, String RuleName, String EditorName, Date Start,Date End) {
-        List<Map<String,Object>> list=protectConfLogService.getProtectConfLogList(ProjectName,GroupDictName,ProtectSource,RuleName,EditorName,DateUtil.beginOfDay(Start),DateUtil.endOfDay(End));
+        List<Map<String,Object>> list=new ArrayList<>();
+        if (Start!=null&&End!=null){
+             list=protectConfLogService.getProtectConfLogList(ProjectName,GroupDictName,ProtectSource,RuleName,EditorName,DateUtil.beginOfDay(Start),DateUtil.endOfDay(End));
+        }else {
+            list=protectConfLogService.getProtectConfLogList(ProjectName,GroupDictName,ProtectSource,RuleName,EditorName,null,null);
+        }
         String ExcelName;
         List<ExcelExportEntity> entity;
 
