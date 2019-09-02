@@ -2049,6 +2049,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				String CardType = customerData.get("CardType")!=null && !"".equals(customerData.get("CardType").toString())?customerData.get("CardType").toString():"空值";
 				String CardID = customerData.get("CardID")!=null && !"".equals(customerData.get("CardID").toString())?customerData.get("CardID").toString():"空值";
 				String Gender = customerData.get("Gender")!=null && !"".equals(customerData.get("Gender").toString())?customerData.get("Gender").toString():"空值";
+				String Address = OpportunityData.get("Address")!=null && "".equals(OpportunityData.get("Address").toString())?OpportunityData.get("Address").toString():"空值";
 				
 				List<Map<String, Object>>  jarry = vCustomergwlistSelectMapper.DictionaryList_Select("E72C340D-4092-467A-9B8F-5138DBDCA43B");
 				
@@ -2117,6 +2118,14 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 						change=true;
 					}
 				}
+				String newAddress = pmap.get("Address")!=null?pmap.get("Address").toString():"";
+				if(!"".equals(newAddress)){
+					if(!Address.equals(newAddress)){
+						log.setHomeAddress(Address + "->" + newAddress);
+						change=true;
+					}
+				}
+				
 				if(change){
 					 log.setCreateTime(new Date());
 				     iUpdateCustinfoLogService.save(log);

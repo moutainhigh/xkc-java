@@ -748,7 +748,8 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		}
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
-		customer.setCustomerRank(_clue.getCustomerRank());
+		System.out.println(clue.getCustomerRank());
+		customer.setCustomerRank(clue.getCustomerRank());
 		List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
 		List<CustomerStatus> customerStatuses = new ArrayList<>();
 		for (CStatus cs : statuses) {
