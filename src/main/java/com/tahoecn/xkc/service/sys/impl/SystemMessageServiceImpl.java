@@ -410,6 +410,7 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		List<String> DRRGYQ = systemMessageMapper.DRRGYQCalendar(paramMap);
 		List<String> DRQYYQ = systemMessageMapper.DRQYYQCalendar(paramMap);
 		List<String> DRHKYQ = systemMessageMapper.DRHKYQCalendar(paramMap);
+		int count = 0;
 		switch (JobCode.toUpperCase()){
 		case "GW":
 			map.put(MessageType.当日待跟进.getTypeID(), DRDGJ);
@@ -417,35 +418,38 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
 			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
 			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
-			map.put("count", DRDGJ.size() + DRGJYQOpportunity.size() + DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			count = DRDGJ.size() + DRGJYQOpportunity.size() + DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size();
 			break;
 		case "XSFZR":
 			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
 			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
 			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
-			map.put("count", DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			count = DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size();
 			break;
 		case "YXJL":
 			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
 			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
 			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
-			map.put("count", DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			count = DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size();
 			break;
 		case "XSJL":
 			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
 			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
 			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
-			map.put("count", DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			count = DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size();
 			break;
 		case "ZQFZR"://当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
 			map.put(MessageType.当日跟进逾期.getTypeID(), DRGJYQClue);
-			map.put("count", DRGJYQClue.size());
+			count = DRGJYQClue.size();
 			break;
 		case "ZQ"://当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
 			map.put(MessageType.当日跟进逾期.getTypeID(), DRGJYQClue);
-			map.put("count", DRGJYQClue.size());
+			count = DRGJYQClue.size();
 			break;
 		}
- 		return map;
+		Map<String,Object> result = new HashMap<String,Object>();
+		result.put("result", map);
+		result.put("count", count);
+ 		return result;
 	}
 }
