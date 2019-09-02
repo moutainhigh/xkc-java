@@ -467,6 +467,7 @@ public class H5Controller extends TahoeBaseController {
         try{
             Map paramMap = (HashMap)paramAry.get("_param");
             SFormsession sess = new SFormsession();
+            sess.setId(UUID.randomUUID().toString().toUpperCase());
             sess.setIp(NetUtil.getRemoteAddr(request));
             sess.setData(JSONObject.toJSONString(paramMap));
             sess.setCreateTime(new Date());
@@ -900,8 +901,8 @@ public class H5Controller extends TahoeBaseController {
     @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
     public Result getUserInfo(@RequestBody JSONObject jsonParam) {
         Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
-        Map<String, Object> user=channeluserService.getUserInfo(paramMap);
-        return Result.ok(user);
+        Result user=channeluserService.getUserInfo(paramMap);
+        return user;
     }
 
 

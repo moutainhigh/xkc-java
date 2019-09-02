@@ -730,74 +730,89 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public Map<String, Object> getUserInfo(Map<String, Object> map) {
-        String username= (String) map.get("UserName");
-        String name= (String) map.get("Name");
-        String mobile= (String) map.get("Mobile");
-        int gender1= (int) map.get("Gender");
-        String channelTypeID= (String) map.get("ChannelTypeID");
-        String sign = (String) map.get("sign");
-        QueryWrapper<BChanneluser> query=new QueryWrapper<>();
-	    query.eq("IsDel",0).eq("Status",1).eq("UserName",username);
-        Map<String, Object> map1 = this.getMap(query);
-        //channelUser表里有 直接返回信息
-        if (CollectionUtil.isNotEmpty(map1)){
-        return map1;
-        }else {//channelUser表里没有 查询saccount表
-            QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
-            wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
-            SAccount one = accountService.getOne(wrapper);
+    public Result getUserInfo(Map<String, Object> map) {
+        try {
+            String username= (String) map.get("UserName");
+            String name= (String) map.get("Name");
+            String mobile= (String) map.get("Mobile");
+            int gender1= (int) map.get("Gender");
+            //sign=0老业主 1为泰禾员工
+            int sign = (int) map.get("sign");
+            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
+            query.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+            Map<String, Object> map1 = this.getMap(query);
+            //channelUser表里有 直接返回信息
+            if (CollectionUtil.isNotEmpty(map1)){
+                return Result.ok(map1);
+            }else {//channelUser表里没有 查询saccount表
+                QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
+                wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+                SAccount one = accountService.getOne(wrapper);
 
-            if (one!=null){
-                //如果有 在channelUser表里创建新用户 用saccount信息
-                BChanneluser channeluser = new BChanneluser();
-                channeluser.setId(UUID.randomUUID().toString().toUpperCase());
-                channeluser.setMobile(one.getMobile());
-                channeluser.setUserName(one.getUserName());
-                channeluser.setPassword(SecureUtil.md5("123321"));
-                channeluser.setName(one.getEmployeeName());
-                Integer gender = one.getGender();
-                if (gender==1){
-                    channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
+                if (one!=null){
+                    //如果有 在channelUser表里创建新用户 用saccount信息
+                    BChanneluser channeluser = new BChanneluser();
+                    channeluser.setId(UUID.randomUUID().toString().toUpperCase());
+                    channeluser.setMobile(one.getMobile());
+                    channeluser.setUserName(one.getUserName());
+                    channeluser.setPassword(SecureUtil.md5("123321"));
+                    channeluser.setName(one.getEmployeeName());
+                    Integer gender = one.getGender();
+                    if (gender==1){
+                        channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
+                    }else {
+                        channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
+                    }
+                    channeluser.setJob(3);
+                    channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
+                    if (sign==0){
+                        channeluser.setChannelTypeID("EB4AD331-F4AD-46D6-889A-D45575ECEE66");
+                        channeluser.setChannelType("老业主");
+                    }else {
+                        channeluser.setChannelTypeID("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD");
+                        channeluser.setChannelType("泰禾员工");
+                    }
+
+                    channeluser.setCreator("99");
+                    channeluser.setCreateTime(new Date());
+                    channeluser.setIsDel(0);
+                    channeluser.setStatus(1);
+                    return Result.ok(channeluser);
                 }else {
-                    channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
+                    //saccount表没有 直接创建新用户
+                    BChanneluser channeluser = new BChanneluser();
+                    channeluser.setId(UUID.randomUUID().toString().toUpperCase());
+                    channeluser.setMobile(mobile);
+                    channeluser.setUserName(username);
+                    channeluser.setPassword(SecureUtil.md5("123321"));
+                    channeluser.setName(name);
+                    Integer gender = gender1;
+                    if (gender==1){
+                        channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
+                    }else {
+                        channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
+                    }
+                    channeluser.setJob(3);
+                    channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
+                    if (sign==0){
+                        channeluser.setChannelTypeID("EB4AD331-F4AD-46D6-889A-D45575ECEE66");
+                        channeluser.setChannelType("老业主");
+                    }else {
+                        channeluser.setChannelTypeID("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD");
+                        channeluser.setChannelType("泰禾员工");
+                    }
+                    channeluser.setCreator("99");
+                    channeluser.setCreateTime(new Date());
+                    channeluser.setIsDel(0);
+                    channeluser.setStatus(1);
+                    return Result.ok(channeluser);
                 }
-                channeluser.setJob(3);
-                channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
-                channeluser.setChannelTypeID(channelTypeID);
-                SDictionary channelType = dictionaryService.getById(channelTypeID);
-                channeluser.setChannelType(channelType.getDictName());
-                channeluser.setCreator("99");
-                channeluser.setCreateTime(new Date());
-                channeluser.setIsDel(0);
-                channeluser.setStatus(1);
-            }else {
-                //saccount表没有 直接创建新用户
-                BChanneluser channeluser = new BChanneluser();
-                channeluser.setId(UUID.randomUUID().toString().toUpperCase());
-                channeluser.setMobile(mobile);
-                channeluser.setUserName(username);
-                channeluser.setPassword(SecureUtil.md5("123321"));
-                channeluser.setName(name);
-                Integer gender = gender1;
-                if (gender==1){
-                    channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
-                }else {
-                    channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
-                }
-                channeluser.setJob(3);
-                channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
-                channeluser.setChannelTypeID(channelTypeID);
-                SDictionary channelType = dictionaryService.getById(channelTypeID);
-                channeluser.setChannelType(channelType.getDictName());
-                channeluser.setCreator("99");
-                channeluser.setCreateTime(new Date());
-                channeluser.setIsDel(0);
-                channeluser.setStatus(1);
             }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.errormsg(1,"获取用户信息错误,请联系管理员");
         }
-        return null;
     }
 
     @Override

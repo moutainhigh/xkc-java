@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PhoneUtil {
-    private static Pattern CHINESE_PHONE_PATTERN = Pattern.compile("^1[3|4|5|6|7|8|9][0-9]\\d{4,8}$");
+    private static Pattern CHINESE_PHONE_PATTERN = Pattern.compile("^[0-9]{11}$");
 
     /**
      * 检查手机是否无效
