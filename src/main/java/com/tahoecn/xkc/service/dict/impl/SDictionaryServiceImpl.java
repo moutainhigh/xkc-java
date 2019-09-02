@@ -724,31 +724,59 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
                     data.add(res.get(key));
                 }
             }
-            System.out.println("1===================>>>>>>>"+data);
-            /*for(Object list : data){
-            	Map<String,Object> map = (Map<String, Object>) list;
-            	if("客户状态".equals(map.get("DictName"))){
-            		List<Map<String,Object>> Child = (List<Map<String, Object>>) map.get("Child");
-            		//修改---客户状态改字段名称
-            		String id = "";
-            		Iterator<Map<String,Object>> it = Child.iterator();
-                    while(it.hasNext()){
-                    	Map<String,Object> c = (Map<String,Object>)it.next();
-            			if("询问".equals(c.get("DictName"))){
-            				c.put(DictNameAlias,"报备");
-            			}
-            			if("看房".equals(c.get("DictName"))){
-            				c.put(DictNameAlias,"到访");
-            			}
-            			if("认购中".equals(c.get("DictName"))){
-            				it.remove();
-            			}
-            			if("丢失".equals(c.get("DictName"))){
-            				c.put(DictNameAlias,"无效");
+            System.out.println(data.size()+"===================>>>>>>>"+data);
+            if(res.size() == 1){
+            	for(Object list : data){
+	            	Map<String,Object> map = (Map<String, Object>) list;
+	            	if("客户状态".equals(map.get("DictName"))){
+	            		List<Map<String,Object>> Child = (List<Map<String, Object>>) map.get("Child");
+	            		//修改---客户状态改字段名称
+	            		Iterator<Map<String,Object>> it = Child.iterator();
+	                    while(it.hasNext()){
+	                    	Map<String,Object> c = (Map<String,Object>)it.next();
+	            			if("询问".equals(c.get("DictName"))){
+	            				c.put(DictNameAlias,"报备");
+	            			}
+	            			if("看房".equals(c.get("DictName"))){
+	            				c.put(DictNameAlias,"到访");
+	            			}
+	            			if("认购中".equals(c.get("DictName"))){
+	            				it.remove();
+	            			}
+	            			if("丢失".equals(c.get("DictName"))){
+	            				c.put(DictNameAlias,"无效");
+	            			}
+	            		}
+	            	}
+            	}
+            }
+            if(res.size() > 1){
+            	for(Object list : data){
+            		List<Map<String, Object>> first = (List<Map<String, Object>>) list;
+            		for(Map<String, Object> map : first){
+            			if("客户状态".equals(map.get("DictName"))){
+            				List<Map<String,Object>> Child = (List<Map<String, Object>>) map.get("Child");
+            				//修改---客户状态改字段名称
+            				Iterator<Map<String,Object>> it = Child.iterator();
+            				while(it.hasNext()){
+            					Map<String,Object> c = (Map<String,Object>)it.next();
+            					if("询问".equals(c.get("DictName"))){
+            						c.put(DictNameAlias,"报备");
+            					}
+            					if("看房".equals(c.get("DictName"))){
+            						c.put(DictNameAlias,"到访");
+            					}
+            					if("认购中".equals(c.get("DictName"))){
+            						it.remove();
+            					}
+            					if("丢失".equals(c.get("DictName"))){
+            						c.put(DictNameAlias,"无效");
+            					}
+            				}
             			}
             		}
             	}
-            }*/
+            }
             System.out.println("2==================>>>>>>>"+data);
             return Result.ok(data);
             
