@@ -77,6 +77,8 @@ public class ProjectAppController extends TahoeBaseController {
             //根据项目id查询是否需要隐藏金额
             QueryWrapper<BProject> wrapper = new QueryWrapper<BProject>();
             wrapper.eq("ID", ProjectID);
+            wrapper.eq("Status","1");
+            wrapper.eq("IsDel","0");
             BProject isHide = projectService.getOne(wrapper);
             for (Map<String,Object> item : roomArray){
                 String RoomFloorName = (String) item.get("RoomFloorName");
@@ -100,7 +102,7 @@ public class ProjectAppController extends TahoeBaseController {
                 
                 //xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseList() == 1){
+                if(isHide.getHouseDetail() != null && isHide.getHouseList() == 1){
                 	room.put("RoomPrice", "****/㎡");
                 	room.put("RoomTotal", "****");
                 }else{
@@ -242,6 +244,8 @@ public class ProjectAppController extends TahoeBaseController {
             //根据项目id查询是否需要隐藏金额
             QueryWrapper<BProject> wrapper = new QueryWrapper<BProject>();
             wrapper.eq("ID", ProjectID);
+            wrapper.eq("Status","1");
+            wrapper.eq("IsDel","0");
             BProject isHide = projectService.getOne(wrapper);
             if(re != null && re.size() > 0){
             	/*if (ProjectID.toUpperCase().equals("252B3699-51B2-E711-80C7-00505686C900") 
@@ -252,7 +256,7 @@ public class ProjectAppController extends TahoeBaseController {
             	}*/
             	//xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseDetail() == 1){
+                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 1){
                 	re.get(0).put("BldPrice","****元");
             		re.get(0).put("TnPrice","****元");
             		re.get(0).put("Total","****元");
@@ -465,11 +469,13 @@ public class ProjectAppController extends TahoeBaseController {
           //根据项目id查询是否需要隐藏金额
             QueryWrapper<BProject> wrapper = new QueryWrapper<BProject>();
             wrapper.eq("ID", ProjectID);
+            wrapper.eq("Status","1");
+            wrapper.eq("IsDel","0");
             BProject isHide = projectService.getOne(wrapper);
             if(re != null && re.size() > 0){
             	//xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseDetail() == 1){
+                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 1){
                 	re.get(0).put("BldPrice","****");
             		re.get(0).put("TnPrice","****");
             		re.get(0).put("Total","****");
