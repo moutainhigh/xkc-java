@@ -374,9 +374,9 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 	 */
 	@Override
 	public Map<String,Object> mMessageCalendar_Select(Map<String, Object> paramMap) {
-		String JobCode = (String)paramMap.get("JobCode");//岗位代码
+//		String JobCode = (String)paramMap.get("JobCode");//岗位代码
 		Map<String,Object> map = new HashMap<String,Object>();
-		/*map.put(MessageType.当日待跟进.getTypeID(), systemMessageMapper.DRDGJCalendar(paramMap));
+		map.put(MessageType.当日待跟进.getTypeID(), systemMessageMapper.DRDGJCalendar(paramMap));
 		if("GW".equals(paramMap.get("JobCode"))){
 			map.put(MessageType.当日跟进逾期.getTypeID(), systemMessageMapper.DRGJYQOpportunityCalendar(paramMap));
 		}else{
@@ -394,8 +394,9 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		}
 		map.put(MessageType.当日认购逾期.getTypeID(), systemMessageMapper.DRRGYQCalendar(paramMap));
 		map.put(MessageType.当日签约逾期.getTypeID(), systemMessageMapper.DRQYYQCalendar(paramMap));
-		map.put(MessageType.当日回款逾期.getTypeID(), systemMessageMapper.DRHKYQCalendar(paramMap));*/
-		List<String> DRDGJ = systemMessageMapper.DRDGJCalendar(paramMap);
+		map.put(MessageType.当日回款逾期.getTypeID(), systemMessageMapper.DRHKYQCalendar(paramMap));
+		return map;
+		/*List<String> DRDGJ = systemMessageMapper.DRDGJCalendar(paramMap);
 		List<String> DRGJYQOpportunity = systemMessageMapper.DRGJYQOpportunityCalendar(paramMap);
 		String sqlWhere = "";
 		if(!"ZQFZR".equals(JobCode)){//ZQ
@@ -450,6 +451,6 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		Map<String,Object> result = new HashMap<String,Object>();
 		result.put("result", map);
 		result.put("count", count);
- 		return result;
+ 		return result;*/
 	}
 }
