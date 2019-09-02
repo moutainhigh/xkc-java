@@ -937,11 +937,13 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                     				}
                     				String CustomerName = map.get("CustomerName").toString();
                     				String CustomerMobile = map.get("CustomerMobile").toString();
+                    				String OpportunityStatusValue = map.get("OpportunityStatusValue").toString();
                     				JSONObject json = new JSONObject();
                     				json.put("ChildID", ChildID);
                     				json.put("ParentRelation", ParentRelation);
                     				json.put("CustomerName", CustomerName);
                     				json.put("CustomerMobile", CustomerMobile);
+                    				json.put("OpportunityStatusValue", OpportunityStatusValue);
                     				J_DATA.add(json);
                     			}
                     			PanelItem.getChild().get(0).setChild(J_DATA);
