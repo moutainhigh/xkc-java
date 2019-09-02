@@ -7,8 +7,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@Component
-@WebFilter(urlPatterns = "/*",filterName = "channelFilter")
+/*@Component
+@WebFilter(urlPatterns = "/*",filterName = "channelFilter")*/
 public class ChannelFilter implements Filter {
 
     @Override
