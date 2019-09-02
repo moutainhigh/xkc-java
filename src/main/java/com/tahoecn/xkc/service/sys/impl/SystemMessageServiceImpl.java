@@ -373,11 +373,12 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 	 * 消息日历
 	 */
 	@Override
-	public Map<String,List<String>> mMessageCalendar_Select(Map<String, Object> paramMap) {
-		Map<String,List<String>> map = new HashMap<String,List<String>>();
-		map.put("487F2C39-779D-097B-455B-799AC0B3CBB4", systemMessageMapper.DRDGJCalendar(paramMap));
+	public Map<String,Object> mMessageCalendar_Select(Map<String, Object> paramMap) {
+		String JobCode = (String)paramMap.get("JobCode");//岗位代码
+		Map<String,Object> map = new HashMap<String,Object>();
+		/*map.put(MessageType.当日待跟进.getTypeID(), systemMessageMapper.DRDGJCalendar(paramMap));
 		if("GW".equals(paramMap.get("JobCode"))){
-			map.put("12D36558-A8A1-20D4-58E5-612338026AE7", systemMessageMapper.DRGJYQOpportunityCalendar(paramMap));
+			map.put(MessageType.当日跟进逾期.getTypeID(), systemMessageMapper.DRGJYQOpportunityCalendar(paramMap));
 		}else{
 			String JobCode = (String) paramMap.get("JobCode");
 			String sqlWhere = "";
@@ -389,11 +390,62 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
 			}
 			paramMap.put("sqlWhere", sqlWhere);
-			map.put("12D36558-A8A1-20D4-58E5-612338026AE7", systemMessageMapper.DRGJYQClueCalendar(paramMap));
+			map.put(MessageType.当日跟进逾期.getTypeID(), systemMessageMapper.DRGJYQClueCalendar(paramMap));
 		}
-		map.put("B5CB4E80-B0D2-959A-7FFB-1C391FF9AD9E", systemMessageMapper.DRRGYQCalendar(paramMap));
-		map.put("BE78B012-2536-DFDC-0D20-A5A86DD3470F", systemMessageMapper.DRQYYQCalendar(paramMap));
-		map.put("0F9709DD-A8FC-6106-99FC-688E10C760B1", systemMessageMapper.DRHKYQCalendar(paramMap));
+		map.put(MessageType.当日认购逾期.getTypeID(), systemMessageMapper.DRRGYQCalendar(paramMap));
+		map.put(MessageType.当日签约逾期.getTypeID(), systemMessageMapper.DRQYYQCalendar(paramMap));
+		map.put(MessageType.当日回款逾期.getTypeID(), systemMessageMapper.DRHKYQCalendar(paramMap));*/
+		List<String> DRDGJ = systemMessageMapper.DRDGJCalendar(paramMap);
+		List<String> DRGJYQOpportunity = systemMessageMapper.DRGJYQOpportunityCalendar(paramMap);
+		String sqlWhere = "";
+		if(!"ZQFZR".equals(JobCode)){//ZQ
+			sqlWhere += " AND o.SaleUserID = '" + map.get("UserID") + "' ";
+		}else{//ZQFZR
+			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
+					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+		}
+		paramMap.put("sqlWhere", sqlWhere);
+		List<String> DRGJYQClue = systemMessageMapper.DRGJYQClueCalendar(paramMap);
+		List<String> DRRGYQ = systemMessageMapper.DRRGYQCalendar(paramMap);
+		List<String> DRQYYQ = systemMessageMapper.DRQYYQCalendar(paramMap);
+		List<String> DRHKYQ = systemMessageMapper.DRHKYQCalendar(paramMap);
+		switch (JobCode.toUpperCase()){
+		case "GW":
+			map.put(MessageType.当日待跟进.getTypeID(), DRDGJ);
+			map.put(MessageType.当日跟进逾期.getTypeID(), DRGJYQOpportunity);
+			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
+			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
+			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
+			map.put("count", DRDGJ.size() + DRGJYQOpportunity.size() + DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			break;
+		case "XSFZR":
+			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
+			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
+			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
+			map.put("count", DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			break;
+		case "YXJL":
+			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
+			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
+			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
+			map.put("count", DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			break;
+		case "XSJL":
+			map.put(MessageType.当日认购逾期.getTypeID(), DRRGYQ);
+			map.put(MessageType.当日签约逾期.getTypeID(), DRQYYQ);
+			map.put(MessageType.当日回款逾期.getTypeID(), DRHKYQ);
+			map.put("count", DRRGYQ.size() + DRQYYQ.size() + DRHKYQ.size());
+			break;
+		case "ZQFZR"://当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
+			map.put(MessageType.当日跟进逾期.getTypeID(), DRGJYQClue);
+			map.put("count", DRGJYQClue.size());
+			break;
+		case "ZQ"://当日跟进逾期、带看通知、认筹通知、认购通知、签约通知、退房通知、无效通知
+			map.put(MessageType.当日跟进逾期.getTypeID(), DRGJYQClue);
+			map.put("count", DRGJYQClue.size());
+			break;
+		}
  		return map;
 	}
 }
