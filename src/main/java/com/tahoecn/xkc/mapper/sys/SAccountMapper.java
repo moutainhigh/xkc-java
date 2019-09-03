@@ -44,4 +44,6 @@ public interface SAccountMapper extends BaseMapper<SAccount> {
     		@Param("UserName")String UserName,@Param("Mobile")String Mobile,@Param("Status")String Status);
 
     List<Map<String, Object>> insertJob(@Param("UserID")String userID, @Param("AuthCompanyID")String authCompanyID, @Param("ProductID")String productID);
+
+    List<String> getJobName(@Param("id")String id);
 }

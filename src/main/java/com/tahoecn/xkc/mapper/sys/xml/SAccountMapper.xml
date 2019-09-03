@@ -659,4 +659,17 @@
         AND j.AuthCompanyID =#{AuthCompanyID}
         AND j.ProductID =#{ProductID};
     </select>
+
+    <select id="getJobName" resultType="string" parameterType="string">
+        SELECT
+        c.JobName
+        FROM
+        S_JobsUserRel r
+        INNER JOIN S_Jobs j ON r.JobID= j.ID
+        AND j.IsDel= 0 AND j.Status=1
+        INNER JOIN S_CommonJobs c ON j.CommonJobID= c.ID
+        AND c.IsDel= 0 AND c.Status=1
+        WHERE
+        r.AccountID= #{id}
+    </select>
 </mapper>

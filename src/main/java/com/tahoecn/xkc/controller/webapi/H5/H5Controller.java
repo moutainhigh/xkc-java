@@ -265,7 +265,7 @@ public class H5Controller extends TahoeBaseController {
                 user.put("ChannelType","分销中介");
             }
         }else {
-            return Result.errormsg(1,"请前往");
+            return Result.errormsg(1,"请前往");//todo 提示信息不全
         }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
@@ -897,13 +897,13 @@ public class H5Controller extends TahoeBaseController {
         return Result.ok(list);
     }
 
-    @ApiOperation(value = "获取用户信息或创建", notes = "获取用户信息或创建")
-    @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
-    public Result getUserInfo(@RequestBody JSONObject jsonParam) {
-        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
-        Result user=channeluserService.getUserInfo(paramMap);
-        return user;
-    }
+//    @ApiOperation(value = "获取用户信息或创建", notes = "获取用户信息或创建")
+//    @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
+//    public Result getUserInfo(@RequestBody JSONObject jsonParam) {
+//        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+//        Result user=channeluserService.getUserInfo(paramMap);
+//        return user;
+//    }
 
 
 }

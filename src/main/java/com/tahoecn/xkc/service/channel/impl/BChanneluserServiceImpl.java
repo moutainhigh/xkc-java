@@ -777,6 +777,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     channeluser.setCreateTime(new Date());
                     channeluser.setIsDel(0);
                     channeluser.setStatus(1);
+                    channeluserService.save(channeluser);
                     return Result.ok(channeluser);
                 }else {
                     //saccount表没有 直接创建新用户
@@ -784,7 +785,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     channeluser.setId(UUID.randomUUID().toString().toUpperCase());
                     channeluser.setMobile(mobile);
                     channeluser.setUserName(username);
-                    channeluser.setPassword(SecureUtil.md5("123321"));
+                    channeluser.setPassword(SecureUtil.md5("123321").toUpperCase());
                     channeluser.setName(name);
                     Integer gender = gender1;
                     if (gender==1){
@@ -805,6 +806,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     channeluser.setCreateTime(new Date());
                     channeluser.setIsDel(0);
                     channeluser.setStatus(1);
+                    channeluserService.save(channeluser);
                     return Result.ok(channeluser);
                 }
             }
