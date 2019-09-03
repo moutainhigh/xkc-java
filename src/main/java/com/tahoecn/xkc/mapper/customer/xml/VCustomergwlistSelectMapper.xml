@@ -574,6 +574,15 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 		</if>
 	</select>
 	
+	<select id="RemindRuleArriveDetail_Select_step1" resultType="java.util.HashMap">
+			SELECT c.ID clueID ,c.ReportUserID reportuserID,cr.ProtectSource protectSource FROM dbo.B_Opportunity o LEFT JOIN dbo.B_Clue c ON o.ClueID=c.ID LEFT JOIN dbo.B_ClueRule cr ON c.RuleID=cr.ID
+			WHERE o.ID=#{opportunityID}
+	</select>
+	
+	<select id="RemindRuleArriveDetail_Select_step2" resultType="java.util.HashMap">
+			SELECT c.ID clueID,c.ReportUserID reportuserID,cr.ProtectSource protectSource FROM dbo.B_Clue c INNER JOIN dbo.B_ClueRule cr ON c.RuleID=cr.ID WHERE c.ID=#{clueID}
+	</select>
+	
 	<select id="RemindRuleArriveDetail_Select_f" resultType="java.util.HashMap">
 		SELECT ISNULL(rc.CustomerVisitsRemind,0) customerVisitsRemind FROM dbo.B_RemindChannel rc WHERE rc.ProjectID=#{projectID} AND rc.IsDel=0 AND rc.ChannelSource=#{protectSource}
 	</select>

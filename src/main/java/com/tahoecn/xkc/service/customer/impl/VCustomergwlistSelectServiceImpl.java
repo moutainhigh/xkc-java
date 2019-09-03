@@ -466,6 +466,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 						String ParentID = opportunityInfo.get("ParentID").toString();
 						List<String> paramParent = new ArrayList<String>();
 						paramParent.add(ParentID);
+						opportunityIDlist.add(ParentID);
 						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(paramParent);
 						if(childs!=null && childs.size()>0){
 							for(Map<String, Object> child : childs){
@@ -506,62 +507,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 			if (follwUpType.equals("售场接待")){
                 //客户到访
-                String clueID = paramAry.getString("ClueID");
-                String projectID = paramAry.getString("ProjectID");
-                Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select(opportunityID, clueID);
-                
-                String tclueID = "";
-                String reportUserID = "";
-                String protectSource = "";
-                if(res!=null && res.get("clueID")!=null){
-                	tclueID = res.get("clueID").toString();
-                }
-                if(res!=null && res.get("reportUserID")!=null){
-                	reportUserID = res.get("reportUserID").toString();
-                }
-                if(res!=null && res.get("protectSource")!=null){
-                	protectSource = res.get("protectSource").toString();
-                }
-                if (!StringUtils.isEmpty(tclueID) &&  !StringUtils.isEmpty(reportUserID)){
-                	String LastName = "";
-                	String FirstName = "";
-                	String Mobile = "";
-                	if(!"".equals(protectSource)){
-                    	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
-                    	int customerVisitsRemind = 0;
-                    	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                    		Number number = (Number)resf.get("customerVisitsRemind");
-                    		customerVisitsRemind = number.intValue();
-                    	}
-                    	if(customerVisitsRemind>0){
-                    		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
-                    		if(ress!=null && ress.get("LastName")!=null){
-                    			LastName = ress.get("LastName").toString();
-                    		}
-                    		if(ress!=null && ress.get("FirstName")!=null){
-                    			FirstName = ress.get("FirstName").toString();
-                    		}
-                    		if(ress!=null && ress.get("Mobile")!=null){
-                    			Mobile = ress.get("Mobile").toString();
-                    		}
-                    	}
-                    }
-                    String UserID =paramAry.getString("UserID");
-                    String ProjectID = paramAry.getString("ProjectID");
-                    String Content = "客户" +LastName +FirstName + "、" + Mobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
-                    Map<String,Object> parameter = new HashMap<String,Object>();
-                    parameter.put("ProjectID", ProjectID);
-                    parameter.put("BizID", res.get("ClueID").toString());
-                    parameter.put("BizType", "Clue");
-                    parameter.put("Subject", "客户到访提醒");
-                    parameter.put("Content", Content);
-                    parameter.put("Receiver",res.get("ReportUserID").toString());
-                    parameter.put("MessageType",MessageType.带看通知.getTypeID());
-                    parameter.put("Sender", UserID);
-                    parameter.put("Creator", UserID);
-                    parameter.put("IsNeedPush", true);
-                    iSystemMessageService.SystemMessageDetail_Insert(parameter);
-                }
+				Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+				customerTemplate.sendKHDFMsg(pmp);
             }
 		}
 		CustomerOpportunityFollowUpDetail_Update(opportunityID,userID);//客户机会跟进记录更新
@@ -1411,59 +1358,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                                 this.CustomerFollowUp_Insert(customerActionVo);
                                 //客户到访
                                 if ( "售场接待".equals(FollwUpType)){//售场接待
-                                	String tClueID = parameter.getString("OpportunitySource");
-                                    Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select("", tClueID);
-                                    String reportUserID = "";
-                                    String tprotectSource = "";
-                                    if(res!=null && res.get("clueID")!=null){
-                                    	tClueID = res.get("clueID").toString();
-                                    }
-                                    if(res!=null && res.get("reportUserID")!=null){
-                                    	reportUserID = res.get("reportUserID").toString();
-                                    }
-                                    if(res!=null && res.get("protectSource")!=null){
-                                    	tprotectSource = res.get("protectSource").toString();
-                                    }
-                                    if (!StringUtils.isEmpty(tClueID) &&  !StringUtils.isEmpty(reportUserID)){
-                                    	String LastName = "";
-                                    	String FirstName = "";
-                                    	String tMobile = "";
-                                    	if(!"".equals(tprotectSource)){
-                                        	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
-                                        	int customerVisitsRemind = 0;
-                                        	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                        		Number number = (Number)resf.get("customerVisitsRemind");
-                                        		customerVisitsRemind = number.intValue();
-                                        	}
-                                        	if(customerVisitsRemind>0){
-                                        		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
-                                        		if(ress!=null && ress.get("LastName")!=null){
-                                        			LastName = ress.get("LastName").toString();
-                                        		}
-                                        		if(ress!=null && ress.get("FirstName")!=null){
-                                        			FirstName = ress.get("FirstName").toString();
-                                        		}
-                                        		if(ress!=null && ress.get("Mobile")!=null){
-                                        			tMobile = ress.get("Mobile").toString();
-                                        		}
-                                        	}
-                                        }
-                                        String UserID =paramAry.getString("UserID");
-                                        String ProjectID = paramAry.getString("ProjectID");
-                                        String Content = "客户" +LastName +FirstName + "、" + tMobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
-                                        Map<String,Object> parameter_1 = new HashMap<String,Object>();
-                                        parameter_1.put("ProjectID", ProjectID);
-                                        parameter_1.put("BizID", res.get("ClueID").toString());
-                                        parameter_1.put("BizType", "Clue");
-                                        parameter_1.put("Subject", "客户到访提醒");
-                                        parameter_1.put("Content", Content);
-                                        parameter_1.put("Receiver",res.get("ReportUserID").toString());
-                                        parameter_1.put("MessageType",MessageType.带看通知.getTypeID());
-                                        parameter_1.put("Sender", UserID);
-                                        parameter_1.put("Creator", UserID);
-                                        parameter_1.put("IsNeedPush", true);
-                                        iSystemMessageService.SystemMessageDetail_Insert(parameter_1);
-                                    }
+                                	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                    				customerTemplate.sendKHDFMsg(pmp);
                                 }
 
                             }
@@ -1707,6 +1603,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         						String ParentID = opportunityInfo.get("ParentID").toString();
         						List<String> paramParent = new ArrayList<String>();
         						paramParent.add(ParentID);
+        						opportunityIDlist.add(ParentID);
         						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(paramParent);
         						if(childs!=null && childs.size()>0){
         							for(Map<String, Object> child : childs){
@@ -1750,54 +1647,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                         	}
                             if (FollwUpType.equals("售场接待")){//售场接待
                                 //客户到访
-                            	String clueID = parameter.getString("ClueID");
-                                String projectID = parameter.getString("ProjectID");
-                                Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select(opportunityID, clueID);
-                                
-                                String tclueID = "";
-                                String reportUserID = "";
-                                String protectSource = "";
-                                if(res!=null && res.get("clueID")!=null){
-                                	tclueID = res.get("clueID").toString();
-                                }
-                                if(res!=null && res.get("reportUserID")!=null){
-                                	reportUserID = res.get("reportUserID").toString();
-                                }
-                                if(res!=null && res.get("protectSource")!=null){
-                                	protectSource = res.get("protectSource").toString();
-                                }
-                                
-                                if (!StringUtils.isEmpty(tclueID) && !StringUtils.isEmpty(reportUserID)){
-                                	
-                                	String LastName = "";
-                                	String FirstName = "";
-                                	String Mobile = "";
-                                	if(!"".equals(protectSource)){
-                                    	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
-                                    	int customerVisitsRemind = 0;
-                                    	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                    		Number number = (Number)resf.get("customerVisitsRemind");
-                                    		customerVisitsRemind = number.intValue();
-                                    	}
-                                    	if(customerVisitsRemind>0){
-                                    		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
-                                    		if(ress!=null && ress.get("LastName")!=null){
-                                    			LastName = ress.get("LastName").toString();
-                                    		}
-                                    		if(ress!=null && ress.get("FirstName")!=null){
-                                    			FirstName = ress.get("FirstName").toString();
-                                    		}
-                                    		if(ress!=null && ress.get("Mobile")!=null){
-                                    			Mobile = ress.get("Mobile").toString();
-                                    		}
-                                    	}
-                                    }
-                                	
-                                    String UserID = parameter.getString("UserID");
-                                    String ProjectID = parameter.getString("ProjectID");
-                                    String Content = "客户" +LastName + FirstName+ "、" + Mobile + "(" + MessageType.到访提醒.getTypeID() + ")";
-                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, tclueID, "Clue", "客户到访提醒", Content, reportUserID, MessageType.带看通知.getTypeID(),true);
-                                }
+                            	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                				customerTemplate.sendKHDFMsg(pmp);
                             }
 
                         }
@@ -2198,6 +2049,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 			QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
 		    updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
+		    updateCustInfoLogQuery.orderByDesc("CreateTime");
 		    List<UpdateCustinfoLog> updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
 		    entity.setErrcode(0);
 			entity.setErrmsg("成功");
