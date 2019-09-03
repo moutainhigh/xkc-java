@@ -55,11 +55,7 @@ import java.util.*;
 public class H5AddController extends TahoeBaseController {
 
     @Autowired
-    private IABrokerprojectService brokerprojectService;
-    @Autowired
     private IBProjectService projectService;
-    @Autowired
-    private IBProjectcollectionService projectcollectionService;
     @Autowired
     private IBChanneluserService channeluserService;
     @Autowired
@@ -69,22 +65,10 @@ public class H5AddController extends TahoeBaseController {
     @Autowired
     private IBClueService clueService;
     @Autowired
-    private IBVerificationcodeService verificationcodeService;
-    @Autowired
     private ISFormsessionService iSFormsessionService;
-    @Autowired
-    private IBClueruleService clueruleService;
-
-    @Autowired
-    private IBVerificationcodeService iBVerificationcodeService;
-    @Autowired
-    private CsSendSmsLogService csSendSmsLogService;
 
     @Autowired
     private IBChannelService iBChannelService;
-
-    @Autowired
-    private IBChannelorgService channelorgService;
 
     @Autowired
     private ISAccountService accountService;
@@ -94,9 +78,6 @@ public class H5AddController extends TahoeBaseController {
 
     @Value("${registerUrl}")
     private  String registerUrl;
-
-    @Autowired
-    private PotentialCustomerServiceImpl potentialCustomerService;
 
 
     @ApiOperation(value = "获取房源项目列表", notes = "获取房源项目列表")
@@ -115,17 +96,10 @@ public class H5AddController extends TahoeBaseController {
         if (StringUtils.isNotBlank(OrgID)) {
             list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
         } else {
-//            list = projectService.ProjectInfoList_SelectN(page,Name, CityID);
-//            list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
+
             list =projectService.findAllProject(Name,PageIndex,PageSize);
         }
-//        List<Map<String, Object>> resultList=projectService.addName(list);
-//        Map<String, Object> map=new HashMap<>();
-//        map.put("List",resultList);
-//        Result result = new Result();
-//        result.setErrcode(0);
-//        result.setErrmsg("成功");
-//        result.setData(map);
+
         return Result.ok(list);
     }
 
@@ -214,7 +188,7 @@ public class H5AddController extends TahoeBaseController {
         }
     }
 
-
+//  如果要修改逻辑,请将H5Controller里的推荐提交一起看,逻辑相同,确认是否需要更改
     @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
     public Result mBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
@@ -266,17 +240,14 @@ public class H5AddController extends TahoeBaseController {
         }
         //获取报备用户所适用的规则
 
-//        Map<String,Object> userRule=clueruleService.getRegisterRule(projectId,adviserGroupID);
         ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userID, adviserGroupID, projectId);
         if (org.springframework.util.StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
             return Result.errormsg(21, "报备失败！所选项目未配置报备规则，请联系管理员！");
         }
 
-//        if (userRule.get("RuleID")==null){
         //验证报备客户是否有效
         Map<String, Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
 
-//        Map<String, Object> ruleValidate = clueService.ValidateForReport(userID, mobile, projectId, userRule);
         String channelOrgId=channeluserService.getChannelOrgID(userID,adviserGroupID);
         Map<String, Object> userRule=new HashMap<>();
         userRule.put("RuleType",channelRegisterModel.getUserRule().getRuleType());
@@ -287,8 +258,6 @@ public class H5AddController extends TahoeBaseController {
         re.setErrmsg(reMsg);
         //允许报备
         if ((int)CustomerValidate.get("InvalidType")==0){
-//        ruleValidate.put("Message",msg);
-//        String errMsg=clueService.GetMessageForReturn((int)ruleValidate.get("InvalidType"),userRule);
         //通过有效验证
         int status = 0;
 
@@ -320,7 +289,6 @@ public class H5AddController extends TahoeBaseController {
             re.setErrmsg("存储错误,请联系管理员");
             return re;
         }
-
         }else {//不允许报备
             re.setErrcode(1);
             return re;

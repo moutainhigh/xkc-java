@@ -722,7 +722,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 	    int width= 500;
         String accessToken = RqCodeUtils.getToken();
         System.out.println("accessToken = " + accessToken);
-        String twoCodeUrl = RqCodeUtils.getminiqrQr(accessToken,width,physicalPath);//todo:根据活动id生成路径
+        String twoCodeUrl = RqCodeUtils.getminiqrQr(accessToken,width,physicalPath);
         if (twoCodeUrl==null){
             return Result.errormsg(1,"生成失败");
         }

@@ -2,7 +2,11 @@ package com.tahoecn.xkc.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.tahoecn.xkc.model.job.SJobs;
+import com.tahoecn.xkc.model.job.SJobsmenurel;
 import com.tahoecn.xkc.model.sys.*;
+import com.tahoecn.xkc.service.job.ISJobsService;
+import com.tahoecn.xkc.service.job.ISJobsmenurelService;
 import com.tahoecn.xkc.service.sys.*;
 import com.tahoecn.xkc.mapper.sys.SCommonjobsMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,6 +47,12 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
 
     @Autowired
     private ISMenusXkcService menusXkcService;
+
+    @Autowired
+    private ISJobsService jobsService;
+
+    @Autowired
+    private ISJobsmenurelService jobsmenurelService;
 
 	@Override
 	public List<SCommonjobs> SystemCommonJobsList_Select(String AuthCompanyID, String ProductID, String JobName) {
@@ -119,6 +129,26 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
                             commonjobsmenurelService.removeById(commonjobsmenurel);
                         }
                     }
+                    //查询出通用岗位对应的job,删除job对应的menu关系
+                    QueryWrapper<SJobs> jobsQueryWrapper=new QueryWrapper<>();
+                    jobsQueryWrapper.eq("CommonJobID",jobID).eq("IsDel",0);
+                    List<SJobs> list1 = jobsService.list(jobsQueryWrapper);
+                    if (list1.size()>0){
+                        //有对应的job 将job对应menu关系删除
+                        for (SJobs sJobs : list1) {
+                            QueryWrapper<SJobsmenurel> jobsmenurelQueryWrapper=new QueryWrapper<>();
+                            jobsmenurelQueryWrapper.eq("JobID",sJobs.getId());
+                            List<SJobsmenurel> list2 = jobsmenurelService.list(jobsmenurelQueryWrapper);
+                            //判断menuID在原menu还是xkc menu  如果原menu不删除
+                            for (SJobsmenurel sJobsmenurel : list2) {
+                                String menuID = sJobsmenurel.getMenuID();
+                                SMenus byId = menusService.getById(menuID);
+                                if (byId==null){
+                                    jobsmenurelService.removeById(sJobsmenurel);
+                                }
+                            }
+                        }
+                    }
 //            QueryWrapper<SCommonjobsfunctionsrel> queryWrapper=new QueryWrapper<>();
 //            queryWrapper.eq("JobID",jobID);
 ////            queryWrapper.in("FuncID",oldFunctionsSplit);
@@ -144,9 +174,21 @@ public class SCommonjobsServiceImpl extends ServiceImpl<SCommonjobsMapper, SComm
                     if (menusSplit.length!=0){
                     for (String s : set) {
                         SCommonjobsmenurel commonjobsmenurel=new SCommonjobsmenurel();
+                        commonjobsmenurel.setId(UUID.randomUUID().toString().toUpperCase());
                         commonjobsmenurel.setJobID(jobID);
                         commonjobsmenurel.setMenuID(s);
                         commonjobsmenurelService.save(commonjobsmenurel);
+                        //新增到jobmenu关系表
+                        if (list1.size()>0){
+                            for (SJobs sJobs : list1) {
+                                SJobsmenurel jobsmenurel=new SJobsmenurel();
+                                jobsmenurel.setId(UUID.randomUUID().toString().toUpperCase());
+                                jobsmenurel.setJobID(sJobs.getId());
+                                jobsmenurel.setMenuID(s);
+                                jobsmenurelService.save(jobsmenurel);
+                            }
+
+                        }
                     }
             }
 //            if (functionsSplit.length!=0){

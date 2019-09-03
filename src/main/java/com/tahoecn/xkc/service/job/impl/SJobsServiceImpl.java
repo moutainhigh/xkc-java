@@ -622,6 +622,29 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
         return true;
     }
 
+    @Override
+    public boolean SystemJob_Insert(SJobs jobs) {
+        //获取通用岗位权限,新增到jobmenu关系表
+        try {
+            QueryWrapper<SCommonjobsmenurel> wrapper=new QueryWrapper<>();
+            wrapper.eq("JobID",jobs.getCommonJobID()).eq("IsDel",0);
+            List<SCommonjobsmenurel> list = commonjobsmenurelService.list(wrapper);
+            for (SCommonjobsmenurel sCommonjobsmenurel : list) {
+                SJobsmenurel jobsmenurel=new SJobsmenurel();
+                jobsmenurel.setId(UUID.randomUUID().toString().toUpperCase());
+                jobsmenurel.setJobID(jobs.getId());
+                jobsmenurel.setMenuID(sCommonjobsmenurel.getMenuID());
+                jobsmenurelService.save(jobsmenurel);
+            }
+            return this.save(jobs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+
+    }
+
 
 //    /**
 //     * 通过父级id获取所有子集
