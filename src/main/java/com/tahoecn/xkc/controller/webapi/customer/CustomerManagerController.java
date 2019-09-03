@@ -245,6 +245,7 @@ public class CustomerManagerController extends TahoeBaseController {
 
         QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
         updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
+        updateCustInfoLogQuery.orderByDesc("CreateTime");
         List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
         result.put("updateCustInfoLogList",updateCustInfoLogList);
 
