@@ -1222,7 +1222,7 @@ public class CustomerHelp implements ICustomerHelp {
 	                    parameter.put("Subject", "客户到访提醒");
 	                    parameter.put("Content", Content);
 	                    parameter.put("Receiver",reportuserid);
-	                    parameter.put("MessageType",MessageType.带看通知.getTypeID());
+	                    parameter.put("MessageType","到访通知");
 	                    parameter.put("Sender", UserID);
 	                    parameter.put("Creator", UserID);
 	                    parameter.put("IsNeedPush", true);
