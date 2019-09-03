@@ -207,12 +207,12 @@ public class H5AddController extends TahoeBaseController {
         }
         //验证手机号格式
         if (PhoneUtil.isNotValidChinesePhone(mobile)){
-            Result.errormsg(1,"手机号格式错误");
+            return Result.errormsg(1,"手机号格式错误");
         }
         //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
         int RowCount =iSFormsessionService.checkFormSessionID(formSessionID);
         if (RowCount==1){
-            Result.errormsg(1,"不能重复请求！");
+            return  Result.errormsg(1,"不能重复请求！");
         }
         //判断身份 是否有自渠和置业顾问 ,如果有,不可报备,返回错误信息
         Result jobByUsername=accountService.getJobByUserName(userName,mobile);
@@ -221,22 +221,22 @@ public class H5AddController extends TahoeBaseController {
         }
 
         if (StringUtils.isBlank(adviserGroupID)){
-            Result.errormsg(1,"未能识别报备人的身份");
+            return  Result.errormsg(1,"未能识别报备人的身份");
         }
         //1.不允许报备自己 0.允许报备自己  IsReportOwn
         int IsReportOwn=projectService.isReport(projectId,userID,mobile);
         if (IsReportOwn==1){
-            Result.errormsg(1,"不允许报备自己");
+            return  Result.errormsg(1,"不允许报备自己");
         }
         //没有ChannelOrgID 的不能报备
         int IsReport=channeluserService.isReport(userID);
         //没有ChannelOrgID 的不能报备
         if (IsReport==-2){
-            Result.errormsg(1,"没有所属机构的人员，不能报备");
+            return  Result.errormsg(1,"没有所属机构的人员，不能报备");
         }
         //ChannelOrgID禁用状态的不能报备
         if (IsReport==0){
-            Result.errormsg(1,"所属机构在禁用状态，不能报备");
+            return  Result.errormsg(1,"所属机构在禁用状态，不能报备");
         }
         //获取报备用户所适用的规则
 

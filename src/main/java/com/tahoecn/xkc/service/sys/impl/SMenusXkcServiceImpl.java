@@ -193,6 +193,17 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
         QueryWrapper<SMenusXkc> wrapper=new QueryWrapper<>();
         wrapper.eq("PID","-1").eq("IsDel",0);
         List<SMenusXkc> PIDList = menusXkcService.list(wrapper);
+        //判断父级是否有自己 如果没有去掉 可授权
+        List<SMenusXkc> pidList=new ArrayList();
+        for (SMenusXkc sMenusXkc : PIDList) {
+            QueryWrapper<SMenusXkc> wrapper1=new QueryWrapper<>();
+            wrapper1.eq("PID",sMenusXkc.getId()).eq("IsDel",0);
+            int count = menusXkcService.count(wrapper1);
+            if (count==0){
+                pidList.add(sMenusXkc);
+            }
+        }
+        PIDList.removeAll(pidList);
         List<String> type=new ArrayList();
         for (String s : result) {
             for (SMenusXkc sMenusXkc : PIDList) {
