@@ -64,4 +64,6 @@ public interface ICustomerHelp {
 	public List<OptionItem> GetRZMTOptionList(String projectID);
 	
 	public List<OptionItem> GetOptionList(String pid, Boolean isall);
+	
+	public void sendKHDFMsg(Map<String,Object> pmp);
 }
