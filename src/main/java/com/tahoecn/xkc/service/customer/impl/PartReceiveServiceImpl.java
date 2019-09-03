@@ -419,7 +419,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                             if (result){
                                 if (IsNew){
                                     //更新线索信息
-                                	customerTemplate.ClueUpdate(parameter);;
+                                	customerTemplate.ClueUpdate(parameter);
                                     if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//不为无
                                     	//判断分配的置业顾问是否为无
                                         if (entity.getErrcode() == 0){
@@ -470,7 +470,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                         }
                                         //客户到访
                                         if ("售场接待".equals(FollwUpType)){//售场接待
-                                        	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                                        	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
                             				customerTemplate.sendKHDFMsg(pmp);
                                         }
                                         String userID = parameter.getString("SaleUserID");

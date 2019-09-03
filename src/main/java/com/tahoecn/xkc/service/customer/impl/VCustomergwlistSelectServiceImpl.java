@@ -1358,7 +1358,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                                 this.CustomerFollowUp_Insert(customerActionVo);
                                 //客户到访
                                 if ( "售场接待".equals(FollwUpType)){//售场接待
-                                	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                                	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
                     				customerTemplate.sendKHDFMsg(pmp);
                                 }
 
@@ -1647,7 +1647,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                         	}
                             if (FollwUpType.equals("售场接待")){//售场接待
                                 //客户到访
-                            	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                            	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
                 				customerTemplate.sendKHDFMsg(pmp);
                             }
 

@@ -908,7 +908,7 @@ public class IpadServiceImpl implements IIpadService {
                                         }
                                         //客户到访
                                         if ("售场接待".equals(FollwUpType)){//售场接待
-                                        	Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+                                        	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
                             				customerTemplate.sendKHDFMsg(pmp);
                                         }
                                         
