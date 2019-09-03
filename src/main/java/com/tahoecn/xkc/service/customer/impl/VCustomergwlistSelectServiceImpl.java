@@ -2049,6 +2049,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 			QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
 		    updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
+		    updateCustInfoLogQuery.orderByDesc("CreateTime");
 		    List<UpdateCustinfoLog> updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
 		    entity.setErrcode(0);
 			entity.setErrmsg("成功");
