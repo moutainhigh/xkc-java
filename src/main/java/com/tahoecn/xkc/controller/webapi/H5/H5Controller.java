@@ -265,7 +265,7 @@ public class H5Controller extends TahoeBaseController {
                 user.put("ChannelType","分销中介");
             }
         }else {
-            return Result.errormsg(1,"请前往");
+            return Result.errormsg(1,"请前往");//todo 提示信息不全
         }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
@@ -499,30 +499,30 @@ public class H5Controller extends TahoeBaseController {
         }
         //验证手机号格式
         if (PhoneUtil.isNotValidChinesePhone(mobile)){
-            Result.errormsg(1,"手机号格式错误");
+            return Result.errormsg(1,"手机号格式错误");
         }
         //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
         int RowCount =iSFormsessionService.checkFormSessionID(formSessionID);
         if (RowCount==1){
-            Result.errormsg(1,"不能重复请求！");
+            return Result.errormsg(1,"不能重复请求！");
         }
         if (StringUtils.isBlank(adviserGroupID)){
-            Result.errormsg(1,"未能识别报备人的身份");
+            return Result.errormsg(1,"未能识别报备人的身份");
         }
         //1.不允许报备自己 0.允许报备自己  IsReportOwn
         int IsReportOwn=projectService.isReport(projectId,userID,mobile);
         if (IsReportOwn==1){
-            Result.errormsg(1,"不允许报备自己");
+            return  Result.errormsg(1,"不允许报备自己");
         }
         //没有ChannelOrgID 的不能报备
         int IsReport=channeluserService.isReport(userID);
         //没有ChannelOrgID 的不能报备
         if (IsReport==-2){
-            Result.errormsg(1,"没有所属机构的人员，不能报备");
+            return  Result.errormsg(1,"没有所属机构的人员，不能报备");
         }
         //ChannelOrgID禁用状态的不能报备
         if (IsReport==0){
-            Result.errormsg(1,"所属机构在禁用状态，不能报备");
+            return  Result.errormsg(1,"所属机构在禁用状态，不能报备");
         }
         //获取报备用户所适用的规则
 
@@ -897,13 +897,13 @@ public class H5Controller extends TahoeBaseController {
         return Result.ok(list);
     }
 
-    @ApiOperation(value = "获取用户信息或创建", notes = "获取用户信息或创建")
-    @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
-    public Result getUserInfo(@RequestBody JSONObject jsonParam) {
-        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
-        Result user=channeluserService.getUserInfo(paramMap);
-        return user;
-    }
+//    @ApiOperation(value = "获取用户信息或创建", notes = "获取用户信息或创建")
+//    @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
+//    public Result getUserInfo(@RequestBody JSONObject jsonParam) {
+//        Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
+//        Result user=channeluserService.getUserInfo(paramMap);
+//        return user;
+//    }
 
 
 }

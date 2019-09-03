@@ -8,11 +8,14 @@ import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.dto.SMenusXkcDto;
 import com.tahoecn.xkc.model.job.SJobs;
+import com.tahoecn.xkc.model.job.SJobsuserrel;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SCommonjobs;
+import com.tahoecn.xkc.model.sys.SCommonjobsmenurel;
 import com.tahoecn.xkc.service.job.ISJobsService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISCommonjobsService;
+import com.tahoecn.xkc.service.sys.ISCommonjobsmenurelService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +47,9 @@ public class SJobsController extends TahoeBaseController {
     @Autowired
     private ISAccountService accountService;
 
+    @Autowired
+    private ISCommonjobsmenurelService commonjobsmenurelService;
+
     @ApiOperation(value = "获取岗位列表", notes = "获取岗位列表")
     @ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "当前页数", dataType = "int") ,
             @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
@@ -72,7 +78,9 @@ public class SJobsController extends TahoeBaseController {
         jobs.setStatus(1);
         jobs.setCreateTime(new Date());
         jobs.setIsDel(0);
-        boolean save = jobsService.save(jobs);
+
+        boolean save = jobsService.SystemJob_Insert(jobs);
+//        boolean save = jobsService.save(jobs);
         if (save){
             return Result.okm("成功");
         }

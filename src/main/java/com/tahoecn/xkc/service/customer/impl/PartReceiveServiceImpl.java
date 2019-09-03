@@ -2,7 +2,6 @@ package com.tahoecn.xkc.service.customer.impl;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -420,7 +419,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                             if (result){
                                 if (IsNew){
                                     //更新线索信息
-                                	customerTemplate.ClueUpdate(parameter);;
+                                	customerTemplate.ClueUpdate(parameter);
                                     if (!SaleUserID.equals("C4C09951-FA39-4982-AAD1-E72D9D4C3899")){//不为无
                                     	//判断分配的置业顾问是否为无
                                         if (entity.getErrcode() == 0){
@@ -471,62 +470,8 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                                         }
                                         //客户到访
                                         if ("售场接待".equals(FollwUpType)){//售场接待
-                                        	String projectID = parameter.getString("ProjectID");
-                                        	String tClueID = parameter.getString("ClueID");
-                                        	String opportunityID = parameter.getString("OpportunityID");
-                                            Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select(opportunityID, tClueID);
-                                            String reportUserID = "";
-                                            String tprotectSource = "";
-                                            if(res!=null && res.get("clueID")!=null){
-                                            	tClueID = res.get("clueID").toString();
-                                            }
-                                            if(res!=null && res.get("reportUserID")!=null){
-                                            	reportUserID = res.get("reportUserID").toString();
-                                            }
-                                            if(res!=null && res.get("protectSource")!=null){
-                                            	tprotectSource = res.get("protectSource").toString();
-                                            }
-                                            if (!StringUtils.isEmpty(tClueID) &&  !StringUtils.isEmpty(reportUserID)){
-                                            	String LastName = "";
-                                            	String FirstName = "";
-                                            	String tMobile = "";
-                                            	if(!"".equals(tprotectSource)){
-                                                	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
-                                                	int customerVisitsRemind = 0;
-                                                	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                                		Number numb = (Number)resf.get("customerVisitsRemind");
-                                                		customerVisitsRemind = numb.intValue();
-                                                	}
-                                                	if(customerVisitsRemind>0){
-                                                		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
-                                                		if(ress!=null && ress.get("LastName")!=null){
-                                                			LastName = ress.get("LastName").toString();
-                                                		}
-                                                		if(ress!=null && ress.get("FirstName")!=null){
-                                                			FirstName = ress.get("FirstName").toString();
-                                                		}
-                                                		if(ress!=null && ress.get("Mobile")!=null){
-                                                			tMobile = ress.get("Mobile").toString();
-                                                		}
-                                                	}
-                                                }
-                                                String UserID =paramAry.getString("UserID");
-                                                String ProjectID = paramAry.getString("ProjectID");
-                                                String Content = "客户" +LastName +FirstName + "、" + tMobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
-                                                Map<String,Object> parameter_1 = new HashMap<String,Object>();
-                                                parameter_1.put("ProjectID", ProjectID);
-                                                parameter_1.put("BizID", res.get("ClueID").toString());
-                                                parameter_1.put("BizType", "Clue");
-                                                parameter_1.put("Subject", "客户到访提醒");
-                                                parameter_1.put("Content", Content);
-                                                parameter_1.put("Receiver",res.get("ReportUserID").toString());
-                                                parameter_1.put("MessageType",MessageType.带看通知.getTypeID());
-                                                parameter_1.put("Sender", UserID);
-                                                parameter_1.put("Creator", UserID);
-                                                parameter_1.put("IsNeedPush", true);
-                                                iSystemMessageService.SystemMessageDetail_Insert(parameter_1);
-                                            }
-                                        
+                                        	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
+                            				customerTemplate.sendKHDFMsg(pmp);
                                         }
                                         String userID = parameter.getString("SaleUserID");
                                         Result Account = iSystemAccountService.SystemAccountDetail_Select(userID);

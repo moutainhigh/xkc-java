@@ -139,7 +139,11 @@ public interface VCustomergwlistSelectMapper {
 	 */
 	Map<String,Object> RemindRuleArriveDetail_Select(@Param("opportunityID")String opportunityID,@Param("clueID")String clueID);
 	
-	Map<String,Object> RemindRuleArriveDetail_Select_f(@Param("projectID")String projectID,@Param("protectSource")String protectSource);
+	Map<String,Object> RemindRuleArriveDetail_Select_step1(@Param("opportunityID")String opportunityID);
+	
+	Map<String,Object> RemindRuleArriveDetail_Select_step2(@Param("clueID")String clueID);
+	
+	Map<String,Object> RemindRuleArriveDetail_Select_f(@Param("projectID")String projectID,@Param("protectSource")Integer protectSource);
 	
 	Map<String,Object> RemindRuleArriveDetail_Select_s(@Param("clueID")String clueID);
 	

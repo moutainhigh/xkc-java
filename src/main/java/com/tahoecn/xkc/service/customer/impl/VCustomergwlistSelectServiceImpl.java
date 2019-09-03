@@ -460,12 +460,27 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				//获取子集信息
 				List<String> opportunityIDlist = new ArrayList<String>();
 				opportunityIDlist.add(OpportunityID);
-				
 				try {
-					List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
-					if(childs!=null && childs.size()>0){
-						for(Map<String, Object> child : childs){
-							opportunityIDlist.add(child.get("OpportunityID").toString());
+					Map<String, Object> opportunityInfo = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
+					if(opportunityInfo.get("ParentID")!=null){
+						String ParentID = opportunityInfo.get("ParentID").toString();
+						List<String> paramParent = new ArrayList<String>();
+						paramParent.add(ParentID);
+						opportunityIDlist.add(ParentID);
+						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(paramParent);
+						if(childs!=null && childs.size()>0){
+							for(Map<String, Object> child : childs){
+								if(!OpportunityID.equals(child.get("OpportunityID").toString())){
+									opportunityIDlist.add(child.get("OpportunityID").toString());
+								}
+							}
+						}
+					}else{
+						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
+						if(childs!=null && childs.size()>0){
+							for(Map<String, Object> child : childs){
+								opportunityIDlist.add(child.get("OpportunityID").toString());
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -492,62 +507,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 			if (follwUpType.equals("售场接待")){
                 //客户到访
-                String clueID = paramAry.getString("ClueID");
-                String projectID = paramAry.getString("ProjectID");
-                Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select(opportunityID, clueID);
-                
-                String tclueID = "";
-                String reportUserID = "";
-                String protectSource = "";
-                if(res!=null && res.get("clueID")!=null){
-                	tclueID = res.get("clueID").toString();
-                }
-                if(res!=null && res.get("reportUserID")!=null){
-                	reportUserID = res.get("reportUserID").toString();
-                }
-                if(res!=null && res.get("protectSource")!=null){
-                	protectSource = res.get("protectSource").toString();
-                }
-                if (!StringUtils.isEmpty(tclueID) &&  !StringUtils.isEmpty(reportUserID)){
-                	String LastName = "";
-                	String FirstName = "";
-                	String Mobile = "";
-                	if(!"".equals(protectSource)){
-                    	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
-                    	int customerVisitsRemind = 0;
-                    	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                    		Number number = (Number)resf.get("customerVisitsRemind");
-                    		customerVisitsRemind = number.intValue();
-                    	}
-                    	if(customerVisitsRemind>0){
-                    		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
-                    		if(ress!=null && ress.get("LastName")!=null){
-                    			LastName = ress.get("LastName").toString();
-                    		}
-                    		if(ress!=null && ress.get("FirstName")!=null){
-                    			FirstName = ress.get("FirstName").toString();
-                    		}
-                    		if(ress!=null && ress.get("Mobile")!=null){
-                    			Mobile = ress.get("Mobile").toString();
-                    		}
-                    	}
-                    }
-                    String UserID =paramAry.getString("UserID");
-                    String ProjectID = paramAry.getString("ProjectID");
-                    String Content = "客户" +LastName +FirstName + "、" + Mobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
-                    Map<String,Object> parameter = new HashMap<String,Object>();
-                    parameter.put("ProjectID", ProjectID);
-                    parameter.put("BizID", res.get("ClueID").toString());
-                    parameter.put("BizType", "Clue");
-                    parameter.put("Subject", "客户到访提醒");
-                    parameter.put("Content", Content);
-                    parameter.put("Receiver",res.get("ReportUserID").toString());
-                    parameter.put("MessageType",MessageType.带看通知.getTypeID());
-                    parameter.put("Sender", UserID);
-                    parameter.put("Creator", UserID);
-                    parameter.put("IsNeedPush", true);
-                    iSystemMessageService.SystemMessageDetail_Insert(parameter);
-                }
+				Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
+				customerTemplate.sendKHDFMsg(pmp);
             }
 		}
 		CustomerOpportunityFollowUpDetail_Update(opportunityID,userID);//客户机会跟进记录更新
@@ -1397,59 +1358,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                                 this.CustomerFollowUp_Insert(customerActionVo);
                                 //客户到访
                                 if ( "售场接待".equals(FollwUpType)){//售场接待
-                                	String tClueID = parameter.getString("OpportunitySource");
-                                    Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select("", tClueID);
-                                    String reportUserID = "";
-                                    String tprotectSource = "";
-                                    if(res!=null && res.get("clueID")!=null){
-                                    	tClueID = res.get("clueID").toString();
-                                    }
-                                    if(res!=null && res.get("reportUserID")!=null){
-                                    	reportUserID = res.get("reportUserID").toString();
-                                    }
-                                    if(res!=null && res.get("protectSource")!=null){
-                                    	tprotectSource = res.get("protectSource").toString();
-                                    }
-                                    if (!StringUtils.isEmpty(tClueID) &&  !StringUtils.isEmpty(reportUserID)){
-                                    	String LastName = "";
-                                    	String FirstName = "";
-                                    	String tMobile = "";
-                                    	if(!"".equals(tprotectSource)){
-                                        	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, tprotectSource);
-                                        	int customerVisitsRemind = 0;
-                                        	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                        		Number number = (Number)resf.get("customerVisitsRemind");
-                                        		customerVisitsRemind = number.intValue();
-                                        	}
-                                        	if(customerVisitsRemind>0){
-                                        		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tClueID);
-                                        		if(ress!=null && ress.get("LastName")!=null){
-                                        			LastName = ress.get("LastName").toString();
-                                        		}
-                                        		if(ress!=null && ress.get("FirstName")!=null){
-                                        			FirstName = ress.get("FirstName").toString();
-                                        		}
-                                        		if(ress!=null && ress.get("Mobile")!=null){
-                                        			tMobile = ress.get("Mobile").toString();
-                                        		}
-                                        	}
-                                        }
-                                        String UserID =paramAry.getString("UserID");
-                                        String ProjectID = paramAry.getString("ProjectID");
-                                        String Content = "客户" +LastName +FirstName + "、" + tMobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
-                                        Map<String,Object> parameter_1 = new HashMap<String,Object>();
-                                        parameter_1.put("ProjectID", ProjectID);
-                                        parameter_1.put("BizID", res.get("ClueID").toString());
-                                        parameter_1.put("BizType", "Clue");
-                                        parameter_1.put("Subject", "客户到访提醒");
-                                        parameter_1.put("Content", Content);
-                                        parameter_1.put("Receiver",res.get("ReportUserID").toString());
-                                        parameter_1.put("MessageType",MessageType.带看通知.getTypeID());
-                                        parameter_1.put("Sender", UserID);
-                                        parameter_1.put("Creator", UserID);
-                                        parameter_1.put("IsNeedPush", true);
-                                        iSystemMessageService.SystemMessageDetail_Insert(parameter_1);
-                                    }
+                                	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
+                    				customerTemplate.sendKHDFMsg(pmp);
                                 }
 
                             }
@@ -1682,75 +1592,63 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                     	customerTemplate.IntentProjectAdd(parameter);
                         //增加跟进记录
                         String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(parameter.getString("FollwUpWay"));
+                        
+                        
+                        //获取子集信息
+        				List<String> opportunityIDlist = new ArrayList<String>();
+        				opportunityIDlist.add(opportunityID);
+        				try {
+        					Map<String, Object> opportunityInfo = vCustomergwlistSelectMapper.selectOpportunityByID(opportunityID);
+        					if(opportunityInfo.get("ParentID")!=null){
+        						String ParentID = opportunityInfo.get("ParentID").toString();
+        						List<String> paramParent = new ArrayList<String>();
+        						paramParent.add(ParentID);
+        						opportunityIDlist.add(ParentID);
+        						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(paramParent);
+        						if(childs!=null && childs.size()>0){
+        							for(Map<String, Object> child : childs){
+        								if(!opportunityID.equals(child.get("OpportunityID").toString())){
+        									opportunityIDlist.add(child.get("OpportunityID").toString());
+        								}
+        							}
+        						}
+        					}else{
+        						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
+        						if(childs!=null && childs.size()>0){
+        							for(Map<String, Object> child : childs){
+        								opportunityIDlist.add(child.get("OpportunityID").toString());
+        							}
+        						}
+        					}
+        				} catch (Exception e) {
+        					e.printStackTrace();
+        				}
+                        
+                        
                         if (!StringUtils.isEmpty(FollwUpType)){
-                            JSONObject obj = new JSONObject();
-                            obj.put("FollwUpType", FollwUpType);
-                            obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
-                            obj.put("SalesType", 1);
-                            obj.put("NewSaleUserName", "");
-                            obj.put("OldSaleUserName", "");
-                            obj.put("FollwUpUserID", parameter.getString("UserID"));
-                            obj.put("FollwUpWay",parameter.getString("FollwUpWay"));
-                            obj.put("FollowUpContent", parameter.getString("FollowUpContent"));
-                            obj.put("IntentionLevel", parameter.getString("CustomerLevel"));
-                            obj.put("OrgID",parameter.getString("OrgID"));
-                            obj.put("FollwUpUserRole", parameter.getString("JobID"));
-                            obj.put("OpportunityID", parameter.getString("OpportunityID"));
-                            obj.put("ClueID", "");
-                            obj.put("NextFollowUpDate", parameter.getString("NextFollowUpDate"));
-                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
-                            this.CustomerFollowUp_Insert(customerActionVo);
-
+                        	for(String oppID :opportunityIDlist){
+                        		JSONObject obj = new JSONObject();
+                                obj.put("FollwUpType", FollwUpType);
+                                obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
+                                obj.put("SalesType", 1);
+                                obj.put("NewSaleUserName", "");
+                                obj.put("OldSaleUserName", "");
+                                obj.put("FollwUpUserID", parameter.getString("UserID"));
+                                obj.put("FollwUpWay",parameter.getString("FollwUpWay"));
+                                obj.put("FollowUpContent", parameter.getString("FollowUpContent"));
+                                obj.put("IntentionLevel", parameter.getString("CustomerLevel"));
+                                obj.put("OrgID",parameter.getString("OrgID"));
+                                obj.put("FollwUpUserRole", parameter.getString("JobID"));
+                                obj.put("OpportunityID", oppID);
+                                obj.put("ClueID", "");
+                                obj.put("NextFollowUpDate", parameter.getString("NextFollowUpDate"));
+                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
+                                this.CustomerFollowUp_Insert(customerActionVo);
+                        	}
                             if (FollwUpType.equals("售场接待")){//售场接待
                                 //客户到访
-                            	String clueID = parameter.getString("ClueID");
-                                String projectID = parameter.getString("ProjectID");
-                                Map<String,Object> res = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select(opportunityID, clueID);
-                                
-                                String tclueID = "";
-                                String reportUserID = "";
-                                String protectSource = "";
-                                if(res!=null && res.get("clueID")!=null){
-                                	tclueID = res.get("clueID").toString();
-                                }
-                                if(res!=null && res.get("reportUserID")!=null){
-                                	reportUserID = res.get("reportUserID").toString();
-                                }
-                                if(res!=null && res.get("protectSource")!=null){
-                                	protectSource = res.get("protectSource").toString();
-                                }
-                                
-                                if (!StringUtils.isEmpty(tclueID) && !StringUtils.isEmpty(reportUserID)){
-                                	
-                                	String LastName = "";
-                                	String FirstName = "";
-                                	String Mobile = "";
-                                	if(!"".equals(protectSource)){
-                                    	Map<String,Object> resf =vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, protectSource);
-                                    	int customerVisitsRemind = 0;
-                                    	if(resf!=null && resf.get("customerVisitsRemind")!=null){
-                                    		Number number = (Number)resf.get("customerVisitsRemind");
-                                    		customerVisitsRemind = number.intValue();
-                                    	}
-                                    	if(customerVisitsRemind>0){
-                                    		Map<String,Object> ress = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(tclueID);
-                                    		if(ress!=null && ress.get("LastName")!=null){
-                                    			LastName = ress.get("LastName").toString();
-                                    		}
-                                    		if(ress!=null && ress.get("FirstName")!=null){
-                                    			FirstName = ress.get("FirstName").toString();
-                                    		}
-                                    		if(ress!=null && ress.get("Mobile")!=null){
-                                    			Mobile = ress.get("Mobile").toString();
-                                    		}
-                                    	}
-                                    }
-                                	
-                                    String UserID = parameter.getString("UserID");
-                                    String ProjectID = parameter.getString("ProjectID");
-                                    String Content = "客户" +LastName + FirstName+ "、" + Mobile + "(" + MessageType.到访提醒.getTypeID() + ")";
-                                    iSystemMessageService.Detail_Insert(UserID, ProjectID, tclueID, "Clue", "客户到访提醒", Content, reportUserID, MessageType.带看通知.getTypeID(),true);
-                                }
+                            	Map<String,Object> pmp = JSONObject.parseObject(parameter.toJSONString(), Map.class);
+                				customerTemplate.sendKHDFMsg(pmp);
                             }
 
                         }
@@ -1759,42 +1657,46 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                             IsLittleBookingOld = "DFE6406C-120B-45E5-9293-DD093E416C68";
                         }
                         if (IsLittleBooking.equals("1DCCBDB8-AD44-44D4-B23A-571A38337D5C") && !IsLittleBookingOld.equals(IsLittleBooking)){//小筹
-                            JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", "小筹");
-                            obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
-                            obj2.put("SalesType", 1);
-                            obj2.put("NewSaleUserName", "");
-                            obj2.put("OldSaleUserName", "");
-                            obj2.put("FollwUpUserID", "99");
-                            obj2.put("FollwUpWay","");
-                            obj2.put("FollowUpContent","小筹");
-                            obj2.put("IntentionLevel", "");
-                            obj2.put("OrgID","");
-                            obj2.put("FollwUpUserRole", "");
-                            obj2.put("OpportunityID", parameter.getString("OpportunityID"));
-                            obj2.put("ClueID", "");
-                            obj2.put("NextFollowUpDate", "");
-                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
-                            this.CustomerFollowUp_Insert(customerActionVo);
+                        	for(String oppID :opportunityIDlist){
+                        		JSONObject obj2 = new JSONObject();
+                                obj2.put("FollwUpType", "小筹");
+                                obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
+                                obj2.put("SalesType", 1);
+                                obj2.put("NewSaleUserName", "");
+                                obj2.put("OldSaleUserName", "");
+                                obj2.put("FollwUpUserID", "99");
+                                obj2.put("FollwUpWay","");
+                                obj2.put("FollowUpContent","小筹");
+                                obj2.put("IntentionLevel", "");
+                                obj2.put("OrgID","");
+                                obj2.put("FollwUpUserRole", "");
+                                obj2.put("OpportunityID",oppID);
+                                obj2.put("ClueID", "");
+                                obj2.put("NextFollowUpDate", "");
+                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
+                                this.CustomerFollowUp_Insert(customerActionVo);
+                        	}
                         }
                         if (IsLittleBooking.equals("DFE6406C-120B-45E5-9293-DD093E416C68") && !IsLittleBookingOld.equals(IsLittleBooking)){//退小筹
-                            JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", "退小筹");
-                            obj2.put("FollwUpTypeID", ActionType.退小筹.getValue());
-                            obj2.put("SalesType", 1);
-                            obj2.put("NewSaleUserName", "");
-                            obj2.put("OldSaleUserName", "");
-                            obj2.put("FollwUpUserID", "99");
-                            obj2.put("FollwUpWay","");
-                            obj2.put("FollowUpContent","退小筹");
-                            obj2.put("IntentionLevel", "");
-                            obj2.put("OrgID","");
-                            obj2.put("FollwUpUserRole", "");
-                            obj2.put("OpportunityID", parameter.getString("OpportunityID"));
-                            obj2.put("ClueID", "");
-                            obj2.put("NextFollowUpDate", "");
-                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
-                            this.CustomerFollowUp_Insert(customerActionVo);
+                        	for(String oppID :opportunityIDlist){
+                        		JSONObject obj2 = new JSONObject();
+                                obj2.put("FollwUpType", "退小筹");
+                                obj2.put("FollwUpTypeID", ActionType.退小筹.getValue());
+                                obj2.put("SalesType", 1);
+                                obj2.put("NewSaleUserName", "");
+                                obj2.put("OldSaleUserName", "");
+                                obj2.put("FollwUpUserID", "99");
+                                obj2.put("FollwUpWay","");
+                                obj2.put("FollowUpContent","退小筹");
+                                obj2.put("IntentionLevel", "");
+                                obj2.put("OrgID","");
+                                obj2.put("FollwUpUserRole", "");
+                                obj2.put("OpportunityID", oppID);
+                                obj2.put("ClueID", "");
+                                obj2.put("NextFollowUpDate", "");
+                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
+                                this.CustomerFollowUp_Insert(customerActionVo);
+                        	}
                         }
                         CustomerOpportunityFollowUpDetail_Update(opportunityID,userID);//客户机会跟进记录更新
                         //处理跟进类待办为已办
@@ -2147,7 +2049,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 			QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
 		    updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
-		    List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
+		    updateCustInfoLogQuery.orderByDesc("CreateTime");
+		    List<UpdateCustinfoLog> updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
 		    entity.setErrcode(0);
 			entity.setErrmsg("成功");
 			entity.setData(updateCustInfoLogList);

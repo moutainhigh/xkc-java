@@ -21,6 +21,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
+import com.tahoecn.xkc.common.enums.MessageType;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
@@ -36,6 +37,7 @@ import com.tahoecn.xkc.model.vo.PanelItem;
 import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IMYService;
 import com.tahoecn.xkc.service.customer.IProjectService;
+import com.tahoecn.xkc.service.sys.ISystemMessageService;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -44,10 +46,10 @@ public class CustomerHelp implements ICustomerHelp {
 
 	@Resource
 	private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
-
 	@Autowired
 	RedisTemplate redisTemplate;
-	
+	@Resource
+	private ISystemMessageService iSystemMessageService;
 	@Resource
 	private IProjectService iProjectService;
 	@Resource
@@ -1167,5 +1169,67 @@ public class CustomerHelp implements ICustomerHelp {
             return false;
         }
         return true;
+	}
+	
+	@Override
+	public void sendKHDFMsg(Map<String,Object> pmp){
+		Integer ProtectSource=null;
+		String clueid="";
+		String reportuserid="";
+		int CustomerVisitsRemind=0;
+		String opportunityid="";
+		if(pmp.get("OpportunityID")!=null){
+			opportunityid = pmp.get("OpportunityID").toString();
+		}
+		Map<String,Object> data = null;
+		if(!"".equals(opportunityid)){
+			data = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_step1(opportunityid);
+		}else{
+			if(pmp.get("ClueID")!=null){
+				clueid = pmp.get("ClueID").toString();
+				if(!"".equals(clueid)){
+					data = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_step2(clueid);
+				}
+			}
+		}
+		if(data!=null){
+			clueid = data.get("clueID")!=null?data.get("clueID").toString():"";
+			reportuserid = data.get("reportuserID")!=null?data.get("reportuserID").toString():"";
+			if(data.get("protectSource")!=null){
+				Number number = (Number) data.get("protectSource");
+				ProtectSource = number.intValue();
+			}
+			
+			String projectID = pmp.get("ProjectID")!=null?pmp.get("ProjectID").toString():"";
+			if(!"".equals(projectID) && ProtectSource!=null){
+				Map<String, Object> customerVisitsRemindData = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_f(projectID, ProtectSource);
+				if(customerVisitsRemindData!=null && customerVisitsRemindData.size()>0){
+					Number number = (Number) customerVisitsRemindData.get("customerVisitsRemind");
+					CustomerVisitsRemind = number.intValue();
+				}
+				if(CustomerVisitsRemind>0){
+					Map<String, Object> oppInfo = vCustomergwlistSelectMapper.RemindRuleArriveDetail_Select_s(clueid);
+					if(oppInfo!=null && oppInfo.size()>0){
+						String LastName = oppInfo.get("LastName")!=null?oppInfo.get("LastName").toString():"";
+						String FirstName= oppInfo.get("FirstName")!=null?oppInfo.get("FirstName").toString():"";
+						String Mobile = oppInfo.get("Mobile")!=null?oppInfo.get("Mobile").toString():"";
+					 	String UserID =pmp.get("UserID")!=null?pmp.get("UserID").toString():"";
+	                    String Content = "客户" +LastName +FirstName + "、" + Mobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
+	                    Map<String,Object> parameter = new HashMap<String,Object>();
+	                    parameter.put("ProjectID", projectID);
+	                    parameter.put("BizID", clueid);
+	                    parameter.put("BizType", "Clue");
+	                    parameter.put("Subject", "客户到访提醒");
+	                    parameter.put("Content", Content);
+	                    parameter.put("Receiver",reportuserid);
+	                    parameter.put("MessageType","到访通知");
+	                    parameter.put("Sender", UserID);
+	                    parameter.put("Creator", UserID);
+	                    parameter.put("IsNeedPush", true);
+	                    iSystemMessageService.SystemMessageDetail_Insert(parameter);
+					}
+				}
+			}
+		}
 	}
 }

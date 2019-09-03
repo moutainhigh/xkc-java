@@ -48,4 +48,6 @@ public interface ISJobsService extends IService<SJobs> {
     List<Map<String, Object>> MenuOrFunIDList_Select(String JobID);
 
     Boolean FunctionAuthorization_Insert(String jobID, String mainID, String sonID);
+
+    boolean SystemJob_Insert(SJobs jobs);
 }
