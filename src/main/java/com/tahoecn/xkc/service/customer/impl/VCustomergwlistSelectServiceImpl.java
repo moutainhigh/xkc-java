@@ -460,12 +460,26 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				//获取子集信息
 				List<String> opportunityIDlist = new ArrayList<String>();
 				opportunityIDlist.add(OpportunityID);
-				
 				try {
-					List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
-					if(childs!=null && childs.size()>0){
-						for(Map<String, Object> child : childs){
-							opportunityIDlist.add(child.get("OpportunityID").toString());
+					Map<String, Object> opportunityInfo = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
+					if(opportunityInfo.get("ParentID")!=null){
+						String ParentID = opportunityInfo.get("ParentID").toString();
+						List<String> paramParent = new ArrayList<String>();
+						paramParent.add(ParentID);
+						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(paramParent);
+						if(childs!=null && childs.size()>0){
+							for(Map<String, Object> child : childs){
+								if(!OpportunityID.equals(child.get("OpportunityID").toString())){
+									opportunityIDlist.add(child.get("OpportunityID").toString());
+								}
+							}
+						}
+					}else{
+						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
+						if(childs!=null && childs.size()>0){
+							for(Map<String, Object> child : childs){
+								opportunityIDlist.add(child.get("OpportunityID").toString());
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -1682,25 +1696,58 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                     	customerTemplate.IntentProjectAdd(parameter);
                         //增加跟进记录
                         String FollwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(parameter.getString("FollwUpWay"));
+                        
+                        
+                        //获取子集信息
+        				List<String> opportunityIDlist = new ArrayList<String>();
+        				opportunityIDlist.add(opportunityID);
+        				try {
+        					Map<String, Object> opportunityInfo = vCustomergwlistSelectMapper.selectOpportunityByID(opportunityID);
+        					if(opportunityInfo.get("ParentID")!=null){
+        						String ParentID = opportunityInfo.get("ParentID").toString();
+        						List<String> paramParent = new ArrayList<String>();
+        						paramParent.add(ParentID);
+        						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(paramParent);
+        						if(childs!=null && childs.size()>0){
+        							for(Map<String, Object> child : childs){
+        								if(!opportunityID.equals(child.get("OpportunityID").toString())){
+        									opportunityIDlist.add(child.get("OpportunityID").toString());
+        								}
+        							}
+        						}
+        					}else{
+        						List<Map<String, Object>> childs = vCustomergwlistSelectMapper.SelectOpportunityByParentID(opportunityIDlist);
+        						if(childs!=null && childs.size()>0){
+        							for(Map<String, Object> child : childs){
+        								opportunityIDlist.add(child.get("OpportunityID").toString());
+        							}
+        						}
+        					}
+        				} catch (Exception e) {
+        					e.printStackTrace();
+        				}
+                        
+                        
                         if (!StringUtils.isEmpty(FollwUpType)){
-                            JSONObject obj = new JSONObject();
-                            obj.put("FollwUpType", FollwUpType);
-                            obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
-                            obj.put("SalesType", 1);
-                            obj.put("NewSaleUserName", "");
-                            obj.put("OldSaleUserName", "");
-                            obj.put("FollwUpUserID", parameter.getString("UserID"));
-                            obj.put("FollwUpWay",parameter.getString("FollwUpWay"));
-                            obj.put("FollowUpContent", parameter.getString("FollowUpContent"));
-                            obj.put("IntentionLevel", parameter.getString("CustomerLevel"));
-                            obj.put("OrgID",parameter.getString("OrgID"));
-                            obj.put("FollwUpUserRole", parameter.getString("JobID"));
-                            obj.put("OpportunityID", parameter.getString("OpportunityID"));
-                            obj.put("ClueID", "");
-                            obj.put("NextFollowUpDate", parameter.getString("NextFollowUpDate"));
-                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
-                            this.CustomerFollowUp_Insert(customerActionVo);
-
+                        	for(String oppID :opportunityIDlist){
+                        		JSONObject obj = new JSONObject();
+                                obj.put("FollwUpType", FollwUpType);
+                                obj.put("FollwUpTypeID", ActionType.valueOf(FollwUpType).getValue());
+                                obj.put("SalesType", 1);
+                                obj.put("NewSaleUserName", "");
+                                obj.put("OldSaleUserName", "");
+                                obj.put("FollwUpUserID", parameter.getString("UserID"));
+                                obj.put("FollwUpWay",parameter.getString("FollwUpWay"));
+                                obj.put("FollowUpContent", parameter.getString("FollowUpContent"));
+                                obj.put("IntentionLevel", parameter.getString("CustomerLevel"));
+                                obj.put("OrgID",parameter.getString("OrgID"));
+                                obj.put("FollwUpUserRole", parameter.getString("JobID"));
+                                obj.put("OpportunityID", oppID);
+                                obj.put("ClueID", "");
+                                obj.put("NextFollowUpDate", parameter.getString("NextFollowUpDate"));
+                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj.toJSONString(), CustomerActionVo.class);
+                                this.CustomerFollowUp_Insert(customerActionVo);
+                        	}
                             if (FollwUpType.equals("售场接待")){//售场接待
                                 //客户到访
                             	String clueID = parameter.getString("ClueID");
@@ -1759,42 +1806,46 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                             IsLittleBookingOld = "DFE6406C-120B-45E5-9293-DD093E416C68";
                         }
                         if (IsLittleBooking.equals("1DCCBDB8-AD44-44D4-B23A-571A38337D5C") && !IsLittleBookingOld.equals(IsLittleBooking)){//小筹
-                            JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", "小筹");
-                            obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
-                            obj2.put("SalesType", 1);
-                            obj2.put("NewSaleUserName", "");
-                            obj2.put("OldSaleUserName", "");
-                            obj2.put("FollwUpUserID", "99");
-                            obj2.put("FollwUpWay","");
-                            obj2.put("FollowUpContent","小筹");
-                            obj2.put("IntentionLevel", "");
-                            obj2.put("OrgID","");
-                            obj2.put("FollwUpUserRole", "");
-                            obj2.put("OpportunityID", parameter.getString("OpportunityID"));
-                            obj2.put("ClueID", "");
-                            obj2.put("NextFollowUpDate", "");
-                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
-                            this.CustomerFollowUp_Insert(customerActionVo);
+                        	for(String oppID :opportunityIDlist){
+                        		JSONObject obj2 = new JSONObject();
+                                obj2.put("FollwUpType", "小筹");
+                                obj2.put("FollwUpTypeID", ActionType.小筹.getValue());
+                                obj2.put("SalesType", 1);
+                                obj2.put("NewSaleUserName", "");
+                                obj2.put("OldSaleUserName", "");
+                                obj2.put("FollwUpUserID", "99");
+                                obj2.put("FollwUpWay","");
+                                obj2.put("FollowUpContent","小筹");
+                                obj2.put("IntentionLevel", "");
+                                obj2.put("OrgID","");
+                                obj2.put("FollwUpUserRole", "");
+                                obj2.put("OpportunityID",oppID);
+                                obj2.put("ClueID", "");
+                                obj2.put("NextFollowUpDate", "");
+                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
+                                this.CustomerFollowUp_Insert(customerActionVo);
+                        	}
                         }
                         if (IsLittleBooking.equals("DFE6406C-120B-45E5-9293-DD093E416C68") && !IsLittleBookingOld.equals(IsLittleBooking)){//退小筹
-                            JSONObject obj2 = new JSONObject();
-                            obj2.put("FollwUpType", "退小筹");
-                            obj2.put("FollwUpTypeID", ActionType.退小筹.getValue());
-                            obj2.put("SalesType", 1);
-                            obj2.put("NewSaleUserName", "");
-                            obj2.put("OldSaleUserName", "");
-                            obj2.put("FollwUpUserID", "99");
-                            obj2.put("FollwUpWay","");
-                            obj2.put("FollowUpContent","退小筹");
-                            obj2.put("IntentionLevel", "");
-                            obj2.put("OrgID","");
-                            obj2.put("FollwUpUserRole", "");
-                            obj2.put("OpportunityID", parameter.getString("OpportunityID"));
-                            obj2.put("ClueID", "");
-                            obj2.put("NextFollowUpDate", "");
-                            CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
-                            this.CustomerFollowUp_Insert(customerActionVo);
+                        	for(String oppID :opportunityIDlist){
+                        		JSONObject obj2 = new JSONObject();
+                                obj2.put("FollwUpType", "退小筹");
+                                obj2.put("FollwUpTypeID", ActionType.退小筹.getValue());
+                                obj2.put("SalesType", 1);
+                                obj2.put("NewSaleUserName", "");
+                                obj2.put("OldSaleUserName", "");
+                                obj2.put("FollwUpUserID", "99");
+                                obj2.put("FollwUpWay","");
+                                obj2.put("FollowUpContent","退小筹");
+                                obj2.put("IntentionLevel", "");
+                                obj2.put("OrgID","");
+                                obj2.put("FollwUpUserRole", "");
+                                obj2.put("OpportunityID", oppID);
+                                obj2.put("ClueID", "");
+                                obj2.put("NextFollowUpDate", "");
+                                CustomerActionVo customerActionVo = JSONObject.parseObject(obj2.toJSONString(), CustomerActionVo.class);
+                                this.CustomerFollowUp_Insert(customerActionVo);
+                        	}
                         }
                         CustomerOpportunityFollowUpDetail_Update(opportunityID,userID);//客户机会跟进记录更新
                         //处理跟进类待办为已办
@@ -2147,7 +2198,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 			QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
 		    updateCustInfoLogQuery.eq("OpportunityID",OpportunityID);
-		    List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
+		    List<UpdateCustinfoLog> updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
 		    entity.setErrcode(0);
 			entity.setErrmsg("成功");
 			entity.setData(updateCustInfoLogList);

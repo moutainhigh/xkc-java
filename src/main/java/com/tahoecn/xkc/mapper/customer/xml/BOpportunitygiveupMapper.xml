@@ -29,8 +29,8 @@
 	</update>
 	<insert id="insBCustomerFollowUp_Adviser" parameterType="java.util.Map">
 		<![CDATA[
-			INSERT INTO dbo.B_CustomerFollowUp( ID ,CustomerID ,CustomerMobile ,CustomerName ,OpportunityID ,FollwUpUserID ,FollwUpUserName ,FollwUpUserMobile ,FollwUpType ,FollwUpWay ,FollowUpContent ,NextFollowUpDate ,IntentionLevel ,OrgID ,Creator ,CreateTime ,Editor ,EditeTime ,IsDel ,Status) 
-			SELECT NEWID() ID, CustomerID, CustomerMobile, CustomerName, ID OpportunityID, #{UserID} FollwUpUserID, dbo.F_GetSaleUserName(#{UserID}) FollwUpUserName, dbo.F_GetSaleMobile(#{UserID}) FollwUpUserMobile, '0' FollwUpType, 'F0942939-A90E-4915-81D7-7752919B0F72' FollwUpWay, '重新分配' FollowUpContent, NULL NextFollowUpDate, '9CEA46E8-A3ED-409E-646C-F38A5EAC383E' IntentionLevel, #{OrgID} OrgID, #{UserID} Creator, GETDATE() CreateTime, NULL Editor, NULL EditeTime, 0 IsDel, 1 Status 
+			INSERT INTO dbo.B_CustomerFollowUp( ID ,CustomerID ,CustomerMobile ,CustomerName ,OpportunityID ,FollwUpUserID ,FollwUpUserName ,FollwUpUserMobile ,FollwUpType ,FollwUpWay ,FollowUpContent ,NextFollowUpDate ,IntentionLevel ,OrgID ,Creator ,CreateTime ,Editor ,EditeTime ,IsDel ,Status,follwUpUserRole,CustomerRank ,ProjectID) 
+			SELECT NEWID() ID, CustomerID, CustomerMobile, CustomerName, ID OpportunityID, #{UserID} FollwUpUserID, dbo.F_GetSaleUserName(#{UserID}) FollwUpUserName, dbo.F_GetSaleMobile(#{UserID}) FollwUpUserMobile, '69331990-DBF4-0A2F-80CD-7BC424AA8912' FollwUpType, 'F0942939-A90E-4915-81D7-7752919B0F72' FollwUpWay, '重新分配' FollowUpContent, NULL NextFollowUpDate, '9CEA46E8-A3ED-409E-646C-F38A5EAC383E' IntentionLevel, #{OrgID} OrgID, #{UserID} Creator, GETDATE() CreateTime, NULL Editor, NULL EditeTime, 0 IsDel, 1 Status,#{JobID} follwUpUserRole,CustomerRank ,ProjectID 
 			FROM dbo.B_Opportunity WHERE ID IN( SELECT name FROM F_StrToTable(#{OpportunityID}) WHERE name <> '')
 		]]>
 	</insert>
