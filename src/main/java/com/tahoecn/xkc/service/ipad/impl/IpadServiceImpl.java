@@ -1340,6 +1340,10 @@ public class IpadServiceImpl implements IIpadService {
 	public Result mLFReceptRecordList_Select_forSaleUser(JSONObject paramAry) {
 		Result re = new Result();
         StringBuilder whereSb = new StringBuilder();
+        CPageModel model = JSONObject.parseObject(paramAry.toJSONString(),CPageModel.class);
+        if (!StringUtils.isEmpty(model.getKeyWord())){
+            whereSb.append(" AND (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) LIKE '%"+model.getKeyWord()+"%'");
+        }
         if (!StringUtils.isEmpty(paramAry.getString("BeginReceptTime")) && !StringUtils.isEmpty(paramAry.getString("EndReceptTime")) ){
             String begintime = paramAry.getString("BeginReceptTime");
             String endtime = paramAry.getString("EndReceptTime");
