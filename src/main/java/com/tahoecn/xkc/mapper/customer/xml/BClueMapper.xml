@@ -208,23 +208,21 @@
 		                    AND IntentProjectID = #{ProjectID}
 		        ) AS Invalid ,
 		        ( SELECT    COUNT(*)
-		          FROM      [B_Clue] AS c
-		                    LEFT JOIN B_ChannelUser u ON c.creator = u.id
-		                    LEFT JOIN B_Opportunity o ON c.id = o.ClueID
-		                    LEFT JOIN dbo.B_ClueRule r ON c.RuleID = r.ID
-		                                      AND r.ProtectSource = 0
-		          WHERE     ( o.ID IS NULL
-		                      OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
-		                    )
-		                    AND c.Status = 2
-		                    AND c.IsDel = 0
-		                    AND c.IntentProjectID = #{ProjectID}
-		                    AND ( CASE WHEN r.IsPreIntercept = 1
-		                     THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
-		                                              c.CreateTime) < GETDATE() THEN 1
-		                                 ELSE 0
-		                            END )
-		                     ELSE 1
+		          FROM    [B_Clue] AS c
+			        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+			        LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+			        LEFT JOIN dbo.B_ClueRule r ON c.RuleID = r.ID AND r.ProtectSource = 0
+					WHERE   ( o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899')
+			        AND c.status = 2
+			        AND c.IsDel = 0
+			        AND (select top 1 bc.ID from B_CustomerFollowUp bc WHERE bc.OpportunityID = o.ID AND bc.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND bc.FollwUpUserID=#{UserID}) IS NOT NULL
+			        AND c.IntentProjectID = #{ProjectID}
+			        AND ( CASE WHEN r.IsPreIntercept = 1
+		                   THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
+		                                            c.CreateTime) < GETDATE() THEN 1
+		                               ELSE 0
+		                          END )
+		                   ELSE 1
 		              END ) = 1 
 		        ) AS ToBeDistribution ,
 		        ( SELECT    COUNT(*)
