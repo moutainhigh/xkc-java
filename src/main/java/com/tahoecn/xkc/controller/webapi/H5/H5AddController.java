@@ -158,7 +158,7 @@ public class H5AddController extends TahoeBaseController {
         int PageIndex=(int) paramMap.get("PageIndex");
         int PageSize=(int) paramMap.get("PageSize");
         IPage page = new Page(PageIndex, PageSize);
-        List<Map<String, Object>> list = messageService.mMessageAllList_Select(page, UserID);
+        IPage<Map<String, Object>> list = messageService.mMessageAllList_Select(page, UserID);
         Result result = new Result();
         result.setErrcode(0);
         result.setErrmsg("成功");

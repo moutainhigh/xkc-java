@@ -206,9 +206,9 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
             //获取job名称,判断是否为自渠或置业顾问
             List<String> nameList=baseMapper.getJobName(list.get(0).getId());
             for (String s : nameList) {
-                if (StringUtils.equals("自渠人员_2.0",s)){
-                    return Result.errormsg(1,"您的账号为自渠人员岗位,请前往....报备");
-                }
+//                if (StringUtils.equals("自渠人员_2.0",s)){
+//                    return Result.errormsg(1,"您的账号为自渠人员岗位,请前往....报备");
+//                }
                 if (StringUtils.equals("置业顾问_2.0",s)){
                     return Result.errormsg(1,"您的账号为置业顾问岗位,请前往....报备");
                 }

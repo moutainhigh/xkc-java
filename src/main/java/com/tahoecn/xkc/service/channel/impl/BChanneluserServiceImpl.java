@@ -739,7 +739,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             //sign=0老业主 1为泰禾员工
             int sign = (int) map.get("sign");
             QueryWrapper<BChanneluser> query=new QueryWrapper<>();
-            query.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);
             Map<String, Object> map1 = this.getMap(query);
             //channelUser表里有 直接返回信息
             if (CollectionUtil.isNotEmpty(map1)){

@@ -118,7 +118,7 @@ public interface ISystemMessageService {
     /**
      * H5消息列表
      */
-    List<Map<String, Object>> mMessageAllList_Select(IPage page, String userID);
+    IPage<Map<String, Object>> mMessageAllList_Select(IPage page, String userID);
     
     /**
      * 消息处理状态更新

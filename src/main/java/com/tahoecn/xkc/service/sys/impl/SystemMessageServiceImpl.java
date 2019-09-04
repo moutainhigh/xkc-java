@@ -184,9 +184,9 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
      * H5消息列表
      */
     @Override
-    public List<Map<String, Object>> mMessageAllList_Select(IPage page, String userID) {
-        List<Map<String, Object>> list = systemMessageMapper.mMessageAllList_Select(page, userID);
-        for (Map<String, Object> map : list) {
+    public IPage<Map<String, Object>> mMessageAllList_Select(IPage page, String userID) {
+        IPage<Map<String, Object>> list = systemMessageMapper.mMessageAllList_Select(page, userID);
+        for (Map<String, Object> map : list.getRecords()) {
             Object id = map.get("ID");
             systemMessageMapper.mMessageAllList_Updata(id.toString());
         }
