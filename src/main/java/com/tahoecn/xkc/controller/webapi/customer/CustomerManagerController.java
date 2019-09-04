@@ -14,6 +14,7 @@ import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerManagerMapper;
+import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.model.customer.BCustomerattribute;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
@@ -34,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/webapi/customermanager")
 public class CustomerManagerController extends TahoeBaseController {
     private static final Log log = LogFactory.get();
+
+    @Resource
+    private VCustomergwlistSelectMapper vCustomergwlistSelectMapper;
 
     @Autowired
     private IBCustomerService customerService;
@@ -293,7 +298,9 @@ public class CustomerManagerController extends TahoeBaseController {
         custAttr.setAddress(Address);
         iBCustomerattributeService.saveOrUpdate(custAttr);
 
+        List<Map<String, Object>>  jarry = vCustomergwlistSelectMapper.DictionaryList_Select("E72C340D-4092-467A-9B8F-5138DBDCA43B");
 
+        List<Map<String, Object>>  cardTypejarry = vCustomergwlistSelectMapper.DictionaryList_Select("848EBE45-2C03-40C5-AE91-EC72533539BD");
 
         //变更记录
         UpdateCustinfoLog log = new UpdateCustinfoLog();
@@ -302,12 +309,31 @@ public class CustomerManagerController extends TahoeBaseController {
         log.setCustomerID(custId);
         log.setEditorId(userId);
         log.setEditorName(ThreadLocalUtils.getRealName());
-        if(StringUtil.isNotNull(gender))
+        if(StringUtil.isNotNull(gender)) {
+
+            for(Map<String, Object> map : jarry){
+                if(map.get("ID").toString().equals(genderOrg)){
+                    genderOrg = map.get("DictName").toString();
+                }
+                if(map.get("ID").toString().equals(gender)){
+                    gender = map.get("DictName").toString();
+                }
+            }
             log.setGender(genderOrg + "->" + gender);
+        }
         if(StringUtil.isNotNull(cardId))
             log.setCardID(cardIdOrg + "->" + cardId);
-        if(StringUtil.isNotNull(cardType))
+        if(StringUtil.isNotNull(cardType)) {
+            for(Map<String, Object> map : cardTypejarry){
+                if(map.get("ID").toString().equals(cardTypeOrg)){
+                    cardTypeOrg = map.get("DictName").toString();
+                }
+                if(map.get("ID").toString().equals(cardType)){
+                    cardType = map.get("DictName").toString();
+                }
+            }
             log.setCardType(cardTypeOrg + "->" + cardType);
+        }
         if(StringUtil.isNotNull(auxiliaryMobile))
             log.setAuxiliaryMobile(auxiliaryMobileOrg + "->" + auxiliaryMobile);
         if(StringUtil.isNotNull(customerName))

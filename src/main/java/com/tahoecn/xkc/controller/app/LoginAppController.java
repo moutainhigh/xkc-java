@@ -508,7 +508,7 @@ public class LoginAppController extends TahoeBaseController {
                     sb.append(",'IsDynamic':0");
                 }
 
-                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("CaseLinkage")) && !Objects.equals(ProjectID.toUpperCase(), "252B3699-51B2-E711-80C7-00505686C900")) {    //案场联动
+                if (MenuAndFunList.stream().anyMatch(a -> a.get("Url").contains("CaseLinkage"))) {    //案场联动
                     sb.append(",'IsCaseLinkage':1");
                 } else {
                     sb.append(",'IsCaseLinkage':0");
