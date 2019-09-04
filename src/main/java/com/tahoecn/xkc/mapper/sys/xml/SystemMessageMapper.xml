@@ -790,13 +790,13 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 				FROM
 					B_CustomerFollowUp a 
 				WHERE
-					CONVERT(VARCHAR(7), a.NextFollowUpDate, 120) = #{month} 
 					AND a.FollwUpUserID = #{UserID} 
 					AND a.ProjectID = #{ProjectID}
 				GROUP BY
 					a.OpportunityID 
 				) b
 				LEFT JOIN B_Opportunity o ON o.id = b.OpportunityID 
+				WHERE CONVERT(VARCHAR(7), b.NextFollowUpDate, 120) = #{month} 
 			GROUP BY
 				CONVERT ( VARCHAR ( 10 ), b.NextFollowUpDate, 120 ) 
 			ORDER BY

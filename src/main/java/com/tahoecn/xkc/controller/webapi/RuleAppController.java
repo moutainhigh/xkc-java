@@ -330,6 +330,7 @@ public class RuleAppController extends TahoeBaseController {
         }
 
         if(IsUpdateGroup!=null && !"".equals(IsUpdateGroup)) {
+            bCluerule.setTakeEffectTime(new Date());
             iBClueruleService.saveOrUpdate(bCluerule);
             //添加修改日志
             String projectId = bCluerule.getProjectID();

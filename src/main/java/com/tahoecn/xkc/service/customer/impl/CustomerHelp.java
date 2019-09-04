@@ -1214,7 +1214,7 @@ public class CustomerHelp implements ICustomerHelp {
 						String FirstName= oppInfo.get("FirstName")!=null?oppInfo.get("FirstName").toString():"";
 						String Mobile = oppInfo.get("Mobile")!=null?oppInfo.get("Mobile").toString():"";
 					 	String UserID =pmp.get("UserID")!=null?pmp.get("UserID").toString():"";
-	                    String Content = "客户" +LastName +FirstName + "、" + Mobile + "(" + MessageType.到访提醒.getTypeID()+ ")";
+	                    String Content = "客户" +LastName +FirstName + "、" + Mobile + "(到访通知)";
 	                    Map<String,Object> parameter = new HashMap<String,Object>();
 	                    parameter.put("ProjectID", projectID);
 	                    parameter.put("BizID", clueid);
@@ -1222,7 +1222,7 @@ public class CustomerHelp implements ICustomerHelp {
 	                    parameter.put("Subject", "客户到访提醒");
 	                    parameter.put("Content", Content);
 	                    parameter.put("Receiver",reportuserid);
-	                    parameter.put("MessageType","到访通知");
+	                    parameter.put("MessageType",MessageType.带看通知.getTypeID());
 	                    parameter.put("Sender", UserID);
 	                    parameter.put("Creator", UserID);
 	                    parameter.put("IsNeedPush", true);
