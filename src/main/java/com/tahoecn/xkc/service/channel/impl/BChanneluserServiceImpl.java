@@ -680,14 +680,14 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         StringBuilder sqlWhere=new StringBuilder();
         StringBuilder Parameter=new StringBuilder();
         if (StringUtils.isNotBlank(UserName)){
-            Parameter.append(" and (name like '%" + UserName + "%' or mobile like '%" + UserName + "%')");
+            Parameter.append(" and (bo.name like '%" + UserName + "%' or bo.mobile like '%" + UserName + "%')");
         }
 
             if ("1".equals(ApprovalStatus)){
-                sqlWhere.append("and ApprovalStatus='1'");
+                sqlWhere.append("and bo.ApprovalStatus='1'");
             }
             else {
-                sqlWhere.append("and (ApprovalStatus='0' OR ApprovalStatus='1')");
+                sqlWhere.append("and (bo.ApprovalStatus='0' OR bo.ApprovalStatus='1')");
             }
 
         return baseMapper.mChannelStoreUserList_SelectN(page,StoreID,sqlWhere.toString(),Parameter.toString());
@@ -738,18 +738,22 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             int gender1= (int) map.get("Gender");
             //sign=0老业主 1为泰禾员工
             int sign = (int) map.get("sign");
-            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
-            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);
-            Map<String, Object> map1 = this.getMap(query);
+//            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
+//            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);
+            Map<String, Object> map1 = baseMapper.checkUser(username,mobile);
             //channelUser表里有 直接返回信息
             if (CollectionUtil.isNotEmpty(map1)){
                 return Result.ok(map1);
             }else {//channelUser表里没有 查询saccount表
-                QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
-                wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
-                SAccount one = accountService.getOne(wrapper);
-
-                if (one!=null){
+//                QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
+//                wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+                SAccount one = new SAccount();
+                if (sign==0){
+                    one = accountService.checkUser0(username,mobile);
+                }else {
+                    one = accountService.checkUser1(username,mobile);
+                }
+                if (one.getId()!=null){
                     //如果有 在channelUser表里创建新用户 用saccount信息
                     BChanneluser channeluser = new BChanneluser();
                     channeluser.setId(UUID.randomUUID().toString().toUpperCase());

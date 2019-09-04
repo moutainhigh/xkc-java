@@ -217,4 +217,12 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
         return Result.ok(null);
     }
 
+    @Override
+    public SAccount checkUser0(String username, String mobile) {
+        return baseMapper.checkUser0(username,mobile);
+    }
+    @Override
+    public SAccount checkUser1(String username, String mobile) {
+        return baseMapper.checkUser1(username,mobile);
+    }
 }

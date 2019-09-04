@@ -88,4 +88,8 @@ public interface ISAccountService extends IService<SAccount> {
 
 
     Result getJobByUserName(String userName, String mobile);
+
+    SAccount checkUser0(String username, String mobile);
+
+    SAccount checkUser1(String username, String mobile);
 }
