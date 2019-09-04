@@ -71,7 +71,7 @@ public class SJobsServiceImpl extends ServiceImpl<SJobsMapper, SJobs> implements
     }
 
     @Override
-    public List<SAccount> SystemUserList_Select(String jobID, String authCompanyID) {
+    public List<Map<String,Object>> SystemUserList_Select(String jobID, String authCompanyID) {
         return baseMapper.SystemUserList_Select(jobID,authCompanyID);
     }
 
