@@ -112,7 +112,7 @@ public interface SystemMessageMapper {
 	 */
 	void SystemMessageReadDetail_Update(Map<String, Object> map);
 
-    List<Map<String, Object>> mMessageAllList_Select(IPage page, @Param("UserID") String userID);
+    IPage<Map<String, Object>> mMessageAllList_Select(IPage page, @Param("UserID") String userID);
     int mMessageAllList_Updata(@Param("ID") String ID);
     
     void SystemMessageDetailByHandle_Update(@Param("BizType")String BizType,@Param("SetStatus")String SetStatus,@Param("Where")String Where);

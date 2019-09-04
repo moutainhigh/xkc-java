@@ -588,24 +588,25 @@ FROM B_ChannelUser WHERE ID=#{UserID};
     <select id="mChannelStoreUserList_SelectN" resultType="java.util.HashMap" parameterType="string">
         <![CDATA[
         SELECT
-        ID AS ID,
-        Name AS Name,
-        CustomerNumber,
-        Mobile AS Mobile,
-        ApprovalStatus,
-        Gender,
-        volume
+        bo.ID AS ID,
+        bo.Name AS Name,
+        bo.CustomerNumber,
+        bo.Mobile AS Mobile,
+        bo.ApprovalStatus,
+        bo.Gender,
+        bo.volume
         FROM
         ChannelUser_List_Select AS bo
+        LEFT JOIN B_ChannelOrg co ON bo.ChannelOrgID=co.ID
         WHERE
-        ChannelOrgID = #{StoreID}
-        AND IsDel = '0'
+        (bo.ChannelOrgID = #{StoreID} OR co.NewPID=#{StoreID})
+        AND bo.IsDel = '0'
         AND bo.Job<> 0 ${sqlWhere}
-        AND Status = 1 ${Parameter}
+        AND bo.Status = 1 ${Parameter}
         ORDER BY
-        ApprovalStatus ASC,
-        CreateTime DESC,
-        ApprovalDate DESC
+        bo.ApprovalStatus ASC,
+        bo.CreateTime DESC,
+        bo.ApprovalDate DESC
          ]]>
     </select>
     <select id="ChannelOrgRuleInfoDetail_Select" resultType="java.util.Map">
@@ -690,4 +691,15 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         ID IN (
         ${ids})
     </update>
+
+    <select id="checkUser" resultType="java.util.Map" parameterType="string">
+        SELECT TOP 1
+        *
+        FROM
+        B_ChannelUser
+        WHERE
+        ( UserName = #{username} OR Mobile = #{mobile} )
+        AND IsDel = 0
+        AND Status =1
+    </select>
 </mapper>

@@ -159,7 +159,7 @@ public class SJobsController extends TahoeBaseController {
             @ApiImplicitParam(name = "pageSize", value = "每页大小", dataType = "int") })
     @RequestMapping(value = "/SystemUserList_Select", method = {RequestMethod.POST})
     public Result SystemUserList_Select(String JobID,String AuthCompanyID){
-        List<SAccount> list=jobsService.SystemUserList_Select(JobID,AuthCompanyID);
+        List<Map<String,Object>> list=jobsService.SystemUserList_Select(JobID,AuthCompanyID);
         return Result.ok(list);
     }
 

@@ -21,7 +21,7 @@ public interface ISJobsService extends IService<SJobs> {
 
     IPage<Map<String,Object>> SystemJobList_Select(IPage page,String authCompanyID, String productID, String orgID);
 
-    List<SAccount> SystemUserList_Select(String jobID, String authCompanyID);
+    List<Map<String,Object>> SystemUserList_Select(String jobID, String authCompanyID);
 
     IPage<Map<String,Object>> SystemJobAllList_Select(IPage page,String authCompanyID, String productID, String orgID);
 

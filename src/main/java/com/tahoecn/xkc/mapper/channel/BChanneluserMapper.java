@@ -154,4 +154,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     void mCustomerTCTransfer_Update(@Param("ids")String ids, @Param("transferID")String transferID, @Param("userID")String userID);
 
     Map<String,Object> ChannelOrgRuleInfoDetail_Select(@Param("projectId")String projectId, @Param("adviserGroupID")String adviserGroupID);
+
+    Map<String, Object> checkUser(@Param("username")String username, @Param("mobile")String mobile);
 }

@@ -128,6 +128,9 @@ public class SAccountController extends TahoeBaseController {
         salesuser.setTelPhone(account.getMobile());
         salesuser.setEditTime(new Date());
         salesuser.setEditor(ThreadLocalUtils.getUserName());
+        salesuser.setName(account.getEmployeeName());
+        salesuser.setStatus(account.getStatus());
+        salesuser.setIsDel(account.getIsDel());
         salesuserService.updateById(salesuser);
         return Result.okm("成功");
     }
