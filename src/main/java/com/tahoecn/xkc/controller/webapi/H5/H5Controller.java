@@ -264,8 +264,6 @@ public class H5Controller extends TahoeBaseController {
             if (StringUtils.equals((String)channelType,"中介同行")){
                 user.put("ChannelType","分销中介");
             }
-        }else {
-            return Result.errormsg(1,"请前往");//todo 提示信息不全
         }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
         //放到响应头部
@@ -274,19 +272,6 @@ public class H5Controller extends TahoeBaseController {
         return Result.ok(user);
     }
 
-    @ApiOperation(value = "微信-JSAPI包信息", notes = "微信-JSAPI包信息")
-    @RequestMapping(value = "/mWeixinJsApiPackage_Select", method = {RequestMethod.POST})
-    public Result mWeixinJsApiPackage_Select(@RequestBody JSONObject jsonParam) {
-        Map paramMap = (HashMap)jsonParam.get("_param");
-        String BrokerProjectID=(String) paramMap.get("BrokerProjectID");
-        String ChannelOrgID=(String) paramMap.get("ChannelOrgID");
-
-        Result result = new Result();
-        result.setErrcode(0);
-        result.setErrmsg("成功");
-//        result.setData(map);
-        return result;
-    }
 
     @Deprecated
     @ApiOperation(value = "获取个人中心的统计数据", notes = "获取个人中心的统计数据")

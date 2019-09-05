@@ -128,7 +128,11 @@ public class LoginIpadController extends TahoeBaseController {
         BProject byId = projectService.getById(projectID);
         SOrganization organization = organizationService.getById(byId.getBuguid());
         res.put("OrgPath",organization.getOrgName());
-        res.put("DynatownCarousel",byId.getDynatownCarousel());
+        if (byId.getDynatownCarousel()==null){
+            res.put("DynatownCarousel",0);
+        }else {
+            res.put("DynatownCarousel",byId.getDynatownCarousel());
+        }
 
         // 0.禁用 1.开启
         short accountStatus = (short) res.get("AccountStatus");

@@ -210,7 +210,7 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
 //                    return Result.errormsg(1,"您的账号为自渠人员岗位,请前往....报备");
 //                }
                 if (StringUtils.equals("置业顾问_2.0",s)){
-                    return Result.errormsg(1,"您的账号为置业顾问,请前往....报备");
+                    return Result.errormsg(1,"您的账号为置业顾问,请前往 泰享+ 报备");
                 }
             }
         }
