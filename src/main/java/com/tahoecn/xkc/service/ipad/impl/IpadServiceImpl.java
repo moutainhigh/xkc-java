@@ -1401,7 +1401,7 @@ public class IpadServiceImpl implements IIpadService {
 		        re.setErrmsg("不可重复签到");
 		        return re;
 			}
-			Long maxSortCode = ipadMapper.getMaxSortByDate(SignInDate);
+			Long maxSortCode = ipadMapper.getMaxSortByDate(SignInDate,paramAry.getString("UserID"));
 			pmap.put("SortCode", maxSortCode.intValue()+1);
 			ipadMapper.addSaleUserSign(pmap);
 			re.setErrcode(0);
@@ -1433,6 +1433,7 @@ public class IpadServiceImpl implements IIpadService {
             Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
             String SignInDate = DateUtil.format(new Date(), "yyyy-MM-dd");
             pmap.put("SignInDate", SignInDate);
+            pmap.put("SalesSupervisorID", paramAry.get("UserID"));
             List<Map<String, Object>> allGwJArray = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select_Sort(pmap);
           
             entity.setData(allGwJArray);
@@ -1460,7 +1461,7 @@ public class IpadServiceImpl implements IIpadService {
 		pmap.put("SignInDate", SignInDate);
 		Map<String, Object> data = ipadMapper.selectByDateAndSaleUserID(pmap);
 		if(data!=null && data.size()>0){
-			Long maxSortCode = ipadMapper.getMaxSortByDate(SignInDate);
+			Long maxSortCode = ipadMapper.getMaxSortByDate(SignInDate,SalesSupervisorID);
 			pmap.put("SortCode", maxSortCode.intValue()+1);
 			ipadMapper.updateSortCodeAndTime(pmap);
 		}

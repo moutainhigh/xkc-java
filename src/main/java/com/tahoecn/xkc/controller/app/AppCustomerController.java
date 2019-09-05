@@ -302,6 +302,11 @@ public class AppCustomerController extends TahoeBaseController {
 			paramMap.put("LostIDList", LostID);
 			paramMap.put("PublicIDList", PublicID);
 			iBOpportunityService.mCustomerAllotAdviser_Update(paramMap);
+			//公共池客户重新分配【协作人】置空
+            String code = (String) paramMap.get("Code");
+            if (code == "GG"){
+            	iBOpportunityService.mCustomerSalePartnerSetNull_Update(paramMap);
+            }
 			return Result.ok(true);
 		}catch (Exception e) {
 			e.printStackTrace();

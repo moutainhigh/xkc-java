@@ -101,8 +101,8 @@ public class ProjectAppController extends TahoeBaseController {
                 room.put("RoomArea", item.get("RoomArea"));
                 
                 //xkc修改---根据PC端配置
-                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseDetail() != null && isHide.getHouseList() == 1){
+                //b_project 中根据projectid查询(HouseList隐藏房源列表价格0:隐藏，1:显示)
+                if(isHide.getHouseList() != null && isHide.getHouseList() == 0){
                 	room.put("RoomPrice", "****/㎡");
                 	room.put("RoomTotal", "****");
                 }else{
@@ -255,8 +255,8 @@ public class ProjectAppController extends TahoeBaseController {
             		re.get(0).put("Total","****元"); 
             	}*/
             	//xkc修改---根据PC端配置
-                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 1){
+                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 0:隐藏，1:显示)
+                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0){
                 	re.get(0).put("BldPrice","****元");
             		re.get(0).put("TnPrice","****元");
             		re.get(0).put("Total","****元");
@@ -474,8 +474,8 @@ public class ProjectAppController extends TahoeBaseController {
             BProject isHide = projectService.getOne(wrapper);
             if(re != null && re.size() > 0){
             	//xkc修改---根据PC端配置
-                //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 1){
+                //b_project 中根据projectid查询(HouseList隐藏房源列表价格0:隐藏，1:显示)
+                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0){
                 	re.get(0).put("BldPrice","****");
             		re.get(0).put("TnPrice","****");
             		re.get(0).put("Total","****");

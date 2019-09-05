@@ -260,6 +260,13 @@ public class BOpportunityServiceImpl extends ServiceImpl<BOpportunityMapper, BOp
 		baseMapper.mCustomerAllotAdviser_Update(paramMap);
 	}
 	/**
+	 * 公共池客户重新分配协作人置空
+	 */
+	@Override
+	public void mCustomerSalePartnerSetNull_Update(Map<String,Object> paramMap) {
+		baseMapper.mCustomerSalePartnerSetNull_Update(paramMap);
+	}
+	/**
 	 * 自有渠道客户列表
 	 */
 	@Override

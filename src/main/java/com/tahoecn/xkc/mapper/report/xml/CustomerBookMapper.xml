@@ -215,6 +215,7 @@
     <select id="customerPayInfo" resultType="java.util.Map">
         <![CDATA[
       SELECT B.ItemName AS MoneyTypeName ,
+      A.TradeGUID,
       convert(nvarchar(50),cast(amount as money),1) AS  Payable ,
       convert(nvarchar(50),cast(B.Ye as money),1) as Paid ,
       Convert(nvarchar(50),B.CreateTime,23) AS PayableDate ,

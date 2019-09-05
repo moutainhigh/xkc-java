@@ -41,6 +41,10 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 	 */
 	void mCustomerAllotAdviser_Update(Map<String, Object> paramMap);
 	/**
+	 * 公共池客户重新分配协作人置空
+	 */
+	void mCustomerSalePartnerSetNull_Update(Map<String, Object> paramMap);
+	/**
 	 * 自有渠道客户列表
 	 */
 	List<List<?>> mCustomerZYQDList_Select(Map<String, Object> paramMap);
