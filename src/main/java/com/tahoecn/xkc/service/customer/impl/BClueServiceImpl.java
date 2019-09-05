@@ -754,7 +754,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
 		System.out.println(clue.getCustomerRank());
-		customer.setCustomerRank(clue.getCustomerRank());
+		
+		if(clue.getCustomerRank().length() > 0) {
+			customer.setCustomerRank(clue.getCustomerRank());
+		}
+		else {
+			customer.setCustomerRank("1级");
+		}
 		List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
 		List<CustomerStatus> customerStatuses = new ArrayList<>();
 		for (CStatus cs : statuses) {
@@ -805,7 +811,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 				customer.setCreateTime(dateFormat.format(cus.getReportTime()));
 				customer.setQrUrl("");
 				customer.setRemark("");
-				customer.setCustomerRank(cus.getCustomerRank());
+				if(cus.getCustomerRank().length() > 0) {
+					customer.setCustomerRank(cus.getCustomerRank());
+				}
+				else {
+					customer.setCustomerRank("1级");
+				}
 				customers.add(customer);
 			}
 		}
@@ -942,7 +953,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		clue.setCreateTime(now);
 		clue.setIsDel(0);
 		clue.setStatus(2); // TODO 状态需确认
-		clue.setCustomerRank("41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
 		clueMapper.insert(clue);
 
 		//插入跟进记录
@@ -974,7 +984,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customerpotentialfollowup.setIsDel(0);
 		customerpotentialfollowup.setStatus(1);
 		customerpotentialfollowup.setProjectID(projectid);
-		customerpotentialfollowup.setCustomerRank("41FA0234-F8AE-434F-8BCD-6E9BE1D059DA");
 		customerpotentialfollowupMapper.insert(customerpotentialfollowup);
 		return result.ok("报备成功");
 	}

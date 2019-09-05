@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.controller.app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,10 @@ public class AppBClueController extends TahoeBaseController {
             }
             List<Customer> customers = bClueService.listMyCustomers(reportId, ascOrDesc, nameOrMobile, status);
     		if (customers == null) {
-    			return Result.errormsg(0,"未查询到该客户");
+    			Customers cs = new Customers();
+    			List a =new ArrayList();
+    			cs.setCustomerList(a);
+    			return Result.ok(cs);
     		} else {
     			Customers cs = new Customers();
     			cs.setCustomerList(customers);
