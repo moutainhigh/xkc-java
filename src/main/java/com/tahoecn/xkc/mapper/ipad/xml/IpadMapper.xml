@@ -140,7 +140,7 @@
 		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
 		                    o.CustomerID ,
 		                    o.CustomerName ,
-		                    STUFF(c.Mobile ,4,4,'****') CustomerMobile ,
+		                    c.Mobile CustomerMobile ,
 		                    c.Gender ,
 		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
 		                    o.OpportunitySource ,
