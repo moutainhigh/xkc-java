@@ -1937,8 +1937,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 	@Override
 	public void addCustomerChangeInfo(Map<String,Object> pmap){
 		try {
-			String OpportunityID = pmap.get("OpportunityID").toString();
-			String CustomerID = pmap.get("CustomerID").toString();
+			String OpportunityID = pmap.get("OpportunityID")!=null?pmap.get("OpportunityID").toString():"";
+			String CustomerID = pmap.get("CustomerID")!=null?pmap.get("CustomerID").toString():"";
 			String userId =  pmap.get("UserID")!=null?pmap.get("UserID").toString():"";
 			String UserTrueName = pmap.get("UserTrueName")!=null?pmap.get("UserTrueName").toString():"";
 			Map<String, Object> customerData = vCustomergwlistSelectMapper.selectCustomerByID(CustomerID);
