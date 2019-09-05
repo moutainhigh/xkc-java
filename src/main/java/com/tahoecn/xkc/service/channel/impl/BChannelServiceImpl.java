@@ -120,7 +120,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         RuleP = new HashMap<String,Object>();
         RuleP.put("ID", ob.get(0).get("RuleID"));
         BCluerule rule = iBClueruleService.CaseFieRuleDetail_Select(RuleP);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         //组建规则说明 根据规则id获取规则
         List<String> ruleList = new ArrayList<String>();
         if(rule != null){
