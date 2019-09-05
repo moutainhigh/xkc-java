@@ -1,11 +1,13 @@
 package com.tahoecn.xkc.service.channel.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.RqCodeUtils;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
@@ -747,13 +749,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             }else {//channelUser表里没有 查询saccount表
 //                QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
 //                wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
-                SAccount one = new SAccount();
+                SAccount one ;
                 if (sign==0){
                     one = accountService.checkUser0(username,mobile);
                 }else {
                     one = accountService.checkUser1(username,mobile);
                 }
-                if (one.getId()!=null){
+                if (one!=null){
                     //如果有 在channelUser表里创建新用户 用saccount信息
                     BChanneluser channeluser = new BChanneluser();
                     channeluser.setId(UUID.randomUUID().toString().toUpperCase());
@@ -761,11 +763,15 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     channeluser.setUserName(one.getUserName());
                     channeluser.setPassword(SecureUtil.md5("123321"));
                     channeluser.setName(one.getEmployeeName());
-                    Integer gender = one.getGender();
-                    if (gender==1){
-                        channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
-                    }else {
+                    Integer gender = (one.getGender());
+                    //gender可能为null 默认为0 女
+                    if (gender==null){
+                        gender=0;
+                    }
+                    if (gender!=1){
                         channeluser.setGender("EC3936F8-82DC-49AF-A8EB-153730359DE7");
+                    }else {
+                        channeluser.setGender("50827B18-5BCC-454C-B658-09AF4328D2A0");
                     }
                     channeluser.setJob(3);
                     channeluser.setApprovalStatus(1);//验证状态 ,为通过验证
@@ -782,7 +788,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     channeluser.setIsDel(0);
                     channeluser.setStatus(1);
                     channeluserService.save(channeluser);
-                    return Result.ok(channeluser);
+                    Map<String, Object> map2=baseMapper.getUserInfo(channeluser.getId());
+                    return Result.ok(map2);
                 }else {
                     //saccount表没有 直接创建新用户
                     BChanneluser channeluser = new BChanneluser();
@@ -811,7 +818,8 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     channeluser.setIsDel(0);
                     channeluser.setStatus(1);
                     channeluserService.save(channeluser);
-                    return Result.ok(channeluser);
+                    Map<String, Object> map2=baseMapper.getUserInfo(channeluser.getId());
+                    return Result.ok(map2);
                 }
             }
         } catch (Exception e) {

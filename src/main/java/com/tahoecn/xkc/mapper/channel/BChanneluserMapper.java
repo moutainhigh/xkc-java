@@ -156,4 +156,6 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     Map<String,Object> ChannelOrgRuleInfoDetail_Select(@Param("projectId")String projectId, @Param("adviserGroupID")String adviserGroupID);
 
     Map<String, Object> checkUser(@Param("username")String username, @Param("mobile")String mobile);
+
+    Map<String, Object> getUserInfo(@Param("id")String id);
 }
