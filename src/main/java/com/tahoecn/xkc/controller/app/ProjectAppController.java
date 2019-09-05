@@ -102,7 +102,7 @@ public class ProjectAppController extends TahoeBaseController {
                 
                 //xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格 1:隐藏，0:显示)
-                if(isHide.getHouseDetail() != null && isHide.getHouseList() == 1){
+                if(isHide.getHouseList() != null && isHide.getHouseList() == 1){
                 	room.put("RoomPrice", "****/㎡");
                 	room.put("RoomTotal", "****");
                 }else{
