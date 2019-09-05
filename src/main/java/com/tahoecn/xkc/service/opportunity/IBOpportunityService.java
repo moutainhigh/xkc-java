@@ -88,4 +88,9 @@ public interface IBOpportunityService extends IService<BOpportunity> {
 	 */
 	List<Map<String,Object>> mCustomerCateList_Select(Map<String,Object> paramMap);
 
+	/**
+	 * 公共池客户重新分配协作人置空
+	 */
+	void mCustomerSalePartnerSetNull_Update(Map<String,Object> paramMap);
+
 }
