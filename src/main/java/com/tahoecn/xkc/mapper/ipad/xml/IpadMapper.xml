@@ -414,7 +414,7 @@
 	
 	<select id="getMaxSortByDate" resultType="java.lang.Long">
 		SELECT ISNULL(MAX(SortCode),0) from Sale_User_Sign
-		WHERE SignInDate = #{SignInDate}
+		WHERE SignInDate = #{SignInDate} AND SalesSupervisorID=#{SalesSupervisorID}
 	</select>
 	
 	<update id="updateSortCodeAndTime" parameterType="java.util.Map">

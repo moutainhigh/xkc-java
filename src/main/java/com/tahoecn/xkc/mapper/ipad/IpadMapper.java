@@ -119,7 +119,7 @@ public interface IpadMapper extends BaseMapper<Object> {
 	 * @param SignInDate
 	 * @return
 	 */
-	Long getMaxSortByDate(@Param("SignInDate")String SignInDate);
+	Long getMaxSortByDate(@Param("SignInDate")String SignInDate,@Param("SalesSupervisorID")String SalesSupervisorID);
 	
 	/**
 	 * 更新排序编码和排序时间
