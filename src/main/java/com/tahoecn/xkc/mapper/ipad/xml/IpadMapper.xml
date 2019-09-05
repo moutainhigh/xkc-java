@@ -140,7 +140,7 @@
 		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
 		                    o.CustomerID ,
 		                    o.CustomerName ,
-		                    STUFF(c.Mobile ,4,4,'****') CustomerMobile ,
+		                    c.Mobile CustomerMobile ,
 		                    c.Gender ,
 		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
 		                    o.OpportunitySource ,
@@ -414,7 +414,7 @@
 	
 	<select id="getMaxSortByDate" resultType="java.lang.Long">
 		SELECT ISNULL(MAX(SortCode),0) from Sale_User_Sign
-		WHERE SignInDate = #{SignInDate}
+		WHERE SignInDate = #{SignInDate} AND SalesSupervisorID=#{SalesSupervisorID}
 	</select>
 	
 	<update id="updateSortCodeAndTime" parameterType="java.util.Map">

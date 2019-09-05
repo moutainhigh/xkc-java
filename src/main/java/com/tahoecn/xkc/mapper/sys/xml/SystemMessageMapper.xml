@@ -790,7 +790,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 				FROM
 					B_CustomerFollowUp a 
 				WHERE
-					AND a.FollwUpUserID = #{UserID} 
+					a.FollwUpUserID = #{UserID} 
 					AND a.ProjectID = #{ProjectID}
 				GROUP BY
 					a.OpportunityID 

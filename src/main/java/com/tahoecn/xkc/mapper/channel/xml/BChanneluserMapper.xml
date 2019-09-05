@@ -702,4 +702,20 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         AND IsDel = 0
         AND Status =1
     </select>
+
+    <select id="getUserInfo" parameterType="string" resultType="java.util.Map">
+        SELECT
+        ID,
+        UserName,
+        Mobile,
+        Name,
+        Gender,
+        ChannelTypeID,
+        ChannelType,
+        Job
+        FROM
+        B_ChannelUser
+        WHERE
+        ID = #{id}
+    </select>
 </mapper>
