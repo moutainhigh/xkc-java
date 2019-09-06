@@ -87,7 +87,7 @@ public interface ISAccountService extends IService<SAccount> {
     List<Map<String, Object>> insertJob(String userID, String authCompanyID, String productID);
 
 
-    Result getJobByUserName(String userName, String mobile);
+    Result getJobByUserName(String userID);
 
     SAccount checkUser0(String username, String mobile);
 

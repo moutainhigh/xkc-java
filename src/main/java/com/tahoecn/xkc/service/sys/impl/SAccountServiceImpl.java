@@ -8,9 +8,11 @@ import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.ucapi.UcApiUtils;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.org.SOrganization;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
+import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.org.ISOrganizationService;
 import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -48,6 +50,9 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
 
     @Autowired
     private ISOrganizationService organizationService;
+
+    @Autowired
+    private IBChanneluserService channeluserService;
 
     @Value("${uc_api_url}")
     private String baseUrl;
@@ -195,16 +200,15 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
     }
 
     @Override
-    public Result getJobByUserName(String userName, String mobile) {
-        QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
-        wrapper.eq("UserName",userName).eq("Mobile",mobile).eq("IsDel",0);
-        //如果有多个 取第一个
-        List<SAccount> list = this.list(wrapper);
-        if (CollectionUtil.isEmpty(list)){
+    public Result getJobByUserName(String userID) {
+        BChanneluser byId = channeluserService.getById(userID);
+         //如果有多个 取第一个
+        SAccount sAccount = baseMapper.findUser(byId.getUserName(),byId.getMobile());
+        if (sAccount==null){
             return Result.ok(null);
         }else {
             //获取job名称,判断是否为自渠或置业顾问
-            List<String> nameList=baseMapper.getJobName(list.get(0).getId());
+            List<String> nameList=baseMapper.getJobName(sAccount.getId());
             for (String s : nameList) {
 //                if (StringUtils.equals("自渠人员_2.0",s)){
 //                    return Result.errormsg(1,"您的账号为自渠人员岗位,请前往....报备");

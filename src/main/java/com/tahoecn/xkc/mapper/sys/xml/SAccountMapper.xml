@@ -695,4 +695,14 @@
         AND IsDel = 0
         AND Status =1
     </select>
+
+    <select id="findUser" parameterType="string" resultType="com.tahoecn.xkc.model.sys.SAccount">
+        SELECT TOP
+        1 *
+        FROM
+        S_Account
+        WHERE
+        ( UserName =#{username} OR Mobile =#{mobile} )
+        AND IsDel =0
+    </select>
 </mapper>

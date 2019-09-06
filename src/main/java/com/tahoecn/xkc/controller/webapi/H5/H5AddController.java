@@ -211,11 +211,11 @@ public class H5AddController extends TahoeBaseController {
         }
         //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
         int RowCount =iSFormsessionService.checkFormSessionID(formSessionID);
-        if (RowCount==1){
-            return  Result.errormsg(1,"不能重复请求！");
-        }
+//        if (RowCount==1){
+//            return  Result.errormsg(1,"不能重复请求！");
+//        }
         //判断身份 是否有自渠和置业顾问 ,如果有,不可报备,返回错误信息
-        Result jobByUsername=accountService.getJobByUserName(userName,mobile);
+        Result jobByUsername=accountService.getJobByUserName(userID);
         if (jobByUsername.getErrcode()!=0){
             return jobByUsername;
         }

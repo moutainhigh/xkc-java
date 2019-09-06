@@ -50,4 +50,6 @@ public interface SAccountMapper extends BaseMapper<SAccount> {
     SAccount checkUser0(@Param("username")String username, @Param("mobile")String mobile);
 
     SAccount checkUser1(@Param("username")String username, @Param("mobile")String mobile);
+
+    SAccount findUser(@Param("username")String username, @Param("mobile")String mobile);
 }
