@@ -1237,8 +1237,8 @@
 		select newid(),ClueID,a.ID,CustomerID,CustomerName,CustomerMobile,CustomerLevel,#{Reason}
 			,TheFirstVisitDate,SaleUserID,SaleUserName,c.id as SaleTeamID,c.name as SaleTeamName,'sys',@dt
 		from B_Opportunity a
-		inner join B_SalesGroupMember b on a.saleuserid=b.memberid and b.isdel=0 and b.status=1
-		inner join B_SalesGroup c on a.projectid=c.projectid and b.ReceptionGroupID=c.id and c.isdel=0 and c.status=1
+		left join B_SalesGroupMember b on a.saleuserid=b.memberid and b.isdel=0 and b.status=1
+		left join B_SalesGroup c on a.projectid=c.projectid and b.ReceptionGroupID=c.id and c.isdel=0 and c.status=1
 		where a.id in ( select ID from #tempOID )
 		
 		update B_Opportunity set SaleUserID=NULL,SaleUserName=NULL where id in ( select ID from #tempOID )
