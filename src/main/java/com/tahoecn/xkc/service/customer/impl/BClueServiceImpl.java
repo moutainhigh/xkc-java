@@ -14,6 +14,7 @@ import com.tahoecn.xkc.mapper.customer.BCustomerpotentialfollowupMapper;
 import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
+import com.tahoecn.xkc.mapper.sys.SAccountMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.clue.BCustomerpotentialfollowup;
@@ -25,6 +26,7 @@ import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
+import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.Customer;
 import com.tahoecn.xkc.model.vo.CustomerActionVo;
@@ -69,6 +71,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
 	@Autowired
 	private BChanneluserMapper channeluserMapper;
+	
+	@Autowired
+	private SAccountMapper accountMapper;
 
 	@Autowired
 	private BCustomerMapper customerMapper;
@@ -749,7 +754,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customer.setRemark(_clue.getRemark());
 		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
 		System.out.println(clue.getCustomerRank());
-		customer.setCustomerRank(clue.getCustomerRank());
+		
+		if(clue.getCustomerRank().length() > 0) {
+			customer.setCustomerRank(clue.getCustomerRank());
+		}
+		else {
+			customer.setCustomerRank("1级");
+		}
 		List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
 		List<CustomerStatus> customerStatuses = new ArrayList<>();
 		for (CStatus cs : statuses) {
@@ -800,7 +811,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 				customer.setCreateTime(dateFormat.format(cus.getReportTime()));
 				customer.setQrUrl("");
 				customer.setRemark("");
-				customer.setCustomerRank(cus.getCustomerRank());
+				if(cus.getCustomerRank().length() > 0) {
+					customer.setCustomerRank(cus.getCustomerRank());
+				}
+				else {
+					customer.setCustomerRank("1级");
+				}
 				customers.add(customer);
 			}
 		}
@@ -821,15 +837,24 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		Date now = new Date();
 
 		BChanneluser channelUser = channeluserMapper.selectById(reportUserId);
-		if (channelUser == null) {
+		SAccount account = accountMapper.selectById(reportUserId);
+		if (channelUser == null && account == null) {
 			return Result.errormsg(-1,"报备人不存在");
 		}
 		if (mobile == null || "".equals(mobile)) {
 			return Result.errormsg(-1,"手机号必须填写");
 		}
-
-		if (mobile.equals(channelUser.getMobile())) {
-			return Result.errormsg(-1,"报备无效，不允许报备自己！");
+		
+		if(channelUser !=null) {
+			if (mobile.equals(channelUser.getMobile())) {
+				return Result.errormsg(-1,"报备无效，不允许报备自己！");
+			}
+		}
+		
+		if(account != null) {
+			if (mobile.equals(account.getMobile())) {
+				return Result.errormsg(-1,"报备无效，不允许报备自己！");
+			}
 		}
 
 		// 判断是否老业主
@@ -903,9 +928,16 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		clue.setRemark(remark);
 		clue.setSourceType(sourceType);
 		clue.setReportUserID(reportUserId);
-		clue.setReportUserName(channelUser.getName());
-		clue.setReportUserMobile(channelUser.getMobile());
-		clue.setReportUserOrg(channelUser.getChannelOrgID());
+		if(channelUser != null) {
+			clue.setReportUserName(channelUser.getName());
+			clue.setReportUserMobile(channelUser.getMobile());
+			clue.setReportUserOrg(channelUser.getChannelOrgID());
+		}
+		else {
+			clue.setReportUserName(account.getEmployeeName());
+			clue.setReportUserMobile(account.getMobile());
+			clue.setReportUserOrg(account.getUserOrgID());
+		}
 		clue.setRuleID(ruleId);
 		clue.setAdviserGroupID(adviserGroupId);
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -921,7 +953,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		clue.setCreateTime(now);
 		clue.setIsDel(0);
 		clue.setStatus(2); // TODO 状态需确认
-
 		clueMapper.insert(clue);
 
 		//插入跟进记录
@@ -938,14 +969,21 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		customerpotentialfollowup.setFollowUpContent("报备成功");
 		customerpotentialfollowup.setFollwUpType("69331990-DBF4-0A2F-80CD-7BC424AA8902");
 		customerpotentialfollowup.setFollwUpUserID(reportUserId);
-		customerpotentialfollowup.setFollwUpUserMobile(channelUser.getMobile());
-		customerpotentialfollowup.setFollwUpUserName(channelUser.getName());
+		if(channelUser != null) {
+			customerpotentialfollowup.setFollwUpUserMobile(channelUser.getMobile());
+			customerpotentialfollowup.setFollwUpUserName(channelUser.getName());
+			customerpotentialfollowup.setOrgID(channelUser.getChannelOrgID());
+		}
+		else {
+			customerpotentialfollowup.setFollwUpUserMobile(account.getMobile());
+			customerpotentialfollowup.setFollwUpUserName(account.getEmployeeName());
+			customerpotentialfollowup.setOrgID(account.getUserOrgID());
+		}
 		customerpotentialfollowup.setFollwUpUserRole(adviserGroupId);
 		customerpotentialfollowup.setFollwUpWay("");
 		customerpotentialfollowup.setIsDel(0);
 		customerpotentialfollowup.setStatus(1);
 		customerpotentialfollowup.setProjectID(projectid);
-		customerpotentialfollowup.setOrgID(channelUser.getChannelOrgID());
 		customerpotentialfollowupMapper.insert(customerpotentialfollowup);
 		return result.ok("报备成功");
 	}
