@@ -562,7 +562,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         	msg.put("Tag", true);
             msg.put("InvalidType", 0);
         }else{//存在销售机会
-            if(StringUtils.isEmpty(opp.get("SaleUserID").toString()))
+            if(StringUtils.isEmpty((opp.get("SaleUserID") == null ? "" : opp.get("SaleUserID")).toString()))
             {
                 msg.put("Tag", true);
                 msg.put("InvalidType", 0);
