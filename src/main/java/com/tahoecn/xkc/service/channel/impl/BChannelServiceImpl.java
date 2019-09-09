@@ -106,9 +106,9 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         //TypeID 表示是否验证规则 1 表示验证 其他表示不验证
         if (paramMap.get("TypeID").equals("1")){
             re =  clueConfirm(paramMap);
-            if(re.getErrcode() != 0){
-            	return re;
-            }
+//            if(re.getErrcode() != 0){
+//            	return re;
+//            }
         }
         //查询
         //获取客户信息
@@ -685,11 +685,8 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	private boolean IsPreIntercept(Date createTime,ChannelRegisterModel channel) {
 		if (channel.getUserRule().getProtectRule().getIsPreIntercept() == 1){
             //报备时间+防截客周期小于等于当前时间
-			System.out.println(createTime.getMinutes()+channel.getUserRule().getProtectRule().getPreInterceptTime());
-			Calendar nowTime = Calendar.getInstance();
-			nowTime.add(Calendar.MINUTE, -channel.getUserRule().getProtectRule().getPreInterceptTime());
 //            if ((createTime.getMinutes()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getMinutes()){
-            if ((createTime.getTime()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getTime()){
+			if ((createTime.getTime()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getTime()){
                 return false;
             }else{
                 return true;
