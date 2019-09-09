@@ -66,4 +66,6 @@ public interface ICustomerHelp {
 	public List<OptionItem> GetOptionList(String pid, Boolean isall);
 	
 	public void sendKHDFMsg(Map<String,Object> pmp);
+	
+	public Result sendBBSBMsg(String OpportunityID,String UserName,String UserID);
 }
