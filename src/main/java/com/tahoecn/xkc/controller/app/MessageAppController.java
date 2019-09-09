@@ -238,6 +238,7 @@ public class MessageAppController extends TahoeBaseController {
      * @param jobCode 岗位代码
      * @param typeCode 页签代码--逾期时传YQ，其余传空
      * 置业顾问GW：当日待跟进、当日跟进逾期、当日认购逾期、当日签约逾期、当日回款逾期、分配待跟进、（我的——逾期：认购逾期、签约逾期、回款逾期）
+     *          报备失败提醒
 	 * 销售负责人XSFZR：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
 	 * 营销负责人YXJL：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
 	 * 销售经理XSJL：当日认购逾期、当日签约逾期、当日回款逾期、（我的——逾期：认购逾期、签约逾期、回款逾期）
@@ -256,7 +257,8 @@ public class MessageAppController extends TahoeBaseController {
     					MessageType.当日认购逾期.getTypeID(),
     					MessageType.当日签约逾期.getTypeID(),
     					MessageType.当日回款逾期.getTypeID(),
-    					MessageType.分配待跟进.getTypeID()};
+    					MessageType.分配待跟进.getTypeID(),
+    					MessageType.报备失败提醒.getTypeID()};
     			break;
     		case "XSFZR":
     			msgType = new String[]{MessageType.当日认购逾期.getTypeID(),
@@ -581,6 +583,15 @@ public class MessageAppController extends TahoeBaseController {
     				res.put("Count", 0);
     				res.put("Content", "");
     			}
+    			if (item.equals(MessageType.报备失败提醒.getTypeID()))
+    			{
+    				res.put("TypeID",  MessageType.报备失败提醒.getTypeID());
+    				res.put("TypeName", MessageType.报备失败提醒.toString());
+    				res.put("TypeCate", MessageCate.拓客客户列表.getCateID());
+    				res.put("Icon", ThemeUrl + "images/icon_cuiban.png");
+    				res.put("Count", 0);
+    				res.put("Content", "");
+    			}
     			resJo.put(item, res);
     		}
     	}
@@ -795,6 +806,13 @@ public class MessageAppController extends TahoeBaseController {
 				UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(iSystemMessageService.ListDRHKYQ_SelectCount(map));
+				v.setContent("");
+				list.add(v);
+			}
+			if(MessageType.报备失败提醒.getTypeID().equals(item)){
+				UnreadCountVo v = new UnreadCountVo();
+				v.setMessageType(item);
+				v.setMessageCount(ListByMessageType_Select_Count(map));
 				v.setContent("");
 				list.add(v);
 			}
@@ -1137,6 +1155,14 @@ public class MessageAppController extends TahoeBaseController {
 	    		map.put("MessageType", String.join("' OR MessageType ='", msgType));
 	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
+	    	if(MessageType.报备失败提醒.getTypeID().equals(TypeID)){
+	    		result.put("EmptyHandleMsg", "暂无通知");
+	    		result.put("EmptyHandleIconType", 0);
+	    		result.put("EmptyUnHandleMsg", "暂无通知");
+	    		result.put("EmptyUnHandleIconType", 0);
+	    		map.put("MessageType", TypeID);
+	    		result = ListBBSBTX_Select(result,map);
+	    	}
 	    	int isCount = iSystemMessageService.IsExistsShareProject(map);
 	    	if(isCount == 1){
 	    		if(MessageType.预约客户.getTypeID().equals(TypeID)){
@@ -1154,6 +1180,28 @@ public class MessageAppController extends TahoeBaseController {
     		return Result.errormsg(1,"系统异常，请联系管理员");
     	}
     }
+	/**
+	 * 报备失败提醒
+	 * @param result
+	 * @param map
+	 * @return
+	 */
+	private Map<String, Object> ListBBSBTX_Select(Map<String, Object> result, Map<String, Object> map) {
+		String IsRead = (String) map.get("IsRead");
+		String sqlWhere = "";
+    	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
+		if(IsRead != null && !"".equals(IsRead)){
+			sqlWhere = " AND ISNULL(IsRead,0) = '" + map.get("IsRead") + "' ";
+		}
+		map.put("sqlWhere", sqlWhere);
+    	//列表
+    	result.put("List", JSON.parseArray(JSON.toJSONString(iSystemMessageService.SystemMessageListByMessageType_Select(map))));
+    	//总数
+    	result.put("AllCount", iSystemMessageService.SystemMessageListByMessageType_SelectCount(map));
+		//更新操作
+		iSystemMessageService.updMessage(map);
+		return result;
+	}
 	/**
 	 * 今日待跟进列表
 	 */

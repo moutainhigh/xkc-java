@@ -36,6 +36,7 @@ import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
 import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
+import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
@@ -114,7 +115,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 	@Autowired
     private IBChannelorgService channelorgService;
 
-
+    @Autowired
+    private ICustomerHelp customerTemplate;
+    
 	@Value("${mobilesale.ruleid}")
 	private String ruleId;
 
@@ -860,6 +863,15 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		// 判断是否老业主
 		String isOwner = customerMapper.isOwner(projectid, mobile);
 		if (isOwner != null && isOwner.length() > 0) {
+			Map<String, Object> obj = new HashMap<String, Object>();
+            obj.put("ProjectID", projectid);
+            obj.put("CustomerMobile", mobile);
+			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+			if(opp.get("ID") != null) {
+				//发送报备失败消息
+				customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+				
+			}
 			return Result.errormsg(-1,"报备无效，该客户为项目老客户！");
 		}
 		// 不是业主，新客户
@@ -875,6 +887,15 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		// 验证是否已被其他渠道报备
 		String isProtected = clueMapper.isProtected(mobile, projectid, reportUserId);
 		if (isProtected != null && isProtected.length() > 0) {
+			Map<String, Object> obj = new HashMap<String, Object>();
+            obj.put("ProjectID", projectid);
+            obj.put("CustomerMobile", mobile);
+			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+			if(opp.get("ID") != null) {
+				//发送报备失败消息
+				customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+				
+			}
 			return Result.errormsg(-1,"报备无效，该客户已被其他渠道报备!");
 		}
 
