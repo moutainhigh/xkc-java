@@ -13,6 +13,7 @@ import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.sys.BVerificationcode;
@@ -22,6 +23,7 @@ import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
+import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
 import com.tahoecn.xkc.service.customer.impl.PotentialCustomerServiceImpl;
 import com.tahoecn.xkc.service.project.IABrokerprojectService;
@@ -72,6 +74,12 @@ public class H5AddController extends TahoeBaseController {
 
     @Autowired
     private ISAccountService accountService;
+
+    @Autowired
+    private BCustomerpotentialMapper bCustomerpotentialMapper;
+
+    @Autowired
+    private ICustomerHelp customerTemplate;
 
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
@@ -290,6 +298,15 @@ public class H5AddController extends TahoeBaseController {
             return re;
         }
         }else {//不允许报备
+            if ((int)CustomerValidate.get("InvalidType")==6||(int)CustomerValidate.get("InvalidType")==2){
+                //存在销售机会且SaleUserID不为空 发送报备失败消息
+                BChanneluser byId = channeluserService.getById(userID);
+                Map<String, Object> obj = new HashMap<String, Object>();
+                obj.put("ProjectID", projectId);
+                obj.put("CustomerMobile", mobile);
+                Map<String,Object> opp = bCustomerpotentialMapper.ValidOpp_Select(obj);
+                customerTemplate.sendBBSBMsg((String) opp.get("ID"),byId.getName(), userID);
+            }
             re.setErrcode(1);
             return re;
         }
