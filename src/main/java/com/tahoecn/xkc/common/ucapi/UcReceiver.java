@@ -10,6 +10,7 @@ package com.tahoecn.xkc.common.ucapi;
 import java.io.IOException;
 import java.util.Map;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -19,6 +20,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,21 +68,28 @@ public class UcReceiver {
 			SimpleRabbitListenerContainerFactoryConfigurer configurer,
 			@Qualifier("ucRabbitConnectionFactory") ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setMessageConverter(new Jackson2JsonMessageConverter());
+		factory.setConcurrentConsumers(1);
+		factory.setMaxConcurrentConsumers(1);
+		factory.setPrefetchCount(1);
+		factory.setTxSize(1);
+		factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
 		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
 
-	@RabbitListener(containerFactory = "ucRabbitFactory", bindings = @QueueBinding(exchange = @Exchange(value = "queue_ydanch"), value = @Queue(value = "queue_ydanch", durable = "true", exclusive = "false", autoDelete = "fasle")))
+	@RabbitListener(containerFactory = "ucRabbitFactory", bindings = @QueueBinding(exchange = @Exchange(value = "${spring.rabbitmq.uc.exchange}"), value = @Queue(value = "${spring.rabbitmq.uc.queue}", durable = "true", exclusive = "false", autoDelete = "fasle")))
 	@RabbitHandler
-	public void onOrderMessage(@Headers Map<String, Object> headers, Map<String, Object> ea, Channel channel) {
+	public void onOrderMessage(@Headers Map<String, Object> headers, byte[] ea, Channel channel) {
 		try {
-			JSONObject res = JSONObject.parseObject(ea.get("Body").toString());
+			JSONObject res = JSONObject.parseObject(new String(ea, "UTF-8"));
+			log.info("UC_MES = {}", res.toJSONString());
 			JSONObject data = JSONObject.parseObject(res.getString("result"));
 			data.put("dataSid", res.get("dataSid"));
 			data.put("opType", res.get("opType"));
 			data.put("dataType", res.get("dataType"));
 			data.put("nanoTime", res.get("nanoTime"));
-			data.put("result", res.get("result"));
+			data.put("result", res.get("result").toString());
 			if ("uc_user".equals(res.get("dataType"))) {
 				csUcUserMapper.TaskUCUserChangeDetail_Insert(data);
 			}
