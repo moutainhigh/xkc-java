@@ -1436,7 +1436,71 @@ public class IpadServiceImpl implements IIpadService {
             pmap.put("SalesSupervisorID", paramAry.get("UserID"));
             List<Map<String, Object>> allGwJArray = vCustomerfjlistSelectMapper.sCustomerFJAdviserList_Select_Sort(pmap);
           
-            entity.setData(allGwJArray);
+          //去重复 取组集合
+            List<Map<String, Object>> groupList = new ArrayList<>();
+            List<String> groupKeys = new ArrayList<>();
+            for(Map<String, Object> item : allGwJArray){
+            	if(item.get("GroupID")!=null){
+            		String groupKey = item.get("GroupID").toString();
+            		if(!groupKeys.contains(groupKey)){
+            			groupKeys.add(groupKey);
+            			groupList.add(item);
+            		}
+            	}
+            }
+
+            JSONObject data = new JSONObject();
+            JSONArray groupJArry = new JSONArray();
+
+            //添加全部分组
+            if (StringUtils.isEmpty(model.getKeyWord())){
+            	JSONObject totalGroupObj = new JSONObject();
+                totalGroupObj.put("GroupID", "");
+                totalGroupObj.put("GroupName", "全部");
+                JSONArray gwJarry1 = new JSONArray();
+                for(Map<String, Object> gwItem : allGwJArray){
+                	JSONObject gwObj = new JSONObject();
+                    gwObj.put("SaleUserID",gwItem.get("ID"));
+                    gwObj.put("SaleUserName",gwItem.get("Name"));
+                    gwObj.put("HeadImg",gwItem.get("HeadImg"));
+                    gwObj.put("GroupName",gwItem.get("GroupName"));
+                    gwObj.put("Mobile",gwItem.get("Mobile"));
+                    gwObj.put("ReceptCount",gwItem.get("DayTotalCount"));
+                    gwObj.put("IsSigned", 0);
+                    gwObj.put("Status", gwItem.get("Status"));
+                    gwJarry1.add(gwObj);
+                }
+                totalGroupObj.put("SaleUserList", gwJarry1);
+                groupJArry.add(totalGroupObj);
+            }
+            //循环添加分组
+            for(Map<String, Object> groupItem : groupList){
+            	JSONObject groupObj = new JSONObject();
+                groupObj.put("GroupID",groupItem.get("GroupID"));
+                groupObj.put("GroupName",groupItem.get("GroupName"));
+
+                JSONArray gwJarry = new JSONArray();
+                //循环添加顾问
+                for(Map<String, Object> gwItem : allGwJArray){
+                    if (gwItem.get("GroupID")!=null && groupItem.get("GroupID")!=null && gwItem.get("GroupID").toString().equals(groupItem.get("GroupID").toString())){
+                    	JSONObject gwObj = new JSONObject();
+                        gwObj.put("SaleUserID",gwItem.get("ID"));  //顾问ID
+                        gwObj.put("SaleUserName",gwItem.get("Name")); //顾问姓名
+                        gwObj.put("HeadImg",gwItem.get("HeadImg")); //顾问头像
+                        gwObj.put("GroupName",gwItem.get("GroupName"));
+                        gwObj.put("Mobile",gwItem.get("Mobile"));
+                        gwObj.put("ReceptCount",gwItem.get("DayTotalCount")); //接待数量
+                        gwObj.put("IsSigned", 0);
+                        gwObj.put("Status", gwItem.get("Status"));
+                        gwJarry.add(gwObj);
+                    }
+                }
+                groupObj.put("SaleUserList", gwJarry);
+                groupJArry.add(groupObj);
+            }
+            
+            data.put("GroupList", groupJArry);
+            entity.setData(data);
             entity.setErrcode(0);
             entity.setErrmsg("成功");
         }catch (Exception e){
