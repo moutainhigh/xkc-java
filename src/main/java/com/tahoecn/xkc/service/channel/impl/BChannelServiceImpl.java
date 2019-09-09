@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.channel.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -105,6 +106,9 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         //TypeID 表示是否验证规则 1 表示验证 其他表示不验证
         if (paramMap.get("TypeID").equals("1")){
             re =  clueConfirm(paramMap);
+            if(re.getErrcode() != 0){
+            	return re;
+            }
         }
         //查询
         //获取客户信息
@@ -261,7 +265,10 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
         jo.put("ClueList", JSON.parseObject(JSON.toJSONString(ob.get(0))));
         jo.put("CluruleListeList", ruleList);
         jo.put("InvalidList", invalidList);
-        return Result.ok(jo);
+        re.setData(jo);
+        re.setErrcode(0);
+        re.setErrmsg("成功");
+        return re;
 	}
 	
 	private Result clueConfirm(Map<String,Object> Parameter) {
@@ -313,7 +320,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 		customerActionVo.setClueID(Parameter.get("ClueID").toString());
 		customerActionVo.setNextFollowUpDate("");
         iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
-        return Result.ok(re);
+        return re;
 	}
 	
 	@Override
@@ -678,7 +685,11 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 	private boolean IsPreIntercept(Date createTime,ChannelRegisterModel channel) {
 		if (channel.getUserRule().getProtectRule().getIsPreIntercept() == 1){
             //报备时间+防截客周期小于等于当前时间
-            if ((createTime.getMinutes()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getMinutes()){
+			System.out.println(createTime.getMinutes()+channel.getUserRule().getProtectRule().getPreInterceptTime());
+			Calendar nowTime = Calendar.getInstance();
+			nowTime.add(Calendar.MINUTE, -channel.getUserRule().getProtectRule().getPreInterceptTime());
+//            if ((createTime.getMinutes()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getMinutes()){
+            if ((createTime.getTime()+channel.getUserRule().getProtectRule().getPreInterceptTime()) <= DateTime.now().getTime()){
                 return false;
             }else{
                 return true;
