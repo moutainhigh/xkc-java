@@ -345,7 +345,7 @@
      </select>
      <select id="ClueConfirm_Update"  statementType="CALLABLE">
      	<![CDATA[
-     	{call dbo.PR_SceneConfirmation(#{VisitTime},#{ClueID}, #{ProjectID},#{TradeOverdueTime},#{ConfirmUserId})}
+     	{call dbo.PR_SceneConfirmation(#{VisitTime},#{ConfirmUserId},#{ClueID}, #{ProjectID},#{TradeOverdueTime})}
 		]]>
      </select>
      <!-- 待确认查询 -->
