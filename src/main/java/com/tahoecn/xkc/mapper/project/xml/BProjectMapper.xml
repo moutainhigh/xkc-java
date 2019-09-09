@@ -297,7 +297,7 @@
                                                               AND B.CloseDate >= #{StartDate}
                                                               AND B.CloseDate <= #{EndDate}
                                                               AND B.CloseReason IN ( '退房', '换房' )
-                                            LEFT JOIN C_MYContract C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+                                            LEFT JOIN C_MYContract (NOLOCK) C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
                                             LEFT JOIN dbo.C_MYTrade (NOLOCK) TR ON tr.TradeGUID = A.TradeGUID
                                             LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = TR.OppGUID
 											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID                  
@@ -400,7 +400,7 @@
 											LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID   
                                      WHERE  NOT EXISTS ( SELECT
                                                               SaleGUID
-                                                         FROM C_MYSaleModiApply c
+                                                         FROM C_MYSaleModiApply (NOLOCK) c
                                                          WHERE
                                                               c.IsCstBg = 1
                                                               AND c.IsPayformBg = 0
@@ -427,9 +427,9 @@
                                      FROM   C_MYGetin (NOLOCK) sg
                                             JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
                                             JOIN dbo.B_Project (NOLOCK) P ON P.ID = sv.ProjGUID
-                                            JOIN dbo.C_MYTrade tr ON sg.SaleGUID = tr.TradeGUID
-											                      JOIN dbo.B_CustomerAttach ca ON tr.OppGUID = ca.ID
-											                      JOIN dbo.B_Opportunity op ON op.ID = ca.OpportunityID
+                                            JOIN dbo.C_MYTrade (NOLOCK) tr ON sg.SaleGUID = tr.TradeGUID
+											                      JOIN dbo.B_CustomerAttach (NOLOCK) ca ON tr.OppGUID = ca.ID
+											                      JOIN dbo.B_Opportunity (NOLOCK) op ON op.ID = ca.OpportunityID
                                      WHERE  sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
                                             AND ( sg.ItemType LIKE '%房款%'
                                                   OR sg.ItemName = '其他'
