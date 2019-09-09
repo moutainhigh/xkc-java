@@ -45,7 +45,7 @@
 		    	ORDER BY s.SortCode ASC
 		    </if>
 	    </if>
-	    <if test="sourceRange=='notAll'">
+	    <if test="SourceRange=='notAll'">
 	    	 <if test="Order=='sgin'">
 		    	AND s.ID IS NOT NULL
 		    	ORDER BY s.SortDateTime ASC
