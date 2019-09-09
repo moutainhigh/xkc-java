@@ -791,6 +791,10 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                     Map<String, Object> map2=baseMapper.getUserInfo(channeluser.getId());
                     return Result.ok(map2);
                 }else {
+                    //如果为泰信用户 不可创建 直接返回错误信息
+                    if (sign==1){
+                        return Result.errormsg(1,"获取用户信息失败,请前往泰享+完善信息");
+                    }
                     //saccount表没有 直接创建新用户
                     BChanneluser channeluser = new BChanneluser();
                     channeluser.setId(UUID.randomUUID().toString().toUpperCase());

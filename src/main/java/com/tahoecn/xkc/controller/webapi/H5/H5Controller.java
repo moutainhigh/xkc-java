@@ -14,6 +14,7 @@ import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.project.BProject;
@@ -24,6 +25,7 @@ import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
+import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
 import com.tahoecn.xkc.service.customer.impl.PotentialCustomerServiceImpl;
 import com.tahoecn.xkc.service.project.IABrokerprojectService;
@@ -41,6 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -89,6 +92,12 @@ public class H5Controller extends TahoeBaseController {
 
     @Autowired
     private IBChannelorgService channelorgService;
+
+    @Autowired
+    private BCustomerpotentialMapper bCustomerpotentialMapper;
+
+    @Autowired
+    private ICustomerHelp customerTemplate;
 
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
@@ -567,6 +576,15 @@ public class H5Controller extends TahoeBaseController {
         }
 
         }else {//不允许报备
+            if ((int)CustomerValidate.get("InvalidType")==6||(int)CustomerValidate.get("InvalidType")==2){
+                //存在销售机会且SaleUserID不为空 发送报备失败消息
+                BChanneluser byId = channeluserService.getById(userID);
+                Map<String, Object> obj = new HashMap<String, Object>();
+                obj.put("ProjectID", projectId);
+                obj.put("CustomerMobile", mobile);
+                Map<String,Object> opp = bCustomerpotentialMapper.ValidOpp_Select(obj);
+                customerTemplate.sendBBSBMsg((String) opp.get("ID"),byId.getName(), userID);
+            }
             re.setErrcode(1);
             return re;
         }
