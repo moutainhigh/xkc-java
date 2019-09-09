@@ -1202,6 +1202,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                         	CustomerObj = j_re.getJSONObject("CustomerObj");
                             entity.setErrcode(1);
                             entity.setErrmsg("此手机号客户已存在,销售顾问:" +CustomerObj.getString("SaleUserName"));
+                            //发送报备失败消息
+                            customerTemplate.sendBBSBMsg(CustomerObj.getString("OpportunityID"), paramAry.getString("UserTrueName"), paramAry.getString("UserID"));
                         }else{//新机会
                         	JSONObject j_re_1 = customerTemplate.CustomerExist(Mobile);
                             if (!j_re_1.getBoolean("status")){//新机会_新客户

@@ -1232,4 +1232,52 @@ public class CustomerHelp implements ICustomerHelp {
 			}
 		}
 	}
+	
+	/**
+	 * 发送报备失败消息
+	 * @param OpportunityID 机会ID
+	 * @param UserName 当前登录人姓名
+	 * @param UserID 当前登录人ID
+	 */
+	@Override
+	public Result sendBBSBMsg(String OpportunityID,String UserName,String UserID){
+		Result result = new Result();
+		try {
+			if(StringUtils.isEmpty(OpportunityID) || StringUtils.isEmpty(UserName) || StringUtils.isEmpty(UserID)){
+				result.setErrcode(1);
+				result.setErrmsg("参数异常");
+				return result;
+			}
+			Map<String, Object> OpportunityData = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
+			if(OpportunityData==null || OpportunityData.size()==0){
+				result.setErrcode(1);
+				result.setErrmsg("未获取到机会信息");
+				return result;
+			}
+			
+			String Mobile = OpportunityData.get("CustomerMobile")!=null?OpportunityData.get("CustomerMobile").toString():"";
+			String CustomerName = OpportunityData.get("CustomerName")!=null?OpportunityData.get("CustomerName").toString():"";
+			String Receiver = OpportunityData.get("SaleUserID")!=null?OpportunityData.get("SaleUserID").toString():"";
+			String ProjectID = OpportunityData.get("ProjectID")!=null?OpportunityData.get("ProjectID").toString():"";
+			String Content = "您跟进的客户"+CustomerName+",电话"+Mobile+",渠道"+UserName+"报备失败";
+			
+			Map<String,Object> parameter = new HashMap<String,Object>();
+            parameter.put("ProjectID", ProjectID);
+            parameter.put("BizID", OpportunityID);
+            parameter.put("BizType", "Opportunity");
+            parameter.put("Subject", "报备失败提醒");
+            parameter.put("Content", Content);
+            parameter.put("Receiver",Receiver);
+            parameter.put("MessageType",MessageType.报备失败提醒.getTypeID());
+            parameter.put("Sender", UserID);
+            parameter.put("Creator", UserID);
+            parameter.put("IsNeedPush", true);
+            iSystemMessageService.SystemMessageDetail_Insert(parameter);
+		} catch (Exception e) {
+			result.setErrcode(1);
+			result.setErrmsg("系统异常");
+			e.printStackTrace();
+		}
+		return result;
+	}
 }
