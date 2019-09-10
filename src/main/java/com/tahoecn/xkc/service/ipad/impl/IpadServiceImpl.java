@@ -741,7 +741,7 @@ public class IpadServiceImpl implements IIpadService {
                             	CustomerObj = re_j_1.getJSONObject("CustomerObj");
                                 parameter.put("CustomerID",CustomerObj.getString("CustomerID"));
                                 JSONObject OldCustomerObj = customerTemplate.OpportunityInfo(model.getProjectID(), Mobile);
-                                if (OldCustomerObj.size() > 0){//本项目存在历史机会,直接分配给之前的顾问
+                                if (OldCustomerObj != null && OldCustomerObj.size() > 0){//本项目存在历史机会,直接分配给之前的顾问
                                     parameter.put("LastName",OldCustomerObj.getString("LastName"));
                                     parameter.put("FirstName",OldCustomerObj.getString("FirstName"));
                                 }
