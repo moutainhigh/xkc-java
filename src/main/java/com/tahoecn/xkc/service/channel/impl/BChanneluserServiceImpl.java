@@ -744,6 +744,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             Integer gender1= map.get("Gender")==null? 0:(Integer)map.get("Gender");
             //先判断是老业主还是泰禾员工
             if (sign==1){
+
+                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies());
+                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession());
+                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request);
+
                 Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
                 System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);
                 String loginName = ssoToken.map(SSOToken::getIssuer).orElse(null);
