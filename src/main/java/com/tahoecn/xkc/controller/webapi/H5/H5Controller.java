@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.controller.webapi.H5;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -576,15 +577,17 @@ public class H5Controller extends TahoeBaseController {
         }
 
         }else {//不允许报备
-            if ((int)CustomerValidate.get("InvalidType")==6||(int)CustomerValidate.get("InvalidType")==2){
+
                 //存在销售机会且SaleUserID不为空 发送报备失败消息
                 BChanneluser byId = channeluserService.getById(userID);
                 Map<String, Object> obj = new HashMap<String, Object>();
                 obj.put("ProjectID", projectId);
                 obj.put("CustomerMobile", mobile);
                 Map<String,Object> opp = bCustomerpotentialMapper.ValidOpp_Select(obj);
-                customerTemplate.sendBBSBMsg((String) opp.get("ID"),byId.getName(), userID);
-            }
+                if (CollectionUtil.isNotEmpty(opp)){
+                    customerTemplate.sendBBSBMsg((String) opp.get("ID"),byId.getName(), userID);
+                }
+
             re.setErrcode(1);
             return re;
         }
