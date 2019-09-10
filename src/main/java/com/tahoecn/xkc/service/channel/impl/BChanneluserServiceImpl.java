@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.uc.sso.SSOHelper;
+import com.tahoecn.uc.sso.security.token.SSOToken;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.RqCodeUtils;
@@ -732,14 +734,22 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public Result getUserInfo(Map<String, Object> map) {
+    public Result getUserInfo(Map<String, Object> map,HttpServletRequest request) {
         try {
+            int sign = (int) map.get("sign");
+            //sign=0老业主 1为泰禾员工
             String username= (String) map.get("UserName");
             String name= (String) map.get("Name");
             String mobile= (String) map.get("Mobile");
             int gender1= (int) map.get("Gender");
-            //sign=0老业主 1为泰禾员工
-            int sign = (int) map.get("sign");
+            //先判断是老业主还是泰禾员工
+            if (sign==1){
+                Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
+                System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);
+                String loginName = ssoToken.map(SSOToken::getIssuer).orElse(null);
+                System.out.println("loginName = ++++++++++++++++++++++++++++++++++++++++++++" + loginName);
+                username=loginName;
+            }
 //            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
 //            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);
             Map<String, Object> map1 = baseMapper.checkUser(username,mobile);
