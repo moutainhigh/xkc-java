@@ -810,6 +810,8 @@ public class MessageAppController extends TahoeBaseController {
 				list.add(v);
 			}
 			if(MessageType.报备失败提醒.getTypeID().equals(item)){
+				map.put("IsRead", "0");
+	    		map.put("MessageType", item);
 				UnreadCountVo v = new UnreadCountVo();
 				v.setMessageType(item);
 				v.setMessageCount(ListByMessageType_Select_Count(map));
@@ -825,6 +827,10 @@ public class MessageAppController extends TahoeBaseController {
      */
     private int ListByMessageType_Select_Count(Map<String, Object> map) {
     	String sqlWhere = "";
+    	String IsRead = (String) map.get("IsRead");
+    	if(IsRead != null && !"".equals(IsRead)){
+			sqlWhere = " AND ISNULL(IsRead,0) = '0' ";
+		}
     	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
     	map.put("sqlWhere", sqlWhere);
     	//总数
@@ -1383,7 +1389,7 @@ public class MessageAppController extends TahoeBaseController {
 		//总数
 		result.put("AllCount", iSystemMessageService.SystemMessageListByMessageTypeOpportunityZQ_SelectCount(map));
 		//更新操作
-		iSystemMessageService.updMessageZQ(map);
+//		iSystemMessageService.updMessageZQ(map);
 		return result;
 	}
 	
