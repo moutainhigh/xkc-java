@@ -42,7 +42,7 @@
 		    	ORDER BY case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
 		    </if>
 		    <if test="Order=='sortCode'">
-		    	ORDER BY case when s.SortCode is null then 1 else 0 end asc,s.SortCode ASC,ORDER BY case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
+		    	ORDER BY case when s.SortCode is null then 1 else 0 end asc,s.SortCode ASC, case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
 		    </if>
 	    </if>
 	    <if test="SourceRange=='notAll'">
@@ -55,7 +55,7 @@
 		    </if>
 		    <if test="Order=='sortCode'">
 		    	AND s.ID IS NOT NULL
-		    	ORDER BY case when s.SortCode is null then 1 else 0 end asc,s.SortCode ASC,ORDER BY case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
+		    	ORDER BY case when s.SortCode is null then 1 else 0 end asc,s.SortCode ASC, case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
 		    </if>
 	    </if>
 	</select>
