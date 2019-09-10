@@ -741,7 +741,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             String username= (String) map.get("UserName");
             String name= (String) map.get("Name");
             String mobile= (String) map.get("Mobile");
-            int gender1= (int) map.get("Gender");
+            Integer gender1= (Integer) map.get("Gender");
             //先判断是老业主还是泰禾员工
             if (sign==1){
                 Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
