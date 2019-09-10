@@ -671,23 +671,24 @@ public class CustomerHelp implements ICustomerHelp {
 			Boolean HasChoose = false;
 			if (RuleType == 1) {// 竞争带看规则线索
 				for (OptionItem item : childItem.getOption()) {
-					if (item.getID().equals(
-							"0390CD8C-D6D4-4C92-995B-08C7E18E6EC2")) {// 增加自然到访
+					if (item.getID().equals("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2")) {// 增加自然到访
 						HasChoose = true;
 						ClueList.add(item);
 						break;
 					}
 				}
 			}
+			
+			Number numb = (Number)optionList.get("IsChoose");
 			if (!HasChoose) {
-				Number numb = (Number)optionList.get("IsChoose");
 				HasChoose = numb.intValue() == 1 ? true: false;
-				OptionItem optionItem = new OptionItem();
-				optionItem.setID(String.valueOf(optionList.get("ID")));
-				optionItem.setName(String.valueOf(optionList.get("Name")));
-				optionItem.setIsChoose(numb.intValue());
-				ClueList.add(optionItem);
 			}
+			OptionItem optionItem = new OptionItem();
+			optionItem.setID(String.valueOf(optionList.get("ID")));
+			optionItem.setName(String.valueOf(optionList.get("Name")));
+			optionItem.setIsChoose(numb.intValue());
+			ClueList.add(optionItem);
+			
 			if (HasChoose) {
 				childItem.setValue(ClueList.get(0).getName());
 				childItem.setValueID(ClueList.get(0).getID());
