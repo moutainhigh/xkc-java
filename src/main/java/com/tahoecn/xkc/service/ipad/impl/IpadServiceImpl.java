@@ -435,7 +435,7 @@ public class IpadServiceImpl implements IIpadService {
 	        //如果是公共客户池客户，销支没有分配权限，只能查看
 	        Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
 	        Map<String, Object> objCustomerPublicPool = ipadMapper.mCustomerPublicPoolByMobile_Select(pmap);
-	        if (objCustomerPublicPool!=null && objCustomerPublicPool.size() > 0){
+	        if (objCustomerPublicPool != null && objCustomerPublicPool.size() > 0){
 	            isNew = 0;
 	            isAlloc = 1;
 	            isReAlloc = 0;
