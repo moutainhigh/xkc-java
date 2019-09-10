@@ -1383,7 +1383,7 @@ public class MessageAppController extends TahoeBaseController {
 		//总数
 		result.put("AllCount", iSystemMessageService.SystemMessageListByMessageTypeOpportunityZQ_SelectCount(map));
 		//更新操作
-		iSystemMessageService.updMessageZQ(map);
+//		iSystemMessageService.updMessageZQ(map);
 		return result;
 	}
 	
