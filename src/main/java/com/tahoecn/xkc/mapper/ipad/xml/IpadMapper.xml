@@ -119,7 +119,7 @@
 	
 	<select id="mCustomerPublicPoolByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT  *
+		SELECT  top 1 *
 		FROM    dbo.B_CustomerPublicPool cpp
 		        INNER JOIN dbo.B_Opportunity o ON cpp.OpportunityID = o.ID
 		                                          AND cpp.IsDel = 0
