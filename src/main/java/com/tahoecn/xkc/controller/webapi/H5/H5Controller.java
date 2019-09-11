@@ -509,11 +509,11 @@ public class H5Controller extends TahoeBaseController {
             return Result.errormsg(1,"未能识别报备人的身份");
         }
 
-        //判断身份 是否有自渠和置业顾问 ,如果有,不可报备,返回错误信息
-        Result jobByUsername=accountService.getJobByUserName(userID);
-        if (jobByUsername.getErrcode()!=0){
-            return jobByUsername;
-        }
+//        //判断身份 是否有自渠和置业顾问 ,如果有,不可报备,返回错误信息
+//        Result jobByUsername=accountService.getJobByUserName(userID);
+//        if (jobByUsername.getErrcode()!=0){
+//            return jobByUsername;
+//        }
 
         //1.不允许报备自己 0.允许报备自己  IsReportOwn
         int IsReportOwn=projectService.isReport(projectId,userID,mobile);
