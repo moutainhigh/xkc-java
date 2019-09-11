@@ -750,7 +750,6 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             Integer gender1= map.get("Gender")==null? 0:(Integer)map.get("Gender");
             //先判断是老业主还是泰禾员工
             if (sign==1){
-
                 SSOToken ssoToken = SSOHelper.getSSOToken(request);
                 if (ssoToken == null) {
                     return Result.errormsg(1,"未获取到用户信息,请重新登录进入");
@@ -770,23 +769,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                 Optional<SSOToken> sso = Optional.ofNullable(SSOHelper.attrToken(request));
                 String loginName = sso.map(SSOToken::getIssuer).orElse(null);
 
-                System.out.println("loginName =++++++++++++++++++++++++++++++++++++++++++++ " +loginName);
                 username=loginName;
-//                Cookie[] cookies = request.getCookies();
-//                for (Cookie cookie : cookies) {
-//                    System.out.println("cookie.getName =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.getName());
-//                    System.out.println("cookie =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.toString());
-//                }
-//                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies().toString());
-//
-//                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession().toString());
-//                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request.toString());
-//
-//                Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
-//                System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);
-//                String loginName = ssoToken.map(SSOToken::getIssuer).orElse(null);
-//                System.out.println("loginName = ++++++++++++++++++++++++++++++++++++++++++++" + loginName);
-//                username=loginName;
             }
 
             Map<String, Object> map1 = baseMapper.checkUser(username,mobile);

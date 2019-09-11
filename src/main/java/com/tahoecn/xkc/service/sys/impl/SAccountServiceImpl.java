@@ -209,7 +209,7 @@ public class SAccountServiceImpl extends ServiceImpl<SAccountMapper, SAccount> i
         }else {
             List<String> nameList=baseMapper.getJobName(sAccount.getId());
             if (CollectionUtil.isNotEmpty(nameList)){
-                return Result.errormsg(1,"您的账号为置业顾问,请前往 泰享+ 报备");
+                return Result.errormsg(1,"您的角色是置业顾问，无法使用此功能进行推荐，请前往客储2.0APP案场联动进行客户推荐。");
             }
         }
         return Result.ok(null);
