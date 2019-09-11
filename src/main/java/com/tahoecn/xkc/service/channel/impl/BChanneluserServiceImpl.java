@@ -745,9 +745,9 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             //先判断是老业主还是泰禾员工
             if (sign==1){
 
-                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies());
-                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession());
-                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request);
+                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies().toString());
+                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession().toString());
+                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request.toString());
 
                 Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
                 System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);

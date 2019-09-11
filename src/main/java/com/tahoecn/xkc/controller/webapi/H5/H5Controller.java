@@ -34,6 +34,7 @@ import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBProjectcollectionService;
 import com.tahoecn.xkc.service.rule.IBClueruleService;
 import com.tahoecn.xkc.service.sys.IBVerificationcodeService;
+import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
 import com.tahoecn.xkc.service.uc.CsSendSmsLogService;
@@ -99,6 +100,9 @@ public class H5Controller extends TahoeBaseController {
 
     @Autowired
     private ICustomerHelp customerTemplate;
+
+    @Autowired
+    private ISAccountService accountService;
 
     @Value("${tahoe.application.physicalPath}")
     private  String physicalPath;
@@ -504,6 +508,13 @@ public class H5Controller extends TahoeBaseController {
         if (StringUtils.isBlank(adviserGroupID)){
             return Result.errormsg(1,"未能识别报备人的身份");
         }
+
+        //判断身份 是否有自渠和置业顾问 ,如果有,不可报备,返回错误信息
+        Result jobByUsername=accountService.getJobByUserName(userID);
+        if (jobByUsername.getErrcode()!=0){
+            return jobByUsername;
+        }
+
         //1.不允许报备自己 0.允许报备自己  IsReportOwn
         int IsReportOwn=projectService.isReport(projectId,userID,mobile);
         if (IsReportOwn==1){
