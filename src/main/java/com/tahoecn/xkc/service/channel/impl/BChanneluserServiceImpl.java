@@ -752,23 +752,26 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             if (sign==1){
 
                 SSOToken ssoToken = SSOHelper.getSSOToken(request);
-                String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
-                if ((StringUtils.isEmpty(LtpaTokenCookie)) || (LtpaTokenCookie.length() < 10)) {
-                    String tokenValue = LtpaToken.generateTokenByUserName(ssoToken.getIssuer(),
-                            String.valueOf(SSOConfig.getInstance().getExpireT()), SSOConfig.getInstance().getOatokenKey());
-                    String domain = SSOConfig.getInstance().getCookieDomain();
-
-                    response.addHeader("Set-Cookie", SSOConfig.getInstance().getOaCookieName() + "=" + tokenValue + ";Domain="
-                            + domain + "; Path=" + SSOConfig.getInstance().getCookiePath());
+                if (ssoToken == null) {
+                    return Result.errormsg(1,"未获取到用户信息,请重新登录进入");
                 }
-                request.setAttribute("ucssoTokenAttr", ssoToken);
+//                String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
+//                if ((StringUtils.isEmpty(LtpaTokenCookie)) || (LtpaTokenCookie.length() < 10)) {
+//                    String tokenValue = LtpaToken.generateTokenByUserName(ssoToken.getIssuer(),
+//                            String.valueOf(SSOConfig.getInstance().getExpireT()), SSOConfig.getInstance().getOatokenKey());
+//                    String domain = SSOConfig.getInstance().getCookieDomain();
+//
+//                    response.addHeader("Set-Cookie", SSOConfig.getInstance().getOaCookieName() + "=" + tokenValue + ";Domain="
+//                            + domain + "; Path=" + SSOConfig.getInstance().getCookiePath());
+//                }
+//                request.setAttribute("ucssoTokenAttr", ssoToken);
 
                 // 单点登陆用户过滤
                 Optional<SSOToken> sso = Optional.ofNullable(SSOHelper.attrToken(request));
                 String loginName = sso.map(SSOToken::getIssuer).orElse(null);
 
                 System.out.println("loginName =++++++++++++++++++++++++++++++++++++++++++++ " +loginName);
-
+                username=loginName;
 //                Cookie[] cookies = request.getCookies();
 //                for (Cookie cookie : cookies) {
 //                    System.out.println("cookie.getName =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.getName());
