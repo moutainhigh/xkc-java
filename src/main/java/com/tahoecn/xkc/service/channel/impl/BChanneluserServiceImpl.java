@@ -7,8 +7,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.uc.sso.SSOConfig;
 import com.tahoecn.uc.sso.SSOHelper;
+import com.tahoecn.uc.sso.common.CookieHelper;
 import com.tahoecn.uc.sso.security.token.SSOToken;
+import com.tahoecn.uc.sso.utils.LtpaToken;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.RqCodeUtils;
@@ -37,9 +40,11 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -735,7 +740,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public Result getUserInfo(Map<String, Object> map,HttpServletRequest request) {
+    public Result getUserInfo(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) {
         try {
             int sign = (int) map.get("sign");
             //sign=0老业主 1为泰禾员工
@@ -745,21 +750,40 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             Integer gender1= map.get("Gender")==null? 0:(Integer)map.get("Gender");
             //先判断是老业主还是泰禾员工
             if (sign==1){
-                Cookie[] cookies = request.getCookies();
-                for (Cookie cookie : cookies) {
-                    System.out.println("cookie.getName =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.getName());
-                    System.out.println("cookie =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.toString());
+
+                SSOToken ssoToken = SSOHelper.getSSOToken(request);
+                String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
+                if ((StringUtils.isEmpty(LtpaTokenCookie)) || (LtpaTokenCookie.length() < 10)) {
+                    String tokenValue = LtpaToken.generateTokenByUserName(ssoToken.getIssuer(),
+                            String.valueOf(SSOConfig.getInstance().getExpireT()), SSOConfig.getInstance().getOatokenKey());
+                    String domain = SSOConfig.getInstance().getCookieDomain();
+
+                    response.addHeader("Set-Cookie", SSOConfig.getInstance().getOaCookieName() + "=" + tokenValue + ";Domain="
+                            + domain + "; Path=" + SSOConfig.getInstance().getCookiePath());
                 }
-                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies().toString());
+                request.setAttribute("ucssoTokenAttr", ssoToken);
 
-                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession().toString());
-                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request.toString());
+                // 单点登陆用户过滤
+                Optional<SSOToken> sso = Optional.ofNullable(SSOHelper.attrToken(request));
+                String loginName = sso.map(SSOToken::getIssuer).orElse(null);
 
-                Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
-                System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);
-                String loginName = ssoToken.map(SSOToken::getIssuer).orElse(null);
-                System.out.println("loginName = ++++++++++++++++++++++++++++++++++++++++++++" + loginName);
-                username=loginName;
+                System.out.println("loginName =++++++++++++++++++++++++++++++++++++++++++++ " +loginName);
+
+//                Cookie[] cookies = request.getCookies();
+//                for (Cookie cookie : cookies) {
+//                    System.out.println("cookie.getName =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.getName());
+//                    System.out.println("cookie =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.toString());
+//                }
+//                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies().toString());
+//
+//                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession().toString());
+//                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request.toString());
+//
+//                Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
+//                System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);
+//                String loginName = ssoToken.map(SSOToken::getIssuer).orElse(null);
+//                System.out.println("loginName = ++++++++++++++++++++++++++++++++++++++++++++" + loginName);
+//                username=loginName;
             }
 //            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
 //            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);

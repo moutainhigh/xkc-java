@@ -6,6 +6,7 @@ import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -175,5 +176,5 @@ public interface IBChanneluserService extends IService<BChanneluser> {
 
     Result getRqCode();
 
-    Result getUserInfo(Map<String, Object> paramMap,HttpServletRequest request);
+    Result getUserInfo(Map<String, Object> paramMap, HttpServletRequest request, HttpServletResponse response);
 }
