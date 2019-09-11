@@ -1197,7 +1197,7 @@ public class MessageAppController extends TahoeBaseController {
 		String sqlWhere = "";
     	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
 		if(IsRead != null && !"".equals(IsRead)){
-			sqlWhere = " AND ISNULL(IsRead,0) = '" + map.get("IsRead") + "' ";
+			sqlWhere += " AND ISNULL(IsRead,0) = '" + map.get("IsRead") + "' ";
 		}
 		map.put("sqlWhere", sqlWhere);
     	//列表
