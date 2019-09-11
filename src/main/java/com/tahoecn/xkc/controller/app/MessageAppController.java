@@ -831,7 +831,7 @@ public class MessageAppController extends TahoeBaseController {
     	if(IsRead != null && !"".equals(IsRead)){
 			sqlWhere = " AND ISNULL(IsRead,0) = '0' ";
 		}
-    	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
+    	sqlWhere += " AND ( MessageType = '" + map.get("MessageType") + "' )";
     	map.put("sqlWhere", sqlWhere);
     	//总数
     	return iSystemMessageService.SystemMessageListByMessageType_SelectCount(map);
