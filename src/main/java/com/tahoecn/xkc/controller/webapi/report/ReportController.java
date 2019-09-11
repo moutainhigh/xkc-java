@@ -115,6 +115,7 @@ public class ReportController extends TahoeBaseController {
         } else if ("9".equals(orglevel)) {   //置业顾问
             sqlWhere.append( "SELECT Area,'', '',one,two,three,four,five,rg,qy,'' haschildren,'10' level FROM kcview");
             List<Map<String,Object>> result = reportService.CustomerRankSalesNew_Select(orgID,startDate,endDate,sqlWhere.toString());
+            return Result.ok(result);
         }
 
         List<Map<String,Object>> result = reportService.CustomerRankNew_Select(orglevel,AccountID,startDate,endDate,sqlWhere.toString());
