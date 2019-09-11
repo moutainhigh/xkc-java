@@ -850,12 +850,36 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		
 		if(channelUser !=null) {
 			if (mobile.equals(channelUser.getMobile())) {
+				Map<String, Object> obj = new HashMap<String, Object>();
+	            obj.put("ProjectID", projectid);
+	            obj.put("CustomerMobile", mobile);
+				Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+				if(opp != null) {
+					if(opp.get("ID") != null) {
+						//发送报备失败消息
+						System.out.println("11111111111111111");
+						customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+						
+					}
+				}
 				return Result.errormsg(-1,"报备无效，不允许报备自己！");
 			}
 		}
 		
 		if(account != null) {
 			if (mobile.equals(account.getMobile())) {
+				Map<String, Object> obj = new HashMap<String, Object>();
+	            obj.put("ProjectID", projectid);
+	            obj.put("CustomerMobile", mobile);
+				Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+				if(opp != null) {
+					if(opp.get("ID") != null) {
+						//发送报备失败消息
+						System.out.println("11111111111111111");
+						customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+						
+					}
+				}
 				return Result.errormsg(-1,"报备无效，不允许报备自己！");
 			}
 		}
@@ -896,6 +920,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 			if(opp != null) {
 				if(opp.get("ID") != null) {
 					//发送报备失败消息
+					System.out.println("11111111111111111");
 					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
 					
 				}
