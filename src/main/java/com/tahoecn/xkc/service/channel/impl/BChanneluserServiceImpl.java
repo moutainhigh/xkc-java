@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -744,8 +745,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             Integer gender1= map.get("Gender")==null? 0:(Integer)map.get("Gender");
             //先判断是老业主还是泰禾员工
             if (sign==1){
-
+                Cookie[] cookies = request.getCookies();
+                for (Cookie cookie : cookies) {
+                    System.out.println("cookie.getName =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.getName());
+                    System.out.println("cookie =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.toString());
+                }
                 System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies().toString());
+
                 System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession().toString());
                 System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request.toString());
 
