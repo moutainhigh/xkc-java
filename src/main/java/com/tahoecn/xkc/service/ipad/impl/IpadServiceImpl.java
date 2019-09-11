@@ -303,7 +303,7 @@ public class IpadServiceImpl implements IIpadService {
 	                Map<String, Object> objProject = ipadMapper.Project_Detail_FindById(proParam);
 	                Number numberIsLocationValidate = (Number)objProject.get("IsLocationValidate");
 	                Integer IsLocationValidate = numberIsLocationValidate.intValue(); //是否开启地理位置验证 1.开启 0.不开启
-	                Number numberIsOffSiteSale = (Number)objProject.get("IsOffSiteSale");
+	                Number numberIsOffSiteSale = (Number)(objProject.get("IsOffSiteSale") == null ? "0" : objProject.get("IsOffSiteSale"));
 	                Integer IsOffSiteSale = numberIsOffSiteSale.intValue(); //是否开启异地销售 1.开启 0.不开启
 
 	                String SaleGroupName = CustomerObj.getString("SaleGroupName"); //顾问分组
