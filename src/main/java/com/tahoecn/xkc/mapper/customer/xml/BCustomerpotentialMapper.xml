@@ -59,7 +59,7 @@
 	             ELSE 1
 	        END IsAlloc
 	FROM    ( SELECT    * ,
-	                    ROW_NUMBER() OVER ( ORDER BY TheLatestFollowUpDate ) num
+	                    ROW_NUMBER() OVER ( ORDER BY TheLatestFollowUpDate desc) num
 	          FROM      ( SELECT    t.ID ClueID ,
 	                                t.CustomerPotentialID CustomerID ,
 	                                t.Name CustomerName ,
