@@ -755,16 +755,16 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                 if (ssoToken == null) {
                     return Result.errormsg(1,"未获取到用户信息,请重新登录进入");
                 }
-//                String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
-//                if ((StringUtils.isEmpty(LtpaTokenCookie)) || (LtpaTokenCookie.length() < 10)) {
-//                    String tokenValue = LtpaToken.generateTokenByUserName(ssoToken.getIssuer(),
-//                            String.valueOf(SSOConfig.getInstance().getExpireT()), SSOConfig.getInstance().getOatokenKey());
-//                    String domain = SSOConfig.getInstance().getCookieDomain();
-//
-//                    response.addHeader("Set-Cookie", SSOConfig.getInstance().getOaCookieName() + "=" + tokenValue + ";Domain="
-//                            + domain + "; Path=" + SSOConfig.getInstance().getCookiePath());
-//                }
-//                request.setAttribute("ucssoTokenAttr", ssoToken);
+                String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
+                if ((StringUtils.isEmpty(LtpaTokenCookie)) || (LtpaTokenCookie.length() < 10)) {
+                    String tokenValue = LtpaToken.generateTokenByUserName(ssoToken.getIssuer(),
+                            String.valueOf(SSOConfig.getInstance().getExpireT()), SSOConfig.getInstance().getOatokenKey());
+                    String domain = SSOConfig.getInstance().getCookieDomain();
+
+                    response.addHeader("Set-Cookie", SSOConfig.getInstance().getOaCookieName() + "=" + tokenValue + ";Domain="
+                            + domain + "; Path=" + SSOConfig.getInstance().getCookiePath());
+                }
+                request.setAttribute("ucssoTokenAttr", ssoToken);
 
                 // 单点登陆用户过滤
                 Optional<SSOToken> sso = Optional.ofNullable(SSOHelper.attrToken(request));
@@ -788,15 +788,13 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 //                System.out.println("loginName = ++++++++++++++++++++++++++++++++++++++++++++" + loginName);
 //                username=loginName;
             }
-//            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
-//            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);
+
             Map<String, Object> map1 = baseMapper.checkUser(username,mobile);
             //channelUser表里有 直接返回信息
             if (CollectionUtil.isNotEmpty(map1)){
                 return Result.ok(map1);
             }else {//channelUser表里没有 查询saccount表
-//                QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
-//                wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+
                 SAccount one ;
                 if (sign==0){
                     one = accountService.checkUser0(username,mobile);
