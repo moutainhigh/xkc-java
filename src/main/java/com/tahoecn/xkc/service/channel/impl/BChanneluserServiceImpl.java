@@ -751,7 +751,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             //先判断是老业主还是泰禾员工
             if (sign==1){
                 SSOToken ssoToken = SSOHelper.getSSOToken(request);
-                if (ssoToken != null) {
+                if (ssoToken == null) {
                     return Result.errormsg(1,"未获取到用户信息,请重新登录进入");
                 }
                 String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
