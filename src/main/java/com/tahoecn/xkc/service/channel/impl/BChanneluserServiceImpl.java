@@ -7,6 +7,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.security.SecureUtil;
+import com.tahoecn.uc.sso.SSOConfig;
+import com.tahoecn.uc.sso.SSOHelper;
+import com.tahoecn.uc.sso.common.CookieHelper;
+import com.tahoecn.uc.sso.security.token.SSOToken;
+import com.tahoecn.uc.sso.utils.LtpaToken;
 import com.tahoecn.xkc.common.utils.JSONUtil;
 import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.RqCodeUtils;
@@ -33,10 +38,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -732,23 +740,61 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public Result getUserInfo(Map<String, Object> map) {
+    public Result getUserInfo(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) {
         try {
+            int sign = (int) map.get("sign");
+            //sign=0老业主 1为泰禾员工
             String username= (String) map.get("UserName");
             String name= (String) map.get("Name");
             String mobile= (String) map.get("Mobile");
-            int gender1= (int) map.get("Gender");
-            //sign=0老业主 1为泰禾员工
-            int sign = (int) map.get("sign");
-//            QueryWrapper<BChanneluser> query=new QueryWrapper<>();
-//            query.eq("IsDel",0).eq("Status",1).eq("UserName",username).eq("Mobile",mobile);
+            Integer gender1= map.get("Gender")==null? 0:(Integer)map.get("Gender");
+            //先判断是老业主还是泰禾员工
+            if (sign==1){
+
+                SSOToken ssoToken = SSOHelper.getSSOToken(request);
+                if (ssoToken == null) {
+                    return Result.errormsg(1,"未获取到用户信息,请重新登录进入");
+                }
+                String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
+                if ((StringUtils.isEmpty(LtpaTokenCookie)) || (LtpaTokenCookie.length() < 10)) {
+                    String tokenValue = LtpaToken.generateTokenByUserName(ssoToken.getIssuer(),
+                            String.valueOf(SSOConfig.getInstance().getExpireT()), SSOConfig.getInstance().getOatokenKey());
+                    String domain = SSOConfig.getInstance().getCookieDomain();
+
+                    response.addHeader("Set-Cookie", SSOConfig.getInstance().getOaCookieName() + "=" + tokenValue + ";Domain="
+                            + domain + "; Path=" + SSOConfig.getInstance().getCookiePath());
+                }
+                request.setAttribute("ucssoTokenAttr", ssoToken);
+
+                // 单点登陆用户过滤
+                Optional<SSOToken> sso = Optional.ofNullable(SSOHelper.attrToken(request));
+                String loginName = sso.map(SSOToken::getIssuer).orElse(null);
+
+                System.out.println("loginName =++++++++++++++++++++++++++++++++++++++++++++ " +loginName);
+                username=loginName;
+//                Cookie[] cookies = request.getCookies();
+//                for (Cookie cookie : cookies) {
+//                    System.out.println("cookie.getName =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.getName());
+//                    System.out.println("cookie =++++++++++++++++++++++++++++++++++++++++++++ " + cookie.toString());
+//                }
+//                System.out.println("request.getCookies = ++++++++++++++++++++++++++++++++++++++++++++" + request.getCookies().toString());
+//
+//                System.out.println("request.getSession = ++++++++++++++++++++++++++++++++++++++++++++" + request.getSession().toString());
+//                System.out.println("request = ++++++++++++++++++++++++++++++++++++++++++++" + request.toString());
+//
+//                Optional<SSOToken> ssoToken = Optional.ofNullable(SSOHelper.attrToken(request));
+//                System.out.println("ssoToken = ++++++++++++++++++++++++++++++++++++++++++++" + ssoToken);
+//                String loginName = ssoToken.map(SSOToken::getIssuer).orElse(null);
+//                System.out.println("loginName = ++++++++++++++++++++++++++++++++++++++++++++" + loginName);
+//                username=loginName;
+            }
+
             Map<String, Object> map1 = baseMapper.checkUser(username,mobile);
             //channelUser表里有 直接返回信息
             if (CollectionUtil.isNotEmpty(map1)){
                 return Result.ok(map1);
             }else {//channelUser表里没有 查询saccount表
-//                QueryWrapper<SAccount> wrapper=new QueryWrapper<>();
-//                wrapper.eq("IsDel",0).eq("Status",1).eq("UserName",username);
+
                 SAccount one ;
                 if (sign==0){
                     one = accountService.checkUser0(username,mobile);

@@ -368,7 +368,7 @@ public class H5AddController extends TahoeBaseController {
     @RequestMapping(value = "/getUserInfo", method = {RequestMethod.POST})
     public Result getUserInfo(@RequestBody JSONObject jsonParam) {
         Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
-        Result user=channeluserService.getUserInfo(paramMap);
+        Result user=channeluserService.getUserInfo(paramMap,request,response);
         return user;
     }
 
