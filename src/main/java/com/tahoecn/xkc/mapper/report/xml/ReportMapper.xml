@@ -565,6 +565,7 @@
               AND CreateTime <= #{endDate}
               AND SourceType IN (
                                  '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                 '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                  '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                  '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                  'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -584,6 +585,7 @@
               AND CreateTime <= #{endDate}
               AND OpportunitySource IN (
                                         '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                        '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                         '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                         '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                         'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -604,6 +606,7 @@
                      JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
                      JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                               '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                              '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                               '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                               '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                               'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -627,6 +630,7 @@
                      JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
                      JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                               '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                              '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                               '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                               '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                               'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -663,6 +667,7 @@
                      JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
                      JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                      '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                      'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -743,6 +748,7 @@
                      JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
                      JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                      '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                      'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -847,6 +853,7 @@
                      JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
                      JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                      '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                      'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -886,6 +893,7 @@
                      JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
                      JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                      '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                      'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -953,6 +961,7 @@
                      JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
                      JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
                                                                                                      '266E0F4F-2EE1-4305-9115-49DDE2186D57',
                                                                                                      'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1065,6 +1074,7 @@
             FROM dbo.B_Clue WHERE IsDel=0 AND CreateTime >= #{startDate} AND CreateTime<=#{endDate}
             AND SourceType IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1082,6 +1092,7 @@
             WHERE IsDel=0 AND CreateTime>=#{startDate} AND CreateTime<=#{endDate}
             AND OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1103,6 +1114,7 @@
             JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
             JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1127,6 +1139,7 @@
             JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
             JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1162,6 +1175,7 @@
             JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
             JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1239,6 +1253,7 @@
             JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
             JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1337,6 +1352,7 @@
             JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
             JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1375,6 +1391,7 @@
             JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
             JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
@@ -1439,6 +1456,7 @@
             JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
             JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
             '266E0F4F-2EE1-4305-9115-49DDE2186D57',
             'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
