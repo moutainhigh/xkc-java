@@ -1705,11 +1705,13 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                                 this.CustomerFollowUp_Insert(customerActionVo);
                         	}
                         }
-                        CustomerOpportunityFollowUpDetail_Update(opportunityID,userID);//客户机会跟进记录更新
-                        //处理跟进类待办为已办
-                        String[] BizIDs = new String[]{opportunityID};
-                		iSystemMessageService.DetailByHandle_Update(BizIDs, "Opportunity", MessageHandleType.新增跟进.getValue());
-                        //同步明源客户数据
+                        for(String oppoID : opportunityIDlist){//包含了父id
+	                        CustomerOpportunityFollowUpDetail_Update(oppoID,userID);//客户机会跟进记录更新
+	                        //处理跟进类待办为已办
+	                        String[] BizIDs = new String[]{oppoID};
+	                		iSystemMessageService.DetailByHandle_Update(BizIDs, "Opportunity", MessageHandleType.新增跟进.getValue());
+                        }
+                		//同步明源客户数据
                         customerTemplate.SyncCustomer(opportunityID, 0);
                     }
                 }else{
