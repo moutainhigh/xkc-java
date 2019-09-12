@@ -1167,7 +1167,8 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyUnHandleMsg", "暂无通知");
 	    		result.put("EmptyUnHandleIconType", 0);
 	    		map.put("MessageType", TypeID);
-	    		result = ListBBSBTX_Select(result,map);
+//	    		result = ListBBSBTX_Select(result,map);
+	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
 	    	int isCount = iSystemMessageService.IsExistsShareProject(map);
 	    	if(isCount == 1){
