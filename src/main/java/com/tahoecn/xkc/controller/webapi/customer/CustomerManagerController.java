@@ -274,7 +274,19 @@ public class CustomerManagerController extends TahoeBaseController {
     @RequestMapping(value = "/UpdateCustBaseInfo", method = {RequestMethod.POST})
     public Result UpdateCustBaseInfo(String oppoId,String custId,String userId,String customerName,String auxiliaryMobile, String cardType,String cardId,String gender,
         String customerNameOrg,String auxiliaryMobileOrg, String cardTypeOrg,String cardIdOrg,String genderOrg,String AddressOrg,String Address,String attrId) {
-        UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
+        //新增重复号码校验 包含主辅
+    	if(StringUtils.isNotBlank(auxiliaryMobile)) {
+    		QueryWrapper<BOpportunity> queryWrapper = new QueryWrapper<>();
+    		queryWrapper.select("count(1) as num");
+    		queryWrapper.eq("CustomerMobile", auxiliaryMobile);
+    		queryWrapper.or(wrapper -> wrapper.eq("SpareMobile", auxiliaryMobile).ne("ID",oppoId));
+    		Map<String, Object> i = iBOpportunityService.getMap(queryWrapper);
+    		if (0 != (Integer) i.get("num")) {
+    			return Result.errormsg(500, "编辑失败，手机号已存在！");
+    		}
+    	}
+    	
+    	UpdateWrapper<BOpportunity> oppoUpWarapper = new UpdateWrapper<>();
         BOpportunity oppo = new BOpportunity();
         oppo.setCustomerName(customerName);
         oppo.setSpareMobile(auxiliaryMobile);
