@@ -18,12 +18,14 @@ import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.channel.BPojectchannelorgrel;
 import com.tahoecn.xkc.model.customer.CostomerReport;
 import com.tahoecn.xkc.model.customer.CustomerBook;
+import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
 import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.channel.IBPojectchannelorgrelService;
+import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.report.ICbFyService;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
@@ -70,6 +72,8 @@ public class ReportController extends TahoeBaseController {
     @Autowired
     private ICustomerBookService customerBookService;
 
+    @Autowired
+    private IUpdateCustinfoLogService iUpdateCustinfoLogService;
 
     @ApiOperation(value = "客储动态监测表", notes = "客储动态监测表")
     @RequestMapping(value = "/CustomerRank_Select", method = {RequestMethod.GET})
@@ -432,11 +436,17 @@ public class ReportController extends TahoeBaseController {
 
     @ApiOperation(value = "客户台账详情", notes = "客户台账详情")
     @RequestMapping(value = "/costomerBookDetail", method = {RequestMethod.GET})
-    public Result costomerBookDetail(String ID) {
+    public Result costomerBookDetail(String ID,String OpportunityID) {
         List<Map<String,Object>> listOpp = customerBookService.listOpp(ID);
         List<Map<String,Object>> listClue = customerBookService.listClue(ID);
         List<Map<String,Object>> payInfoList = customerBookService.customerPayInfo(ID);
         Map<String,List<Map<String,Object>>> result = new HashMap<>();
+        
+        QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
+        updateCustInfoLogQuery.eq("CustomerID",ID);
+        updateCustInfoLogQuery.orderByDesc("CreateTime");
+        List updateCustInfoLogList = iUpdateCustinfoLogService.list(updateCustInfoLogQuery);
+        result.put("updateCustInfoLogList",updateCustInfoLogList);
         result.put("listOpp",listOpp);
         result.put("listClue",listClue);
         result.put("payInfoList",payInfoList);
