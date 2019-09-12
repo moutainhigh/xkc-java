@@ -126,7 +126,7 @@ public class BCustomerManagerServiceImpl extends ServiceImpl<BCustomerMapper, BC
 //            else if ("13".equals(Status))//线索（无效）
 //                sqlWhere.append(" AND tm.ClueStatus= 3  AND tm.OpportunityStatus=0");
             else if ("6".equals(Status))   //无效   机会丢失为6  线索丢失为4 || 线索 3  机会 0 
-                sqlWhere.append(" AND ((tm.ClueStatus= 4 AND tm.OpportunityStatus=6) or (tm.ClueStatus= 3  AND tm.OpportunityStatus=0)) ");
+                sqlWhere.append(" AND (tm.OpportunityStatus=6 or (tm.ClueStatus= 3  AND tm.OpportunityStatus=0)) ");
             else//其余为机会的状态
                 sqlWhere.append(" AND tm.OpportunityStatus='"+Status+"'");
         }

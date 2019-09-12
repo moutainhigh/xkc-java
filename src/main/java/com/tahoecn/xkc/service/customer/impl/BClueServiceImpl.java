@@ -867,10 +867,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             obj.put("ProjectID", projectid);
             obj.put("CustomerMobile", mobile);
 			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
-			if(opp.get("ID") != null) {
-				//发送报备失败消息
-				customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
-				
+			if(opp != null) {
+				if(opp.get("ID") != null) {
+					//发送报备失败消息
+					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+					
+				}
 			}
 			return Result.errormsg(-1,"报备无效，该客户为项目老客户！");
 		}
@@ -881,6 +883,18 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		// 验证是否重复报备
 		String isRepeatedReg = clueMapper.isRepeatedReg(mobile, projectid, reportUserId);
 		if (isRepeatedReg != null && isRepeatedReg.length() > 0) {
+			Map<String, Object> obj = new HashMap<String, Object>();
+            obj.put("ProjectID", projectid);
+            obj.put("CustomerMobile", mobile);
+			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+			if(opp != null) {
+				if(opp.get("ID") != null) {
+					//发送报备失败消息
+					System.out.println("11111111111111111");
+					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+					
+				}
+			}
 			return Result.errormsg(-1,"报备无效，该客户已被您报备!");
 		}
 
@@ -891,10 +905,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             obj.put("ProjectID", projectid);
             obj.put("CustomerMobile", mobile);
 			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
-			if(opp.get("ID") != null) {
-				//发送报备失败消息
-				customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
-				
+			if(opp != null) {
+				if(opp.get("ID") != null) {
+					//发送报备失败消息
+					System.out.println("11111111111111111");
+					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+					
+				}
 			}
 			return Result.errormsg(-1,"报备无效，该客户已被其他渠道报备!");
 		}

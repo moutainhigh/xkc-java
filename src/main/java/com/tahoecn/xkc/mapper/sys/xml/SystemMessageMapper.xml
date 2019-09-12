@@ -264,6 +264,7 @@
 		                    A.MessageTypeName ,
 		                    A.IsCustomerFirstEdit ,
 		                    A.CustomerRankName ,
+		                    A.IsRead,
 		                    ROW_NUMBER() OVER ( ORDER BY A.YJTimeValue , A.EditTime DESC , A.SendTime DESC ) num
 		          FROM      V_MessageOpportunity A
 		          WHERE     A.Receiver = #{UserID}

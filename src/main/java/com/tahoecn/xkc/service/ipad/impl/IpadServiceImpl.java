@@ -301,9 +301,9 @@ public class IpadServiceImpl implements IIpadService {
 	                Map<String,Object> proParam = new HashMap<>();
 	                proParam.put("ID", model.getProjectID());
 	                Map<String, Object> objProject = ipadMapper.Project_Detail_FindById(proParam);
-	                Number numberIsLocationValidate = (Number)objProject.get("IsLocationValidate");
+	                Number numberIsLocationValidate = (Number)(objProject.get("IsLocationValidate") == null ? "0" : objProject.get("IsLocationValidate"));
 	                Integer IsLocationValidate = numberIsLocationValidate.intValue(); //是否开启地理位置验证 1.开启 0.不开启
-	                Number numberIsOffSiteSale = (Number)objProject.get("IsOffSiteSale");
+	                Number numberIsOffSiteSale = (Number)(objProject.get("IsOffSiteSale") == null ? "0" : objProject.get("IsOffSiteSale"));
 	                Integer IsOffSiteSale = numberIsOffSiteSale.intValue(); //是否开启异地销售 1.开启 0.不开启
 
 	                String SaleGroupName = CustomerObj.getString("SaleGroupName"); //顾问分组
@@ -669,9 +669,9 @@ public class IpadServiceImpl implements IIpadService {
                             Map<String,Object> proParam = new HashMap<String, Object>();
                             proParam.put("ID", model.getProjectID());
                             Map<String,Object> objProject = ipadMapper.Project_Detail_FindById(proParam);
-                            Number numberIsLocationValidate =(Number)objProject.get("IsLocationValidate");
-                            int IsLocationValidate = numberIsLocationValidate.intValue(); //是否开启地理位置验证 1.开启 0.不开启
-                            Number numberIsOffSiteSale =(Number)objProject.get("IsOffSiteSale");
+                            Number numberIsLocationValidate = (Number)(objProject.get("IsLocationValidate") == null ? "0" : objProject.get("IsLocationValidate"));
+        	                Integer IsLocationValidate = numberIsLocationValidate.intValue(); //是否开启地理位置验证 1.开启 0.不开启
+        	                Number numberIsOffSiteSale = (Number)(objProject.get("IsOffSiteSale") == null ? "0" : objProject.get("IsOffSiteSale"));
                             int IsOffSiteSale = numberIsOffSiteSale.intValue(); //是否开启异地销售 1.开启 0.不开启
                             String SaleGroupName = CustomerObj.getString("SaleGroupName"); //顾问分组
                             String FirstVisitAddress = CustomerObj.getString("FirstVisitAddress");//首访地址

@@ -564,7 +564,7 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
                 }
             }
         }
-        if (StringUtil.isNotNull(ReceptionGroupID) && StringUtil.isNotNull(PersonId)){
+        if (StringUtil.isNotNull(ReceptionGroupID) && StringUtil.isNull(RemoveIds)){
             String leaderRoleId = "";
             String leaderRoleName = "";
             if (Integer.valueOf(Nature) == 3 || Integer.valueOf(Nature) == 4 || Integer.valueOf(Nature) == 5|| Integer.valueOf(Nature)==6|| Integer.valueOf(Nature)==7)

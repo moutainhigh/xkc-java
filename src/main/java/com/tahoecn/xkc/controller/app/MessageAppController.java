@@ -831,7 +831,7 @@ public class MessageAppController extends TahoeBaseController {
     	if(IsRead != null && !"".equals(IsRead)){
 			sqlWhere = " AND ISNULL(IsRead,0) = '0' ";
 		}
-    	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
+    	sqlWhere += " AND ( MessageType = '" + map.get("MessageType") + "' )";
     	map.put("sqlWhere", sqlWhere);
     	//总数
     	return iSystemMessageService.SystemMessageListByMessageType_SelectCount(map);
@@ -1167,7 +1167,8 @@ public class MessageAppController extends TahoeBaseController {
 	    		result.put("EmptyUnHandleMsg", "暂无通知");
 	    		result.put("EmptyUnHandleIconType", 0);
 	    		map.put("MessageType", TypeID);
-	    		result = ListBBSBTX_Select(result,map);
+//	    		result = ListBBSBTX_Select(result,map);
+	    		result = ListByMessageTypeOpportunity_Select(result,map);
 	    	}
 	    	int isCount = iSystemMessageService.IsExistsShareProject(map);
 	    	if(isCount == 1){
@@ -1197,7 +1198,7 @@ public class MessageAppController extends TahoeBaseController {
 		String sqlWhere = "";
     	sqlWhere = " AND ( MessageType = '" + map.get("MessageType") + "' )";
 		if(IsRead != null && !"".equals(IsRead)){
-			sqlWhere = " AND ISNULL(IsRead,0) = '" + map.get("IsRead") + "' ";
+			sqlWhere += " AND ISNULL(IsRead,0) = '" + map.get("IsRead") + "' ";
 		}
 		map.put("sqlWhere", sqlWhere);
     	//列表
