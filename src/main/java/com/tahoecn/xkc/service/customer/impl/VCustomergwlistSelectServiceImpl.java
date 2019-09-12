@@ -453,12 +453,12 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 			}
 		}
 		String follwUpType = CareerConsCustConverter.GetCustomerActionByFollowUpWay(mode);
-		
+		//获取子集信息
+		List<String> opportunityIDlist = new ArrayList<String>();
 		if(!StringUtils.isEmpty(follwUpType)){
 			String OpportunityID = paramAry.getString("OpportunityID");
 			if(OpportunityID!=null && !"".equals(OpportunityID)){
-				//获取子集信息
-				List<String> opportunityIDlist = new ArrayList<String>();
+				
 				opportunityIDlist.add(OpportunityID);
 				try {
 					Map<String, Object> opportunityInfo = vCustomergwlistSelectMapper.selectOpportunityByID(OpportunityID);
@@ -486,7 +486,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				for(String oppoID : opportunityIDlist){
+				for(String oppoID : opportunityIDlist){//包含了父id
 					CustomerActionVo customerActionVo = new CustomerActionVo();
 					customerActionVo.setFollwUpType(follwUpType);
 					customerActionVo.setFollwUpTypeID(ActionType.valueOf(follwUpType).getValue());
@@ -506,15 +506,20 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 				}
 			}
 			if (follwUpType.equals("售场接待")){
-                //客户到访
+				//客户到访
 				Map<String,Object> pmp = JSONObject.parseObject(paramAry.toJSONString(), Map.class);
-				customerTemplate.sendKHDFMsg(pmp);
+				//for(String oppoID : opportunityIDlist){//包含了父id  通知只给跟进的人员发送
+					//pmp.put("OpportunityID", oppoID);
+					customerTemplate.sendKHDFMsg(pmp);
+				//}
             }
 		}
-		CustomerOpportunityFollowUpDetail_Update(opportunityID,userID);//客户机会跟进记录更新
-        //处理跟进类待办为已办
-		String[] BizIDs = new String[]{opportunityID};
-		iSystemMessageService.DetailByHandle_Update(BizIDs, "Opportunity", MessageHandleType.新增跟进.getValue());
+		for(String oppoID : opportunityIDlist){//包含了父id
+			CustomerOpportunityFollowUpDetail_Update(oppoID,userID);//客户机会跟进记录更新
+			//处理跟进类待办为已办
+			String[] BizIDs = new String[]{oppoID};
+			iSystemMessageService.DetailByHandle_Update(BizIDs, "Opportunity", MessageHandleType.新增跟进.getValue());
+		}
 		re.setErrcode(0);
         re.setErrmsg("成功");
         return re;
