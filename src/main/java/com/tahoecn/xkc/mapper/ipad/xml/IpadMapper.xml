@@ -101,7 +101,7 @@
 	
 	<select id="mLFCustomerPotentialDetailByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT  cc.IntentProjectID ProjectID ,
+		SELECT top 1 cc.IntentProjectID ProjectID ,
 		        dbo.F_ChannelName(cc.ID) AS ChannelName ,
 		        cc.CustomerPotentialID ,
 		        cp.Name CustomerName ,
@@ -110,7 +110,7 @@
 		        dbo.F_DictName(cp.Gender) AS CustomerGender,
 		        cr.RuleType 
 		FROM    dbo.B_CustomerPotential cp
-		        LEFT JOIN dbo.B_Clue cc ON cc.CustomerPotentialID = cp.ID
+		        LEFT JOIN dbo.B_Clue cc ON cc.CustomerPotentialID = cp.ID and cc.Status <= 2
 		        LEFT JOIN dbo.B_ClueRule cr ON cc.RuleID = cr.ID
 		WHERE   cp.Mobile = #{Mobile}
 		        AND cc.IntentProjectID = #{ProjectID}
