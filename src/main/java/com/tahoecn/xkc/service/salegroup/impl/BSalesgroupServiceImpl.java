@@ -120,7 +120,7 @@ public class BSalesgroupServiceImpl extends ServiceImpl<BSalesgroupMapper, BSale
             QueryWrapper<BChanneluser> selchanneluserWrapper = new QueryWrapper<BChanneluser>();
             selchanneluserWrapper.eq("ID",memberId);
             BChanneluser channeluser = (BChanneluser) bChanneluserMapper.selectOne(selchanneluserWrapper);
-            if(channeluser!=null  && (roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))){
+            if(channeluser!=null  && (roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("WSD12580-003A-6505-B211-C2C2C2C2C2C2") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582"))){
                 map.put("memberId",memberId);
                 String channelOrgId = bSaleGroupMemberMapper.getChannelOrgId(map);
                 if(channelOrgId==null || "".equals(channelOrgId)){
@@ -133,7 +133,7 @@ public class BSalesgroupServiceImpl extends ServiceImpl<BSalesgroupMapper, BSale
             }
             //判断该用户下在该项目下是否有客户，有客户添加到 离职/调岗表
             //自有渠道 团队负责人 团队人员
-            if(roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582")){
+            if(roleId.equals("B0BF5636-94AD-4814-BB67-9C1873566F29") || roleId.equals("WSD12580-003A-6505-B211-C2C2C2C2C2C2") || roleId.equals("48FC928F-6EB5-4735-BF2B-29B1F591A582")){
                 int customerCount = clueListSelectMapper.getCustomerCount(projectId,memberId);
                 if(customerCount>0){
                     BQuituser insertQuituser = new BQuituser();

@@ -647,7 +647,7 @@ public class MessageAppController extends TahoeBaseController {
 		}else{
 			sqlWhere = " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=T.Receiver "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		map.put("sqlWhere", sqlWhere);
 		list = iSystemMessageService.UnreadCountListByMessageType_Select(map);*/
@@ -780,7 +780,7 @@ public class MessageAppController extends TahoeBaseController {
 	    			}else{//ZQFZR
 	    				sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 	    						+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=o.SaleUserID "
-	    						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+	    						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 	    			}
 	    			map.put("sqlWhere", sqlWhere);
 	    			v.setMessageCount(iSystemMessageService.ListDRGJYQClue_SelectCount(map));
@@ -856,7 +856,7 @@ public class MessageAppController extends TahoeBaseController {
 		}else{
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID = '" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		
 		map.put("sqlWhere", sqlWhere);
@@ -902,7 +902,7 @@ public class MessageAppController extends TahoeBaseController {
 		}else{
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		map.put("sqlWhere", sqlWhere);
 		//总数
@@ -1241,7 +1241,7 @@ public class MessageAppController extends TahoeBaseController {
 		}else{//ZQFZR
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=o.SaleUserID "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		map.put("sqlWhere", sqlWhere);
 		//列表
@@ -1320,7 +1320,7 @@ public class MessageAppController extends TahoeBaseController {
 		}else{
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		map.put("sqlWhere", sqlWhere);
 		//列表
@@ -1381,7 +1381,7 @@ public class MessageAppController extends TahoeBaseController {
 		}else{
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID = '" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		
 		map.put("sqlWhere", sqlWhere);
