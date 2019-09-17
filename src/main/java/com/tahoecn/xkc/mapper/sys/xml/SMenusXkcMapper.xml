@@ -199,4 +199,23 @@
         AND m.IsDel = 0
         AND cjmr.JobID = #{JobID}
     </select>
+
+    <select id="getAllMenuList" resultType="java.util.HashMap" >
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_Menus_xkc  m
+        WHERE
+        m.IsDel = 0
+        AND m.[Status] = 1
+        AND m.FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;
+    </select>
 </mapper>
