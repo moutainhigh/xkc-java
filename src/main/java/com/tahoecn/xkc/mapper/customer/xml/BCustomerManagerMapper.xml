@@ -14,7 +14,7 @@
         tr.OpportunityStatus OpportunityStatus,
         dbo.F_GetClueStatusName_xkc(tr.ClueStatus, tr.OpportunityStatus) CustomerStatus ,
         dbo.F_GetProjectName(tr.ProjectID) AS IntentProjectName ,
-        dbo.F_DictName(tr.OpportunitySource) OpportunitySource ,
+        dbo.F_DictName(tr.SourceType) OpportunitySource ,
         dbo.F_GetMediaLargeName(tr.CognitiveChannel) CognitiveChannel ,
         dbo.F_GetMediaChildName(tr.CognitiveChannelSub) CognitiveChannelSub ,
         tr.SaleUserID ,
@@ -209,7 +209,7 @@
       CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,<!--客储等级名称,客储等级-->
       dbo.F_GetMediaLargeName(O.CognitiveChannel) CognitiveChannel,<!--媒体大类-->
       dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,<!--媒体子类-->
-      dbo.F_DictName(O.OpportunitySource) OpportunitySource,<!--客户来源-->
+      dbo.F_DictName(Cl.SourceType) OpportunitySource,<!--客户来源-->
       dbo.F_DictName(O.Commercial) Commercial,<!--业态需求-->
       O.CreateTime,<!--创建时间-->
       O.TheFirstVisitDate,<!--首次到访时间-->

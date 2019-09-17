@@ -21,4 +21,6 @@ public interface IBSalesgroupmemberService extends IService<BSalesgroupmember> {
     Map<String,Object> SalesGroupTeamList_Select(IPage page,Map<String, Object> map);
 
     Result SalesGroupMembers_Insert(Map<String, Object> map);
+    
+    Result setZqLeader(Map<String, Object> map);
 }

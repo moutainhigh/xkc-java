@@ -387,7 +387,7 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 			}else{//ZQFZR
 				sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 						+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=Receiver "
-						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+						+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 			}
 			paramMap.put("sqlWhere", sqlWhere);
 			map.put(MessageType.当日跟进逾期.getTypeID(), systemMessageMapper.DRGJYQClueCalendar(paramMap));
@@ -404,7 +404,7 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		}else{//ZQFZR
 			sqlWhere += " AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember "
 					+ "WHERE ProjectID='" + map.get("ProjectID") + "'  AND IsDel=0 AND Status=1 AND MemberID=o.SaleUserID "
-					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29'))";
+					+ "AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582', '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4', 'B0BF5636-94AD-4814-BB67-9C1873566F29', 'WSD12580-003A-6505-B211-C2C2C2C2C2C2'))";
 		}
 		paramMap.put("sqlWhere", sqlWhere);
 		List<String> DRGJYQClue = systemMessageMapper.DRGJYQClueCalendar(paramMap);

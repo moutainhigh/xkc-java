@@ -1712,7 +1712,7 @@ VALUES  ( #{OpportunityID},
 	
 	<select id="CustomerPotential_Exist" resultType="java.util.HashMap">
 		<![CDATA[
-		SELECT * FROM V_CustomerPotential WHERE IsDel = 0 AND Mobile = #{Mobile} ORDER BY CreateTime
+		SELECT top 1 * FROM V_CustomerPotential WHERE IsDel = 0 AND Mobile = #{Mobile} ORDER BY CreateTime desc
 	    ]]>
 	</select>
 	
