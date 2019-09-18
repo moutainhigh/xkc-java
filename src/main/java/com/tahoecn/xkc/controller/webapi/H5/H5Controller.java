@@ -265,7 +265,7 @@ public class H5Controller extends TahoeBaseController {
         }
         BChannelorg channelOrg = channelorgService.getById((String) user.get("ChannelOrgID"));
         if(channelOrg != null){
-            if (StringUtils.equals(channelOrg.getMobile(),(String)user.get("Mobile"))){
+            if (StringUtils.equals("0",(String)user.get("Job"))){
                 user.put("position","负责人");
             }else {
                 user.put("position","经纪人");
