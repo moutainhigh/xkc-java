@@ -174,27 +174,28 @@ public class CustomerManagerController extends TahoeBaseController {
 
     private void SetExcelToCustomerChange_BakList(Map<String, Object> map){
         List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
-        entity.add(new ExcelExportEntity("客户姓名","CustomerName"));
+        entity.add(new ExcelExportEntity("客户信息","CustomerName"));
         entity.add(new ExcelExportEntity("手机号","CustomerMobile"));
-        entity.add(new ExcelExportEntity("客储等级","CustomerRank"));
-        entity.add(new ExcelExportEntity("客户状态","Status"));
-        entity.add(new ExcelExportEntity("原因","InvalidReason"));
-        entity.add(new ExcelExportEntity("项目名称","ProjectName"));
-        entity.add(new ExcelExportEntity("到访逾期时间","ComeOverdueTime"));
-        entity.add(new ExcelExportEntity("成交逾期时间","TradeOverdueTime"));
-        entity.add(new ExcelExportEntity("确认人","ConfirmUserName"));
-        entity.add(new ExcelExportEntity("确认时间","ConfirmTime"));
-        entity.add(new ExcelExportEntity("置业顾问","SaleUserName"));
+        entity.add(new ExcelExportEntity("客储等级","CustomerRankName"));
+        entity.add(new ExcelExportEntity("客户状态","CustomerStatus"));
         entity.add(new ExcelExportEntity("渠道类型","SourceType"));
-        entity.add(new ExcelExportEntity("报备人","ReportUserName"));
-        entity.add(new ExcelExportEntity("报备人手机号","ReportUserMobile"));
-        entity.add(new ExcelExportEntity("报备时间","ReportTime"));
         entity.add(new ExcelExportEntity("所属机构","ChannelName"));
+        entity.add(new ExcelExportEntity("报备人","ReportUserName"));
+        entity.add(new ExcelExportEntity("销售团队","SaleTeamName"));
+        entity.add(new ExcelExportEntity("置业顾问","SaleUserName"));
+        entity.add(new ExcelExportEntity("成交房源","Room"));
+        entity.add(new ExcelExportEntity("报备时间","ReportTime"));
         entity.add(new ExcelExportEntity("首访时间","TheFirstVisitDate"));
         entity.add(new ExcelExportEntity("最近到访","ZJDF"));
-        entity.add(new ExcelExportEntity("认筹时间","RCTime"));
-        entity.add(new ExcelExportEntity("认购时间","RGTime"));
-        entity.add(new ExcelExportEntity("签约时间","QYTime"));
+        entity.add(new ExcelExportEntity("最近跟进","TheLatestFollowUpDate"));
+//        entity.add(new ExcelExportEntity("原因","InvalidReason"));
+//        entity.add(new ExcelExportEntity("成交逾期时间","TradeOverdueTime"));
+//        entity.add(new ExcelExportEntity("确认人","ConfirmUserName"));
+//        entity.add(new ExcelExportEntity("确认时间","ConfirmTime"));
+//        entity.add(new ExcelExportEntity("报备人手机号","ReportUserMobile"));
+//        entity.add(new ExcelExportEntity("认筹时间","RCTime"));
+//        entity.add(new ExcelExportEntity("认购时间","RGTime"));
+//        entity.add(new ExcelExportEntity("签约时间","QYTime"));
         IPage page = new Page(1,999999999);
         IPage<Map<String,Object>> result = customerManagerService.CustomerManagePageList_Select(page,map);
 

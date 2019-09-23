@@ -151,22 +151,25 @@ public class CustomerController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("客户姓名", "CustomerName"));
         entity.add(new ExcelExportEntity("手机号", "CustomerMobile"));
         entity.add(new ExcelExportEntity("客储等级", "CustomerRank"));
-        entity.add(new ExcelExportEntity("客户状态", "Status"));
-        entity.add(new ExcelExportEntity("原因", "InvalidReason"));
-        entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
-        entity.add(new ExcelExportEntity("到访逾期时间", "ComeOverdueTime"));
-        entity.add(new ExcelExportEntity("成交逾期时间", "TradeOverdueTime"));
+        entity.add(new ExcelExportEntity("渠道类型", "SourceType"));
+        entity.add(new ExcelExportEntity("所属机构", "ChannelName"));
+        entity.add(new ExcelExportEntity("渠道人员", "ReportUserName"));
+        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
+        entity.add(new ExcelExportEntity("首访时间", "TheFirstVisitDate"));
         entity.add(new ExcelExportEntity("确认人", "ConfirmUserName"));
         entity.add(new ExcelExportEntity("确认时间", "ConfirmTime"));
-        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
-        entity.add(new ExcelExportEntity("渠道类型", "SourceType"));
-        entity.add(new ExcelExportEntity("报备人", "ReportUserName"));
-        entity.add(new ExcelExportEntity("报备人手机号", "ReportUserMobile"));
-        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
-        entity.add(new ExcelExportEntity("所属机构", "ChannelName"));
-        entity.add(new ExcelExportEntity("首访时间", "TheFirstVisitDate"));
-        entity.add(new ExcelExportEntity("最近到访", "ZJDF"));
-        entity.add(new ExcelExportEntity("成交记录", "Room"));
+        entity.add(new ExcelExportEntity("到访保护截止", "ComeOverdueTime"));
+        entity.add(new ExcelExportEntity("成交保护截止", "TradeOverdueTime"));
+        entity.add(new ExcelExportEntity("成交房源", "Room"));
+        entity.add(new ExcelExportEntity("确认状态", "Status"));
+        entity.add(new ExcelExportEntity("原因", "InvalidReason"));
+        entity.add(new ExcelExportEntity("客户状态", "OpportunityStatus"));
+
+//        entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
+//        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
+//        entity.add(new ExcelExportEntity("报备人手机号", "ReportUserMobile"));
+//        entity.add(new ExcelExportEntity("最近到访", "ZJDF"));
+//        entity.add(new ExcelExportEntity("成交记录", "Room"));
 
         List<Map<String,Object>> result = customerService.setExcelToCustomerChangeList(projectID,sqlWhere);
 
@@ -243,24 +246,24 @@ public class CustomerController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("客户姓名", "CustomerName"));
         entity.add(new ExcelExportEntity("手机号", "CustomerMobile"));
         entity.add(new ExcelExportEntity("客储等级", "CustomerRank"));
+        entity.add(new ExcelExportEntity("渠道类型", "SourceType"));
+        entity.add(new ExcelExportEntity("所属机构", "ChannelName"));
+        entity.add(new ExcelExportEntity("渠道人员", "ReportUserName"));
+        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
         entity.add(new ExcelExportEntity("客户状态", "Status"));
         entity.add(new ExcelExportEntity("原因", "InvalidReason"));
-        entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
-        entity.add(new ExcelExportEntity("到访逾期时间", "ComeOverdueTime"));
         entity.add(new ExcelExportEntity("成交逾期时间", "TradeOverdueTime"));
+        entity.add(new ExcelExportEntity("到访逾期时间", "ComeOverdueTime"));
         entity.add(new ExcelExportEntity("确认人", "ConfirmUserName"));
         entity.add(new ExcelExportEntity("确认时间", "ConfirmTime"));
-        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
-        entity.add(new ExcelExportEntity("渠道类型", "SourceType"));
-        entity.add(new ExcelExportEntity("报备人", "ReportUserName"));
-        entity.add(new ExcelExportEntity("报备人手机号", "ReportUserMobile"));
-        entity.add(new ExcelExportEntity("报备时间", "ReportTime"));
-        entity.add(new ExcelExportEntity("所属机构", "ChannelName"));
         entity.add(new ExcelExportEntity("首访时间", "TheFirstVisitDate"));
         entity.add(new ExcelExportEntity("最近到访", "ZJDF"));
-        entity.add(new ExcelExportEntity("认筹时间", "RCTime"));
-        entity.add(new ExcelExportEntity("认购时间", "RGTime"));
-        entity.add(new ExcelExportEntity("签约时间", "QYTime"));
+//        entity.add(new ExcelExportEntity("项目名称", "ProjectName"));
+//        entity.add(new ExcelExportEntity("置业顾问", "SaleUserName"));
+//        entity.add(new ExcelExportEntity("报备人手机号", "ReportUserMobile"));
+//        entity.add(new ExcelExportEntity("认筹时间", "RCTime"));
+//        entity.add(new ExcelExportEntity("认购时间", "RGTime"));
+//        entity.add(new ExcelExportEntity("签约时间", "QYTime"));
 
         List<Map<String,Object>> result = customerService.SetExcelToCustomerChange_BakList(projectID,sqlWhere);
 
