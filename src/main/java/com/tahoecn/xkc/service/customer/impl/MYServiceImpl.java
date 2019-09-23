@@ -42,8 +42,8 @@ public class MYServiceImpl implements IMYService {
         		}
         	}
         	List<Map<String,Object>> vaild_1_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_1(info);
-        	List<Map<String,Object>> vaild_2_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_2(info);
-        	if((vaild_1_map==null || vaild_1_map.size()==0) && (vaild_2_map==null || vaild_2_map.size()==0)){
+        	//List<Map<String,Object>> vaild_2_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_2(info);
+        	if((vaild_1_map==null || vaild_1_map.size()==0)){//&& (vaild_2_map==null || vaild_2_map.size()==0)
         		List<Map<String,Object>> vaild_3_map = vCustomergwlistSelectMapper.MYCustomerDetail_Insert_vaild_3(info);
         		if(vaild_3_map!=null && vaild_3_map.size()>0){
         			vCustomergwlistSelectMapper.MYCustomerDetail_Insert_update(info);
@@ -75,8 +75,8 @@ public class MYServiceImpl implements IMYService {
             		vCustomergwlistSelectMapper.MYOpportunityDetail_Insert_insert_1(item);
             	}else{
             		List<Map<String,Object>> vaild_2_map = vCustomergwlistSelectMapper.MYOpportunityDetail_Insert_valid_2(item);
-            		List<Map<String,Object>> vaild_3_map = vCustomergwlistSelectMapper.MYOpportunityDetail_Insert_valid_3(item);
-            		if((vaild_2_map==null || vaild_2_map.size()==0) && (vaild_3_map==null || vaild_3_map.size()==0)){
+            		//List<Map<String,Object>> vaild_3_map = vCustomergwlistSelectMapper.MYOpportunityDetail_Insert_valid_3(item);
+            		if((vaild_2_map==null || vaild_2_map.size()==0)){// && (vaild_3_map==null || vaild_3_map.size()==0)
             			vCustomergwlistSelectMapper.MYOpportunityDetail_Insert_update(item);
             		}
             	}

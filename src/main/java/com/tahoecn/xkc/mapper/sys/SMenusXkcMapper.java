@@ -38,4 +38,7 @@ public interface SMenusXkcMapper extends BaseMapper<SMenusXkc> {
     List<Map<String, Object>> CommonJobFunctions(@Param("JobID")String jobID);
 
     List<Map<String, Object>> getCommonJobFunctions(@Param("JobID")String jobID);
+
+    List<Map<String, Object>> getAllMenuList();
+
 }

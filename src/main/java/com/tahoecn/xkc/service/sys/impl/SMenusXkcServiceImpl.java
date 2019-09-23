@@ -162,8 +162,9 @@ public class SMenusXkcServiceImpl extends ServiceImpl<SMenusXkcMapper, SMenusXkc
 
     @Override
     public List<Map<String, Object>> UserMenus(String userID, String authCompanyID, String productID) {
-        List<Map<String, Object>> list=accountService.insertJob(userID,authCompanyID,productID);
-
+//        原查登录人的关系,现修改为直接查询全部菜单
+//        List<Map<String, Object>> list=accountService.insertJob(userID,authCompanyID,productID);
+        List<Map<String, Object>> list=baseMapper.getAllMenuList();
         return list;
     }
 
