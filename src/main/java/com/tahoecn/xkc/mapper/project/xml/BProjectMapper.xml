@@ -110,7 +110,7 @@
     </select>
     <!-- 业绩看板start -->
     <!-- 首页销售业绩认购数据 -->
-    <select id="mYJKBSalesPerformanceData_Select" resultType="java.util.Map" parameterType="java.util.Map">
+    <select id="mYJKBSalesPerformanceData_SelectOld" resultType="java.util.Map" parameterType="java.util.Map">
     <![CDATA[
 		WITH #R_YJKBSalesPerformanceData_Select
           	AS ( SELECT   R.ProjectID ,
@@ -492,6 +492,128 @@
               GROUP BY  T.ProjectID
             ) T 
     ]]>
+    </select>
+    
+    <!-- 首页销售业绩认购数据 -->
+    <select id="mYJKBSalesPerformanceData_Select" resultType="java.util.Map" parameterType="java.util.Map">
+   	<![CDATA[
+   		WITH 
+		-- 查项目信息
+		#SL_MYOrder AS (
+			SELECT O.* FROM C_MYOrder ( NOLOCK ) O LEFT JOIN B_Project P ON O.ProjGUID = P.ID  WHERE P.Level = 2 AND p.PID = '0F228EF6-548A-E711-80C7-00505686C900'
+		),
+		-- 查合同信息
+		#SL_MYContract AS (
+			SELECT A.*,C.PCode FROM C_MYContract (NOLOCK) A JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+		),
+		-- 查人员信息
+		#SL_MYTrade AS ( 
+			SELECT TR.TradeGUID FROM C_MYTrade (NOLOCK) TR LEFT JOIN B_CustomerAttach ( NOLOCK ) CA ON TR.OppGUID = CA.ID LEFT JOIN B_Opportunity ( NOLOCK ) OP ON CA.OpportunityID = OP.ID WHERE SaleUserID = '7DA4A671-41F7-E611-8F4F-6EAE8B3FA499'
+		),
+		#R_YJKBSalesPerformanceData_Select AS ( 
+			SELECT 
+				ISNULL(T6.BookingCount, 0) - ISNULL(T7.BookingCount, 0) BookingCount ,
+				ISNULL(T6.BookingAmount, 0) - ISNULL(T7.BookingAmount, 0) BookingAmount ,
+				ISNULL(T7.BookingCount, 0) BookingCancelCount ,
+				ISNULL(T7.BookingAmount, 0) BookingCancelAmount ,
+				ISNULL(T1.OrderCount, 0) - ISNULL(T2.OrderCount, 0) - ISNULL(T3.OrderCount, 0) OrderCount ,
+				ISNULL(T1.OrderAmount, 0) - ISNULL(T2.OrderAmount, 0) - ISNULL(T3.OrderAmount, 0) OrderAmount ,
+				ISNULL(T1.OrderCount, 0) OrderNewCount ,
+				ISNULL(T1.OrderAmount, 0) OrderNewAmount ,
+				ISNULL(T2.OrderBackCount, 0) + ISNULL(T3.OrderBackCount, 0) OrderBackCount ,
+				ISNULL(T2.OrderBackAmount, 0) + ISNULL(T3.OrderBackAmount, 0) OrderBackAmount ,
+				ISNULL(T2.OrderChangeCount, 0) + ISNULL(T3.OrderChangeCount, 0) OrderChangeCount ,
+				ISNULL(T2.OrderChangeAmount, 0) + ISNULL(T3.OrderChangeAmount, 0) OrderChangeAmount ,
+				ISNULL(T4.ContractCount, 0) - ISNULL(T8.ContractCount, 0) ContractCount ,
+				ISNULL(T4.ContractAmount, 0) - ISNULL(T8.ContractAmount, 0) ContractAmount ,
+				ISNULL(T4.ContractCount, 0) ContractNewCount ,
+				ISNULL(T4.ContractAmount, 0) ContractNewAmount ,
+				ISNULL(T8.ContractBackCount, 0) ContractBackCount ,
+				ISNULL(T8.ContractBackAmount, 0) ContractBackAmount ,
+				ISNULL(T4.ContractHouseBldArea, 0) - ISNULL(T8.ContractHouseBldArea, 0) ContractHouseBldArea ,
+				ISNULL(T4.ContractHouseAmount, 0) - ISNULL(T8.ContractHouseAmount, 0) ContractHouseAmount ,
+				ISNULL(T5.FeeCount, 0) FeeCount ,
+				ISNULL(T5.FeeAmount, 0) FeeAmount
+			FROM 
+			-- T1
+			( SELECT COUNT ( 1 ) OrderCount,
+				SUM ( CASE WHEN B.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~ CAST ( B.IsZxkbrht AS BIT ) ) * B.ZxTotal ) + B.FactOtherTotal ELSE A.CjTotal + ( ( ~ CAST ( A.IsZxkbrht AS BIT ) ) * A.ZxTotal ) + A.FactOtherTotal END ) OrderAmount 
+			FROM #SL_MYTrade TR, #SL_MYOrder A
+				LEFT JOIN C_MYContract ( NOLOCK ) B ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ( '换房', '退房' ))
+				WHERE TR.TradeGUID = A.TradeGUID AND A.OrderType = '认购' AND (( A.ChgDate IS NULL AND A.QsDate >= '2018-01-01' AND A.QsDate <= '2019-10-01' ) OR ( A.ChgDate >= '2018-01-01' AND A.ChgDate <= '2019-10-01' )) ) T1,
+		
+			-- T2
+			( SELECT COUNT(1) OrderCount ,
+				SUM(CASE WHEN B.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal END) OrderAmount ,
+				SUM(CASE A.CloseReason WHEN '退房' THEN 1 ELSE 0 END) OrderBackCount ,
+				SUM(CASE A.CloseReason WHEN '退房' THEN ( CASE WHEN B.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal END ) ELSE 0 END) OrderBackAmount ,
+				SUM(CASE A.CloseReason WHEN '换房' THEN 1 ELSE 0 END) OrderChangeCount ,
+				SUM(CASE A.CloseReason WHEN '换房' THEN ( CASE WHEN B.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal END ) ELSE 0 END) OrderChangeAmount
+			FROM #SL_MYTrade TR, #SL_MYOrder A
+				LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND ( B.Status = '激活' OR B.CloseReason IN ( '换房', '退房' ) )
+				WHERE TR.TradeGUID = A.TradeGUID AND A.OrderType = '认购' AND A.Status = '关闭' AND A.CloseReason IN ( '退房', '换房', '其它变更', '作废', '特批折扣' ) AND A.CloseDate >= '2018-01-01' AND A.CloseDate <= '2019-10-01' ) T2,
+		
+			--T3
+			( SELECT SUM(CASE B.CloseReason WHEN '换房' THEN 0 ELSE 1 END) OrderCount ,
+				SUM(CASE WHEN B.ContractGUID IS NOT NULL THEN ( CASE WHEN C.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal - ( C.HtTotal + ( ( ~CAST(C.IsZxkbrht AS BIT) ) * C.ZxTotal ) + C.FactOtherTotal ) ELSE B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal END ) ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal END) OrderAmount ,
+				SUM(CASE B.CloseReason WHEN '退房' THEN 1 ELSE 0 END) OrderBackCount ,
+				SUM(CASE B.CloseReason WHEN '退房' THEN ( CASE WHEN B.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal END ) ELSE 0 END) OrderBackAmount ,
+				SUM(CASE B.CloseReason WHEN '换房' THEN 1 ELSE 0 END) OrderChangeCount ,
+				SUM(CASE B.CloseReason WHEN '换房' THEN ( CASE WHEN B.ContractGUID IS NOT NULL THEN ( CASE WHEN C.ContractGUID IS NOT NULL THEN B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal - ( C.HtTotal + ( ( ~CAST(C.IsZxkbrht AS BIT) ) * C.ZxTotal ) + C.FactOtherTotal ) ELSE B.HtTotal + ( ( ~CAST(B.IsZxkbrht AS BIT) ) * B.ZxTotal ) + B.FactOtherTotal END ) ELSE A.CjTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal END ) ELSE 0 END) OrderChangeAmount
+			FROM #SL_MYTrade TR, #SL_MYOrder A
+				JOIN C_MYContract B ON A.TradeGUID = B.TradeGUID AND B.CloseDate >= '2018-01-01' AND B.CloseDate <= '2019-10-01' AND B.CloseReason IN ( '退房', '换房' )
+				LEFT JOIN C_MYContract (NOLOCK) C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+				WHERE TR.TradeGUID = A.TradeGUID AND A.OrderType = '认购' AND A.CloseReason = '转签约') T3,
+				
+			--T4
+			( SELECT  COUNT(1) ContractCount ,
+				SUM(A.RmbHtTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal) ContractAmount ,
+				SUM(ISNULL(A.BldArea, 0)) ContractBldArea ,
+				SUM(CASE WHEN A.PCode IN ( '03', '05' ) THEN 0 ELSE ( A.RmbHtTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal ) END) ContractHouseAmount ,
+				SUM(CASE WHEN A.PCode IN ( '03', '05' ) THEN 0 ELSE ISNULL(A.BldArea, 0) END) ContractHouseBldArea
+			FROM #SL_MYTrade TR, #SL_MYContract A 
+			WHERE TR.TradeGUID = A.TradeGUID AND NOT EXISTS ( SELECT SaleGUID FROM C_MYSaleModiApply c WHERE c.IsCstBg = 1 AND c.IsPayformBg = 0 AND c.IsYhBg = 0 AND c.IsCjtotalBg = 0 AND c.IsExcutive = 1 AND a.LastSaleGUID = c.SaleGUID AND SaleType <> '定单' )
+				AND ( A.ConStatus = '正签' OR ISNULL(A.ConStatus, '') = '' )
+				AND ( CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate ELSE A.zqdate END ) >= '2018-01-01'
+				AND ( CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate ELSE A.zqdate END ) <= '2019-10-01' ) T4,
+				
+			--T8
+			( SELECT COUNT(1) ContractCount ,
+				SUM(A.RmbHtTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal) ContractAmount ,
+				SUM(ISNULL(A.BldArea, 0)) ContractBldArea ,
+				SUM(CASE A.CloseReason WHEN '退房' THEN 1 ELSE 0 END) ContractBackCount ,
+				SUM(CASE A.CloseReason WHEN '退房' THEN ISNULL(A.Total, 0) ELSE 0 END) ContractBackAmount ,
+				SUM(CASE WHEN A.PCode IN ( '03', '05' ) THEN 0 ELSE ( A.RmbHtTotal + ( ( ~CAST(A.IsZxkbrht AS BIT) ) * A.ZxTotal ) + A.FactOtherTotal ) END) ContractHouseAmount ,
+				SUM(CASE WHEN A.PCode IN ( '03', '05' ) THEN 0 ELSE ISNULL(A.BldArea, 0) END) ContractHouseBldArea
+			FROM #SL_MYTrade TR, #SL_MYContract A 
+			WHERE TR.TradeGUID = A.TradeGUID AND NOT EXISTS ( SELECT SaleGUID FROM C_MYSaleModiApply (NOLOCK) c WHERE c.IsCstBg = 1 AND c.IsPayformBg = 0 AND c.IsYhBg = 0 AND c.IsCjtotalBg = 0 AND c.IsExcutive = 1 AND a.ContractGUID = c.SaleGUID )
+				AND ( A.ConStatus = '正签' OR ISNULL(A.ConStatus, '') = '' )
+				AND A.CloseReason IN ( '退房', '换房', '其它变更', '重置认购', '作废', '特批折扣' )
+				AND A.Status = '关闭' AND A.CloseDate >= '2018-01-01' AND A.CloseDate <= '2019-10-01' ) T8,
+				
+			--T5
+			( SELECT SUM(C.FeeCount) FeeCount,SUM(C.FeeAmount) FeeAmount FROM (SELECT COUNT(DISTINCT sg.RoomGUID) FeeCount , SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
+			FROM #SL_MYTrade TR, C_MYGetin (NOLOCK) sg JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID JOIN dbo.B_Project (NOLOCK) P ON P.ID = sv.ProjGUID
+			WHERE TR.TradeGUID = sg.SaleGUID AND P.Level = 2 AND p.PID = '0F228EF6-548A-E711-80C7-00505686C900' AND sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' ) AND ( sg.ItemType LIKE '%房款%'OR sg.ItemName = '其他') AND ( sg.Status = ''OR sg.Status IS NULL) AND sv.KpDate >= '2018-01-01' AND sv.KpDate <= '2019-10-01' GROUP BY CONVERT(VARCHAR(10), sv.KpDate, 120)) C ) T5,
+				
+			--T6
+			( SELECT COUNT(1) BookingCount , SUM(ISNULL(A.Total, 0)) BookingAmount
+			FROM C_MYBooking (NOLOCK) A JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID LEFT JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID LEFT JOIN dbo.B_Opportunity (NOLOCK) OP ON CA.OpportunityID = OP.ID 
+			WHERE P.Level = 2 AND p.PID = '0F228EF6-548A-E711-80C7-00505686C900' AND SaleUserID = '7DA4A671-41F7-E611-8F4F-6EAE8B3FA499' AND A.Status = '排号' AND A.BgnDate >= '2018-01-01' AND A.BgnDate < '2019-10-01' ) T6,
+				
+			--T7
+			( SELECT COUNT(1) BookingCount , SUM(ISNULL(A.Total, 0)) BookingAmount FROM #SL_MYTrade TR, C_MYBooking (NOLOCK) A JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID WHERE TR.TradeGUID = A.TradeGUID AND P.Level = 2 AND p.PID = '0F228EF6-548A-E711-80C7-00505686C900' AND A.CloseYy IN ( '退号', '作废', '转其它项目' ) AND A.CloseDate >= '2018-01-01' AND A.CloseDate < '2019-10-01' ) T7 )
+			
+		SELECT SUM(OrderCount) OrderCount ,
+			CONVERT(DECIMAL(18,2),SUM(OrderAmount) / 10000) OrderAmount ,
+			SUM(BookingCount) BookingCount ,
+			CONVERT(DECIMAL(18,2),SUM(BookingAmount) / 10000) BookingAmount ,
+			SUM(ContractCount) ContractCount ,
+			CONVERT(DECIMAL(18,2),SUM(ContractAmount) / 10000) ContractAmount ,
+			SUM(FeeCount) PaybackCount ,
+			CONVERT(DECIMAL(18,2),SUM(FeeAmount) / 10000) PaybackAmount
+		FROM #R_YJKBSalesPerformanceData_Select
+   	]]>
     </select>
     <!-- 首页销售业绩逾期未签约数据 -->
     <select id="mSalesPerformanceOverdueContractData_Select" resultType="java.util.HashMap" parameterType="java.util.Map">
