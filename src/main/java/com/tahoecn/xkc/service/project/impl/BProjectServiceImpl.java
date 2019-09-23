@@ -100,7 +100,7 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
         if (memberList.size()>0) {
             for (BSalesgroupmember bSalesgroupmember : memberList) {
                 for (Map<String, Object> map : list) {
-                    if (StringUtils.equals((String) map.get("ProjectID"), bSalesgroupmember.getProjectID())) {
+                    if (StringUtils.equalsIgnoreCase((String) map.get("ProjectID"), bSalesgroupmember.getProjectID())) {
                         tpyeList.add(map);
                     }
                 }
