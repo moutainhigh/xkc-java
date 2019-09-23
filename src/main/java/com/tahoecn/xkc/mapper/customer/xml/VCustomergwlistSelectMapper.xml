@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper">
-	<select id="sCustomerGWListNew_Select" resultType="java.util.HashMap" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
+
+	<resultMap type="java.util.HashMap" id="CustomerGWList">
+		<result column="OpportunityID" property="OpportunityID" />
+		<result column="CustomerID" property="CustomerID" />
+		<result column="CustomerName" property="CustomerName" />
+		<result column="CustomerMobile" property="CustomerMobile" />
+		<result column="SpareMobile" property="SpareMobile" />
+		<result column="UseMobile" property="UseMobile" />
+		<result column="FollwUpWay" property="FollwUpWay" />
+		<result column="CustomerTag" property="CustomerTag" />
+		<result column="TheLatestFollowUpDate" property="TheLatestFollowUpDate" />
+		<result column="TheLatestFollowUpContent" property="TheLatestFollowUpContent" />
+		<result column="IntentionLevel" property="IntentionLevel" />
+		<result column="CustomerRank" property="CustomerRank" />
+		<result column="IsCare" property="IsCare" />
+		<result column="OpportunityStatus" property="OpportunityStatus" />
+		<result column="OpportunityStatusValue" property="OpportunityStatusValue" />
+		<result column="IsCustomerFirstEdit" property="IsCustomerFirstEdit" />
+		<result column="SaleUserName" property="SaleUserName" />
+		<result column="IsCooperat" property="IsCooperat" />
+		<collection property="childItem" ofType="java.util.HashMap" select="SelectOpportunityByParentIDNew" column="{ParentID=OpportunityID}" ></collection>
+	</resultMap>
+
+	<select id="sCustomerGWListNew_Select" resultMap="CustomerGWList" parameterType="com.tahoecn.xkc.model.dto.GWCustomerPageDto">
 		<![CDATA[
 	SELECT
 		OpportunityID ,
@@ -192,6 +215,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	</update>
 	
 	<select id="SelectOpportunityByParentID" resultType="java.util.HashMap" parameterType="java.util.List">
+		<if test="list != null and list.size() > 0">
 		<![CDATA[
 		SELECT    t.ID AS OpportunityID ,
 					t.ParentID,
@@ -221,13 +245,46 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
                     AND t.Status > 0
                     AND t.Status <> 6
                     AND ISNULL(t.SaleUserID,'') != '' 
-                    AND ParentID IN 
 		]]>
-		<foreach collection="list" item="item" separator="," open="(" close=")">
-			#{item}
-		</foreach>
+            AND ParentID IN 
+			<foreach collection="list" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+        </if>
 	</select>
 	
+	<select id="SelectOpportunityByParentIDNew" resultType="java.util.HashMap">
+		SELECT
+			t.ID AS OpportunityID,
+			t.ParentID,
+			t.ParentRelation,
+			t.CustomerID ,
+			t.CustomerName ,
+			t.CustomerMobile ,
+			t.SpareMobile,
+			ISNULL( t.UseMobile, t.CustomerMobile ) UseMobile,
+			t.CustomerLevel ,
+			t.CustomerRank ,
+			t.Status OpportunityStatusValue,
+			t.IsCustomerFirstEdit ,
+			dbo.F_FormatDate (
+			ISNULL( t.TheLatestFollowUpDate, t.AllotTime )) AS TheLatestFollowUpDate,
+			( CASE WHEN t.TheLatestFollowUpDate IS NULL THEN '无跟进信息' ELSE t.TheLatestFollowUpContent END ) TheLatestFollowUpContent,
+			t.TheLatestFollowUpWay ,
+			t.SaleUserID ,
+			t.SaleUserName ,
+			dbo.F_GetSaleIsCare ( t.ID, t.SaleUserID ) IsCare,
+			t.CreateTime,
+			( CASE WHEN ISNULL( t.SalePartnerID, '' ) != '' THEN 1 ELSE 0 END ) IsCooperat 
+		FROM
+			dbo.B_Opportunity AS t 
+		WHERE
+			t.IsDel = 0 
+			AND t.Status &gt; 0 
+			AND t.Status &lt;&gt; 6 
+			AND ISNULL( t.SaleUserID, '' ) != '' 
+			AND ParentID = #{ParentID}
+	</select>
 	
 	<select id="sCustomerGWBase_Select" resultType="java.util.HashMap">
 		 <![CDATA[

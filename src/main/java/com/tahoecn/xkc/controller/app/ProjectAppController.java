@@ -503,7 +503,7 @@ public class ProjectAppController extends TahoeBaseController {
     @ApiOperation(value = "区域项目列表", notes = "区域项目列表")
     @RequestMapping(value = "/ProjectList_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Result ProjectList_Select(@RequestBody JSONObject jsonParam) {
-
+    	System.out.println("==================>>>>>>"+jsonParam);
         Map<String, Object> paramMap = (HashMap<String, Object>)jsonParam.get("_param");
         Object Name = paramMap.get("Name");
         String UserID = (String) paramMap.get("UserID");

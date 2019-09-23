@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.date.DateUtil;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -44,6 +42,8 @@ import com.tahoecn.xkc.service.customer.IProjectService;
 import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
+
+import cn.hutool.core.date.DateUtil;
 
 /**
  * <p>
@@ -79,38 +79,40 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	setParamForCustomerList(model);
         	//设置分页
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
-        	List<String> OpportunityID_list = new ArrayList<String>();
-        	if(data!=null && data.size()>0){
-        		for(Map<String,Object> data_map : data){
-        			OpportunityID_list.add(data_map.get("OpportunityID").toString());
-        		}
-        	}
-        	Map<String,List<Map<String,Object>>> childs = new HashMap<>();
-        	try {
-        		List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
-            	if(data_child!=null && data_child.size()>0){
-            		for(Map<String,Object> data_child_map : data_child){
-            			String tkey = data_child_map.get("ParentID").toString();
-            			if(!childs.containsKey(tkey)){
-            				List<Map<String,Object>> list = new ArrayList<>();
-            				list.add(data_child_map);
-            				childs.put(tkey, list);
-            			}else{
-            				childs.get(tkey).add(data_child_map);
-            			}
-            		}
-            	}
-            	if(childs!=null && childs.size()>0){
-            		for(Map<String,Object> data_map : data){
-            			String tkey = data_map.get("OpportunityID").toString();
-            			if(childs.containsKey(tkey)){
-            				data_map.put("childItem", childs.get(tkey));
-            			}
-            		}
-            	}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+        	//OLD 通过父ID获取机会信息
+//        	List<String> OpportunityID_list = new ArrayList<String>();
+//        	if(data!=null && data.size()>0){
+//        		for(Map<String,Object> data_map : data){
+//        			OpportunityID_list.add(data_map.get("OpportunityID").toString());
+//        		}
+//        	}
+//        	Map<String,List<Map<String,Object>>> childs = new HashMap<>();
+//        	try {
+//        		List<Map<String,Object>> data_child = vCustomergwlistSelectMapper.SelectOpportunityByParentID(OpportunityID_list);
+//            	if(data_child!=null && data_child.size()>0){
+//            		for(Map<String,Object> data_child_map : data_child){
+//            			String tkey = data_child_map.get("ParentID").toString();
+//            			if(!childs.containsKey(tkey)){
+//            				List<Map<String,Object>> list = new ArrayList<>();
+//            				list.add(data_child_map);
+//            				childs.put(tkey, list);
+//            			}else{
+//            				childs.get(tkey).add(data_child_map);
+//            			}
+//            		}
+//            	}
+//            	if(childs!=null && childs.size()>0){
+//            		for(Map<String,Object> data_map : data){
+//            			String tkey = data_map.get("OpportunityID").toString();
+//            			if(childs.containsKey(tkey)){
+//            				data_map.put("childItem", childs.get(tkey));
+//            			}
+//            		}
+//            	}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+        	
         	Long allCount = vCustomergwlistSelectMapper.sCustomerGWListNew_Select_count(model);
         	Map<String,Object> re = new HashMap<String, Object>();
         	re.put("List", data);
