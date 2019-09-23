@@ -475,6 +475,7 @@ FROM    dbo.B_Opportunity A
                                 CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,<!--客储等级-->
                                 b.Status,<!--线索状态-->
                                 b.Status Statu,
+                                b.Status OpportunityStatus,
 								                b.InvalidReason,<!--原因-->
 								                b.ComeOverdueTime,<!--到访逾期时间-->
 								                b.TradeOverdueTime,<!--成交逾期时间-->
@@ -497,7 +498,7 @@ FROM    dbo.B_Opportunity A
                       WHERE     b.IsDel = 0
                                 AND b.IntentProjectID = #{paramMap.ProjectID}
                                 AND b.Status&lt;&gt;3
-								) t  WHERE 1=1 ${paramMap.sqlWhere}
+								) tm  WHERE 1=1 ${paramMap.sqlWhere}
                                 ) m
 
 								WHERE 1=1
