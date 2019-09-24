@@ -545,12 +545,12 @@
                  , a.ID      ProjectID
                  , a.Name    ProjectName
             INTO #org
-            FROM B_Project a
-                     JOIN S_Organization c ON a.BUGUID = c.ID
-                     JOIN S_Organization d ON c.PID = d.ID
-                     JOIN dbo.B_ProjectJobRel e ON a.ID = e.ProjectID
-                     JOIN dbo.S_JobsUserRel f ON e.JobID = f.JobID
-                     JOIN dbo.S_Account g ON f.accountID = g.ID
+            FROM B_Project (NOLOCK) a
+                     JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                     JOIN S_Organization(NOLOCK) d ON c.PID = d.ID
+                     JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID = e.ProjectID
+                     JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID = f.JobID
+                     JOIN dbo.S_Account (NOLOCK) g ON f.accountID = g.ID
             WHERE a.Level = 1
               AND a.status = 1
               AND a.isdel = 0
@@ -559,7 +559,7 @@
 
             SELECT IntentProjectID ProjectID, COUNT(1) KHCount
             INTO #baobei
-            FROM dbo.B_Clue
+            FROM dbo.B_Clue (NOLOCK)
             WHERE IsDel = 0
               AND CreateTime >= #{startDate}
               AND CreateTime <= #{endDate}
@@ -579,7 +579,7 @@
 
             SELECT ProjectID, COUNT(1) KHCount
             INTO #daofang
-            FROM dbo.B_Opportunity
+            FROM dbo.B_Opportunity (NOLOCK)
             WHERE IsDel = 0
               AND CreateTime >= #{startDate}
               AND CreateTime <= #{endDate}
@@ -663,9 +663,9 @@
                      JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
                      LEFT JOIN C_MYContract (NOLOCK) B
                                ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ('换房', '退房'))
-                     JOIN dbo.C_MYTrade MT ON A.TradeGUID = MT.TradeGUID
-                     JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
-                     JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
                                                                                                      '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -744,9 +744,9 @@
                      JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
                      LEFT JOIN C_MYContract (NOLOCK) B
                                ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ('换房', '退房'))
-                     JOIN dbo.C_MYTrade MT ON A.TradeGUID = MT.TradeGUID
-                     JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
-                     JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
                                                                                                      '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -845,13 +845,13 @@
             INTO #rengouC
             FROM C_MYOrder (NOLOCK) A
                      JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
-                     JOIN C_MYContract B
+                     JOIN C_MYContract (NOLOCK) B
                           ON A.TradeGUID = B.TradeGUID AND B.CloseDate >= #{startDate} AND B.CloseDate <= #{endDate} AND
                              B.CloseReason IN ('退房', '换房')
-                     LEFT JOIN C_MYContract C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
-                     JOIN dbo.C_MYTrade MT ON A.TradeGUID = MT.TradeGUID
-                     JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
-                     JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                     LEFT JOIN C_MYContract (NOLOCK) C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
                                                                                                      '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -889,9 +889,9 @@
                      JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
                      JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
                      JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
-                     JOIN dbo.C_MYTrade MT ON A.TradeGUID = MT.TradeGUID
-                     JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
-                     JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
                                                                                                      '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -904,7 +904,7 @@
                                                                                                      '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
                 )
             WHERE NOT EXISTS(SELECT SaleGUID
-                             FROM C_MYSaleModiApply c
+                             FROM C_MYSaleModiApply (NOLOCK) c
                              WHERE c.IsCstBg = 1
                                AND c.IsPayformBg = 0
                                AND c.IsYhBg = 0
@@ -957,9 +957,9 @@
                      JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
                      JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
                      JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
-                     JOIN dbo.C_MYTrade MT ON A.TradeGUID = MT.TradeGUID
-                     JOIN dbo.B_CustomerAttach CA ON MT.OppGUID = CA.ID
-                     JOIN dbo.B_Opportunity O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
                                                                                                      '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
                                                                                                      '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                                                                                      '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -972,7 +972,7 @@
                                                                                                      '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
                 )
             WHERE NOT EXISTS(SELECT SaleGUID
-                             FROM C_MYSaleModiApply c
+                             FROM C_MYSaleModiApply (NOLOCK) c
                              WHERE c.IsCstBg = 1
                                AND c.IsPayformBg = 0
                                AND c.IsYhBg = 0
@@ -1053,25 +1053,25 @@
         <![CDATA[
             SELECT h.OpportunitySource,h.DictName , b.* into #org
                 FROM   ( SELECT    ID OpportunitySource , DictName,1 flag
-                          FROM      dbo.S_Dictionary
+                          FROM      dbo.S_Dictionary (NOLOCK)
                           WHERE     PID = 'F1725D6B-D1F7-4BC3-8C35-20FAB53A1602' AND Ext2 = 1
                        ) h
                 LEFT JOIN (
                     SELECT  d.PID, d.ID POrgID, D.OrgName POrgName ,c.ID COrgID,C.OrgName COrgName
                         ,a.ID ProjectID , a.Name ProjectName,1 flag
-                    FROM B_Project a
-                         JOIN S_Organization c ON a.BUGUID = c.ID
-                         JOIN S_Organization d ON c.PID = d.ID
-                           JOIN dbo.B_ProjectJobRel e ON a.ID=e.ProjectID
-                         JOIN dbo.S_JobsUserRel f ON e.JobID=f.JobID
-                         JOIN dbo.S_Account g ON f.AccountID=g.ID
+                    FROM B_Project (NOLOCK) a
+                         JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                         JOIN S_Organization (NOLOCK) d ON c.PID = d.ID
+                           JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID=e.ProjectID
+                         JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID=f.JobID
+                         JOIN dbo.S_Account (NOLOCK) g ON f.AccountID=g.ID
                     WHERE a.Level=1 AND a.status=1 AND a.isdel=0 AND g.UserName=(SELECT UserName FROM dbo.S_Account WHERE ID=#{accountID})
                     GROUP BY d.PID,a.ID,a.Name,d.ID,d.OrgName,c.ID,c.OrgName
                 ) b ON h.flag=b.flag
 
             SELECT IntentProjectID ProjectID,COUNT(1) KHCount ,SourceType OpportunitySource
             INTO #baobei
-            FROM dbo.B_Clue WHERE IsDel=0 AND CreateTime >= #{startDate} AND CreateTime<=#{endDate}
+            FROM dbo.B_Clue (NOLOCK) WHERE IsDel=0 AND CreateTime >= #{startDate} AND CreateTime<=#{endDate}
             AND SourceType IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
             '86D702BC-F30F-4091-B520-CA0909CADCDD',
@@ -1088,7 +1088,7 @@
 
             SELECT ProjectID,COUNT(1) KHCount,OpportunitySource
             INTO #daofang
-            FROM dbo.B_Opportunity
+            FROM dbo.B_Opportunity (NOLOCK)
             WHERE IsDel=0 AND CreateTime>=#{startDate} AND CreateTime<=#{endDate}
             AND OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
@@ -1171,9 +1171,9 @@
             FROM    C_MYOrder (NOLOCK) A
             JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
             LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活'OR B.CloseReason IN ('换房', '退房' ))
-            JOIN dbo.C_MYTrade MT ON A.TradeGUID=MT.TradeGUID
-            JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
-            JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
             '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -1249,9 +1249,9 @@
             FROM    C_MYOrder (NOLOCK) A
             JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
             LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ('换房', '退房' ))
-            JOIN dbo.C_MYTrade MT ON A.TradeGUID=MT.TradeGUID
-            JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
-            JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
             '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -1346,11 +1346,11 @@
             INTO #rengouC
             FROM C_MYOrder (NOLOCK) A
             JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
-            JOIN C_MYContract B ON A.TradeGUID = B.TradeGUID AND B.CloseDate >= #{startDate} AND B.CloseDate <= #{endDate} AND B.CloseReason IN('退房', '换房')
-            LEFT JOIN C_MYContract C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
-            JOIN dbo.C_MYTrade MT ON A.TradeGUID=MT.TradeGUID
-            JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
-            JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND B.CloseDate >= #{startDate} AND B.CloseDate <= #{endDate} AND B.CloseReason IN('退房', '换房')
+            LEFT JOIN C_MYContract (NOLOCK) C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
             '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -1387,9 +1387,9 @@
             JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
             JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
             JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
-            JOIN dbo.C_MYTrade MT ON A.TradeGUID=MT.TradeGUID
-            JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
-            JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
             '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -1402,7 +1402,7 @@
             '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
             )
             WHERE  NOT EXISTS ( SELECT SaleGUID
-            FROM   C_MYSaleModiApply c
+            FROM   C_MYSaleModiApply (NOLOCK) c
             WHERE  c.IsCstBg = 1
             AND c.IsPayformBg = 0
             AND c.IsYhBg = 0
@@ -1452,9 +1452,9 @@
             JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
             JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
             JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
-            JOIN dbo.C_MYTrade MT ON A.TradeGUID=MT.TradeGUID
-            JOIN dbo.B_CustomerAttach CA ON MT.OppGUID=CA.ID
-            JOIN dbo.B_Opportunity O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
             '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
             '86D702BC-F30F-4091-B520-CA0909CADCDD',
             '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -1467,7 +1467,7 @@
             '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
             )
             WHERE  NOT EXISTS ( SELECT SaleGUID
-            FROM   C_MYSaleModiApply c
+            FROM   C_MYSaleModiApply (NOLOCK) c
             WHERE  c.IsCstBg = 1
             AND c.IsPayformBg = 0
             AND c.IsYhBg = 0
