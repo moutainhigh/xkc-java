@@ -47,6 +47,8 @@ public class IpadServiceImpl implements IIpadService {
 	private IpadMapper ipadMapper;
 	@Value("${SiteUrl}")
     private String SiteUrl;
+	@Value("${SiteUrl1}")
+	private String SiteUrl1;
 	@Resource
 	private VCustomerfjlistSelectMapper vCustomerfjlistSelectMapper;
 	@Resource
@@ -202,7 +204,7 @@ public class IpadServiceImpl implements IIpadService {
                 	JSONObject gwObj = new JSONObject();
                     gwObj.put("SaleUserID",gwItem.get("ID"));
                     gwObj.put("SaleUserName",gwItem.get("Name"));
-                    gwObj.put("HeadImg",gwItem.get("HeadImg"));
+                    gwObj.put("HeadImg",SiteUrl1+"/ncs/uploadfiles"+gwItem.get("HeadImg"));
                     gwObj.put("GroupName",gwItem.get("GroupName"));
                     gwObj.put("Mobile",gwItem.get("Mobile"));
                     gwObj.put("ReceptCount",gwItem.get("DayTotalCount"));
@@ -226,7 +228,7 @@ public class IpadServiceImpl implements IIpadService {
                     	JSONObject gwObj = new JSONObject();
                         gwObj.put("SaleUserID",gwItem.get("ID"));  //顾问ID
                         gwObj.put("SaleUserName",gwItem.get("Name")); //顾问姓名
-                        gwObj.put("HeadImg",gwItem.get("HeadImg")); //顾问头像
+                        gwObj.put("HeadImg",SiteUrl1+"/ncs/uploadfiles"+gwItem.get("HeadImg")); //顾问头像
                         gwObj.put("GroupName",gwItem.get("GroupName"));
                         gwObj.put("Mobile",gwItem.get("Mobile"));
                         gwObj.put("ReceptCount",gwItem.get("DayTotalCount")); //接待数量
