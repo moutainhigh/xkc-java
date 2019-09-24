@@ -1838,7 +1838,7 @@ public class MessageAppController extends TahoeBaseController {
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("ProjectID", ProjectID);
 			map.put("UserID", UserID);
-			//设消息为已读
+			//设消息为已读 
 			iSystemMessageService.mMessagenotreading_Update(map);
 			return Result.ok("设置已读成功");
 		}catch(Exception e){
