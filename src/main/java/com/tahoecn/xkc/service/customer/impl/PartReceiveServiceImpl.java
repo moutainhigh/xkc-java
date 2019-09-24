@@ -273,7 +273,7 @@ public class PartReceiveServiceImpl implements IPartReceiveService {
                             IsNew = false;
                             //公共客户不允许分接跟进
                             if (!"XSZC".equals(paramAry.getString("JobCode"))){
-                                if (OldSaleUserID.length() == 0){
+                                if (OldSaleUserID==null||OldSaleUserID.length() == 0){
                                     entity.setErrcode(1);
                             		entity.setErrmsg("不能跟进公共客户！");
                                     return entity;
