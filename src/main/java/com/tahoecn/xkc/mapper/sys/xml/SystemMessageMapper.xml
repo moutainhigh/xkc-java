@@ -920,7 +920,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 		        EditTime = GETDATE()
 		WHERE   ProjectID = #{ProjectID}
 				AND Receiver = #{UserID}
-				AND A.IsRead = 0
+				AND IsRead = 0
     </update>
     
 </mapper>
