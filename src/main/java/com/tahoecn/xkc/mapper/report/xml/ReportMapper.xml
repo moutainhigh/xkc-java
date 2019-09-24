@@ -4,6 +4,259 @@
 
     <select id="CustomerRankNew_Select" resultType="java.util.Map">
         <![CDATA[
+        WITH kcview AS (SELECT org.PID,
+        org.POrgName             area,
+        org.COrgName             city,
+        org.ProjectName          project,
+        org.ProjectID,
+        org.POrgID,
+        org.COrgID,
+        ISNULL(one.KHCount, 0)   one,
+        ISNULL(two.KHCount, 0)   two,
+        ISNULL(three.KHCount, 0) three,
+        ISNULL(four.KHCount, 0)  four,
+        ISNULL(five.KHCount, 0)  five,
+        ISNULL(rg.KHCount, 0)    rg,
+        ISNULL(qy.KHCount, 0)    qy,
+        (CASE #{orglevel}
+        WHEN '5' THEN org.POrgID
+        WHEN '6' THEN org.COrgID
+        WHEN '7' THEN org.ProjectID
+        WHEN '8' THEN org.ProjectID
+        ELSE '' END)        haschildren
+        FROM (
+
+        SELECT d.PID
+        , d.ID      POrgID
+        , D.OrgName POrgName
+        , c.ID      COrgID
+        , C.OrgName COrgName
+        , a.ID      ProjectID
+        , a.Name    ProjectName
+        FROM B_Project a
+        JOIN S_Organization c ON a.BUGUID = c.ID
+        JOIN S_Organization d ON c.PID = d.ID
+        JOIN dbo.B_ProjectJobRel e ON a.ID = e.ProjectID
+        JOIN dbo.S_JobsUserRel f ON e.JobID = f.JobID
+        WHERE a.Level = 1
+        AND a.status = 1
+        AND a.isdel = 0
+        AND f.accountID = #{accountID}
+        GROUP BY d.PID, a.ID, a.Name, d.ID, d.OrgName, c.ID, c.OrgName
+        ) org
+        LEFT JOIN (
+
+        SELECT ProjectID, SUM(KHCount) KHCount
+        FROM (
+
+
+        SELECT ProjectID, COUNT(1) KHCount
+        FROM B_Opportunity
+        WHERE IsDel = 0
+        AND ClueID IS NOT NULL
+        AND CreateTime > #{startDate}
+        AND CreateTime < #{endDate}
+        GROUP BY ProjectID
+        UNION ALL
+
+        SELECT ProjectID, SUM(KHCount) KHCount
+        FROM (
+
+        SELECT IntentProjectID ProjectID, COUNT(1) KHCount
+        FROM dbo.B_Clue
+        WHERE IsDel = 0
+        AND Status != 3
+        AND CreateTime > #{startDate}
+        AND CreateTime < #{endDate}
+        AND ReportUserID IS NOT NULL
+        AND ReportUserID != ''
+        AND ID NOT IN (SELECT ClueID
+        FROM dbo.B_Opportunity
+        WHERE IsDel = 0
+        AND CreateTime > #{startDate}
+        AND CreateTime < #{endDate}
+        AND ClueID IS NOT NULL)
+        GROUP BY IntentProjectID, ReportUserID, Mobile
+        ) a1
+        GROUP BY a1.ProjectID
+        ) a
+        GROUP BY a.ProjectID
+        ) one ON org.ProjectID = one.ProjectID
+        LEFT JOIN (
+
+        SELECT ProjectID, COUNT(1) KHCount
+        FROM (
+        SELECT b.ProjectID, COUNT(1) KHCount
+        FROM dbo.B_OpportunityCustomerRankLog a
+        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        WHERE a.CustomerRank = 'FC420696-6F6C-40B1-BE17-96FCEC75B0F2'
+        AND a.CustomerRankValue > 0
+
+        GROUP BY b.ProjectID, a.OpportunityID
+        HAVING MIN(a.CreateTime) > #{startDate}
+        AND MIN(a.CreateTime) < #{endDate}
+        ) twoa
+        GROUP BY ProjectID
+        ) two ON org.ProjectID = two.ProjectID
+        LEFT JOIN (
+
+        SELECT b.ProjectID, COUNT(1) KHCount
+        FROM (
+        SELECT OpportunityID, MIN(CreateTime) CreateTime
+        FROM B_OpportunityCustomerRankLog
+        WHERE CustomerRank = 'ED0AD9E6-AF72-424C-9EE0-9884FF31FA42'
+        AND CustomerRankValue > 0
+        GROUP BY OpportunityID
+        HAVING MIN(CreateTime) > #{startDate}
+        AND MIN(CreateTime) < #{endDate}
+        ) a
+        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        GROUP BY b.ProjectID
+        ) three ON org.ProjectID = three.ProjectID
+        LEFT JOIN (
+
+        SELECT p.ID ProjectID, (ISNULL(foura.KHCount, 0) - ISNULL(fourb.KHCount, 0)) AS KHCount
+        FROM dbo.B_Project p
+        LEFT join(
+        SELECT ProjectID, COUNT(1) KHCount
+        FROM (
+        SELECT b.ProjectID, COUNT(1) KHCount
+        FROM dbo.B_OpportunityCustomerRankLog a
+        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        WHERE a.CustomerRank = 'D47878CE-D560-44C0-A6F8-4C92CCAC9EE0'
+        AND a.CustomerRankValue > 0
+
+        GROUP BY b.ProjectID, a.OpportunityID
+        HAVING MIN(a.CreateTime) > #{startDate}
+        AND MIN(a.CreateTime) < #{endDate}
+        ) fouraa
+        GROUP BY ProjectID
+        ) foura ON p.ID = foura.ProjectID
+        LEFT JOIN (
+        SELECT ProjectID, COUNT(1) KHCount
+        FROM (
+        SELECT b.ProjectID, COUNT(1) KHCount
+        FROM dbo.B_OpportunityCustomerRankLog a
+        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        WHERE a.CustomerRank = 'D47878CE-D560-44C0-A6F8-4C92CCAC9EE0'
+        AND a.CustomerRankValue < 0
+
+        AND b.CustomerRank IN
+        ('41FA0234-F8AE-434F-8BCD-6E9BE1D059DA', 'FC420696-6F6C-40B1-BE17-96FCEC75B0F2',
+        'ED0AD9E6-AF72-424C-9EE0-9884FF31FA42')
+        GROUP BY b.ProjectID, a.OpportunityID
+        HAVING MAX(a.CreateTime) > #{startDate}
+        AND MAX(a.CreateTime) < #{endDate}
+        ) fourbb
+        GROUP BY ProjectID
+        ) fourb ON p.ID = fourb.ProjectID
+        ) four ON org.ProjectID = four.ProjectID
+        LEFT JOIN (
+
+        SELECT p.ID ProjectID, (ISNULL(fivea.KHCount, 0) - ISNULL(fiveb.KHCount, 0)) AS KHCount
+        FROM dbo.B_Project p
+        LEFT JOIN (
+        SELECT p.PID ProjectID, COUNT(1) KHCount
+        FROM C_MYBooking a
+        JOIN dbo.B_Project p ON a.ProjGUID = p.ID
+        WHERE a.Status IN ('排号', '关闭')
+        AND a.BgnDate >= #{startDate}
+        AND a.BgnDate < #{endDate}
+        GROUP BY p.PID
+        ) fivea ON p.ID = fivea.ProjectID
+        LEFT JOIN (
+        SELECT p.PID ProjectID, COUNT(1) KHCount
+        FROM C_MYBooking a
+        JOIN dbo.B_Project p ON a.ProjGUID = p.ID
+        WHERE a.CloseYy IN ('退号', '作废')
+        AND a.CloseDate >= #{startDate}
+        AND a.CloseDate < #{endDate}
+        GROUP BY p.PID
+        ) fiveb ON p.ID = fiveb.ProjectID
+        ) five ON org.ProjectID = five.ProjectID
+        LEFT JOIN (
+
+        SELECT p.ID                      ProjectID,
+
+        ISNULL(rga.KHCount, 0) AS KHCount
+        FROM dbo.B_Project p
+        LEFT JOIN (
+        SELECT e.PID ProjectID, COUNT(1) KHCount
+        FROM C_MYOrder a
+        INNER JOIN C_MYTrade b ON a.TradeGUID = b.TradeGUID
+        LEFT JOIN C_MYContract d
+        ON b.TradeGUID = d.TradeGUID AND (d.Status = '激活' or d.CloseReason in ('换房', '退房'))
+        LEFT JOIN dbo.B_Project e ON a.ProjGUID = e.ID
+        WHERE ((a.ChgDate BETWEEN #{startDate} AND #{endDate})
+        OR (a.ChgDate IS NULL AND a.QsDate BETWEEN #{startDate} AND #{endDate}))
+        and a.OrderType = '认购'
+        GROUP BY e.PID
+        ) rga ON p.ID = rga.ProjectID
+        LEFT JOIN (
+        SELECT e.PID ProjectID, COUNT(1) KHCount
+        FROM C_MYOrder a
+        INNER JOIN C_MYTrade b ON a.TradeGUID = b.TradeGUID
+        LEFT JOIN dbo.B_Project e ON a.ProjGUID = e.ID
+        WHERE ((a.CloseDate BETWEEN #{startDate} AND #{endDate} and
+        a.CloseReason IN ('退房', '换房', '其它变更', '作废', '特批折扣'))
+        OR (a.QyCloseDate BETWEEN #{startDate} AND #{endDate} and a.QyCloseReason IN ('退房', '换房')))
+        AND a.Status = '关闭'
+        and a.OrderType = '认购'
+        GROUP BY e.PID
+        ) rgb ON p.ID = rgb.ProjectID
+        ) rg ON org.ProjectID = rg.ProjectID
+        LEFT JOIN (
+
+        SELECT p.ID                      ProjectID,
+
+        ISNULL(qya.KHCount, 0) AS KHCount
+        FROM dbo.B_Project p
+        LEFT JOIN (
+        SELECT P.PID ProjectID, COUNT(1) KHCount
+        FROM C_MYContract (NOLOCK) A
+        JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+        WHERE NOT EXISTS(
+        SELECT SaleGUID
+        FROM C_MYSaleModiApply c
+        WHERE c.IsCstBg = 1
+        AND c.IsPayformBg = 0
+        AND c.IsYhBg = 0
+        AND c.IsCjtotalBg = 0
+        AND c.IsExcutive = 1
+        AND a.LastSaleGUID = c.SaleGUID
+        AND SaleType <> '定单')
+        AND (A.ConStatus = '正签' OR ISNULL(A.ConStatus, '') = '')
+        AND (CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate ELSE A.zqdate END) >= #{startDate}
+        AND (CASE WHEN A.chgdate >= A.ZqDate THEN A.chgdate ELSE A.zqdate END) <= #{endDate}
+        GROUP BY P.PID
+        ) qya ON p.ID = qya.ProjectID
+        LEFT JOIN (
+        SELECT P.PID ProjectID, COUNT(1) KHCount
+        FROM dbo.C_MYContract (NOLOCK) A
+        JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+        WHERE NOT EXISTS(
+        SELECT SaleGUID
+        FROM C_MYSaleModiApply c
+        WHERE c.IsCstBg = 1
+        AND c.IsPayformBg = 0
+        AND c.IsYhBg = 0
+        AND c.IsCjtotalBg = 0
+        AND c.IsExcutive = 1
+        AND a.ContractGUID = c.SaleGUID)
+        AND (A.ConStatus = '正签' OR ISNULL(A.ConStatus, '') = '')
+        AND A.CloseReason IN ('退房', '换房', '其它变更', '重置认购', '作废', '特批折扣')
+        AND A.Status = '关闭'
+        AND A.CloseDate >= #{startDate}
+        AND A.CloseDate <= #{endDate}
+        GROUP BY P.PID
+        ) qyb ON p.ID = qyb.ProjectID
+        ) qy ON org.ProjectID = qy.ProjectID
+        ) ${sql}
+        ]]>
+    </select>
+    
+    <select id="CustomerRankNew_Select_Old" resultType="java.util.Map">
+        <![CDATA[
         SELECT org.PID,
         org.POrgName             area,
         org.COrgName             city,
