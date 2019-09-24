@@ -1553,8 +1553,8 @@
         cur.Name ReportName,
         dbo.F_DictName ( TaskType ) ChannelTypeName
         FROM
-        dbo.B_ChannelUser cu
-        LEFT JOIN dbo.B_SalesUser su ON cu.ReportUserID = su.ID
+        dbo.B_ChannelUser (NOLOCK) cu
+        LEFT JOIN dbo.B_SalesUser (NOLOCK) su ON cu.ReportUserID = su.ID
         LEFT JOIN (
         SELECT
         cc.Creator ,
@@ -1566,8 +1566,8 @@
         ct.Creator TaskCreator,
         CONVERT ( NVARCHAR ( 10 ), cc.CheckDate, 111 ) CheckDate
         FROM
-        dbo.B_CheckClockRecord cc
-        LEFT JOIN dbo.B_ChannelTask ct ON cc.ChannelTaskID = ct.ID
+        dbo.B_CheckClockRecord (NOLOCK) cc
+        LEFT JOIN dbo.B_ChannelTask (NOLOCK) ct ON cc.ChannelTaskID = ct.ID
         GROUP BY
         cc.Creator ,
         ct.Name ,
@@ -1576,7 +1576,7 @@
         ct.Creator ,
         cc.CheckDate
         ) ccr ON cu.ID = ccr.Creator
-        LEFT JOIN dbo.B_ChannelUser cur ON cur.ID = TaskCreator
+        LEFT JOIN dbo.B_ChannelUser (NOLOCK) cur ON cur.ID = TaskCreator
         WHERE
         cu.ChannelType = '兼职'
         AND ccr.ProjectID = #{ProjectID}
