@@ -918,7 +918,9 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 		        IsApprove=1,
 		        Editor = #{UserID} ,
 		        EditTime = GETDATE()
-		WHERE   ID = #{MessageID}
+		WHERE   ProjectID = #{ProjectID}
+				AND Receiver = #{UserID}
+				AND A.IsRead = 0
     </update>
     
 </mapper>

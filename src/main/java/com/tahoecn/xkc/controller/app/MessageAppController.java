@@ -1832,11 +1832,11 @@ public class MessageAppController extends TahoeBaseController {
 	public Result mMessagenotreading_Update(@RequestBody JSONObject jsonParam) {
 		try{
 			Map paramMap = (HashMap)jsonParam.get("_param");
-			String MessageID = (String) paramMap.get("MessageID");
+			String ProjectID = (String) paramMap.get("ProjectID");
 			String UserID = (String) paramMap.get("UserID");
 			
 			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("MessageID", MessageID);
+			map.put("ProjectID", ProjectID);
 			map.put("UserID", UserID);
 			//设消息为已读
 			iSystemMessageService.mMessagenotreading_Update(map);
