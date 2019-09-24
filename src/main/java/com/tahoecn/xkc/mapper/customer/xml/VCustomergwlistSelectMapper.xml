@@ -676,7 +676,7 @@ WHERE   t.num > (#{pageIndex}-1) * #{pageSize}
 	<update id="mClueTradeOverdueTime_Update">
 		<![CDATA[
 		UPDATE B_Clue SET TradeOverdueTime =CASE WHEN c.CreateTime > o.TheFirstVisitDate THEN
-			CONVERT ( VARCHAR ( 100 ), DATEADD( DAY, cr.ProtectTime+ 1, GETDATE( ) ), 23 ) ELSE CONVERT ( VARCHAR ( 100 ), DATEADD( DAY, cr.ProtectTime+ 1, o.TheFirstVisitDate ), 23 ) 
+			CONVERT ( VARCHAR ( 100 ), DATEADD( DAY, cr.ProtectTime+ 1, c.ComeOverdueTime ), 23 ) ELSE CONVERT ( VARCHAR ( 100 ), DATEADD( DAY, cr.ProtectTime+ 1, o.TheFirstVisitDate ), 23 ) 
 		END 
 		FROM dbo.B_Opportunity o  
 		INNER JOIN dbo.B_Clue c ON c.ID = o.ClueID
