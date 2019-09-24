@@ -453,4 +453,20 @@ public class SystemMessageServiceImpl implements ISystemMessageService {
 		result.put("count", count);
  		return result;
 	}
+
+	/*
+	 * 楼盘动态消息未读数目
+	 */
+	@Override
+	public int mMessagenotreading_Select(Map<String, Object> map) {
+		return systemMessageMapper.mMessagenotreading_Select(map);
+	}
+
+	/*
+	 * 设楼盘动态消息为已读
+	 */
+	@Override
+	public void mMessagenotreading_Update(Map<String, Object> map) {
+		systemMessageMapper.mMessagenotreading_Update(map);
+	}
 }
