@@ -1352,7 +1352,7 @@ public class IpadServiceImpl implements IIpadService {
             whereSb.append(" AND CONVERT(NVARCHAR(10),ca.VisitTime,23) BETWEEN '"+begintime+"' AND '"+endtime+"'");
         }
         paramAry.put("WHERE", whereSb.toString());
-        paramAry.put("SiteUrl", SiteUrl);
+        paramAry.put("SiteUrl", SiteUrl1);
         //接待记录列表
         Map<String,Object> pmap = JSONObject.parseObject(paramAry.toJSONString(),Map.class);
         List<Map<String, Object>> pageObj = ipadMapper.mLFReceptRecordList_Select_forSaleUser(pmap);
