@@ -33,11 +33,11 @@
         , C.OrgName COrgName
         , a.ID      ProjectID
         , a.Name    ProjectName
-        FROM B_Project a
-        JOIN S_Organization c ON a.BUGUID = c.ID
-        JOIN S_Organization d ON c.PID = d.ID
-        JOIN dbo.B_ProjectJobRel e ON a.ID = e.ProjectID
-        JOIN dbo.S_JobsUserRel f ON e.JobID = f.JobID
+        FROM B_Project (NOLOCK)  a
+        JOIN S_Organization (NOLOCK)  c ON a.BUGUID = c.ID
+        JOIN S_Organization  (NOLOCK) d ON c.PID = d.ID
+        JOIN dbo.B_ProjectJobRel  (NOLOCK) e ON a.ID = e.ProjectID
+        JOIN dbo.S_JobsUserRel  (NOLOCK) f ON e.JobID = f.JobID
         WHERE a.Level = 1
         AND a.status = 1
         AND a.isdel = 0
@@ -51,7 +51,7 @@
 
 
         SELECT ProjectID, COUNT(1) KHCount
-        FROM B_Opportunity
+        FROM B_Opportunity (NOLOCK) 
         WHERE IsDel = 0
         AND ClueID IS NOT NULL
         AND CreateTime > #{startDate}
@@ -63,7 +63,7 @@
         FROM (
 
         SELECT IntentProjectID ProjectID, COUNT(1) KHCount
-        FROM dbo.B_Clue
+        FROM dbo.B_Clue (NOLOCK) 
         WHERE IsDel = 0
         AND Status != 3
         AND CreateTime > #{startDate}
@@ -71,7 +71,7 @@
         AND ReportUserID IS NOT NULL
         AND ReportUserID != ''
         AND ID NOT IN (SELECT ClueID
-        FROM dbo.B_Opportunity
+        FROM dbo.B_Opportunity (NOLOCK) 
         WHERE IsDel = 0
         AND CreateTime > #{startDate}
         AND CreateTime < #{endDate}
@@ -87,8 +87,8 @@
         SELECT ProjectID, COUNT(1) KHCount
         FROM (
         SELECT b.ProjectID, COUNT(1) KHCount
-        FROM dbo.B_OpportunityCustomerRankLog a
-        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        FROM dbo.B_OpportunityCustomerRankLog  (NOLOCK) a
+        INNER JOIN dbo.B_Opportunity  (NOLOCK) b ON a.OpportunityID = b.ID
         WHERE a.CustomerRank = 'FC420696-6F6C-40B1-BE17-96FCEC75B0F2'
         AND a.CustomerRankValue > 0
 
@@ -103,26 +103,26 @@
         SELECT b.ProjectID, COUNT(1) KHCount
         FROM (
         SELECT OpportunityID, MIN(CreateTime) CreateTime
-        FROM B_OpportunityCustomerRankLog
+        FROM B_OpportunityCustomerRankLog (NOLOCK) 
         WHERE CustomerRank = 'ED0AD9E6-AF72-424C-9EE0-9884FF31FA42'
         AND CustomerRankValue > 0
         GROUP BY OpportunityID
         HAVING MIN(CreateTime) > #{startDate}
         AND MIN(CreateTime) < #{endDate}
         ) a
-        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        INNER JOIN dbo.B_Opportunity (NOLOCK)  b ON a.OpportunityID = b.ID
         GROUP BY b.ProjectID
         ) three ON org.ProjectID = three.ProjectID
         LEFT JOIN (
 
         SELECT p.ID ProjectID, (ISNULL(foura.KHCount, 0) - ISNULL(fourb.KHCount, 0)) AS KHCount
-        FROM dbo.B_Project p
+        FROM dbo.B_Project (NOLOCK)  p
         LEFT join(
         SELECT ProjectID, COUNT(1) KHCount
         FROM (
         SELECT b.ProjectID, COUNT(1) KHCount
-        FROM dbo.B_OpportunityCustomerRankLog a
-        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        FROM dbo.B_OpportunityCustomerRankLog (NOLOCK)  a
+        INNER JOIN dbo.B_Opportunity (NOLOCK)  b ON a.OpportunityID = b.ID
         WHERE a.CustomerRank = 'D47878CE-D560-44C0-A6F8-4C92CCAC9EE0'
         AND a.CustomerRankValue > 0
 
@@ -136,8 +136,8 @@
         SELECT ProjectID, COUNT(1) KHCount
         FROM (
         SELECT b.ProjectID, COUNT(1) KHCount
-        FROM dbo.B_OpportunityCustomerRankLog a
-        INNER JOIN dbo.B_Opportunity b ON a.OpportunityID = b.ID
+        FROM dbo.B_OpportunityCustomerRankLog (NOLOCK)  a
+        INNER JOIN dbo.B_Opportunity (NOLOCK)  b ON a.OpportunityID = b.ID
         WHERE a.CustomerRank = 'D47878CE-D560-44C0-A6F8-4C92CCAC9EE0'
         AND a.CustomerRankValue < 0
 
@@ -154,11 +154,11 @@
         LEFT JOIN (
 
         SELECT p.ID ProjectID, (ISNULL(fivea.KHCount, 0) - ISNULL(fiveb.KHCount, 0)) AS KHCount
-        FROM dbo.B_Project p
+        FROM dbo.B_Project (NOLOCK)  p
         LEFT JOIN (
         SELECT p.PID ProjectID, COUNT(1) KHCount
-        FROM C_MYBooking a
-        JOIN dbo.B_Project p ON a.ProjGUID = p.ID
+        FROM C_MYBooking (NOLOCK)  a
+        JOIN dbo.B_Project (NOLOCK)  p ON a.ProjGUID = p.ID
         WHERE a.Status IN ('排号', '关闭')
         AND a.BgnDate >= #{startDate}
         AND a.BgnDate < #{endDate}
@@ -166,8 +166,8 @@
         ) fivea ON p.ID = fivea.ProjectID
         LEFT JOIN (
         SELECT p.PID ProjectID, COUNT(1) KHCount
-        FROM C_MYBooking a
-        JOIN dbo.B_Project p ON a.ProjGUID = p.ID
+        FROM C_MYBooking (NOLOCK)  a
+        JOIN dbo.B_Project (NOLOCK)  p ON a.ProjGUID = p.ID
         WHERE a.CloseYy IN ('退号', '作废')
         AND a.CloseDate >= #{startDate}
         AND a.CloseDate < #{endDate}
@@ -179,14 +179,14 @@
         SELECT p.ID                      ProjectID,
 
         ISNULL(rga.KHCount, 0) AS KHCount
-        FROM dbo.B_Project p
+        FROM dbo.B_Project (NOLOCK)  p
         LEFT JOIN (
         SELECT e.PID ProjectID, COUNT(1) KHCount
-        FROM C_MYOrder a
-        INNER JOIN C_MYTrade b ON a.TradeGUID = b.TradeGUID
-        LEFT JOIN C_MYContract d
+        FROM C_MYOrder (NOLOCK)  a
+        INNER JOIN C_MYTrade (NOLOCK)  b ON a.TradeGUID = b.TradeGUID
+        LEFT JOIN C_MYContract (NOLOCK)  d
         ON b.TradeGUID = d.TradeGUID AND (d.Status = '激活' or d.CloseReason in ('换房', '退房'))
-        LEFT JOIN dbo.B_Project e ON a.ProjGUID = e.ID
+        LEFT JOIN dbo.B_Project (NOLOCK)  e ON a.ProjGUID = e.ID
         WHERE ((a.ChgDate BETWEEN #{startDate} AND #{endDate})
         OR (a.ChgDate IS NULL AND a.QsDate BETWEEN #{startDate} AND #{endDate}))
         and a.OrderType = '认购'
@@ -194,9 +194,9 @@
         ) rga ON p.ID = rga.ProjectID
         LEFT JOIN (
         SELECT e.PID ProjectID, COUNT(1) KHCount
-        FROM C_MYOrder a
-        INNER JOIN C_MYTrade b ON a.TradeGUID = b.TradeGUID
-        LEFT JOIN dbo.B_Project e ON a.ProjGUID = e.ID
+        FROM C_MYOrder (NOLOCK)  a
+        INNER JOIN C_MYTrade (NOLOCK)  b ON a.TradeGUID = b.TradeGUID
+        LEFT JOIN dbo.B_Project (NOLOCK)  e ON a.ProjGUID = e.ID
         WHERE ((a.CloseDate BETWEEN #{startDate} AND #{endDate} and
         a.CloseReason IN ('退房', '换房', '其它变更', '作废', '特批折扣'))
         OR (a.QyCloseDate BETWEEN #{startDate} AND #{endDate} and a.QyCloseReason IN ('退房', '换房')))
@@ -217,7 +217,7 @@
         JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
         WHERE NOT EXISTS(
         SELECT SaleGUID
-        FROM C_MYSaleModiApply c
+        FROM C_MYSaleModiApply (NOLOCK)  c
         WHERE c.IsCstBg = 1
         AND c.IsPayformBg = 0
         AND c.IsYhBg = 0
@@ -236,7 +236,7 @@
         JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
         WHERE NOT EXISTS(
         SELECT SaleGUID
-        FROM C_MYSaleModiApply c
+        FROM C_MYSaleModiApply (NOLOCK)  c
         WHERE c.IsCstBg = 1
         AND c.IsPayformBg = 0
         AND c.IsYhBg = 0
