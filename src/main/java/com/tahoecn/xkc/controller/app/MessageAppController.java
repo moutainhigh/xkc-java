@@ -1818,7 +1818,9 @@ public class MessageAppController extends TahoeBaseController {
 			map.put("ProjectID", ProjectID);
 			map.put("UserID", UserID);
 			int result = iSystemMessageService.mMessagenotreading_Select(map);
-			
+			if(result < 1) {
+				result = 0;
+			}
 			return Result.ok(result);
 		}catch(Exception e){
 			e.printStackTrace();
