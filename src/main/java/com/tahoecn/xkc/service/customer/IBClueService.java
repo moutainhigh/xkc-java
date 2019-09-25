@@ -42,6 +42,10 @@ public interface IBClueService extends IService<BClue> {
 	 */
 	List<Map<String,Object>> CaseFieCustomerDetail_Select(Map<String, Object> paramMap);
 	/**
+	 * 获取顾问接待组数
+	 */
+	public Map<String, Object> DayTotalCount_Select(String ProjectID, String SaleUserID);
+	/**
 	 * 客户无效信息
 	 */
 	List<Map<String,Object>> CaseFieInvalDetail_Select(Map<String, Object> paramMap);

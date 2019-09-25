@@ -35,6 +35,10 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	 */
 	List<Map<String, Object>> CaseFieCustomerDetail_Select(Map<String, Object> paramMap);
 	/**
+	 * 获取顾问接待组数
+	 */
+	Map<String, Object> DayTotalCount_Select(@Param("ProjectID")String ProjectID,@Param("SaleUserID")String SaleUserID);
+	/**
 	 * 客户无效信息
 	 */
 	List<Map<String, Object>> CaseFieInvalDetail_Select(Map<String, Object> paramMap);
