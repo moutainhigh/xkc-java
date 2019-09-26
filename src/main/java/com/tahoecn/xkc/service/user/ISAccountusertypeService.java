@@ -29,5 +29,9 @@ public interface ISAccountusertypeService extends IService<SAccountusertype> {
 	 * 修改用户密码资料
 	 */
 	void SalesUserForgetPwdDetail_Update(Map<String, Object> map);
+	/**
+	 * 修改用户密码资料
+	 */
+	void SAccountusertypePassWord_Update(String Password, String UserName);
 
 }

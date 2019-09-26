@@ -655,6 +655,13 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 		return baseMapper.CaseFieCustomerDetail_Select(paramMap);
 	}
 	/**
+	 * 获取顾问接待组数
+	 */
+	@Override
+	public Map<String, Object> DayTotalCount_Select(String ProjectID, String SaleUserID) {
+		return baseMapper.DayTotalCount_Select(ProjectID,SaleUserID);
+	}
+	/**
 	 * 客户无效信息
 	 */
 	@Override

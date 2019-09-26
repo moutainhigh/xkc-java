@@ -899,4 +899,28 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 				ORDER BY CONVERT ( VARCHAR (10), B.lastDate  , 120 )
 		]]>		        
     </select>
+    
+    <!-- 楼盘动态消息未读数目 -->
+    <select id="mMessagenotreading_Select" parameterType="java.util.Map" resultType="int">
+    	<![CDATA[
+			SELECT  COUNT(1) recordCount
+			FROM    dbo.S_Message A
+			WHERE   A.ProjectID = #{ProjectID}
+					AND A.Receiver = #{UserID}
+					AND A.IsRead = 0
+		]]>		        
+    </select>
+    
+    <!-- 设楼盘动态消息为已读 -->
+    <update id="mMessagenotreading_Update" parameterType="java.util.Map">
+	    UPDATE  S_Message
+		SET     IsRead = 1 ,
+		        IsApprove=1,
+		        Editor = #{UserID} ,
+		        EditTime = GETDATE()
+		WHERE   ProjectID = #{ProjectID}
+				AND Receiver = #{UserID}
+				AND IsRead = 0
+    </update>
+    
 </mapper>

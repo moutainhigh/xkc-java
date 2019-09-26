@@ -260,6 +260,11 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 		    jos.put("Value", (inval.size()==0)?"":inval.get(0).get("ClCreateTime"));
 		    invalidList.add(jos);
 		}
+        //查询置业顾问的已接待组数
+        if(ob != null && !StringUtils.isEmpty(ob.get(0).get("SaleUserID"))){
+        	Map<String,Object> zu = iBClueService.DayTotalCount_Select((String)paramMap.get("ProjectID"),(String)ob.get(0).get("SaleUserID"));
+        	ob.get(0).put("SaleUserNum", zu == null ? 0 : zu.get("DayTotalCount"));
+        }
         //组建json
         Map<String,Object> jo = new HashMap<String,Object>();
         jo.put("ClueList", JSON.parseObject(JSON.toJSONString(ob.get(0))));

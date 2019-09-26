@@ -296,6 +296,19 @@
 		WHERE   c.id = #{ClueID}
 	     ]]>
     </select>
+    <!-- 获取顾问接待组数 -->
+    <select id="DayTotalCount_Select" parameterType="String" resultType="java.util.HashMap">
+		<![CDATA[
+	    	SELECT
+				c.DayTotalCount
+			FROM
+				CustomerFJAdviserList_Select c
+			WHERE
+				c.RoleID IN ( '0269F35E-B32D-4D12-8496-4E6E4CE597B7' ) 
+				AND c.ProjectID=#{ProjectID}
+				and c.ID=#{SaleUserID}
+	    ]]>
+	</select>
     <!-- 客户无效信息 -->
     <select id="CaseFieInvalDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
 	    <![CDATA[

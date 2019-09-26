@@ -1804,4 +1804,48 @@ public class MessageAppController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	
+	@ResponseBody
+	@ApiOperation(value = "楼盘动态消息未读数目", notes = "楼盘动态消息未读数目")
+	@RequestMapping(value = "/mMessagenotreading_Select", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mMessagenotreading_Select(@RequestBody JSONObject jsonParam) {
+		try{
+			System.out.println("jsonParam===========================>"+jsonParam);
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			String UserID = (String) paramMap.get("UserID");
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("ProjectID", ProjectID);
+			map.put("UserID", UserID);
+			int result = iSystemMessageService.mMessagenotreading_Select(map);
+			if(result < 1) {
+				result = 0;
+			}
+			return Result.ok(result);
+		}catch(Exception e){
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
+	
+	@ResponseBody
+	@ApiOperation(value = "设楼盘动态消息为已读", notes = "设楼盘动态消息为已读")
+	@RequestMapping(value = "/mMessagenotreading_Update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public Result mMessagenotreading_Update(@RequestBody JSONObject jsonParam) {
+		try{
+			Map paramMap = (HashMap)jsonParam.get("_param");
+			String ProjectID = (String) paramMap.get("ProjectID");
+			String UserID = (String) paramMap.get("UserID");
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("ProjectID", ProjectID);
+			map.put("UserID", UserID);
+			//设消息为已读 
+			iSystemMessageService.mMessagenotreading_Update(map);
+			return Result.ok("设置已读成功");
+		}catch(Exception e){
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

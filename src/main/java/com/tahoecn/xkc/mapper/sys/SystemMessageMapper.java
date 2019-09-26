@@ -180,4 +180,13 @@ public interface SystemMessageMapper {
 	List<String> DRQYYQCalendar(Map<String, Object> paramMap);
     //当日回款逾期
 	List<String> DRHKYQCalendar(Map<String, Object> paramMap);
+	/*
+	 *  楼盘动态消息未读数目
+	 */
+	int mMessagenotreading_Select(Map<String, Object> map);
+
+	/*
+	 * 设楼盘动态消息为已读
+	 */
+	void mMessagenotreading_Update(Map<String, Object> map);
 }

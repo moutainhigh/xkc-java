@@ -5,6 +5,7 @@ import com.tahoecn.xkc.mapper.user.SAccountusertypeMapper;
 import com.tahoecn.xkc.model.user.SAccountusertype;
 import com.tahoecn.xkc.service.user.ISAccountusertypeService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +47,16 @@ public class SAccountusertypeServiceImpl extends ServiceImpl<SAccountusertypeMap
 	@Override
 	public void SalesUserForgetPwdDetail_Update(Map<String, Object> map) {
 		sAccountusertypeMapper.SalesUserForgetPwdDetail_Update(map);
+	}
+	/**
+	 * 修改用户密码资料
+	 */
+	@Override
+	public void SAccountusertypePassWord_Update(String Password, String UserName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("Password", Password);
+		map.put("UserName", UserName);
+		sAccountusertypeMapper.SAccountusertypePassWord_Update(map);
 	}
 
 }

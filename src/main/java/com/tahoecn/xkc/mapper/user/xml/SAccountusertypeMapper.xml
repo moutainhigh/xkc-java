@@ -30,4 +30,11 @@
 			WHERE Mobile = #{Mobile} and AccountType != '1'
 	    ]]>
 	</update>
+	<!-- 修改用户密码资料 -->
+	<update id="SAccountusertypePassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE S_AccountUserType SET Password = #{Password}
+			WHERE UserName = #{UserName}
+	    ]]>
+	</update>
 </mapper>

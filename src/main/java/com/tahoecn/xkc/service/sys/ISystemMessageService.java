@@ -200,5 +200,15 @@ public interface ISystemMessageService {
 	 * 消息日历
 	 */
 	Map<String,Object> mMessageCalendar_Select(Map<String, Object> paramMap);
+
+	/*
+	 * 楼盘动态消息未读数目
+	 */
+	int mMessagenotreading_Select(Map<String, Object> map);
+
+	/*
+	 * 设楼盘动态消息为已读
+	 */
+	void mMessagenotreading_Update(Map<String, Object> map);
 	
 }
