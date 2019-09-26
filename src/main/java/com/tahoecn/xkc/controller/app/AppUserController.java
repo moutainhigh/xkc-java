@@ -2,6 +2,7 @@ package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -9,6 +10,7 @@ import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.project.SAccountuserproject;
 import com.tahoecn.xkc.model.project.SAccountuserprojectjob;
 import com.tahoecn.xkc.model.sys.SAccount;
+import com.tahoecn.xkc.model.user.SAccountusertype;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.project.ISAccountuserprojectService;
 import com.tahoecn.xkc.service.project.ISAccountuserprojectjobService;
@@ -164,6 +166,8 @@ public class AppUserController extends TahoeBaseController {
                     List<BChanneluser> obj = iBChanneluserService.ChannelUserPassWord_Select(map);//修改密码-判断原密码是否正确
                     if (obj != null && obj.size() > 0){
                         iBChanneluserService.ChannelUserPassWord_Update(map);
+                        //修改s-AccountUserType中的密码
+                        iSAccountusertypeService.SAccountusertypePassWord_Update(SecureUtil.md5(Password).toUpperCase(),obj.get(0).getUserName());
                         return Result.ok("用户修改密码成功");
                     }
                     else{
@@ -209,6 +213,8 @@ public class AppUserController extends TahoeBaseController {
                 String ReOldPasswordMD5 = (String) obj.get(0).get("ReOldPassword");
                 if (OldPasswordMD5.equals(ReOldPasswordMD5)){
                 	iSAccountusertypeService.SalesUserPwdDetail_Update(map);
+                	//修改s-AccountUserType中的密码
+                	iSAccountusertypeService.SAccountusertypePassWord_Update(SecureUtil.md5(Password).toUpperCase(),s.getUserName());
                     return Result.ok("用户密码修改成功");
                 }else{
                 	return Result.errormsg(92, "原密码不正确");
@@ -253,6 +259,8 @@ public class AppUserController extends TahoeBaseController {
                 }else{
                 	//4.UC用户修改密码
                 	iSAccountusertypeService.SalesUserForgetPwdDetail_Update(map);
+                	//修改s-AccountUserType中的密码
+                	iSAccountusertypeService.SAccountusertypePassWord_Update(SecureUtil.md5(Password).toUpperCase(),sAccount.get(0).getUserName());
                 }
             	//2.是否为兼职
             	QueryWrapper<BChanneluser> wrapper = new  QueryWrapper<BChanneluser>();
@@ -263,10 +271,11 @@ public class AppUserController extends TahoeBaseController {
                 		return Result.errormsg(91, "根据手机号查询存在多个用户，请联系系统管理员");
                 	}else{
 	                    iBChanneluserService.ChannelUserForgetPassWord_Update(map);
+	                    //修改s-AccountUserType中的密码
+	                    iSAccountusertypeService.SAccountusertypePassWord_Update(SecureUtil.md5(Password).toUpperCase(),Channeluser.get(0).getUserName());
 //	                    return Result.ok("用户修改密码成功");
                 	}
                 }
-                
                 return Result.ok("用户密码修改成功");
             }else{
             	return Result.errormsg(90, "密码与确认密码不一致");
@@ -276,4 +285,5 @@ public class AppUserController extends TahoeBaseController {
     		return Result.errormsg(1, "系统异常，请联系管理员");
     	}
     }
+
 }
