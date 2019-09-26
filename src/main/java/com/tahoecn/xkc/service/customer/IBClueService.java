@@ -104,4 +104,9 @@ public interface IBClueService extends IService<BClue> {
 	void updateTradeOverdueTimeByDay(Integer extendSigningProDays, String id);
 
 	void updateTradeOverdueTimeByDate(Date extendSigningProEndDate, String id);
+
+	/*
+	 * 我的客户列表分类统计
+	 */
+	public Map<String, Object> listMyCustomersCount(String reportUserId);
 }
