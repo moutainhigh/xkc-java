@@ -161,24 +161,25 @@ public class AppUserController extends TahoeBaseController {
             map.put("UserID", UserID);
             map.put("OldPassword", SecureUtil.md5(OldPassword).toUpperCase());
             map.put("Password", SecureUtil.md5(Password).toUpperCase());
-            if("JZ".equals(JobCode.toUpperCase())){
+//            if("JZ".equals(JobCode.toUpperCase())){
             	if(Password.equals(RePassword)){
                     List<BChanneluser> obj = iBChanneluserService.ChannelUserPassWord_Select(map);//修改密码-判断原密码是否正确
                     if (obj != null && obj.size() > 0){
                         iBChanneluserService.ChannelUserPassWord_Update(map);
                         //修改s-AccountUserType中的密码
                         iSAccountusertypeService.SAccountusertypePassWord_Update(SecureUtil.md5(Password).toUpperCase(),obj.get(0).getUserName());
-                        return Result.ok("用户修改密码成功");
+//                        return Result.ok("用户修改密码成功");
                     }
                     else{
                         return Result.errormsg(9, "当前密码错误");
                     }
+                    
             	}else{
             		return Result.errormsg(90, "密码与确认密码不一致");
             	}
-            }else{//用户基本信息修改
+//            }else{//用户基本信息修改
             	return UserPwdDetail_Update(paramMap);
-            }
+//            }
     	}catch(Exception e){
     		e.printStackTrace();
     		return Result.errormsg(1, "系统异常，请联系管理员");
