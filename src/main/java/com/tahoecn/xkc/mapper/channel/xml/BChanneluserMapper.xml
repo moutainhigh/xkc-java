@@ -200,7 +200,7 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         FROM
         B_ChannelUser
         WHERE
-        ( UserName = #{Mobile} )
+        ( UserName = #{Mobile} or Mobile=#{Mobile} )
         AND PASSWORD = upper(#{Password})
         AND IsDel = 0
         AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
