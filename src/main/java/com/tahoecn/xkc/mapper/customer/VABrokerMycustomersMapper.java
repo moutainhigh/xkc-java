@@ -23,4 +23,6 @@ public interface VABrokerMycustomersMapper extends BaseMapper<VABrokerMycustomer
 	List<VABrokerMycustomers> selectMyCustomer(@Param("reportUserId") String reportUserId, @Param("order") String order, @Param("nameOrMobile") String nameOrMobile, @Param("status") String status);
 
     int getWuXiao(@Param("brokerID")String brokerID);
+    
+	List<VABrokerMycustomers> selectMyCustomerCount(@Param("reportUserId") String reportUserId);
 }

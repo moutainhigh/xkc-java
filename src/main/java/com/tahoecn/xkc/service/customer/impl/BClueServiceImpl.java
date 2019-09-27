@@ -1053,5 +1053,54 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clueMapper.updateTradeOverdueTimeByDate(extendSigningProEndDate,clueRuleId);
     }
 
+	@Override
+	public Map<String, Object> listMyCustomersCount(String reportUserId) {
+		if (reportUserId == null) {
+			return null;
+		}
+		List<VABrokerMycustomers> cusList = vABrokerMycustomersMapper.selectMyCustomerCount(reportUserId);
+		Map<String, Object> customer = new HashMap();
+		int baobei = 0, daofang = 0, rengou = 0,qianyue = 0, tuifang = 0, wuxiao = 0;
+		if (cusList == null || cusList.isEmpty()) {
+		} else {
+			for (VABrokerMycustomers cus : cusList) {
+				if(cus.getStatusText().equals("来访")) {
+					cus.setStatusText("到访");
+				}
+				switch(cus.getStatusText()) {
+				case "报备成功":
+					baobei++;
+					break;
+				case "报备":
+					baobei++;
+					break;
+				case "到访":
+					daofang++;
+					break;
+				case "认购":
+					rengou++;
+					break;
+				case "签约":
+					qianyue++;
+					break;
+				case "退房":
+					tuifang++;
+					break;
+				case "无效":
+					wuxiao++;
+					break;
+				}
+			}
+		}
+		customer.put("baobei",baobei);
+		customer.put("daofang",daofang);
+		customer.put("rengou",rengou);
+		customer.put("qianyue",qianyue);
+		customer.put("tuifang",tuifang);
+		customer.put("wuxiao",wuxiao);
+		customer.put("Count",baobei+daofang+qianyue+tuifang+wuxiao);
+		return customer;
+	}
+
 
 }

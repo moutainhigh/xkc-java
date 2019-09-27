@@ -113,4 +113,32 @@ public class AppBClueController extends TahoeBaseController {
 			return Result.errormsg(1,"系统异常，请联系管理员");
 		}
 	}
+	
+	@ApiOperation(value = "我的客户列表分类统计", notes = "我的客户列表分类统计")
+	@RequestMapping(value = "/listCount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Result listCount(@RequestBody JSONObject jsonParam) {
+		Result re=new Result();
+		try {
+			System.out.println(jsonParam.toJSONString());
+            Map paramMap = (HashMap)jsonParam.get("_param");
+            String reportId = (String)paramMap.get("reportId").toString();//报告人ID
+            String nameOrMobile = "";
+            String status = "";
+            String ascOrDesc = "";
+            if(paramMap.get("nameOrMobile") != null) {
+            	nameOrMobile = (String)paramMap.get("nameOrMobile").toString();//客户姓名或者手机号
+            }
+            if(paramMap.get("ascOrDesc") != null) {
+            	ascOrDesc = (String)paramMap.get("ascOrDesc").toString();//排序
+            }
+            if(paramMap.get("status") != null) {
+            	status = (String)paramMap.get("status").toString();//客户状态
+            }
+            Map<String, Object> Count = bClueService.listMyCustomersCount(reportId);
+    			return Result.ok(Count);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Result.errormsg(1,"系统异常，请联系管理员");
+		}
+	}
 }

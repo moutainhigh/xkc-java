@@ -61,4 +61,22 @@
     <select id="getWuXiao" resultType="int" parameterType="string">
         select COUNT(1) from V_A_Broker_MyCustomers where ReportUserID=#{brokerID} and StatusText='无效'
     </select>
+    
+    <select id="selectMyCustomerCount" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
+		select ClueID, 
+				CustomerName, 
+				Mobile, 
+				IntentProjectName, 
+				ReportTime, 
+				InvalidType, 
+				Status, 
+				OppID, 
+				StatusText, 
+				ReportUserID, 
+				isvisit, 
+				dbo.F_DictName(CustomerRank) CustomerRank, 
+				ReportMethod 
+				from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} 
+			
+	</select>
 </mapper>
