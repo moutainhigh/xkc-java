@@ -232,4 +232,42 @@
         order by B.Sequence
       ]]>
     </select>
+
+    <select id="CustomerNEWSignInfo_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT  R.RoomCode ,
+                    D.CstAllName ,
+                    R.SaleStatus ,
+                    D.QSDate ,
+                    CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate
+                         ELSE E.ZqDate
+                    END ZqDate ,
+                    D.PayformName ,
+                    D.Total ,
+                    E.RmbHtTotal + ( ( ~CAST(E.IsZxkbrht AS BIT) ) * E.ZxTotal )
+                    + E.FactOtherTotal ContractAmount ,
+                    F.FeeAmount ,
+                    E.TradeGUID
+            FROM    dbo.B_Opportunity A
+                    JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
+                    JOIN dbo.C_MYTrade C ON C.OppGUID = B.ID
+                    JOIN dbo.B_Room R ON C.RoomGUID = R.ID
+                    JOIN dbo.C_MYOrder D ON D.TradeGUID = C.TradeGUID
+                    LEFT JOIN dbo.C_MYContract E ON E.TradeGUID = C.TradeGUID  AND E.CloseDate IS NULL
+                    LEFT JOIN ( SELECT  sg.SaleGUID ,
+                                        SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
+                                FROM    C_MYGetin (NOLOCK) sg
+                                        JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+                                WHERE   sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+                                        AND ( sg.ItemType LIKE '%房款%'
+                                              OR sg.ItemName = '其他'
+                                            )
+                                        AND ( sg.Status = ''
+                                              OR sg.Status IS NULL
+                                            )
+                                GROUP BY sg.SaleGUID
+                              ) F ON F.SaleGUID = E.TradeGUID
+                              WHERE   A.ID = (select top 1 ID from B_Opportunity where CustomerID=#{customerID})
+        ]]>
+    </select>
 </mapper>

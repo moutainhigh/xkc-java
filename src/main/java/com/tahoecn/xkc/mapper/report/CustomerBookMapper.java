@@ -23,4 +23,6 @@ public interface CustomerBookMapper extends BaseMapper<CustomerBook> {
     List<Map<String,Object>> listClue(@Param("id") String id);
 
     List<Map<String,Object>> customerPayInfo(@Param("id") String id);
+
+    List<Map<String,Object>> CustomerNEWSignInfo_Select(String customerID);
 }

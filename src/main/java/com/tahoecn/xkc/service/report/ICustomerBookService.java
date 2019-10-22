@@ -22,4 +22,6 @@ public interface ICustomerBookService extends IService<CustomerBook> {
     List<Map<String,Object>> listClue(String id);
 
     List<Map<String,Object>> customerPayInfo(String id);
+
+    List<Map<String,Object>> CustomerNEWSignInfo_Select(String customerID);
 }

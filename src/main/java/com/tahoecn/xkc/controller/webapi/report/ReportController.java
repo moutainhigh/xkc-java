@@ -2,50 +2,36 @@ package com.tahoecn.xkc.controller.webapi.report;
 
 
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Maps;
-import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
-import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
-import com.tahoecn.xkc.model.channel.BChannelorg;
-import com.tahoecn.xkc.model.channel.BChanneluser;
-import com.tahoecn.xkc.model.channel.BPojectchannelorgrel;
 import com.tahoecn.xkc.model.customer.CostomerReport;
 import com.tahoecn.xkc.model.customer.CustomerBook;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
-import com.tahoecn.xkc.model.dict.SDictionary;
-import com.tahoecn.xkc.model.dto.ChannelInsertDto;
-import com.tahoecn.xkc.model.rule.BClueruleAdvisergroup;
-import com.tahoecn.xkc.service.channel.IBChannelorgService;
-import com.tahoecn.xkc.service.channel.IBChanneluserService;
-import com.tahoecn.xkc.service.channel.IBPojectchannelorgrelService;
 import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
-import com.tahoecn.xkc.service.dict.ISDictionaryService;
 import com.tahoecn.xkc.service.report.ICbFyService;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
 import com.tahoecn.xkc.service.report.ICustomerBookService;
 import com.tahoecn.xkc.service.report.ReportService;
-import com.tahoecn.xkc.service.rule.IBClueruleAdvisergroupService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.beans.BeanMap;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.*;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -440,6 +426,9 @@ public class ReportController extends TahoeBaseController {
         List<Map<String,Object>> listOpp = customerBookService.listOpp(ID);
         List<Map<String,Object>> listClue = customerBookService.listClue(ID);
         List<Map<String,Object>> payInfoList = customerBookService.customerPayInfo(ID);
+        //查询客户签约信息
+        List<Map<String, Object>> CustomerNEWSignInfo = customerBookService.CustomerNEWSignInfo_Select(ID);
+
         Map<String,List<Map<String,Object>>> result = new HashMap<>();
         
         QueryWrapper<UpdateCustinfoLog> updateCustInfoLogQuery = new QueryWrapper<>();
@@ -449,6 +438,7 @@ public class ReportController extends TahoeBaseController {
         result.put("updateCustInfoLogList",updateCustInfoLogList);
         result.put("listOpp",listOpp);
         result.put("listClue",listClue);
+        result.put("CustomerNEWSignInfo",CustomerNEWSignInfo);
         result.put("payInfoList",payInfoList);
         return Result.ok(result);
     }

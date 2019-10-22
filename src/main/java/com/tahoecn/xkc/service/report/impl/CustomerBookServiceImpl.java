@@ -33,4 +33,9 @@ public class CustomerBookServiceImpl extends ServiceImpl<CustomerBookMapper, Cus
     public List<Map<String, Object>> customerPayInfo(String id) {
         return baseMapper.customerPayInfo(id);
     }
+
+    @Override
+    public List<Map<String, Object>> CustomerNEWSignInfo_Select(String customerID) {
+        return baseMapper.CustomerNEWSignInfo_Select(customerID);
+    }
 }
