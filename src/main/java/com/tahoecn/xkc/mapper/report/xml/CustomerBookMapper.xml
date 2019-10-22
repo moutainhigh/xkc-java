@@ -247,7 +247,10 @@
                     E.RmbHtTotal + ( ( ~CAST(E.IsZxkbrht AS BIT) ) * E.ZxTotal )
                     + E.FactOtherTotal ContractAmount ,
                     F.FeeAmount ,
-                    E.TradeGUID
+                    E.TradeGUID,
+                    orgCity.OrgName cityName,
+                    orgArea.OrgName areaName,
+                    dbo.F_GetProjectName(p.id) AS IntentProjectName
             FROM    dbo.B_Opportunity A
                     JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
                     JOIN dbo.C_MYTrade C ON C.OppGUID = B.ID
@@ -267,6 +270,9 @@
                                             )
                                 GROUP BY sg.SaleGUID
                               ) F ON F.SaleGUID = E.TradeGUID
+                    join B_Project P on C.ProjGUID = P.ID
+                    LEFT JOIN  S_Organization orgCity   ON  orgCity.ID = p.BUGUID
+                    LEFT JOIN S_Organization orgArea ON  orgArea.id = orgCity.PID
                               WHERE   A.ID in (select ID from B_Opportunity where CustomerID=#{customerID})
         ]]>
     </select>
