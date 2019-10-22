@@ -267,7 +267,7 @@
                                             )
                                 GROUP BY sg.SaleGUID
                               ) F ON F.SaleGUID = E.TradeGUID
-                              WHERE   A.ID = (select top 1 ID from B_Opportunity where CustomerID=#{customerID})
+                              WHERE   A.ID in (select ID from B_Opportunity where CustomerID=#{customerID})
         ]]>
     </select>
 </mapper>
