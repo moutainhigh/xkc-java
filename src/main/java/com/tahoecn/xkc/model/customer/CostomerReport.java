@@ -1,11 +1,11 @@
 package com.tahoecn.xkc.model.customer;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModel;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
