@@ -4,6 +4,8 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.annotation.DataSource;
+import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.mapper.channel.BChannelorgMapper;
 import com.tahoecn.xkc.mapper.report.ReportMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
@@ -54,6 +56,7 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
     }
 
     @Override
+    @DataSource(DataSourceEnum.DB3)
     public IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, Date startTime, Date endTime, String projectID, String checkDate, String name, String mobile, String taskName, String reportName) {
         endTime = new Date(endTime.getTime() + 60 * 60 * 24 * 1000);
         IPage<Map<String, Object>> list=baseMapper.mChannelCheckReportList_Select(page, startTime, endTime, projectID, checkDate, name, mobile, taskName, reportName);

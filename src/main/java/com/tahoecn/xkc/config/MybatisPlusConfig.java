@@ -34,14 +34,8 @@ import java.util.Map;
 public class MybatisPlusConfig {
 
     @Bean
-    @Profile({"develop"})
     public PerformanceInterceptor performanceInterceptor() {
-        return new PerformanceInterceptor();
-        /*PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
-        <!-- SQL 执行性能分析，开发环境使用，线上不推荐。 maxTime 指的是 sql 最大执行时长 -->
-        performanceInterceptor.setMaxTime(1000);
-        performanceInterceptor.setFormat(true);
-        return performanceInterceptor;*/
+        return  new PerformanceInterceptor();
     }
 
     @Bean
@@ -51,9 +45,7 @@ public class MybatisPlusConfig {
 
     @Bean
     public PaginationInterceptor paginationInterceptor() {
-        PaginationInterceptor page = new PaginationInterceptor();
-        page.setDialectType("sqlServer2005");
-        return page;
+        return new PaginationInterceptor();
     }
 
     @Bean(name = "db1")
@@ -68,17 +60,25 @@ public class MybatisPlusConfig {
         return DruidDataSourceBuilder.create().build();
     }
 
+    @Bean(name = "db3")
+    @ConfigurationProperties(prefix = "spring.datasource.dynamic.datasource.s199" )
+    public DataSource db3() {
+        return DruidDataSourceBuilder.create().build();
+    }
+
     /**
      * 动态数据源配置
      * @return
      */
     @Bean
     @Primary
-    public DataSource multipleDataSource(@Qualifier("db1") DataSource db1, @Qualifier("db2") DataSource db2) {
+    public DataSource multipleDataSource(@Qualifier("db1") DataSource db1, @Qualifier("db2") DataSource db2,@Qualifier("db3") DataSource db3) {
         MultipleDataSource multipleDataSource = new MultipleDataSource();
         Map< Object, Object > targetDataSources = new HashMap<>();
         targetDataSources.put(DataSourceEnum.DB1.getValue(), db1);
         targetDataSources.put(DataSourceEnum.DB2.getValue(), db2);
+        targetDataSources.put(DataSourceEnum.DB3.getValue(), db3);
+
         //添加数据源
         multipleDataSource.setTargetDataSources(targetDataSources);
         //设置默认数据源
@@ -89,8 +89,7 @@ public class MybatisPlusConfig {
     @Bean("sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(multipleDataSource(db1(),db2()));
-        //sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:/mapper/*/*Mapper.xml"));
+        sqlSessionFactory.setDataSource(multipleDataSource(db1(),db2(),db3()));
         sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:com/tahoecn/xkc/mapper/**/*.xml"));
 
         MybatisConfiguration configuration = new MybatisConfiguration();

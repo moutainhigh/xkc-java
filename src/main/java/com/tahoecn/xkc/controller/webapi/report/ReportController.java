@@ -225,6 +225,11 @@ public class ReportController extends TahoeBaseController {
     }
 
 
+
+
+
+
+
     @ApiOperation(value = "考勤报表查询", notes = "考勤报表查询")
     @RequestMapping(value = "/mChannelCheckReportList_Select", method = {RequestMethod.GET})
     public Result mChannelCheckReportList_Select(String ProjectID, Date StartTime,Date EndTime,String CheckDate,String Name,String Mobile,String TaskName,
@@ -233,6 +238,14 @@ public class ReportController extends TahoeBaseController {
         IPage<Map<String,Object>> list=reportService.mChannelCheckReportList_Select(page,StartTime,EndTime,ProjectID,CheckDate,Name,Mobile,TaskName,ReportName);
         return Result.ok(list);
     }
+
+
+
+
+
+
+
+
     @ApiOperation(value = "考勤报表导出", notes = "考勤报表导出")
     @RequestMapping(value = "/mChannelCheckReportList_Export", method = {RequestMethod.GET})
     public Result mChannelCheckReportList_Export(String ProjectID, Date StartTime,Date EndTime,String CheckDate,String Name,String Mobile,String TaskName,
@@ -263,6 +276,30 @@ public class ReportController extends TahoeBaseController {
             e.printStackTrace();
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @ApiOperation(value = "客户信息明细", notes = "客户信息明细")
     @RequestMapping(value = "/costomerReportDetail", method = {RequestMethod.GET})
@@ -312,6 +349,29 @@ public class ReportController extends TahoeBaseController {
         }
         return Result.ok(list);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void SetExcel_costomerReport(IPage<CostomerReport> result,String isWhole) {
         List<ExcelExportEntity> entity = new ArrayList<>();

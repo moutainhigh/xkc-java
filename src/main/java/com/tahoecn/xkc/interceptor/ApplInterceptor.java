@@ -32,7 +32,7 @@ public class ApplInterceptor implements HandlerInterceptor {
 
 	/**
 	 * 在处理请求之前要做的动作
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @param handler
@@ -85,7 +85,7 @@ public class ApplInterceptor implements HandlerInterceptor {
 
 	/**
 	 * 完成请求处理后要做的动作
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @param handler
@@ -100,7 +100,7 @@ public class ApplInterceptor implements HandlerInterceptor {
 
 	/**
 	 * 请求结束后要做的动作
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @param handler
