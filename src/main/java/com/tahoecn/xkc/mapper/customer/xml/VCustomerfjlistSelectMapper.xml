@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.VCustomerfjlistSelectMapper">
+	<!-- 案场分接客户列表 -->
+	<select id="sCustomerFJList_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VCustomerfjlistSelect">
+		<![CDATA[
+			SELECT * FROM V_CustomerFJList_Select   
+	      	WHERE IsDel = 0    AND Assignor = #{pa.UserID}  AND ProjectID = #{pa.ProjectID} 
+	      	AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = OpportunityID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pa.UserID}) IS NOT NULL
+	      	${pa.WHERE}
+	      	${pa.ORDER}
+		]]>
+	</select>
+	
+	<select id="sCustomerFJAdviserList_Select_part" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT ID,RoleID,ProjectID,Name,Mobile,HeadImg HeadImg,GroupName,GroupID,DayTotalCount,Creator  FROM CustomerFJAdviserList_Select
+	    WHERE RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and ProjectID=#{pmap.ProjectID}
+	    ${pmap.WHERE}
+	    ${pmap.ORDER}
+	    ]]>
+	</select>
+	
+	<select id="sCustomerFJAdviserList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator,ISNULL(us.Status,'KX') Status  FROM CustomerFJAdviserList_Select c
+	    LEFT JOIN Sale_User_Status us ON (us.SaleUserID = c.ID AND us.StatusDate=#{pmap.StatusDate})
+	    WHERE c.RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and c.ProjectID=#{pmap.ProjectID}
+	    ${pmap.WHERE}
+	    ${pmap.ORDER}
+	    ]]>
+	</select>
+	
+	<select id="sCustomerFJAdviserList_Select_Sort" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    SELECT c.ID,c.RoleID,c.ProjectID,c.Name,c.Mobile,c.HeadImg HeadImg,c.GroupName,c.GroupID,c.DayTotalCount,c.Creator,ISNULL(us.Status,'KX') Status,s.SignInDateTime SignInDate FROM CustomerFJAdviserList_Select c
+		LEFT JOIN Sale_User_Sign s ON (s.SaleUserID = c.ID AND s.SignInDate=#{SignInDate} AND s.SalesSupervisorID = #{SalesSupervisorID})
+		LEFT JOIN Sale_User_Status us ON (us.SaleUserID = c.ID AND us.StatusDate=#{SignInDate})
+	    WHERE c.RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7') and c.ProjectID=#{ProjectID} 
+	    ${WHERE}
+	    <if test="SourceRange=='all'">
+	    	 <if test="Order=='sgin'">
+		    	ORDER BY case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
+		    </if>
+		    <if test="Order=='sortCode'">
+		    	ORDER BY case when s.SortCode is null then 1 else 0 end asc,s.SortCode ASC, case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
+		    </if>
+	    </if>
+	    <if test="SourceRange=='notAll'">
+	    	 <if test="Order=='sgin'">
+		    	AND s.ID IS NOT NULL
+		    	ORDER BY case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
+		    </if>
+		    <if test="Order=='notSgin'">
+		    	AND s.ID IS NULL
+		    </if>
+		    <if test="Order=='sortCode'">
+		    	AND s.ID IS NOT NULL
+		    	ORDER BY case when s.SortCode is null then 1 else 0 end asc,s.SortCode ASC, case when s.SortDateTime is null then 1 else 0 end asc,s.SortDateTime ASC
+		    </if>
+	    </if>
+	</select>
+	
+	<select id="mSystemFormSessionStatus_Select_step1" parameterType="java.util.Map" resultType="java.lang.Long"> 
+		<![CDATA[
+			SELECT COUNT(1) FROM S_FormSession WHERE Status = 0 AND ID = #{FormSessionID}
+		]]>
+	</select>
+	
+	<update id="mSystemFormSessionStatus_Select_step2" parameterType="java.util.Map" >
+		<![CDATA[
+		UPDATE S_FormSession SET Status = 0,EditTime = GETDATE() WHERE ID = #{FormSessionID}
+		]]>
+	</update>
+	
+	<select id="mCustomerFJDetail_Update_step1" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  ISNULL(SaleUserID,'')  SaleUserID,
+		        Status ,
+		        SalePartnerID ,
+		        ISNULL(FirstVisitAddress,'') FirstVisitAddress,
+		        ISNULL(ReVisitAddress,'') ReVisitAddress
+		FROM    dbo.B_Opportunity
+		WHERE   ID = #{OpportunityID}
+		]]>
+	</select>
+	
+	<update id="mCustomerFJDetail_Update_step2" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_Opportunity
+        SET     Status = 2 ,
+                SaleUserID = #{SaleUserID},
+                SaleUserName = dbo.F_GetSaleUserName(#{SaleUserID}) ,
+                Editor = #{UserID},
+                EditeTime = GETDATE()
+        WHERE   ID = #{OpportunityID}
+		]]>
+	</update>
+	
+	<update id="mCustomerFJDetail_Update_step3" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_Opportunity
+        SET     Status = 2 ,
+                Editor = #{UserID},
+                EditeTime = GETDATE() ,
+                FirstVisitAddress = #{VisitAddress},
+                ReVisitAddress = #{VisitAddress}
+        WHERE   ID = #{OpportunityID}
+		]]>
+	</update>
+	
+	<update id="mCustomerFJDetail_Update_step4" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_Opportunity
+        SET     Status = 2 ,
+                SalePartnerID = #{SaleUserID},
+                SalePartnerName = dbo.F_GetSaleUserName(#{SaleUserID}) ,
+                SalePartnerAllotUserID = #{UserID},
+                SalePartnerAllotTime = GETDATE(),
+                Editor = #{UserID},
+                EditeTime = GETDATE(),
+                ReVisitAddress = #{VisitAddress}
+        WHERE   ID = #{OpportunityID}
+		]]>
+	</update>
+	
+	<insert id="mCustomerFJDetail_Update_step5" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_ClueAllocation
+	        ( ID ,
+	          CustomerID ,
+	          OpportunityID ,
+	          ClueID ,
+	          Assignor ,
+	          AllocationTime ,
+	          VisitType ,
+	          VisitTime ,
+	          AttendNum ,
+	          IsOld ,
+	          Remark ,
+	          VisitAddress ,
+	          IsIPad
+	        )
+	VALUES  ( NEWID() ,
+	          #{CustomerID},
+	          #{OpportunityID},
+	          #{ClueID},
+	          #{UserID},
+	          GETDATE(),
+	          #{VisitType},
+	          #{VisitTime},
+	          #{AttendNum},
+	          1,
+	          #{ClueAllocationRemark},
+	          #{VisitAddress}, 
+	          #{IsIPad}
+	        )
+		]]>
+	</insert>
+	
+	<insert id="mCustomerFJDetail_Insert_step1" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_Customer
+        ( ID ,
+          Name ,
+          LastName ,
+          FirstName ,
+          Mobile ,
+          Gender ,
+          CardType ,
+          CardID ,
+          AcceptFactor ,
+          Remark ,
+          OrgID ,
+          Creator ,
+          CreateTime ,
+          TheFirstVisitDate ,
+          isDel ,
+          Status,
+          SpareMobile,
+          UseMobile
+        )
+VALUES  ( #{CustomerID},
+          #{Name},
+          #{LastName},
+          #{FirstName},
+          #{Mobile},
+          #{Gender},
+          #{CardType},
+          #{CardID},
+          #{AcceptFactor},
+          #{Remark},
+          #{OrgID},
+          #{UserID},
+          GETDATE(),
+          NULL,
+          0,
+          1,
+          '',
+          #{Mobile}
+        )
+		]]>
+	</insert>
+	<insert id="mCustomerFJDetail_Insert_step2" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerAttribute
+        ( ID ,
+          CustomerID ,
+          AgeGroup ,
+          DomicilePlace ,
+          HomeAddress ,
+          HomeArea ,
+          WorkArea ,
+          Marriage ,
+          Family ,
+          Industry ,
+          Creator ,
+          CreateTime ,
+          PropertyNum
+        )
+VALUES  ( NEWID() ,
+          #{CustomerID},
+          #{AgeGroup},
+          #{DomicilePlace},
+          #{HomeAddress},
+          #{HomeArea},
+          #{WorkArea},
+          #{Marriage},
+          #{Family},
+          #{Industry},
+          #{UserID},
+          GETDATE(),
+          #{PropertyNum}
+        )   
+		]]>
+	</insert>
+	<insert id="mCustomerFJDetail_Insert_step3" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_Opportunity
+        ( Id ,
+          ProjectID ,
+          ClueID ,
+          CustomerID ,
+          CustomerName ,
+          LastName ,
+          FirstName ,
+          CustomerMobile ,
+          SaleUserID ,
+          SaleUserName ,
+          TheFirstVisitDate ,
+          TheLatestFollowUpDate ,
+          CustomerLevel ,
+          OpportunitySource ,
+          IntentProjectID ,
+          IntentProjectName ,
+          CognitiveChannel ,
+          CognitiveChannelSub ,
+          Commercial ,
+          OrgID ,
+          Creator ,
+          CreateTime ,
+          PropertyIntention ,
+          Status ,
+          FollowupCount ,
+          AllotUserID ,
+          AllotTime ,
+          FirstVisitAddress,
+          SpareMobile,
+          UseMobile
+        )
+VALUES  ( #{OpportunityID},
+          #{ProjectID},
+          #{ClueID},
+          #{CustomerID},
+          #{Name},
+          #{LastName},
+          #{FirstName},
+          #{Mobile},
+          #{SaleUserID},
+          dbo.F_GetSaleUserName(#{SaleUserID}) ,
+          NULL,
+          GETDATE(),
+          '9CEA46E8-A3ED-409E-646C-F38A5EAC383E' ,
+          #{OpportunitySource},
+          #{IntentProjectID},
+          dbo.F_GetProjectName(#{IntentProjectID}) ,
+          #{CognitiveChannel},
+          #{CognitiveChannelSub},
+          #{Commercial},
+          #{OrgID},
+          #{UserID},
+          GETDATE() ,
+          #{PropertyIntention},
+          #{Status},
+          1 ,
+          #{UserID},
+          GETDATE(),
+          #{VisitAddress},
+          '',
+          #{Mobile}
+        )
+		]]>
+	</insert>
+	
+	<insert id="mCustomerFJDetail_Insert_step4" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_OpportunityCustomerRel
+        ( ID ,
+          CustomerID ,
+          OpportunityID ,
+          Familiarity ,
+          IsMain ,
+          OrgID ,
+          Creator ,
+          CreateTime ,
+          Editor ,
+          EditeTime ,
+          IsDel ,
+          Status
+        )
+VALUES  ( NEWID() ,
+          #{CustomerID},
+          #{OpportunityID},
+          NULL ,
+          1 ,
+          #{OrgID},
+          #{UserID},
+          GETDATE(),
+          #{UserID},
+          GETDATE(),
+          0 ,
+          1
+        )
+		]]>
+	</insert>
+	<insert id="mCustomerFJDetail_Insert_step5" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_ClueAllocation
+        ( ID ,
+          CustomerID ,
+          OpportunityID ,
+          ClueID ,
+          Assignor ,
+          AllocationTime ,
+          VisitType ,
+          VisitTime ,
+          AttendNum ,
+          IsOld ,
+          Remark ,
+          VisitAddress ,
+          IsIPad
+          
+        )
+VALUES  ( NEWID() ,
+          #{CustomerID},
+          #{OpportunityID},
+          #{ClueID},
+          #{UserID},
+          GETDATE(),
+          #{VisitType},
+          #{VisitTime},
+          #{AttendNum},
+          0,
+          #{ClueAllocationRemark},
+          #{VisitAddress},
+          #{IsIPad}
+        )
+		]]>
+	</insert>
+
+	<update id="mOldCustomerFJDetail_Insert_step1" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_Opportunity
+		SET     IsDel = 1,
+		        Editor = #{UserID},
+		        EditeTime = GETDATE()
+		WHERE   CustomerID = #{CustomerID}
+		        AND Status = 6
+		        AND ProjectID = #{ProjectID}
+        ]]>
+	</update>
+	
+	<insert id="mOldCustomerFJDetail_Insert_step2" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_Opportunity
+        ( Id ,
+          ProjectID ,
+          ClueID ,
+          CustomerID ,
+          CustomerName ,
+          LastName ,
+          FirstName ,
+          CustomerMobile ,
+          SaleUserID ,
+          SaleUserName ,
+          CustomerLevel ,
+          OpportunitySource ,
+          IntentProjectID ,
+          IntentProjectName ,
+          CognitiveChannel ,
+          CognitiveChannelSub ,
+          Commercial ,
+          OrgID ,
+          Creator ,
+          CreateTime ,
+          PropertyIntention ,
+          status ,
+          IsCustomerFirstEdit ,
+          CustomerFirstEditTime ,
+          AllotUserID ,
+          AllotTime ,
+          FirstVisitAddress
+        )
+VALUES  ( #{OpportunityID},
+          #{ProjectID},
+          #{ClueID},
+          #{CustomerID},
+          #{Name},
+          #{LastName},
+          #{FirstName},
+          #{Mobile},
+          #{SaleUserID},
+          dbo.F_GetSaleUserName(#{SaleUserID}) ,
+          '9CEA46E8-A3ED-409E-646C-F38A5EAC383E' ,
+          #{OpportunitySource},
+          #{IntentProjectID},
+          dbo.F_GetProjectName(#{IntentProjectID}) ,
+          #{CognitiveChannel},
+          #{CognitiveChannelSub},
+          #{Commercial},
+          #{OrgID},
+          #{UserID},
+          GETDATE(),
+          #{PropertyIntention},
+          #{Status},
+          1,
+          GETDATE(),
+          #{UserID},
+          GETDATE(),
+          #{VisitAddress}
+        )
+		]]>
+	</insert>
+	
+	<insert id="mOldCustomerFJDetail_Insert_step3" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_OpportunityCustomerRel
+        ( ID ,
+          CustomerID ,
+          OpportunityID ,
+          Familiarity ,
+          IsMain ,
+          OrgID ,
+          Creator ,
+          CreateTime ,
+          Editor ,
+          EditeTime ,
+          IsDel ,
+          Status
+        )
+VALUES  ( NEWID(),
+          #{CustomerID},
+          #{OpportunityID},
+          NULL,
+          1,
+          #{OrgID},
+          #{UserID},
+          GETDATE(),
+          #{UserID},
+          GETDATE(),
+          0,
+          1
+        )
+		]]>
+	</insert>
+	
+	<insert id="mOldCustomerFJDetail_Insert_step4" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_ClueAllocation
+        ( ID ,
+          CustomerID ,
+          OpportunityID ,
+          ClueID ,
+          Assignor ,
+          AllocationTime ,
+          VisitType ,
+          VisitTime ,
+          AttendNum ,
+          IsOld ,
+          Remark ,
+          VisitAddress ,
+          IsIPad
+        )
+VALUES  ( NEWID() ,
+          #{CustomerID},
+          #{OpportunityID},
+          #{ClueID},
+          #{UserID},
+          GETDATE(),
+          #{VisitType},
+          #{VisitTime},
+          #{AttendNum},
+          0,
+          #{ClueAllocationRemark},
+          #{VisitAddress},
+          #{IsIPad}
+        )
+		]]>
+	</insert>
+	
+	<select id="SystemAccountDetail_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  UserName ,
+		        EmployeeName ,
+		        Mobile
+		FROM    dbo.S_Account
+		WHERE   ID = #{userID}
+	    ]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get1" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT ID ShareProjectID FROM dbo.A_ShareProject WHERE ProjectID = #{ProjectID} AND IsDel = 0 
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get2" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT BindChannelUserID UserID,ID FROM dbo.C_WXUser WHERE UnionID = #{UnionID} AND IsDel = 0
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_getCount" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		SELECT count(1) FROM dbo.C_WXUser WHERE BindChannelUserID = #{UserID} AND IsDel = 0
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get3" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 1 Msg,'' WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID= #{UserID}
+		]]>
+	</select>
+	
+	<insert id="mUserAuthorDetail_Select_Insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT INTO dbo.C_WXUser
+			        ( ID ,
+			          OpenID ,
+			          UnionID ,
+			          ShareProjectID ,
+			          Name ,
+			          NickName ,
+			          Gender ,
+			          AvatarUrl ,
+			          Province ,
+			          City ,
+			          Mobile ,
+			          ChannelUserID ,
+			          AdviserGroupID ,
+			          SessionKey ,
+			          BindChannelUserID ,
+			          BindAdviserGroupID ,
+			          IsFirstAuthorize ,
+			          Creator ,
+			          CreateTime ,
+			          Editor ,
+			          EditeTime ,
+			          IsDel ,
+			          Status
+			        )
+			VALUES  ( #{NewID},
+			          '',
+			          #{UnionID}, 
+			          #{ShareProjectID}, 
+			          '',
+			          '', 
+			          0 , 
+			          '',
+			          '',
+			          '',
+			          '', 
+			          '',
+			          '', 
+			          '',
+			          #{UserID},
+			          #{AdviserGroupID},
+			          0 , 
+			          #{UserID}, 
+			          GETDATE(), 
+			          '' ,
+			          NULL , 
+			          0 , 
+			          1 
+			        )
+		]]>
+	</insert>
+	
+	<select id="mUserAuthorDetail_Select_get4" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 0 Msg,#{NewID} WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID=#{UserID}
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get5" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 0 Msg,#{TID} WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID= #{UserID}
+		]]>
+	</select>
+	
+	<select id="mUserAuthorDetail_Select_get6" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT 2 Msg,'' WXUserID,HeadImg FROM dbo.B_SalesUser WHERE ID= #{UserID}
+		]]>
+	</select>
+	
+	<update id="mUserAuthorDetail_Select_update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE dbo.C_WXUser
+				SET BindChannelUserID = #{UserID},
+				BindAdviserGroupID = #{AdviserGroupID}
+				WHERE UnionID = #{UnionID}
+		]]>
+	</update>
+  
+</mapper>

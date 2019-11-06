@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.ASharepoolMapper">
+	<!-- 新增客户信息 -->
+	<insert id="insBCustomer_new" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT  INTO B_Customer
+	        ( ID ,
+	          Name ,
+	          LastName ,
+	          FirstName ,
+	          Mobile ,
+	          Gender ,
+	          CardType ,
+	          CardID ,
+	          AcceptFactor ,
+	          Remark ,
+	          OrgID ,
+	          Creator ,
+	          CreateTime ,
+	          IsEmployee ,
+	          isDel ,
+	          Status,
+	          SpareMobile,
+	          UseMobile
+	        )
+		VALUES  ( #{CustomerID} ,
+	          #{NickName} ,
+	          '' ,
+	          '' ,
+	          #{Mobile} ,
+	          #{Gender} ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          #{OrgID} ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          '' ,
+	          0 ,
+	          1,
+	          '',
+	          #{Mobile}
+	        );
+	]]>
+	</insert>
+	<!-- 新增客户特性 -->
+	<insert id="insBCustomerAttribute_new" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT  INTO B_CustomerAttribute
+	        ( ID ,
+	          CustomerID ,
+	          AgeGroup ,
+	          DomicilePlace ,
+	          HomeAddress ,
+	          HomeArea ,
+	          WorkArea ,
+	          Marriage ,
+	          Family ,
+	          Industry ,
+	          Creator ,
+	          CreateTime ,
+	          PropertyNum ,
+	          Birthday ,
+	          Address
+	        )
+		VALUES  ( NEWID() ,
+	          #{CustomerID} ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          '' ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          '' ,
+	          CASE LEN('')
+	            WHEN 0 THEN NULL
+	            ELSE ''
+	          END ,
+	          ''
+	        );
+	]]>
+	</insert>
+	<!-- 新增机会 -->
+	<insert id="insBOpportunity_new" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT  INTO B_Opportunity
+	        ( Id ,
+	          ProjectID ,
+	          ClueID ,
+	          CustomerID ,
+	          CustomerName ,
+	          LastName ,
+	          FirstName ,
+	          CustomerMobile ,
+	          SaleUserID ,
+	          SaleUserName ,
+	          OpportunitySource ,
+	          IntentProjectID ,
+	          IntentProjectName ,
+	          CognitiveChannel ,
+	          CognitiveChannelSub ,
+	          Commercial ,
+	          IsLittleBooking ,
+	          OrgID ,
+	          Creator ,
+	          CreateTime ,
+	          PropertyIntention ,
+	          AllotUserID ,
+	          AllotTime ,
+	          IsCustomerFirstEdit ,
+	          CustomerFirstEditTime ,
+	          Status,
+	          SpareMobile,
+	          UseMobile
+	        )
+		VALUES  ( #{OpportunityID} ,
+	          #{ProjectID} ,
+	          #{ClueID} ,
+	          #{CustomerID} ,
+	          #{NickName} ,
+	          '' ,
+	          '' ,
+	          #{Mobile} ,
+	          #{SaleUserID} ,
+	          dbo.F_GetSaleUserName(#{SaleUserID}) ,
+	          #{OpportunitySource} ,
+	          #{IntentProjectID} ,
+	          dbo.F_GetProjectName(#{IntentProjectID}) ,
+	          #{CognitiveChannel} ,
+	          #{CognitiveChannelSub} ,
+	          '' ,
+	          '' ,
+	          #{OrgID} ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          '' ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          1 ,
+	          GETDATE() ,
+	          #{Status},
+	          '',
+	          #{Mobile}
+	        );
+	]]>
+	</insert>
+	<!-- 新增销售轨迹 -->
+	<insert id="insBCustomerTag_new" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT  INTO B_CustomerTag
+	        ( ID ,
+	          CustomerID ,
+	          TagName ,
+	          Creator ,
+	          CreateTime ,
+	          Editor ,
+	          EditeTime ,
+	          IsDel ,
+	          Status
+	        )
+	        SELECT  NEWID() ID ,
+	                #{CustomerID} CustomerID ,
+	                name ,
+	                #{UserID} TagName ,
+	                GETDATE() ,
+	                #{UserID} ,
+	                GETDATE() ,
+	                0 ,
+	                1
+	        FROM    F_StrToTable(#{CustomerTag})
+	        WHERE   name <> '';
+	]]>
+	</insert>
+	<!-- 客户标签 -->
+	<insert id="insBOpportunityCustomerRel_new" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT  INTO B_OpportunityCustomerRel
+	        ( ID ,
+	          CustomerID ,
+	          OpportunityID ,
+	          Familiarity ,
+	          IsMain ,
+	          OrgID ,
+	          Creator ,
+	          CreateTime ,
+	          Editor ,
+	          EditeTime ,
+	          IsDel ,
+	          Status
+	        )
+		VALUES  ( NEWID() ,
+	          #{CustomerID} ,
+	          #{OpportunityID} ,
+	          NULL ,
+	          1 ,
+	          #{OrgID} ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          0 ,
+	          1
+	        );  
+	]]>
+	</insert>
+	
+	<select id="callPOpportunityCustomerRank" statementType="CALLABLE">
+	<![CDATA[
+     	{call dbo.P_OpportunityCustomerRank(#{OpportunityID},#{CustomerID}, #{CustomerRank},
+    		#{UserID}, 1)}
+	]]>	
+	</select>
+	<select id="callPSyncClueOpportunity_Update" statementType="CALLABLE">
+	<![CDATA[
+     	{call dbo.P_SyncClueOpportunity_Update(#{UserID}, '', #{OpportunityID})}
+	]]>	
+	</select>
+	<update id="updBOpportunity_old" parameterType="java.util.Map">
+	<![CDATA[
+     	UPDATE  B_Opportunity
+		SET     IsDel = 1 ,
+		        Editor = #{UserID} ,
+		        EditeTime = GETDATE()
+		WHERE   CustomerID = #{CustomerID}
+		        AND Status = 6
+		        AND ProjectID = #{ProjectID};
+	]]>	
+	</update>
+	<insert id="insBOpportunity_old" parameterType="java.util.Map">
+	<![CDATA[
+     	INSERT  INTO B_Opportunity
+	        ( Id ,
+	          ProjectID ,
+	          ClueID ,
+	          CustomerID ,
+	          CustomerName ,
+	          LastName ,
+	          FirstName ,
+	          CustomerMobile ,
+	          SaleUserID ,
+	          SaleUserName ,
+	          CustomerLevel ,
+	          OpportunitySource ,
+	          IntentProjectID ,
+	          IntentProjectName ,
+	          CognitiveChannel ,
+	          CognitiveChannelSub ,
+	          Commercial ,
+	          OrgID ,
+	          Creator ,
+	          CreateTime ,
+	          PropertyIntention ,
+	          status ,
+	          IsCustomerFirstEdit ,
+	          CustomerFirstEditTime ,
+	          AllotUserID ,
+	          AllotTime,
+	          SpareMobile,
+	          UseMobile
+	        )
+		VALUES  ( #{OpportunityID} ,
+	          #{ProjectID} ,
+	          #{ClueID} ,
+	          #{CustomerID} ,
+	          #{LastFirstName} ,
+	          #{LastName} ,
+	          #{FirstName} ,
+	          #{Mobile} ,
+	          #{SaleUserID} ,
+	          dbo.F_GetSaleUserName(#{SaleUserID}) ,
+	          '9CEA46E8-A3ED-409E-646C-F38A5EAC383E' ,
+	          #{OpportunitySource} ,
+	          #{IntentProjectID} ,
+	          dbo.F_GetProjectName(#{IntentProjectID}) ,
+	          #{CognitiveChannel} ,
+	          #{CognitiveChannelSub} ,
+	          '' ,
+	          #{OrgID} ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          '' ,
+	          #{Status} ,
+	          1 ,
+	          GETDATE() ,
+	          #{UserID} ,
+	          GETDATE(),
+	          '',
+	          #{Mobile}
+	        );
+	]]>	
+	</insert>
+	<insert id="insBOpportunityCustomerRel_old" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT  INTO B_OpportunityCustomerRel
+	        ( ID ,
+	          CustomerID ,
+	          OpportunityID ,
+	          Familiarity ,
+	          IsMain ,
+	          OrgID ,
+	          Creator ,
+	          CreateTime ,
+	          Editor ,
+	          EditeTime ,
+	          IsDel ,
+	          Status
+	        )
+		VALUES  ( NEWID() ,
+	          #{CustomerID} ,
+	          #{OpportunityID} ,
+	          NULL ,
+	          1 ,
+	          #{OrgID} ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          #{UserID} ,
+	          GETDATE() ,
+	          0 ,
+	          1
+	        );   
+	]]>	
+	</insert>
+</mapper>

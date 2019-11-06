@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper">
+
+    <select id="mGetMyCustomers_Select" resultType="java.util.HashMap">
+        select * from V_A_Broker_MyCustomers ${Where} ${Search} ${Order}
+    </select>
+    
+    <select id="selectClue" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
+		select ClueID, 
+				CustomerName, 
+				Mobile, 
+				IntentProjectName, 
+				ReportTime, 
+				InvalidType, 
+				Status, 
+				OppID, 
+				StatusText, 
+				ReportUserID, 
+				isvisit, 
+				dbo.F_DictName(CustomerRank) CustomerRank, 
+				ReportMethod 
+		from V_A_Broker_MyCustomers where ClueID = #{clueId}
+	</select>
+	
+	<select id="selectMyCustomer" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
+		select ClueID, 
+				CustomerName, 
+				Mobile, 
+				IntentProjectName, 
+				ReportTime, 
+				InvalidType, 
+				Status, 
+				OppID, 
+				StatusText, 
+				ReportUserID, 
+				isvisit, 
+				dbo.F_DictName(CustomerRank) CustomerRank, 
+				ReportMethod 
+				from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} 
+		<choose>
+		<when test="nameOrMobile!=null and nameOrMobile != ''">
+    		 and (Mobile=#{nameOrMobile} or CustomerName=#{nameOrMobile})
+  		</when>
+  		</choose>
+  		<choose>
+  		<when test="status != null and status != '' and status != '全部'">
+    		 and StatusText=#{status}
+  		</when>
+  		</choose>
+  		<choose>
+  		<when test="order == 'asc'">
+    		 order by ReportTime asc
+  		</when>
+  		<otherwise>
+  		     order by ReportTime desc
+  		</otherwise>
+  		</choose>
+	</select>
+
+    <select id="getWuXiao" resultType="int" parameterType="string">
+        select COUNT(1) from V_A_Broker_MyCustomers where ReportUserID=#{brokerID} and StatusText='无效'
+    </select>
+    
+    <select id="selectMyCustomerCount" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.customer.VABrokerMycustomers">
+		select ClueID, 
+				CustomerName, 
+				Mobile, 
+				IntentProjectName, 
+				ReportTime, 
+				InvalidType, 
+				Status, 
+				OppID, 
+				StatusText, 
+				ReportUserID, 
+				isvisit, 
+				dbo.F_DictName(CustomerRank) CustomerRank, 
+				ReportMethod 
+				from V_A_Broker_MyCustomers where ReportUserID=#{reportUserId} 
+			
+	</select>
+</mapper>

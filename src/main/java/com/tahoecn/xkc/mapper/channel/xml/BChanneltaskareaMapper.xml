@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.channel.BChanneltaskareaMapper">
+	
+	<!-- 任务地点列表 -->
+	<select id="mChannelTaskAreaList_Select" parameterType="String" resultType="java.util.Map">
+    	<![CDATA[
+    	SELECT  A.ID ,
+		        A.Name
+		FROM    dbo.B_ChannelTaskArea A
+		WHERE   A.IsDel = 0
+		        AND a.Status = 1
+		        AND Creator = #{UserID}
+		]]>		        
+    </select>
+    <!-- 新建任务地点 -->
+    <insert id="mChannelTaskArea_Insert" parameterType="java.util.Map" >
+		<![CDATA[
+		INSERT  INTO dbo.B_ChannelTaskArea
+		        ( ID ,
+		          Name ,
+		          Longitude ,
+		          Dimension ,
+		          Creator ,
+		          CreateTime ,
+		          IsDel ,
+		          Status
+		        )
+		VALUES  ( NEWID() ,
+		          #{Name} , 
+		          #{Longitude} , 
+		          #{Dimension} , 
+		          #{UserID} , 
+		          GETDATE() , 
+		          0 ,
+		          1  
+		        )
+    ]]>
+    </insert>
+    
+    <!-- 任务地点数量 -->
+    <select id="mChannelTaskAreaList_SelectAllCount" parameterType="java.util.Map" resultType="int" >
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM    dbo.B_ChannelTaskArea A
+		WHERE   A.IsDel = 0
+		        AND a.Status = 1
+		        AND Creator = #{UserID}    
+    ]]>
+	</select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SServiceMapper">
+
+
+    <select id="ServiceList_Select" resultType="java.util.HashMap">
+        SELECT
+        ID,
+        ServiceCode,
+        ServiceDesc,
+        Status,
+        ServiceFrequency
+        FROM dbo.S_Service WHERE IsDel=0 AND Status=1
+        ORDER BY CreateTime DESC
+    </select>
+
+    <select id="ServiceLogList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT TOP
+        1 ID ServiceLogID,
+        StartRunTime,
+        EndRunTime,
+        Status LogStatus,
+        ( SELECT COUNT ( 1 ) FROM dbo.S_ServiceLog WHERE ServiceID = #{id} AND Status = 2 ) COUNT
+        FROM
+        dbo.S_ServiceLog
+        WHERE
+        ServiceID = #{id}
+        ORDER BY
+        CreateTime DESC
+    </select>
+
+    <select id="ServiceLogListByService_Select" resultType="java.util.HashMap">
+        SELECT
+        StartRunTime,
+        EndRunTime,
+        FailureReasons
+        FROM dbo.S_ServiceLog WHERE ServiceID=#{serviceID}
+        <if test="status!=0">
+            AND Status=#{status}
+        </if>
+    </select>
+</mapper>

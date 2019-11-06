@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SMenusXkcMapper">
+
+
+    <select id="SystemMenusList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        ID ,
+        PID ,
+        MenuName ,
+        MenuSysName ,
+        Url ,
+        ImageUrl ,
+        IconClass ,
+        IsHomePage ,
+        IsShow ,
+        Levels ,
+        ListIndex ,
+        IsLast ,
+        [Status]
+        FROM  [S_Menus_xkc]
+        WHERE IsDel = 0
+        ORDER BY Levels,ListIndex
+    </select>
+
+    <insert id="SystemMenu_Insert" parameterType="com.tahoecn.xkc.model.sys.SMenus">
+        INSERT INTO dbo.S_Menus_xkc (
+        ID,
+        PID,
+        MenuName,
+        MenuSysName,
+        Url,
+        ImageUrl,
+        IconClass,
+        IsHomePage,
+        IsShow,
+        Levels,
+        ListIndex,
+        FullPath,
+        IsLast,
+        Creator,
+        CreateTime,
+        Editor,
+        EditTime,
+        Status,
+        IsDel
+        )
+        VALUES
+        (
+        #{id},
+        #{pid},
+        #{menuName},
+        #{menuSysName},
+        #{url},
+        #{imageUrl},
+        #{iconClass},
+        #{isHomePage},
+        #{isShow},
+        #{levels},
+        #{listIndex},
+        ISNULL(( SELECT FullPath FROM S_Menus_xkc WHERE ID = #{pid} ) + '/', '' ) + #{menuSysName},
+        #{isLast},
+        #{creator},
+        GETDATE(),
+        NULL,
+        NULL,
+        #{status},
+        0
+        )
+    </insert>
+
+    <select id="getOldPath" resultType="string" parameterType="string">
+        SELECT FullPath FROM S_Menus_xkc WHERE ID = #{ID}
+    </select>
+    <select id="getNewPath" parameterType="string" resultType="string">
+        SELECT FullPath FROM S_Menus_xkc WHERE ID = #{ID}
+    </select>
+
+    <select id="getResult" resultType="java.util.HashMap">
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_Menus_xkc  m
+        WHERE
+        m.IsDel = 0
+        AND m.[Status] = 1
+        AND FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;
+
+    </select>
+
+    <select id="getElseResult" resultType="java.util.HashMap" parameterType="string">
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_CommonJobs cj
+        INNER JOIN dbo.S_CommonJobsMenuRel cjmr ON cj.ID = cjmr.JobID
+        INNER JOIN dbo.S_Menus_xkc  m ON cjmr.MenuID = m.ID
+        WHERE
+        cj.IsDel = 0
+        AND cj.[Status] = 1
+        AND m.IsDel = 0
+        AND m.[Status] = 1
+        AND cj.ID =#{CommonJobID}
+        AND m.FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;;
+
+    </select>
+    <select id="getOtherResult" parameterType="string" resultType="java.util.HashMap">
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_JobsMenuRel jmr
+        INNER JOIN dbo.S_Menus_xkc  m ON jmr.MenuID = m.ID
+        WHERE
+        m.IsDel = 0
+        AND m.[Status] = 1
+        AND jmr.JobID=#{JobID}
+        AND jmr.MenuID  NOT IN(${ID})
+        AND m.FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;
+
+    </select>
+    <select id="UserFunctions" resultType="java.util.HashMap" parameterType="string">
+        SELECT DISTINCT
+        f.*
+        FROM
+        S_JobsUserRel jur
+        INNER JOIN S_Jobs j ON jur.JobID = j.ID
+        INNER JOIN S_Organization o ON j.JobOrgID = o.ID
+        INNER JOIN (
+        SELECT
+        JobID,
+        FuncID
+        FROM
+        S_JobsFunctionsRel UNION
+        SELECT
+        j.ID,
+        cjfr.FuncID
+        FROM
+        S_CommonJobsFunctionsRel cjfr
+        INNER JOIN S_Jobs j ON cjfr.JobID = j.CommonJobID
+        ) temp ON j.ID = temp.JobID
+        INNER JOIN dbo.S_Functions f ON temp.FuncID = f.ID
+        WHERE
+        j.IsDel = 0
+        AND j.[Status] = 1
+        AND o.IsDel = 0
+        AND o.[Status] = 1
+        AND f.IsDel = 0
+        AND f.[Status] = 1
+        AND jur.AccountID = #{UserID}
+        AND j.AuthCompanyID = #{AuthCompanyID}
+        AND j.ProductID = #{ProductID}
+    </select>
+
+    <select id="CommonJobFunctions" parameterType="string" resultType="java.util.HashMap">
+        <![CDATA[
+       SELECT DISTINCT
+			cjfr.FuncID IDS
+		FROM
+			dbo.S_CommonJobsFunctionsRel cjfr
+			INNER JOIN dbo.S_Functions f ON cjfr.FuncID = f.ID
+		WHERE
+			f.[Status] = 1
+			AND f.IsDel = 0
+			AND cjfr.JobID = #{JobID}
+      ]]>
+    </select>
+    <select id="getCommonJobFunctions" parameterType="string" resultType="java.util.HashMap">
+        SELECT DISTINCT
+        cjmr.MenuID  IDS
+        FROM
+        dbo.S_CommonJobsMenuRel cjmr
+        INNER JOIN dbo.S_Menus_xkc  m ON cjmr.MenuID = m.ID
+        WHERE
+        m.[Status] = 1
+        AND m.IsDel = 0
+        AND cjmr.JobID = #{JobID}
+    </select>
+
+    <select id="getAllMenuList" resultType="java.util.HashMap" >
+        SELECT DISTINCT
+        m.ID ,
+        m.PID ,
+        m.MenuName ,
+        m.MenuSysName ,
+        m.IsLast ,
+        m.Levels ,
+        m.ListIndex ,
+        '/' + m.FullPath
+        FROM
+        dbo.S_Menus_xkc  m
+        WHERE
+        m.IsDel = 0
+        AND m.[Status] = 1
+        AND m.FullPath NOT LIKE '%App菜单%'
+        ORDER BY m.Levels,m.ListIndex;
+    </select>
+</mapper>

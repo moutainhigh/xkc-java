@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.job.SJobsMapper">
+    <insert id="userJobInsert" >
+        INSERT INTO dbo.S_Jobs
+        ( ID ,
+          JobCode ,
+          JobName ,
+          JobDesc ,
+          JobPID ,
+          CommonJobID ,
+          JobOrgID ,
+          AuthCompanyID ,
+          ProductID ,
+          Creator ,
+          CreateTime ,
+          Editor ,
+          EditTime ,
+          Status ,
+          IsDel
+        )
+		SELECT NEWID(),Code,Name+''+(SELECT DictName FROM dbo.S_Dictionary WHERE ID=#{RoleID}),Name+''+(SELECT DictName FROM dbo.S_Dictionary WHERE ID=#{RoleID}),NULL,#{RoleID},id,'17BA4307-D05A-4A57-8729-FC1BD45302B6','9E0FADFF-31F0-4EC5-B35D-EE5BC5F4E622',#{UserID},GETDATE(),NULL,NULL,1,0 FROM dbo.B_Project WHERE id=#{ProjectID}
+    </insert>
+
+    <select id="SystemJobList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *
+        FROM dbo.S_Jobs
+        WHERE AuthCompanyID = #{AuthCompanyID}
+        AND ProductID = #{ProductID}
+        AND JobOrgID = #{OrgID}
+        AND IsDel = 0
+        and JobName like '%_2.0'
+        ORDER BY LEN(JobName),JobName
+    </select>
+
+    <select id="SystemUserList_Select" resultType="java.util.Map" parameterType="string">
+        SELECT
+        A.[ID],
+        A.[UserName],
+        A.[AccountType],
+        A.[EmployeeName],
+        A.[Gender],
+        A.[OfficeTel],
+        A.[EmployeeCode],
+        A.[OfficeMail],
+        A.[Mobile],
+        A.[PostCode],
+        A.[Address],
+        A.[Status],
+        O.FullPath
+        FROM
+        [S_Account] A
+        INNER JOIN S_JobsUserRel B ON A.ID = B.AccountID
+        INNER JOIN S_Jobs J ON J.ID= B.JobID
+        LEFT JOIN S_Organization O ON J.JobOrgID = O.ID
+        AND O.IsDel = 0
+        AND O.[Status] = 1
+        WHERE
+        B.JobID = #{JobID}
+        AND A.AuthCompanyID = #{AuthCompanyID}
+        AND A.IsDel = 0
+
+    </select>
+
+
+    <select id="SystemJobAllList_Select" parameterType="string" resultType="java.util.HashMap">
+        SELECT
+        *
+        FROM dbo.S_Jobs j
+        WHERE AuthCompanyID = #{AuthCompanyID}
+        AND ProductID = #{ProductID}
+        AND IsDel = 0
+        AND EXISTS(
+        SELECT
+        1
+        FROM
+        (
+        SELECT
+        ID
+        FROM dbo.S_Organization
+        WHERE ProductID = #{ProductID}
+        AND FullPath LIKE
+        (
+        SELECT
+        FullPath + '%'
+        FROM dbo.S_Organization
+        WHERE ID = #{OrgID}
+        )
+        ) t WHERE j.JobOrgID = t.ID
+        )
+        ORDER BY LEN(JobName),JobName
+    </select>
+
+    <select id="SystemOrgUserList_Select" resultType="com.tahoecn.xkc.model.sys.SAccount" parameterType="string">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        ID,
+        UserName,
+        EmployeeName,
+        Gender,
+        OfficeTel,
+        EmployeeCode,
+        OfficeMail,
+        Mobile,
+        Status,
+        IsDel
+        FROM
+        dbo.S_Account A
+        WHERE
+        ( #{UserName} = '' OR A.UserName LIKE  CONCAT('%',#{UserName},'%') )
+        AND ( #{EmployeeName} = '' OR A.EmployeeName LIKE  CONCAT('%',#{EmployeeName},'%'))
+        AND NOT EXISTS ( SELECT 1 FROM S_JobsUserRel jur WHERE jur.JobID = #{JobID} AND jur.AccountID = A.ID )
+        AND A.IsDel = 0
+        ) t
+    </select>
+
+    <insert id="SystemJobUserRel_Insert" >
+        INSERT INTO dbo.S_JobsUserRel ( ID, JobID, AccountID )
+        SELECT
+        NEWID(),
+        #{JobID},
+        a.ID
+        FROM
+        dbo.fn_split (#{UserIDS}, ',' ) t
+        INNER JOIN S_Account a ON t.AllItem = a.UserName
+        LEFT JOIN S_JobsUserRel r ON r.AccountID= a.ID
+        AND r.JobID = #{JobID}
+        WHERE
+        a.ID IS NOT NULL
+        AND r.ID IS NULL
+    </insert>
+
+    <select id="CommonJobList_Select" resultType="java.util.HashMap" parameterType="string">
+
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY CreateTime ) rowNum,
+        ID,
+        JobName,
+        JobDesc,
+        (
+        SELECT COUNT
+        ( 1 )
+        FROM
+        dbo.S_CommonJobsMenuRel a
+        INNER JOIN dbo.S_Menus_xkc b ON a.MenuID= b.ID
+        AND b.IsDel= 0
+        AND b.Creator= '99'
+        WHERE
+        a.IsDel= 0
+        AND a.JobID= s.ID
+        ) menuCount,
+        (
+        SELECT COUNT
+        ( 1 )
+        FROM
+        S_CommonJobsFunctionsRel c
+        INNER JOIN dbo.S_Functions d ON c.FuncID= d.ID
+        AND d.IsDel= 0
+        AND d.Creator= '99'
+        WHERE
+        c.IsDel= 0
+        AND c.JobID= s.ID
+        ) funCount
+        FROM
+        dbo.S_CommonJobs s
+        WHERE
+        Creator = '100'
+
+    </select>
+
+    <select id="getChildrenByPID" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE PID=#{pid}
+    </select>
+
+    <select id="MenuOrFunIDList_Select_Tree" parameterType="string" resultType="com.tahoecn.xkc.model.dto.SMenusXkcDto">
+        SELECT ID,MenuName,PID FROM S_Menus_xkc WHERE
+        FullPath LIKE 'App菜单%' and IsDel= 0
+    </select>
+
+    <select id="MenuOrFunIDList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        b.ID
+        FROM
+        dbo.S_CommonJobsMenuRel a
+        INNER JOIN dbo.S_Menus_xkc b ON a.MenuID= b.ID
+        AND b.IsDel= 0
+        AND b.Creator= '99'
+        WHERE
+        JobID = #{JobID}
+        AND a.IsDel= 0 UNION ALL
+        SELECT
+        b.ID
+        FROM
+        dbo.S_CommonJobsFunctionsRel a
+        INNER JOIN dbo.S_Functions b ON a.FuncID= b.ID
+        AND b.Creator= '99'
+        WHERE
+        JobID = #{JobID}
+        AND a.IsDel=0
+
+    </select>
+
+    <select id="getFuncChildren" resultType="java.util.HashMap" parameterType="string">
+
+        SELECT ID,  FuncName as MenuName  FROM S_Functions WHERE MenuID=#{menuID}
+
+    </select>
+
+    <select id="getFuncList" resultType="java.util.HashMap">
+        SELECT ID,  FuncName ,MenuID FROM S_Functions
+    </select>
+
+    <select id="getOrgPID" resultType="string" >
+        SELECT DISTINCT PID FROM S_Organization WHERE IsDel=0 AND Status=1
+    </select>
+
+    <select id="getChildrenByOrgID" resultType="string" parameterType="string">
+        SELECT ID FROM S_Organization WHERE IsDel=0 AND Status=1 AND PID=#{orgID}
+        UNION
+        SELECT ID FROM B_Project WHERE IsDel=0 AND Status=1 AND PID =#{orgID}
+    </select>
+</mapper>

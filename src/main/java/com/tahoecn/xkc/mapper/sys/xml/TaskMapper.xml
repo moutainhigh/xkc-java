@@ -1,0 +1,1369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.TaskMapper">
+
+	<!-- 更新任务状态 -->
+	<update id="TaskDetail_Update">
+		UPDATE dbo.S_Task SET EditTime = GETDATE() , EndTime = GETDATE() , EndRemark = #{EndRemark} , TaskResult = #{TaskResult} WHERE ID = #{TaskID}
+	</update>
+
+	<!-- 插入应收数据 -->
+	<select id="TaskGetinDetail_Insert" statementType="CALLABLE">
+	<![CDATA[
+     	{call dbo.P_SyncMYGetin_Insert}
+	]]>
+	</select>
+
+	<!-- 插入发票数据 -->
+	<select id="TaskVoucherDetail_Insert" statementType="CALLABLE">
+	<![CDATA[
+     	{call dbo.P_SyncMYVoucher_Insert}
+	]]>
+	</select>
+
+	<!-- 插入月度计划数据 -->
+	<select id="TaskMonthYsDetail_Insert" statementType="CALLABLE">
+	<![CDATA[
+     	{call dbo.P_SyncMYMonthYs_Insert}
+	]]>
+	</select>
+
+	<!-- 插入销售数据 -->
+	<insert id="TaskOC2SaleDetail_Insert">
+		INSERT INTO C_MYOC2Sale 
+		SELECT A.*, GETDATE() CreateTime, 0 [Version], 0 IsHandle, NULL HandleTime
+		FROM MY.dotnet_erp25.dbo.s_OC2Sale A 
+		WHERE NOT EXISTS( SELECT OC2SaleGUID FROM C_MYOC2Sale B WHERE A.OC2SaleGUID = B.OC2SaleGUID);
+	</insert>
+	
+	<!-- 获取同步客户列表 -->
+	<select id="TaskSyncCustomerList_Select" resultType="java.util.HashMap">
+		SELECT TOP 400 ID , TaskType , TaskPara FROM S_Task WHERE EndTime IS NULL AND( TaskType = 'SyncCustomer' OR TaskType = 'SyncOpportunity' OR TaskType = 'SyncCustomerOpportunity') ORDER BY StartTime , CreateTime
+	</select>
+	
+	<!-- 机会客户ID信息 -->
+	<select id="TaskOpportunityCustomerID_Select" resultType="java.lang.String">
+		SELECT CustomerID FROM B_Opportunity WHERE ID = #{OpportunityID}
+	</select>
+	
+	<!-- 查询本地客户信息 -->
+	<select id="LocalCustomerDetail_Select" resultType="java.util.HashMap">
+		SELECT
+			A.ID CstGUID,
+			A.NAME CstName,
+			A.CardID ,
+			A.Mobile MobileTel,
+			ISNULL( D1.DictName , '个人' ) CstType,
+			ISNULL( D2.DictName , '男' ) Gender,
+			D3.DictName CardType,
+			A.CreateTime CreatedOn,
+			C.EmployeeName CreatedBy,
+			A.EditeTime ModifyOn,
+			D.EmployeeName ModifyBy,
+			A.LastName SurName,
+			A.FirstName GivenName,
+			ISNULL( A.IsOwner , 0 ) IsYZ,
+			A.Creator CreatedByGUID,
+			A.FirstName LastName,
+			A.LastName FirstName,
+			U.Birthday BirthDate,
+			U.Address ,
+			A.Editor ModifyByGUID,
+			C.UserName CreatorUserName,
+			D.UserName EditorUserName 
+		FROM
+			B_Customer A
+			LEFT JOIN S_Dictionary D1 ON D1.ID = A.CustomerType
+			LEFT JOIN S_Dictionary D2 ON D2.ID = A.Gender
+			LEFT JOIN S_Dictionary D3 ON D3.ID = A.CardType
+			LEFT JOIN S_Account C ON C.ID = A.Creator
+			LEFT JOIN S_Account D ON D.ID = A.Editor
+			LEFT JOIN B_CustomerAttribute U ON A.ID = U.CustomerID 
+		WHERE A.ID = #{CustomerID}
+	</select>
+	
+	<insert id="MYUserDetail_Insert" parameterType="java.util.Map">
+	<![CDATA[
+     	IF #{CreatedByGUID} <> '' 
+		AND #{CreatedByGUID} <> '99' 
+		AND NOT EXISTS ( SELECT TOP 1 UserGUID FROM dbo.myUser WHERE UserGUID = #{CreatedByGUID} ) BEGIN
+			INSERT dbo.myUser (
+				UserGUID,
+				UserCode,
+				UserName,
+				BUGUID,
+				CreatedOn,
+				CreatedBy,
+				IsDisabeld,
+				Comments,
+				Password,
+				IsAdmin,
+				IsSaler,
+				IsPersonCost,
+				IsZjPlanUser,
+				IsAdvanceUser,
+				_DataSource,
+				IsUserChangePWD,
+				IsLocked,
+				UserKind,
+				IsMobileUser 
+			)
+			VALUES
+				(
+					#{CreatedByGUID},
+					#{CreatorUserName},
+					#{CreatedBy},
+					'11B11DB4-E907-4F1F-8835-B9DAAB6E1F23',
+					GETDATE(),
+					'4230BC6E-69E6-46A9-A39E-B929A06A84E8',
+					1,
+					'YDYX初始化导入',
+					'9C615D9C00427C0B868B1BA7E1B1E702',
+					0,
+					0,
+					0,
+					0,
+					1,
+					'YDYX',
+					0,
+					0,
+					0,
+					0 
+				) 
+			END IF #{ModifyByGUID} <> '' 
+			AND #{ModifyByGUID} <> '99' 
+			AND NOT EXISTS ( SELECT TOP 1 UserGUID FROM dbo.myUser WHERE UserGUID = #{ModifyByGUID} ) BEGIN
+				INSERT dbo.myUser (
+					UserGUID,
+					UserCode,
+					UserName,
+					BUGUID,
+					CreatedOn,
+					CreatedBy,
+					IsDisabeld,
+					Comments,
+					Password,
+					IsAdmin,
+					IsSaler,
+					IsPersonCost,
+					IsZjPlanUser,
+					IsAdvanceUser,
+					_DataSource,
+					IsUserChangePWD,
+					IsLocked,
+					UserKind,
+					IsMobileUser 
+				)
+			VALUES
+				(
+					#{ModifyByGUID},
+					#{EditorUserName},
+					#{ModifyBy},
+					'11B11DB4-E907-4F1F-8835-B9DAAB6E1F23',
+					GETDATE(),
+					'4230BC6E-69E6-46A9-A39E-B929A06A84E8',
+					1,
+					'YDYX初始化导入',
+					'9C615D9C00427C0B868B1BA7E1B1E702',
+					0,
+					0,
+					0,
+					0,
+					1,
+					'YDYX',
+					0,
+					0,
+					0,
+					0 
+				) 
+		END
+	]]>
+	</insert>
+
+	<insert id="MYCustomerDetail_Insert" parameterType="java.util.Map">
+	<![CDATA[
+     	IF NOT EXISTS ( SELECT TOP 1 TradeGUID FROM s_Trade A WHERE A.TradeGUID IN ( SELECT TradeGUID FROM s_Trade2Cst WHERE CstGUID = #{CstGUID} ) ) 
+		AND NOT EXISTS ( SELECT TOP 1 BookingGUID FROM s_Booking A WHERE A.BookingGUID IN ( SELECT BookingGUID FROM dbo.s_Booking2Cst WHERE CstGUID = #{CstGUID} ) ) BEGIN
+			IF
+				NOT EXISTS ( SELECT TOP 1 CstGUID FROM p_Customer WHERE CstGUID = #{CstGUID} ) BEGIN
+					INSERT INTO p_Customer (
+						CstGUID,
+						CstName,
+						CardID,
+						MobileTel,
+						CstType,
+						Gender,
+						BirthDate,
+						Address,
+						CardType,
+						CreatedOn,
+						CreatedBy,
+						ModifyOn,
+						ModifyBy,
+						SurName,
+						GivenName,
+						IsYZ,
+						CreatedByGUID,
+						FirstName,
+						LastName,
+						_DataSource 
+					)
+				VALUES
+					(
+						#{CstGUID},
+						#{CstName},
+						#{CardID},
+						#{MobileTel},
+						#{CstType},
+						#{Gender},
+					CASE
+							LEN( #{BirthDate} ) 
+							WHEN 0 THEN
+							NULL ELSE #{BirthDate} 
+						END,
+						#{Address},
+						#{CardType},
+						CONVERT ( DATETIME, #{CreatedOn}, 121 ),
+						#{CreatedBy},
+						CONVERT ( DATETIME, #{ModifyOn}, 121 ),
+						#{ModifyBy},
+						#{SurName},
+						#{GivenName},
+						#{IsYZ},
+					CASE
+							
+							WHEN #{CreatedByGUID} = '99' THEN
+						NULL 
+							WHEN #{CreatedByGUID} = '' THEN
+							NULL ELSE #{CreatedByGUID} 
+						END,
+						#{FirstName},
+						#{LastName},
+						'YDYX' 
+					) INSERT INTO p_CstAttribute ( CstGUID )
+				VALUES
+					( #{CstGUID} ) 
+				END ELSE BEGIN
+					UPDATE p_Customer 
+					SET CstName = #{CstName},
+					CardID = #{CardID},
+					MobileTel = #{MobileTel},
+					CstType = #{CstType},
+					Gender = #{Gender},
+					BirthDate = ( CASE LEN( #{BirthDate} ) WHEN 0 THEN NULL ELSE #{BirthDate} END ),
+					Address = #{Address},
+					CardType = #{CardType},
+					ModifyOn = CONVERT ( DATETIME, #{ModifyOn}, 121 ),
+					ModifyBy = #{ModifyBy},
+					SurName = #{SurName},
+					GivenName = #{GivenName},
+					IsYZ = #{IsYZ},
+					FirstName = #{FirstName},
+					LastName = #{LastName} 
+				WHERE
+					CstGUID = #{CstGUID} 
+			END 
+		END
+	]]>
+	</insert>
+	
+	<!-- 查询本地机会信息 -->
+	<select id="LocalOpportunityDetail_Select" resultType="java.util.HashMap">
+		SELECT A.CustomerID CstGUID , A.ID OppGUID , C.BUGUID , A.IntentProjectID ProjGUID , CASE F.FollwUpWay WHEN 'E30825AA-B894-4A5F-AF55-24CAC34C8F1F' THEN '来访' WHEN 'A79A1057-D4DC-497C-8C81-8F93E422C819' THEN '来电' ELSE '其他' END OppSource , dbo.F_DictName(B.OpportunitySource) CognizeAve , CASE A.Status WHEN 1 THEN '激活' WHEN 2 THEN '丢失' WHEN 3 THEN '关闭' ELSE '激活' END Status , A.CreateTime CreatedOn , dbo.F_GetSaleUserName(A.Creator) CreatedBy , dbo.F_GetSaleUserName(A.Editor) ModifyBy , A.EditeTime ModifyOn , B.SaleUserID UserGUID , dbo.F_DictName(B.CustomerLevel) Probability , B.TheLatestFollowUpDate ZJJHDate , B.VisitsCount LFCount , B.TheFirstVisitDate FisrtLFDate , D.NextFollowUpDate NextGjDate , CASE A.SalesStatus WHEN 1 THEN '问询' WHEN 2 THEN '看房' WHEN 3 THEN '看房' WHEN 4 THEN '认购' WHEN 5 THEN '签约' WHEN 6 THEN '丢失' WHEN 8 THEN '预约' ELSE '看房' END OppStatus , A.Editor ModifyUserGUID , D.FollowUpContent ZjGjNr FROM B_CustomerAttach A JOIN B_Opportunity B ON A.OpportunityID = B.ID LEFT JOIN B_Project C ON A.IntentProjectID = C.ID LEFT JOIN( SELECT OpportunityID , FollowUpContent , NextFollowUpDate , ROW_NUMBER() OVER( PARTITION BY OpportunityID ORDER BY createtime DESC) num FROM B_CustomerFollowUp WHERE OpportunityID = #{OpportunityID}) D ON A.OpportunityID = D.OpportunityID AND D.num = 1 LEFT JOIN( SELECT OpportunityID , FollwUpWay , ROW_NUMBER() OVER( PARTITION BY OpportunityID ORDER BY createtime) num FROM B_CustomerFollowUp WHERE OpportunityID = #{OpportunityID}) F ON A.OpportunityID = F.OpportunityID AND F.num = 1 WHERE A.OpportunityID = #{OpportunityID}
+	</select>
+	
+	<!-- 查询本地机会客户信息 -->
+	<select id="LocalOpportunityCustomerList_Select" resultType="java.util.HashMap">
+		SELECT NEWID() Opp2CstGUID , B.ID OppGUID , A.CustomerID CstGUID , row_number() OVER( PARTITION BY B.ID ORDER BY IsMain DESC , A.CreateTime) CstNum , A.* FROM B_OpportunityCustomerRel A JOIN B_CustomerAttach B ON A.OpportunityID = B.OpportunityID WHERE B.OpportunityID = #{OpportunityID}
+	</select>
+	
+	<!-- 添加明源机会信息 -->
+	<insert id="MYOpportunityDetail_Insert">
+	<![CDATA[
+     	IF NOT EXISTS ( SELECT OppGUID FROM s_Opportunity WHERE OppGUID = #{OppGUID} ) BEGIN
+			INSERT INTO s_Opportunity (
+				OppGUID,
+				BUGUID,
+				ProjGUID,
+				OppSource,
+				CognizeAve,
+				Status,
+				CreatedOn,
+				CreatedBy,
+				ModifyOn,
+				ModifyBy,
+				UserGUID,
+				Probability,
+				ZJJHDate,
+				LFCount,
+				FisrtLFDate,
+				NextGjDate,
+				OppStatus,
+				ModifyUserGUID,
+				ZjGjNr,
+				_DataSource 
+			)
+			VALUES
+				(
+					#{OppGUID},
+					#{BUGUID},
+					#{ProjGUID},
+					#{OppSource},
+					#{CognizeAve},
+					#{Status},
+					CONVERT ( DATETIME, #{CreatedOn}, 121 ),
+					#{CreatedBy},
+					CONVERT ( DATETIME, #{ModifyOn}, 121 ),
+					#{ModifyBy},
+				CASE
+						
+						WHEN #{UserGUID} = '99' THEN
+					NULL 
+						WHEN #{UserGUID} = '' THEN
+						NULL ELSE #{UserGUID} 
+					END,
+					#{Probability},
+				CASE
+						LEN( #{ZJJHDate} ) 
+						WHEN 0 THEN
+						NULL ELSE #{ZJJHDate} 
+					END,
+					#{LFCount},
+				CASE
+						LEN( #{FisrtLFDate} ) 
+						WHEN 0 THEN
+						NULL ELSE #{FisrtLFDate} 
+					END,
+				CASE
+						LEN( #{NextGjDate} ) 
+						WHEN 0 THEN
+						NULL ELSE #{NextGjDate} 
+						END,
+					#{OppStatus},
+				CASE
+						
+						WHEN #{ModifyUserGUID} = '99' THEN
+					NULL 
+						WHEN #{ModifyUserGUID} = '' THEN
+						NULL ELSE #{ModifyUserGUID} 
+					END,
+					#{ZjGjNr},
+					'YDYX' 
+				) 
+			END ELSE BEGIN
+			IF
+				NOT EXISTS ( SELECT TOP 1 TradeGUID FROM s_Trade A WHERE A.TradeGUID IN ( SELECT TradeGUID FROM s_Trade2Cst WHERE CstGUID = #{CstGUID} ) ) 
+				AND NOT EXISTS ( SELECT TOP 1 BookingGUID FROM s_Booking A WHERE A.BookingGUID IN ( SELECT BookingGUID FROM dbo.s_Booking2Cst WHERE CstGUID = #{CstGUID} ) ) BEGIN
+					UPDATE s_Opportunity 
+					SET BUGUID = #{BUGUID},
+					ProjGUID = #{ProjGUID},
+					Status = #{Status},
+					ModifyOn = CONVERT ( DATETIME, #{ModifyOn}, 121 ),
+					ModifyBy = #{ModifyBy},
+					UserGUID =
+				CASE
+						
+						WHEN #{UserGUID} = '99' THEN
+					NULL 
+						WHEN #{UserGUID} = '' THEN
+						NULL ELSE #{UserGUID} 
+					END,
+					Probability = #{Probability},
+					ZJJHDate = ( CASE LEN( #{ZJJHDate} ) WHEN 0 THEN NULL ELSE #{ZJJHDate} END ),
+					LFCount = #{LFCount},
+					FisrtLFDate = ( CASE LEN( #{FisrtLFDate} ) WHEN 0 THEN NULL ELSE #{FisrtLFDate} END ),
+					NextGjDate = ( CASE LEN( #{NextGjDate} ) WHEN 0 THEN NULL ELSE #{NextGjDate} END ),
+					OppStatus = #{OppStatus},
+					ModifyUserGUID =
+				CASE
+						
+						WHEN #{ModifyUserGUID} = '99' THEN
+					NULL 
+						WHEN #{ModifyUserGUID} = '' THEN
+						NULL ELSE #{ModifyUserGUID} 
+					END,
+					ZjGjNr = #{ZjGjNr} 
+				WHERE
+					OppGUID = #{OppGUID} 
+				END;
+			
+			END IF NOT EXISTS ( SELECT CstAttachGUID FROM p_CstAttach WHERE CstGUID = #{CstGUID} AND ProjGUID = #{ProjGUID} ) BEGIN
+			INSERT INTO p_CstAttach ( BUGUID, CstGUID, ProjGUID, UserGUID, CstAttachGUID, CreatedOn, _DataSource )
+			VALUES
+				(
+					#{BUGUID},
+					#{CstGUID},
+					#{ProjGUID},
+				CASE
+						
+						WHEN #{UserGUID} = '99' THEN
+					NULL 
+						WHEN #{UserGUID} = '' THEN
+						NULL ELSE #{UserGUID} 
+					END,
+					NEWID(),
+					CONVERT ( DATETIME, #{CreatedOn}, 121 ),
+					'YDYX' 
+				) 
+		END
+	]]>
+	</insert>
+	
+	<!-- 删除机会客户信息 -->
+	<delete id="MyOpportunityCustomerDetail_Delete">
+		DELETE FROM dbo.[s_Opp2Cst ] WHERE OppGUID = #{OppGUID} AND _DataSource = 'YDYX'
+	</delete>
+	
+	<!-- 添加机会客户信息 -->
+	<insert id="MyOpportunityCustomerDetail_Insert">
+		INSERT INTO dbo.[s_Opp2Cst ]( Opp2CstGUID, OppGUID, CstGUID, CstNum, _DataSource) VALUES( #{Opp2CstGUID}, #{OppGUID}, #{CstGUID}, #{CstNum}, 'YDYX')
+	</insert>
+	
+	<!-- 获取明源项目列表 -->
+	<select id="MYProjectList_Select" resultType="java.util.HashMap">
+		SELECT ProjGUID , BUGUID , ProjCode , ProjName , BgnSaleDate , EndSaleDate , CONVERT (varchar (2000),ProjInfo) , PlanUrl , CwztGUID , BuildBeginDate , BuildEndDate , ProjStatus , RcntQueryNum , IsPDAQuery , ProjAddress , ContactPhone , MobilePhone , Email , OccupyArea , BuildArea , ProjectAddress , DevelopUnitName , BuildUnitName , InspectUnitName , CONVERT (varchar (2000),ProjIntro) , CONVERT (varchar (2000),ProjProgress) , PublishTime , Publisher , ProjShortName , ParentCode , LEVEL , IfEnd , ProjShortCode , InnerArea , SaleArea , SaleNum , SalePrice , SaleAmount , ApplySys , TeamProjGUID , BeginDate , EndDate , CbCwztGUID , ScheduleMode , IsGT , PlotName , TentativeName , SpreadName , OnceName , Investment , SaleEarning , HouseNum , BoroughStation , ZsName , ByStages , ZuTuan , DevProduct , LeaseArea , LayoutArea , JHomeDate , BuildDensity , Rjl , CarNum , SaleGain , IRR , InvestmentBack , CONVERT (varchar (2000),TargetEffigy) , ApproveState , LastRecensionDate , ApproveDate , ApproveR , LastRecensionR , ConstructArea , Principal , RecensionCause , CostApproveState , LandApproveState , StartApproveState , CheckApproveState , HistoryCostApproveState , ImgName , ProjAreacode , VoucherTitle , BaseArea , Lhl , PotocolNoFlowID , EmpolderMode , ProjForShort , ProjRegion , ProjCwztMode , CBProjGUID , XSProjGUID , CBProjName , XSProjName , CBProjCode , XSProjCode , xpos , ypos , IsQtyCheck , JcFlag , ProjCardId , LhQyRate , CreateDate , InvestBuName , LandGetDate , BlockCoding , LandPrice , CONVERT (varchar (2000),PlotAddress) , ProjUseArea , RedlineUseArea , LandUseYear , LandUseProp , ParkingRequ , TheHeight , BuildingNum , PublicSettRequ , TheGroundPark , UndergroundPark , LandPlanLetArea , PlanningArea , CreatedByGUID , ZsArea , IsQltCheck , isBhzcJzwy , PrecaseApproveState , MbcbVer , IsSyProj , ProjType , ProjYsUrl , ProjTzUrl , is_Yjkfxm , GhQhAdjustRemarks , IsIncludeHotel , XmType , IsExistsYjMd , IsYxysqy , YsQytzyy , _DataSource , ProjectType FROM p_Project(NOLOCK)  
+	</select>
+	
+	<!-- 清空本地明源项目数据 -->
+	<delete id="TaskMYProjectList_Delete">
+		DELETE FROM C_MYProject
+	</delete>
+	
+	<!-- 插入本地明源项目数据 -->
+	<insert id="TaskMYProjectDetail_Insert">
+		INSERT INTO C_MYProject( ProjGUID, BUGUID, ProjCode, ProjName, BgnSaleDate, EndSaleDate, ProjInfo, PlanUrl, CwztGUID, BuildBeginDate, BuildEndDate, ProjStatus, RcntQueryNum, IsPDAQuery, ProjAddress, ContactPhone, MobilePhone, Email, OccupyArea, BuildArea, ProjectAddress, DevelopUnitName, BuildUnitName, InspectUnitName, ProjIntro, ProjProgress, PublishTime, Publisher, ProjShortName, ParentCode, LEVEL, IfEnd, ProjShortCode, InnerArea, SaleArea, SaleNum, SalePrice, SaleAmount, ApplySys, TeamProjGUID, BeginDate, EndDate, CbCwztGUID, ScheduleMode, IsGT, PlotName, TentativeName, SpreadName, OnceName, Investment, SaleEarning, HouseNum, BoroughStation, ZsName, ByStages, ZuTuan, DevProduct, LeaseArea, LayoutArea, JHomeDate, BuildDensity, Rjl, CarNum, SaleGain, IRR, InvestmentBack, TargetEffigy, ApproveState, LastRecensionDate, ApproveDate, ApproveR, LastRecensionR, ConstructArea, Principal, RecensionCause, CostApproveState, LandApproveState, StartApproveState, CheckApproveState, HistoryCostApproveState, ImgName, ProjAreacode, VoucherTitle, BaseArea, Lhl, PotocolNoFlowID, EmpolderMode, ProjForShort, ProjRegion, ProjCwztMode, CBProjGUID, XSProjGUID, CBProjName, XSProjName, CBProjCode, XSProjCode, xpos, ypos, IsQtyCheck, JcFlag, ProjCardId, LhQyRate, CreateDate, InvestBuName, LandGetDate, BlockCoding, LandPrice, PlotAddress, ProjUseArea, RedlineUseArea, LandUseYear, LandUseProp, ParkingRequ, TheHeight, BuildingNum, PublicSettRequ, TheGroundPark, UndergroundPark, LandPlanLetArea, PlanningArea, CreatedByGUID, ZsArea, IsQltCheck, isBhzcJzwy, PrecaseApproveState, MbcbVer, IsSyProj, ProjType, ProjYsUrl, ProjTzUrl, is_Yjkfxm, GhQhAdjustRemarks, IsIncludeHotel, XmType, IsExistsYjMd, IsYxysqy, YsQytzyy, _DataSource, ProjectType, CreateTime)
+		VALUES
+			(#{ProjGUID},
+			#{BUGUID},
+			#{ProjCode},
+			#{ProjName},
+			CASE
+				LEN( #{BgnSaleDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{BgnSaleDate} 
+			END,
+			CASE
+				LEN( #{EndSaleDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{EndSaleDate} 
+			END,
+			#{ProjInfo,jdbcType=CLOB},
+			#{PlanUrl},
+			#{CwztGUID},
+			CASE
+				LEN( #{BuildBeginDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{BuildBeginDate} 
+			END,
+			CASE
+				LEN( #{BuildEndDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{BuildEndDate} 
+			END,
+			#{ProjStatus},
+			#{RcntQueryNum},
+			#{IsPDAQuery},
+			#{ProjAddress},
+			#{ContactPhone},
+			#{MobilePhone},
+			#{Email},
+			#{OccupyArea},
+			#{BuildArea},
+			#{ProjectAddress},
+			#{DevelopUnitName},
+			#{BuildUnitName},
+			#{InspectUnitName},
+			#{ProjIntro,jdbcType=CLOB},
+			#{ProjProgress,jdbcType=CLOB},
+			CASE
+				LEN( #{PublishTime} ) 
+				WHEN 0 THEN
+				NULL ELSE #{PublishTime} 
+			END,
+			#{Publisher},
+			#{ProjShortName},
+			#{ParentCode},
+			#{LEVEL},
+			#{IfEnd},
+			#{ProjShortCode},
+			#{InnerArea},
+			#{SaleArea},
+			#{SaleNum},
+			#{SalePrice},
+			#{SaleAmount},
+			#{ApplySys},
+			#{TeamProjGUID},
+			CASE
+				LEN( #{BeginDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{BeginDate} 
+			END,
+			CASE
+				LEN( #{EndDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{EndDate} 
+			END,
+			#{CbCwztGUID},
+			#{ScheduleMode},
+			#{IsGT},
+			#{PlotName},
+			#{TentativeName},
+			#{SpreadName},
+			#{OnceName},
+			#{Investment},
+			#{SaleEarning},
+			#{HouseNum},
+			#{BoroughStation},
+			#{ZsName},
+			#{ByStages},
+			#{ZuTuan},
+			#{DevProduct},
+			#{LeaseArea},
+			#{LayoutArea},
+			CASE
+				LEN( #{JHomeDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{JHomeDate} 
+			END,
+			#{BuildDensity},
+			#{Rjl},
+			#{CarNum},
+			#{SaleGain},
+			#{IRR},
+			#{InvestmentBack},
+			#{TargetEffigy,jdbcType=CLOB},
+			#{ApproveState},
+			CASE
+				LEN( #{LastRecensionDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{LastRecensionDate} 
+			END,
+			CASE
+				LEN( #{ApproveDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ApproveDate} 
+			END,
+			#{ApproveR},
+			#{LastRecensionR},
+			#{ConstructArea},
+			#{Principal},
+			#{RecensionCause},
+			#{CostApproveState},
+			#{LandApproveState},
+			#{StartApproveState},
+			#{CheckApproveState},
+			#{HistoryCostApproveState},
+			#{ImgName},
+			#{ProjAreacode},
+			#{VoucherTitle},
+			#{BaseArea},
+			#{Lhl},
+			#{PotocolNoFlowID},
+			#{EmpolderMode},
+			#{ProjForShort},
+			#{ProjRegion},
+			#{ProjCwztMode},
+			#{CBProjGUID},
+			#{XSProjGUID},
+			#{CBProjName},
+			#{XSProjName},
+			#{CBProjCode},
+			#{XSProjCode},
+			#{xpos},
+			#{ypos},
+			#{IsQtyCheck},
+			#{JcFlag},
+			#{ProjCardId},
+			#{LhQyRate},
+			CASE
+				LEN( #{CreateDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{CreateDate} 
+			END,
+			#{InvestBuName},
+			CASE
+				LEN( #{LandGetDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{LandGetDate} 
+			END,
+			#{BlockCoding},
+			#{LandPrice},
+			#{PlotAddress,jdbcType=CLOB},
+			#{ProjUseArea},
+			#{RedlineUseArea},
+			#{LandUseYear},
+			#{LandUseProp},
+			#{ParkingRequ},
+			#{TheHeight},
+			#{BuildingNum},
+			#{PublicSettRequ},
+			#{TheGroundPark},
+			#{UndergroundPark},
+			#{LandPlanLetArea},
+			#{PlanningArea},
+			#{CreatedByGUID},
+			#{ZsArea},
+			#{IsQltCheck},
+			#{isBhzcJzwy},
+			#{PrecaseApproveState},
+			#{MbcbVer},
+			#{IsSyProj},
+			#{ProjType},
+			#{ProjYsUrl},
+			#{ProjTzUrl},
+			#{is_Yjkfxm},
+			#{GhQhAdjustRemarks},
+			#{IsIncludeHotel},
+			#{XmType},
+			#{IsExistsYjMd},
+			#{IsYxysqy},
+			#{YsQytzyy},
+			#{_DataSource},
+			#{ProjectType},
+			GETDATE())
+	</insert>
+	
+	<!-- 插入项目数据 -->
+	<update id="TaskProjectDetail_Insert">
+	<![CDATA[
+		UPDATE A SET A. CODE = B.ProjCode , A.ShortName = B.ProjShortName , A. NAME = B.ProjName , A.Editor = '99' , A.EditTime = GETDATE() FROM dbo.B_Project A JOIN dbo.C_MYProject B ON A.ID = B.ProjGUID WHERE A. CODE <> B.ProjCode OR A.ShortName <> B.ProjShortName OR A. NAME <> B.ProjName;
+		INSERT INTO B_Project( ID , PID , PCode , CODE , ShortName , NAME , Category , LEVEL , BUGUID , Creator , CreateTime , Editor , EditTime , IsDel , Status) SELECT A.ProjGUID ID , B.ProjGUID PID , B.ProjCode PCode , A.ProjCode CODE , A.ProjShortName ShortName , A.ProjName NAME , CASE WHEN A. LEVEL = 2 THEN 1 WHEN A. LEVEL = 3 THEN 2 ELSE 99 END AS Category , CASE WHEN A. LEVEL = 2 THEN 1 WHEN A. LEVEL = 3 THEN 2 ELSE 99 END AS LEVEL , A.BUGUID , '99' Creator , GETDATE() CreateTime , NULL Editor , NULL EditTime , 0 IsDel , 1 Status FROM C_MYProject A LEFT JOIN C_MYProject B ON A.TeamProjGUID = B.ProjGUID WHERE A.IsHandle = 0 AND NOT EXISTS( SELECT P.ID FROM dbo.B_Project P WHERE P.ID = A.ProjGUID);
+		UPDATE C_MYProject SET IsHandle = 1 , HandleTime = GETDATE() WHERE IsHandle = 0;
+		INSERT INTO H_C_MYProject( ProjGUID , BUGUID , ProjCode , ProjName , BgnSaleDate , EndSaleDate , ProjInfo , PlanUrl , CwztGUID , BuildBeginDate , BuildEndDate , ProjStatus , RcntQueryNum , IsPDAQuery , ProjAddress , ContactPhone , MobilePhone , Email , OccupyArea , BuildArea , ProjectAddress , DevelopUnitName , BuildUnitName , InspectUnitName , ProjIntro , ProjProgress , PublishTime , Publisher , ProjShortName , ParentCode , LEVEL , IfEnd , ProjShortCode , InnerArea , SaleArea , SaleNum , SalePrice , SaleAmount , ApplySys , TeamProjGUID , BeginDate , EndDate , CbCwztGUID , ScheduleMode , IsGT , PlotName , TentativeName , SpreadName , OnceName , Investment , SaleEarning , HouseNum , BoroughStation , ZsName , ByStages , ZuTuan , DevProduct , LeaseArea , LayoutArea , JHomeDate , BuildDensity , Rjl , CarNum , SaleGain , IRR , InvestmentBack , TargetEffigy , ApproveState , LastRecensionDate , ApproveDate , ApproveR , LastRecensionR , ConstructArea , Principal , RecensionCause , CostApproveState , LandApproveState , StartApproveState , CheckApproveState , HistoryCostApproveState , ImgName , ProjAreacode , VoucherTitle , BaseArea , Lhl , PotocolNoFlowID , EmpolderMode , ProjForShort , ProjRegion , ProjCwztMode , CBProjGUID , XSProjGUID , CBProjName , XSProjName , CBProjCode , XSProjCode , xpos , ypos , IsQtyCheck , JcFlag , ProjCardId , LhQyRate , CreateDate , InvestBuName , LandGetDate , BlockCoding , LandPrice , PlotAddress , ProjUseArea , RedlineUseArea , LandUseYear , LandUseProp , ParkingRequ , TheHeight , BuildingNum , PublicSettRequ , TheGroundPark , UndergroundPark , LandPlanLetArea , PlanningArea , CreatedByGUID , ZsArea , IsQltCheck , isBhzcJzwy , PrecaseApproveState , MbcbVer , IsSyProj , ProjType , ProjYsUrl , ProjTzUrl , is_Yjkfxm , GhQhAdjustRemarks , IsIncludeHotel , XmType , IsExistsYjMd , IsYxysqy , YsQytzyy , _DataSource , ProjectType , CreateTime) SELECT ProjGUID , BUGUID , ProjCode , ProjName , BgnSaleDate , EndSaleDate , ProjInfo , PlanUrl , CwztGUID , BuildBeginDate , BuildEndDate , ProjStatus , RcntQueryNum , IsPDAQuery , ProjAddress , ContactPhone , MobilePhone , Email , OccupyArea , BuildArea , ProjectAddress , DevelopUnitName , BuildUnitName , InspectUnitName , ProjIntro , ProjProgress , PublishTime , Publisher , ProjShortName , ParentCode , LEVEL , IfEnd , ProjShortCode , InnerArea , SaleArea , SaleNum , SalePrice , SaleAmount , ApplySys , TeamProjGUID , BeginDate , EndDate , CbCwztGUID , ScheduleMode , IsGT , PlotName , TentativeName , SpreadName , OnceName , Investment , SaleEarning , HouseNum , BoroughStation , ZsName , ByStages , ZuTuan , DevProduct , LeaseArea , LayoutArea , JHomeDate , BuildDensity , Rjl , CarNum , SaleGain , IRR , InvestmentBack , TargetEffigy , ApproveState , LastRecensionDate , ApproveDate , ApproveR , LastRecensionR , ConstructArea , Principal , RecensionCause , CostApproveState , LandApproveState , StartApproveState , CheckApproveState , HistoryCostApproveState , ImgName , ProjAreacode , VoucherTitle , BaseArea , Lhl , PotocolNoFlowID , EmpolderMode , ProjForShort , ProjRegion , ProjCwztMode , CBProjGUID , XSProjGUID , CBProjName , XSProjName , CBProjCode , XSProjCode , xpos , ypos , IsQtyCheck , JcFlag , ProjCardId , LhQyRate , CreateDate , InvestBuName , LandGetDate , BlockCoding , LandPrice , PlotAddress , ProjUseArea , RedlineUseArea , LandUseYear , LandUseProp , ParkingRequ , TheHeight , BuildingNum , PublicSettRequ , TheGroundPark , UndergroundPark , LandPlanLetArea , PlanningArea , CreatedByGUID , ZsArea , IsQltCheck , isBhzcJzwy , PrecaseApproveState , MbcbVer , IsSyProj , ProjType , ProjYsUrl , ProjTzUrl , is_Yjkfxm , GhQhAdjustRemarks , IsIncludeHotel , XmType , IsExistsYjMd , IsYxysqy , YsQytzyy , _DataSource , ProjectType , CreateTime FROM C_MYProject WHERE IsHandle = 1;
+		DELETE FROM C_MYProject WHERE IsHandle = 1;
+	]]>
+	</update>
+	
+	<!-- 获取本地明源机会最后数据时间戳 -->
+	<select id="TaskMYOpportunityDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM H_C_MYOpportunity;
+	</select>
+	
+	<!-- 获取明源机会列表 -->
+	<select id="MYOpportunityList_Select" resultType="java.util.HashMap">
+		SELECT DISTINCT TOP 500 A.OppGUID , A.BUGUID , A.ProjGUID , A.LeadGUID , REPLACE(A.Topic , '''' , '') Topic , A.OppSource , A.Process , A.EstRevenue , A.EstCloseDate , A.Rating , A. Status , A.StatusReason , A.CreatedOn , A.CreatedBy , A.ClosedOn , A.Competitor , A.CjTotal , REPLACE( CONVERT(varchar , A.Description) , '''' , '') Description , A.RoomGUID , A.ModifyBy , A.ModifyOn , A.UserGUID , A.Jzfx , A.CognizeAve , A.FailType , A.Probability , A.ProductType , A.KPPC , A.ZJLFDate , A.ZJJHDate , A.LFCount , A.isFirstLF , A.isFirstLD , A.OPPID , A.AccountID , A.Sslp , A.FisrtLFDate , A.ZhgzDate , A.ywy , A.ImportDate , A.ImportPc , A.IsNewRecieve , A.lfTelCount , A.lfSpotCount , A.DjDate , A.MtZl , A.GfYs , A.GfYt , A.XqTs , A.XmGz1 , A.XmGz2 , A.XmGz3 , A.NextGjDate , A.WorkAreaDl , A.WorkAreaXl , A.HomeAreaDl , A.HomeAreaXl , A.NextGjNr , A.OppGjGUID , A.GzQs , A.GzJg , A.FpDate , A.OldSaler , A.Fpr , A.DataSource , A.FpCs , A.Gjxw , A.OppStatus , A.ModifyUserGUID , A.ZjGjNr , A._DataSource , A.LdzLfDate , A.IsYkCreate , A.IsErpHandle , C.UserCode , C.UserName , B.CstGUID , REPLACE(D.CstName , '''' , '') CstName , REPLACE(D.FirstName , '''' , '') FirstName , REPLACE(D.LastName , '''' , '') LastName , D.MobileTel , E.GJCount , E.DFCount , E.ZJGJDate , E.SFDate , B.CstNum , CONVERT(BIGINT , A.scrm_timestamp_data) scrm_timestamp_data , #{LastTime} Version FROM s_Opportunity(NOLOCK) A LEFT JOIN s_Opp2Cst(NOLOCK) B ON A.OppGUID = B.OppGUID LEFT JOIN p_Customer(NOLOCK) D ON B.CstGUID = D.CstGUID LEFT JOIN myuser(NOLOCK) C ON A.UserGUID = C.UserGUID LEFT JOIN( SELECT OppGUID , COUNT(1) GJCount , SUM( CASE Status WHEN ' 看房' THEN 1 WHEN '看房' THEN 1 WHEN '签约' THEN 1 WHEN '认购' THEN 1 WHEN '预留' THEN 1 WHEN '预约' THEN 1 ELSE 0 END) DFCount , MAX(GJDate) ZJGJDate , MIN( CASE Status WHEN ' 看房' THEN GjDate WHEN '看房' THEN GjDate ELSE NULL END) SFDate FROM s_Opp2Gj(NOLOCK) GROUP BY OppGUID) E ON A.OppGUID = E.OppGUID WHERE CONVERT(BIGINT , A.scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , A.scrm_timestamp_data)
+	</select>
+	
+	<!-- 插入本地明源机会信息 -->
+	<insert id="TaskMYOpportunityDetail_Insert">
+		INSERT INTO C_MYOpportunity( OppGUID, BUGUID, ProjGUID, LeadGUID, Topic, OppSource, Process, EstRevenue, EstCloseDate, Rating, Status, StatusReason, CreatedOn, CreatedBy, ClosedOn, Competitor, CjTotal, Description, RoomGUID, ModifyBy, ModifyOn, UserGUID, Jzfx, CognizeAve, FailType, Probability, ProductType, KPPC, ZJLFDate, ZJJHDate, LFCount, isFirstLF, isFirstLD, OPPID, AccountID, Sslp, FisrtLFDate, ZhgzDate, ywy, ImportDate, ImportPc, IsNewRecieve, lfTelCount, lfSpotCount, DjDate, MtZl, GfYs, GfYt, XqTs, XmGz1, XmGz2, XmGz3, NextGjDate, WorkAreaDl, WorkAreaXl, HomeAreaDl, HomeAreaXl, NextGjNr, OppGjGUID, GzQs, GzJg, FpDate, OldSaler, Fpr, DataSource, FpCs, Gjxw, OppStatus, ModifyUserGUID, ZjGjNr, _DataSource, LdzLfDate, IsYkCreate, IsErpHandle, UserCode, UserName, CstGUID, CstName, FirstName, LastName, MobileTel, GJCount, DFCount, ZJGJDate, SFDate, CstNum, scrm_timestamp_data, CreateTime, Version)
+		VALUES 
+			(#{OppGUID},
+			#{BUGUID},
+			#{ProjGUID},
+			#{LeadGUID},
+			#{Topic},
+			#{OppSource},
+			#{Process},
+			#{EstRevenue},
+			CASE
+				LEN( #{EstCloseDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{EstCloseDate} 
+			END,
+			#{Rating},
+			#{Status},
+			#{StatusReason},
+			CASE
+				LEN( #{CreatedOn} ) 
+				WHEN 0 THEN
+				NULL ELSE #{CreatedOn} 
+			END,
+			#{CreatedBy},
+			CASE
+				LEN( #{ClosedOn} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ClosedOn} 
+			END,
+			#{Competitor},
+			#{CjTotal},
+			#{Description,jdbcType=CLOB},
+			#{RoomGUID},
+			#{ModifyBy},
+			CASE
+				LEN( #{ModifyOn} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ModifyOn} 
+			END,
+			#{UserGUID},
+			#{Jzfx},
+			#{CognizeAve},
+			#{FailType},
+			#{Probability},
+			#{ProductType},
+			#{KPPC},
+			CASE
+				LEN( #{ZJLFDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ZJLFDate} 
+			END,
+			CASE
+				LEN( #{ZJJHDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ZJJHDate} 
+			END,
+			#{LFCount},
+			#{isFirstLF},
+			#{isFirstLD},
+			#{OPPID},
+			#{AccountID},
+			#{Sslp},
+			CASE
+				LEN( #{FisrtLFDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{FisrtLFDate} 
+			END,
+			CASE
+				LEN( #{ZhgzDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ZhgzDate} 
+			END,
+			#{ywy},
+			CASE
+				LEN( #{ImportDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ImportDate} 
+			END,
+			#{ImportPc},
+			#{IsNewRecieve},
+			#{lfTelCount},
+			#{lfSpotCount},
+			CASE
+				LEN( #{DjDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{DjDate} 
+			END,
+			#{MtZl},
+			#{GfYs},
+			#{GfYt},
+			#{XqTs},
+			#{XmGz1},
+			#{XmGz2},
+			#{XmGz3},
+			CASE
+				LEN( #{NextGjDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{NextGjDate} 
+			END,
+			#{WorkAreaDl},
+			#{WorkAreaXl},
+			#{HomeAreaDl},
+			#{HomeAreaXl},
+			#{NextGjNr},
+			#{OppGjGUID},
+			#{GzQs},
+			#{GzJg},
+			CASE
+				LEN( #{FpDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{FpDate} 
+			END,
+			#{OldSaler},
+			#{Fpr},
+			#{DataSource},
+			#{FpCs},
+			#{Gjxw},
+			#{OppStatus},
+			#{ModifyUserGUID},
+			#{ZjGjNr},
+			#{_DataSource},
+			CASE
+				LEN( #{LdzLfDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{LdzLfDate} 
+			END,
+			#{IsYkCreate},
+			#{IsErpHandle},
+			#{UserCode},
+			#{UserName},
+			#{CstGUID},
+			#{CstName},
+			#{FirstName},
+			#{LastName},
+			#{MobileTel},
+			#{GJCount},
+			#{DFCount},
+			CASE
+				LEN( #{ZJGJDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{ZJGJDate} 
+			END,
+			CASE
+				LEN( #{SFDate} ) 
+				WHEN 0 THEN
+				NULL ELSE #{SFDate} 
+			END,
+			#{CstNum},
+			#{scrm_timestamp_data},
+			GETDATE(),
+			#{Version})
+	</insert>
+	
+	<!-- 插入机会数据 -->
+	<!-- 此句未使用 UPDATE A SET A.SalesStatus = CASE B.OppStatus WHEN '问询' THEN 1 WHEN '看房' THEN 2 WHEN ' 看房' THEN 2 WHEN '认购' THEN 4 WHEN '签约' THEN 5 WHEN '丢失' THEN 6 WHEN '预约' THEN 8 ELSE 2 END , A.Editor = '99' , A.EditeTime = ISNULL(B.ModifyOn , GETDATE()) , A. Status = CASE B. Status WHEN '激活' THEN 1 WHEN '丢失' THEN 2 WHEN '关闭' THEN 3 ELSE 1 END FROM B_CustomerAttach A INNER JOIN C_MYOpportunity B ON A.ID = B.OppGUID AND B.IsHandle = 0;-->	
+	<update id="TaskOpportunityDetail_Insert">
+	<![CDATA[
+ 		UPDATE A SET A.SalesStatus = CASE B.OppStatus WHEN '问询' THEN 1 WHEN '看房' THEN 2 WHEN ' 看房' THEN 2 WHEN '认购' THEN 4 WHEN '签约' THEN 5 WHEN '丢失' THEN A.SalesStatus WHEN '预约' THEN 8 ELSE 2 END , A.Editor = '99' , A.EditeTime = ISNULL(B.ModifyOn , GETDATE()) , A. Status = CASE B. Status WHEN '激活' THEN 1 WHEN '丢失' THEN 2 WHEN '关闭' THEN 3 ELSE 1 END FROM B_CustomerAttach A INNER JOIN C_MYOpportunity B ON A.ID = B.OppGUID AND B.IsHandle = 0;
+		UPDATE A SET A.Editor = '99' , A.EditeTime = ISNULL(B.EditeTime , GETDATE()) , A. Status =( CASE WHEN A. Status = 3 AND B. Status = 2 THEN 3 WHEN A. Status = 2 AND B. Status = 1 THEN 2 WHEN A. Status = 3 AND B. Status < 3 THEN 3 WHEN A. Status = 6 THEN 6 ELSE B. Status END) FROM B_Opportunity A INNER JOIN( SELECT * FROM( SELECT AT .OpportunityID ID , AT .SalesStatus Status , A.ModifyOn EditeTime , ROW_NUMBER() OVER( PARTITION BY AT .OpportunityID ORDER BY CASE AT .SalesStatus WHEN 4 THEN 99 WHEN 5 THEN 100 WHEN 8 THEN 98 WHEN 3 THEN 97 WHEN 2 THEN 96 ELSE 1 END DESC) rownum FROM B_CustomerAttach D INNER JOIN C_MYOpportunity A ON D.ID = A.OppGUID AND A.IsHandle = 0 INNER JOIN B_CustomerAttach AT ON AT .OpportunityID = D.OpportunityID) T WHERE T.rownum = 1) B ON A.ID = B.ID;
+		UPDATE S_Message SET IsApprove = 1 , Editor = '99' , EditTime = GETDATE() WHERE BizType = 'Opportunity' AND IsApprove = 0 AND BizID IN( SELECT AT .OpportunityID FROM B_CustomerAttach AT INNER JOIN C_MYOpportunity A ON AT .ID = A.OppGUID AND A.IsHandle = 0 INNER JOIN B_Opportunity H ON AT .OpportunityID = H.ID WHERE AT .SalesStatus = 4 OR AT .SalesStatus = 5 OR AT .SalesStatus = 6);
+		UPDATE C_MYOpportunity SET IsHandle = 1 , HandleTime = GETDATE() WHERE IsHandle = 0;
+		INSERT INTO H_C_MYOpportunity( OppGUID , BUGUID , ProjGUID , LeadGUID , Topic , OppSource , Process , EstRevenue , EstCloseDate , Rating , Status , StatusReason , CreatedOn , CreatedBy , ClosedOn , Competitor , CjTotal , Description , RoomGUID , ModifyBy , ModifyOn , UserGUID , Jzfx , CognizeAve , FailType , Probability , ProductType , KPPC , ZJLFDate , ZJJHDate , LFCount , isFirstLF , isFirstLD , OPPID , AccountID , Sslp , FisrtLFDate , ZhgzDate , ywy , ImportDate , ImportPc , IsNewRecieve , lfTelCount , lfSpotCount , DjDate , MtZl , GfYs , GfYt , XqTs , XmGz1 , XmGz2 , XmGz3 , NextGjDate , WorkAreaDl , WorkAreaXl , HomeAreaDl , HomeAreaXl , NextGjNr , OppGjGUID , GzQs , GzJg , FpDate , OldSaler , Fpr , DataSource , FpCs , Gjxw , OppStatus , ModifyUserGUID , ZjGjNr , _DataSource , LdzLfDate , IsYkCreate , IsErpHandle , UserCode , UserName , CstGUID , CstName , FirstName , LastName , MobileTel , GJCount , DFCount , ZJGJDate , SFDate , CstNum , scrm_timestamp_data , CreateTime , Version) SELECT OppGUID , BUGUID , ProjGUID , LeadGUID , Topic , OppSource , Process , EstRevenue , EstCloseDate , Rating , Status , StatusReason , CreatedOn , CreatedBy , ClosedOn , Competitor , CjTotal , Description , RoomGUID , ModifyBy , ModifyOn , UserGUID , Jzfx , CognizeAve , FailType , Probability , ProductType , KPPC , ZJLFDate , ZJJHDate , LFCount , isFirstLF , isFirstLD , OPPID , AccountID , Sslp , FisrtLFDate , ZhgzDate , ywy , ImportDate , ImportPc , IsNewRecieve , lfTelCount , lfSpotCount , DjDate , MtZl , GfYs , GfYt , XqTs , XmGz1 , XmGz2 , XmGz3 , NextGjDate , WorkAreaDl , WorkAreaXl , HomeAreaDl , HomeAreaXl , NextGjNr , OppGjGUID , GzQs , GzJg , FpDate , OldSaler , Fpr , DataSource , FpCs , Gjxw , OppStatus , ModifyUserGUID , ZjGjNr , _DataSource , LdzLfDate , IsYkCreate , IsErpHandle , UserCode , UserName , CstGUID , CstName , FirstName , LastName , MobileTel , GJCount , DFCount , ZJGJDate , SFDate , CstNum , scrm_timestamp_data , CreateTime , Version FROM C_MYOpportunity WHERE IsHandle = 1;
+		DELETE FROM C_MYOpportunity WHERE IsHandle = 1;
+    ]]>
+	</update>
+	
+	<!-- 插入销售变更数据 -->
+	<insert id="TaskSaleModiApplyDetail_Insert">
+		INSERT INTO C_MYSaleModiApply SELECT
+			A.SaleModiApplyGUID,
+			A.SaleGUID,
+			A.SaleType,
+			A.ApplyType,
+			A.ReasonSort,
+			A.Reason,
+			A.ApplyBy,
+			A.ApplyDate,
+			A.BUGUID,
+			A.ProjGUID,
+			A.ExecBy,
+			A.ExecDate,
+			A.RoomGUID,
+			A.CstName,
+			A.CstGUID,
+			A.ApplyByGUID,
+			A.ApplyByStationGUID,
+			A.IsApproved,
+			A.ApproveBy,
+			A.ApproveDate,
+			A.Opinion,
+			A.RoomInfo,
+			A.NewRoomGUID,
+			A.NewRoomInfo,
+			A.NewObligee,
+			A.NewObligeeGUID,
+			A.Ywy,
+			A.IsQdHfSqb,
+			A.IsQdTfSqb,
+			A.IsQdBgSqb,
+			A.Pay,
+			A.FellBackAmount,
+			A.HandCharge,
+			A.JjArea,
+			A.CjPrice,
+			A.Cjtotal,
+			A.QsDate,
+			A.NewJjArea,
+			A.NewPrice,
+			A.NewTotal,
+			A.IsCstBg,
+			A.IsPayformBg,
+			A.IsYhBg,
+			A.PayformName,
+			A.NewPayFormName,
+			A.DiscntValue,
+			A.NewDiscntValue,
+			A.DiscntRemark,
+			A.NewDiscntRemark,
+			A.NewCjPrice,
+			A.NewCjtotal,
+			A.Ajtotal,
+			A.NewAjtotal,
+			A.AjYear,
+			A.NewAjYear,
+			A.ApproveStatus,
+			A.NewRoomTotal,
+			A.NewBldCjPrice,
+			A.NewTnCjPrice,
+			A.NewRmbHtTotal,
+			A.NewEarnest,
+			A.NewAjBank,
+			A.NewGjjTotal,
+			A.NewGjjBank,
+			A.NewGjjYear,
+			A.BldCjPrice,
+			A.TnCjPrice,
+			A.RoomTotal,
+			A.Earnest,
+			A.AjBank,
+			A.GjjTotal,
+			A.GjjBank,
+			A.GjjYear,
+			A.RmbHtTotal,
+			A.Refundment,
+			A.IsCjtotalBg,
+			A.DisCountPlanGUID,
+			A.IsExcutive,
+			A.IsAfreshAdju,
+			A._DataSource,
+			A.YsFellBackAmount,
+			A.ReliefReason,
+			A.HaveCertificate,
+			GETDATE() CreateTime,
+			0 [Version],
+			0 IsHandle,
+			NULL HandleTime 
+		FROM
+			MY.dotnet_erp25.dbo.s_SaleModiApply A 
+		WHERE
+			NOT EXISTS ( SELECT SaleModiApplyGUID FROM C_MYSaleModiApply B WHERE A.SaleModiApplyGUID = B.SaleModiApplyGUID );
+	</insert>
+	<insert id="TaskSaleModiApplyDetail_Insert1">
+		INSERT INTO C_MYSaleModiApply SELECT A.*, GETDATE() CreateTime, 0 [Version], 0 IsHandle, NULL HandleTime FROM MY.dotnet_erp25.dbo.s_SaleModiApply A WHERE NOT EXISTS( SELECT SaleModiApplyGUID FROM C_MYSaleModiApply B WHERE A.SaleModiApplyGUID = B.SaleModiApplyGUID);
+	</insert>
+	
+	<!-- 获取本地明源房间最后数据时间戳 -->
+	<select id="TaskMYRoomDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM H_C_MYRoom
+	</select>
+	
+	<!-- 获取明源房间列表 -->
+	<select id="MYRoomList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT TOP 500 RoomGUID , BUGUID , ProjGUID , BldGUID , MainRoomGUID , Unit , Floor , [No], Room , RoomCode , HuXing , [Status] , IsVirtualRoom , BldArea , TnArea , BlRhDate , RHBLZT , YFBZ , RoomMemo , XPos , YPos , ZxBz , Price , TnPrice , Total , ZxPrice , ZxTotal , IsTempletRoom , Locker , LockTime , TfDate , DjArea , IsAreaModify , VirtualStatus , RHDate , JFRQ , JFMemo , XkRow , XkCol , AreaStatus , West , AreaChangingGUID , ImportDate , ChooseRoom , REPLACE(CstName , '''' , '') CstName , CstGUIDList , REPLACE(ChooseRoomCstName , '''' , '') ChooseRoomCstName , ChooseRoomDate , Jbr , isAnnexe , Sight , RoomStru , AbsolutelyFloor , StatusChgGUID , SaleRentable , RentPrice , CalcRentMode , RentUnit , Bz , RentStatus , ContinueRentStatus , NextRentStatus , RentName , RentGUIDList , RentStatusChgGUID , RentLocker , RentLockTime , RentAmount , BProductTypeCode , YsBldArea , YsTnArea , ScBldArea , ScTnArea , YardArea , TopGardenArea , LoftArea , BasementArea , CarArea , Earnest , ThisImportGuid , ThisImportBldCode , ThisImportBldName , YsFtArea , ScFtArea , GetinStatus , SpLock , ParkCnt , SaleCtrlLock , ChooseRoomCstGUID , LtArea , BacupWorkFlowGUID , XkLocker , XKLockReason , RoomKpDate , RoomZxqk , PriceApprove , IsSingleModi , IsAfreshAdju , RebuildArea , BalconyArea , GardenArea , Shtick , Collocate , ExpiryDate , IsYsAreaChgPriceSp , PriceLayoutExecDate , YsAreaXcScale , PreYsBldArea , PriceLayoutStatus , IsKpAreaImport , TkArea , BaseTotal , _DataSource , gxtime , isghfj , ForceEarnest , YjQdYsDate , SjQdYsDate , GhFjGUID , RoomMph , DisCountPlanGUID , JgDelayStatus , YSZNum , YSZAmountBank , YSZMainUser , YSZSubUser , FaceTotal , PcBaseTotal , ThfSpLock , RecordPrice , TotalDj , NoTaxAmount , TaxAmount , TaxRate , NoTaxAmountDj , TaxAmountDj , PreparedNo , SgPermitsNo , TaxServiceDirectory , TaxServiceDirectoryCode , CONVERT(BIGINT , scrm_timestamp_data) scrm_timestamp_data , #{LastTime} Version FROM p_Room(NOLOCK) WHERE CONVERT(BIGINT , scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , scrm_timestamp_data)
+	]]>
+	</select>
+	
+	<!-- 插入本地明源房间信息 -->
+	<insert id="TaskMYRoomDetail_Insert">
+		INSERT INTO C_MYRoom( RoomGUID, BUGUID, ProjGUID, BldGUID, MainRoomGUID, Unit, Floor, [No], Room, RoomCode, HuXing, Status, IsVirtualRoom, BldArea, TnArea, BlRhDate, RHBLZT, YFBZ, RoomMemo, XPos, YPos, ZxBz, Price, TnPrice, Total, ZxPrice, ZxTotal, IsTempletRoom, Locker, LockTime, TfDate, DjArea, IsAreaModify, VirtualStatus, RHDate, JFRQ, JFMemo, XkRow, XkCol, AreaStatus, West, AreaChangingGUID, ImportDate, ChooseRoom, CstName, CstGUIDList, ChooseRoomCstName, ChooseRoomDate, Jbr, isAnnexe, Sight, RoomStru, AbsolutelyFloor, StatusChgGUID, SaleRentable, RentPrice, CalcRentMode, RentUnit, Bz, RentStatus, ContinueRentStatus, NextRentStatus, RentName, RentGUIDList, RentStatusChgGUID, RentLocker, RentLockTime, RentAmount, BProductTypeCode, YsBldArea, YsTnArea, ScBldArea, ScTnArea, YardArea, TopGardenArea, LoftArea, BasementArea, CarArea, Earnest, ThisImportGuid, ThisImportBldCode, ThisImportBldName, YsFtArea, ScFtArea, GetinStatus, SpLock, ParkCnt, SaleCtrlLock, ChooseRoomCstGUID, LtArea, BacupWorkFlowGUID, XkLocker, XKLockReason, RoomKpDate, RoomZxqk, PriceApprove, IsSingleModi, IsAfreshAdju, RebuildArea, BalconyArea, GardenArea, Shtick, Collocate, ExpiryDate, IsYsAreaChgPriceSp, PriceLayoutExecDate, YsAreaXcScale, PreYsBldArea, PriceLayoutStatus, IsKpAreaImport, TkArea, BaseTotal, _DataSource, gxtime, isghfj, ForceEarnest, YjQdYsDate, SjQdYsDate, GhFjGUID, RoomMph, DisCountPlanGUID, JgDelayStatus, YSZNum, YSZAmountBank, YSZMainUser, YSZSubUser, FaceTotal, PcBaseTotal, ThfSpLock, RecordPrice, TotalDj, NoTaxAmount, TaxAmount, TaxRate, NoTaxAmountDj, TaxAmountDj, PreparedNo, SgPermitsNo, TaxServiceDirectory, TaxServiceDirectoryCode, scrm_timestamp_data, CreateTime, Version)
+		VALUES( #{RoomGUID}, #{BUGUID}, #{ProjGUID}, #{BldGUID}, #{MainRoomGUID}, #{Unit}, #{Floor}, #{No}, #{Room}, #{RoomCode}, #{HuXing}, #{Status}, #{IsVirtualRoom}, #{BldArea}, #{TnArea}, CASE LEN(#{BlRhDate}) WHEN 0 THEN NULL ELSE #{BlRhDate} END, #{RHBLZT}, #{YFBZ}, #{RoomMemo,jdbcType=CLOB}, #{XPos}, #{YPos}, #{ZxBz}, #{Price}, #{TnPrice}, #{Total}, #{ZxPrice}, #{ZxTotal}, #{IsTempletRoom}, #{Locker}, CASE LEN(#{LockTime}) WHEN 0 THEN NULL ELSE #{LockTime} END, CASE LEN(#{TfDate}) WHEN 0 THEN NULL ELSE #{TfDate} END, #{DjArea}, #{IsAreaModify}, #{VirtualStatus}, CASE LEN(#{RHDate}) WHEN 0 THEN NULL ELSE #{RHDate} END, CASE LEN(#{JFRQ}) WHEN 0 THEN NULL ELSE #{JFRQ} END, #{JFMemo,jdbcType=CLOB}, #{XkRow}, #{XkCol}, #{AreaStatus}, #{West}, #{AreaChangingGUID}, CASE LEN(#{ImportDate}) WHEN 0 THEN NULL ELSE #{ImportDate} END, #{ChooseRoom}, #{CstName}, #{CstGUIDList}, #{ChooseRoomCstName}, CASE LEN(#{ChooseRoomDate}) WHEN 0 THEN NULL ELSE #{ChooseRoomDate} END, #{Jbr}, #{isAnnexe}, #{Sight}, #{RoomStru}, #{AbsolutelyFloor}, #{StatusChgGUID}, #{SaleRentable}, #{RentPrice}, #{CalcRentMode}, #{RentUnit}, #{Bz}, #{RentStatus}, #{ContinueRentStatus}, #{NextRentStatus}, #{RentName}, #{RentGUIDList}, #{RentStatusChgGUID}, #{RentLocker}, CASE LEN(#{RentLockTime}) WHEN 0 THEN NULL ELSE #{RentLockTime} END, #{RentAmount}, #{BProductTypeCode}, #{YsBldArea}, #{YsTnArea}, #{ScBldArea}, #{ScTnArea}, #{YardArea}, #{TopGardenArea}, #{LoftArea}, #{BasementArea}, #{CarArea}, #{Earnest}, #{ThisImportGuid}, #{ThisImportBldCode}, #{ThisImportBldName}, #{YsFtArea}, #{ScFtArea}, #{GetinStatus}, #{SpLock}, #{ParkCnt}, CASE LEN(#{SaleCtrlLock}) WHEN 0 THEN NULL ELSE #{SaleCtrlLock} END, #{ChooseRoomCstGUID}, #{LtArea}, #{BacupWorkFlowGUID}, #{XkLocker}, #{XKLockReason}, CASE LEN(#{RoomKpDate}) WHEN 0 THEN NULL ELSE #{RoomKpDate} END, #{RoomZxqk}, #{PriceApprove}, #{IsSingleModi}, #{IsAfreshAdju}, #{RebuildArea}, #{BalconyArea}, #{GardenArea}, #{Shtick,jdbcType=CLOB}, #{Collocate,jdbcType=CLOB}, CASE LEN(#{ExpiryDate}) WHEN 0 THEN NULL ELSE #{ExpiryDate} END, #{IsYsAreaChgPriceSp}, CASE LEN(#{PriceLayoutExecDate}) WHEN 0 THEN NULL ELSE #{PriceLayoutExecDate} END, #{YsAreaXcScale}, #{PreYsBldArea}, #{PriceLayoutStatus}, #{IsKpAreaImport}, #{TkArea}, #{BaseTotal}, #{_DataSource}, CASE LEN(#{gxtime}) WHEN 0 THEN NULL ELSE #{gxtime} END, #{isghfj}, #{ForceEarnest}, CASE LEN(#{YjQdYsDate}) WHEN 0 THEN NULL ELSE #{YjQdYsDate} END, CASE LEN(#{SjQdYsDate}) WHEN 0 THEN NULL ELSE #{SjQdYsDate} END, #{GhFjGUID}, #{RoomMph}, #{DisCountPlanGUID}, #{JgDelayStatus}, #{YSZNum}, #{YSZAmountBank}, #{YSZMainUser}, #{YSZSubUser}, #{FaceTotal}, #{PcBaseTotal}, #{ThfSpLock}, #{RecordPrice}, #{TotalDj}, #{NoTaxAmount}, #{TaxAmount}, #{TaxRate}, #{NoTaxAmountDj}, #{TaxAmountDj}, #{PreparedNo}, #{SgPermitsNo}, #{TaxServiceDirectory}, #{TaxServiceDirectoryCode}, #{scrm_timestamp_data}, GETDATE(), #{Version})
+	</insert>
+	
+	<!-- 插入房间数据 -->
+	<update id="TaskRoomDetail_Insert">
+	<![CDATA[
+		UPDATE A SET A.ID = B.ID , A.ProjectID = B.ProjectID , A.BuildingID = B.BuildingID , A.Unit = B.Unit , A.AbsolutelyFloor = B.AbsolutelyFloor , A.Floor = B.Floor , A.[No] = B.[No] , A.Room = B.Room , A.RoomCode = B.RoomCode , A.HuXing = B.HuXing , A.SaleStatus = B.SaleStatus , A.BldArea = B.BldArea , A.TnArea = B.TnArea , A.YsBldArea = B.YsBldArea , A.YsTnArea = B.YsTnArea , A.ScBldArea = B.ScBldArea , A.ScTnArea = B.ScTnArea , A.AreaStatus = B.AreaStatus , A.DjArea = B.DjArea , A.Price = B.Price , A.TnPrice = B.TnPrice , A.Total = B.Total , A.RoomStru = B.RoomStru , A.West = B.West , A.BProductTypeCode = B.BProductTypeCode , A.SpLock = B.SpLock , A.Editor = '99' , A.EditTime = GETDATE() FROM dbo.B_Room A JOIN( SELECT DISTINCT A.RoomGUID ID , A.ProjGUID ProjectID , A.BldGUID BuildingID , A.Unit , A.AbsolutelyFloor , A.Floor , A.[No], A.Room , A.RoomCode , A.HuXing , A.Status SaleStatus , A.BldArea , A.TnArea , A.YsBldArea , A.YsTnArea , A.ScBldArea , A.ScTnArea , A.AreaStatus , A.DjArea , A.Price , A.TnPrice , A.Total , A.RoomStru , A.West , A.BProductTypeCode , A.SpLock FROM dbo.C_MYRoom A WHERE A.IsHandle = 0) B ON A.ID = B.ID;
+		INSERT INTO B_Room( ID , ProjectID , BuildingID , Unit , AbsolutelyFloor , Floor , [No] , Room , RoomCode , HuXing , SaleStatus , BldArea , TnArea , YsBldArea , YsTnArea , ScBldArea , ScTnArea , AreaStatus , DjArea , Price , TnPrice , Total , RoomStru , West , BProductTypeCode , SpLock , Creator , CreateTime , Editor , EditTime , IsDel , Status) SELECT DISTINCT A.RoomGUID ID , A.ProjGUID ProjectID , A.BldGUID BuildingID , A.Unit , A.AbsolutelyFloor , A.Floor , A.[No], A.Room , A.RoomCode , A.HuXing , A.Status SaleStatus , A.BldArea , A.TnArea , A.YsBldArea , A.YsTnArea , A.ScBldArea , A.ScTnArea , A.AreaStatus , A.DjArea , A.Price , A.TnPrice , A.Total , A.RoomStru , A.West , A.BProductTypeCode , A.SpLock , '99' Creator , GETDATE() CreateTime , NULL Editor , NULL EditTime , 0 IsDel , 1 Sataus FROM C_MYRoom A WHERE A.IsHandle = 0 AND NOT EXISTS( SELECT B.ID FROM dbo.B_Room B WHERE A.RoomGUID = B.ID);
+		UPDATE C_MYRoom SET IsHandle = 1, HandleTime = getdate() WHERE IsHandle = 0;
+		INSERT INTO H_C_MYRoom( RoomGUID, BUGUID, ProjGUID, BldGUID, MainRoomGUID, Unit, Floor, [No], Room, RoomCode, HuXing, Status, IsVirtualRoom, BldArea, TnArea, BlRhDate, RHBLZT, YFBZ, RoomMemo, XPos, YPos, ZxBz, Price, TnPrice, Total, ZxPrice, ZxTotal, IsTempletRoom, Locker, LockTime, TfDate, DjArea, IsAreaModify, VirtualStatus, RHDate, JFRQ, JFMemo, XkRow, XkCol, AreaStatus, West, AreaChangingGUID, ImportDate, ChooseRoom, CstName, CstGUIDList, ChooseRoomCstName, ChooseRoomDate, Jbr, isAnnexe, Sight, RoomStru, AbsolutelyFloor, StatusChgGUID, SaleRentable, RentPrice, CalcRentMode, RentUnit, Bz, RentStatus, ContinueRentStatus, NextRentStatus, RentName, RentGUIDList, RentStatusChgGUID, RentLocker, RentLockTime, RentAmount, BProductTypeCode, YsBldArea, YsTnArea, ScBldArea, ScTnArea, YardArea, TopGardenArea, LoftArea, BasementArea, CarArea, Earnest, ThisImportGuid, ThisImportBldCode, ThisImportBldName, YsFtArea, ScFtArea, GetinStatus, SpLock, ParkCnt, SaleCtrlLock, ChooseRoomCstGUID, LtArea, BacupWorkFlowGUID, XkLocker, XKLockReason, RoomKpDate, RoomZxqk, PriceApprove, IsSingleModi, IsAfreshAdju, RebuildArea, BalconyArea, GardenArea, Shtick, Collocate, ExpiryDate, IsYsAreaChgPriceSp, PriceLayoutExecDate, YsAreaXcScale, PreYsBldArea, PriceLayoutStatus, IsKpAreaImport, TkArea, BaseTotal, _DataSource, gxtime, isghfj, ForceEarnest, YjQdYsDate, SjQdYsDate, GhFjGUID, RoomMph, DisCountPlanGUID, JgDelayStatus, YSZNum, YSZAmountBank, YSZMainUser, YSZSubUser, FaceTotal, PcBaseTotal, ThfSpLock, RecordPrice, TotalDj, NoTaxAmount, TaxAmount, TaxRate, NoTaxAmountDj, TaxAmountDj, PreparedNo, SgPermitsNo, TaxServiceDirectory, TaxServiceDirectoryCode, scrm_timestamp_data, CreateTime, Version) SELECT RoomGUID, BUGUID, ProjGUID, BldGUID, MainRoomGUID, Unit, Floor, [No], Room, RoomCode, HuXing, Status, IsVirtualRoom, BldArea, TnArea, BlRhDate, RHBLZT, YFBZ, RoomMemo, XPos, YPos, ZxBz, Price, TnPrice, Total, ZxPrice, ZxTotal, IsTempletRoom, Locker, LockTime, TfDate, DjArea, IsAreaModify, VirtualStatus, RHDate, JFRQ, JFMemo, XkRow, XkCol, AreaStatus, West, AreaChangingGUID, ImportDate, ChooseRoom, CstName, CstGUIDList, ChooseRoomCstName, ChooseRoomDate, Jbr, isAnnexe, Sight, RoomStru, AbsolutelyFloor, StatusChgGUID, SaleRentable, RentPrice, CalcRentMode, RentUnit, Bz, RentStatus, ContinueRentStatus, NextRentStatus, RentName, RentGUIDList, RentStatusChgGUID, RentLocker, RentLockTime, RentAmount, BProductTypeCode, YsBldArea, YsTnArea, ScBldArea, ScTnArea, YardArea, TopGardenArea, LoftArea, BasementArea, CarArea, Earnest, ThisImportGuid, ThisImportBldCode, ThisImportBldName, YsFtArea, ScFtArea, GetinStatus, SpLock, ParkCnt, SaleCtrlLock, ChooseRoomCstGUID, LtArea, BacupWorkFlowGUID, XkLocker, XKLockReason, RoomKpDate, RoomZxqk, PriceApprove, IsSingleModi, IsAfreshAdju, RebuildArea, BalconyArea, GardenArea, Shtick, Collocate, ExpiryDate, IsYsAreaChgPriceSp, PriceLayoutExecDate, YsAreaXcScale, PreYsBldArea, PriceLayoutStatus, IsKpAreaImport, TkArea, BaseTotal, _DataSource, gxtime, isghfj, ForceEarnest, YjQdYsDate, SjQdYsDate, GhFjGUID, RoomMph, DisCountPlanGUID, JgDelayStatus, YSZNum, YSZAmountBank, YSZMainUser, YSZSubUser, FaceTotal, PcBaseTotal, ThfSpLock, RecordPrice, TotalDj, NoTaxAmount, TaxAmount, TaxRate, NoTaxAmountDj, TaxAmountDj, PreparedNo, SgPermitsNo, TaxServiceDirectory, TaxServiceDirectoryCode, scrm_timestamp_data, CreateTime, Version FROM C_MYRoom WHERE IsHandle = 1;
+		DELETE FROM C_MYRoom WHERE IsHandle = 1;
+		DELETE A FROM B_Room A LEFT JOIN MY.dotnet_erp25.dbo.p_Room B ON A.ID = B.RoomGUID WHERE B.RoomGUID is null;
+	]]>
+	</update>
+	
+	<!-- 获取本地明源楼栋最后数据时间戳 -->
+	<select id="TaskMYBuildingDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM H_C_MYBuilding
+	</select>
+	
+	<!-- 获取明源楼栋列表 -->
+	<select id="MYBuildingList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT TOP 500 BldGUID , BUGUID , ProjGUID , BldCode , BldName , ParentCode , BldFullName , XPos , YPos , DispMode , PlanUrl , BldProPerty , UnitNum , FloorNum , FloorList , IsBld , SaleRentable , PlanBldArea , FactBldArea , WorkGUID , BldAreacode , Cg , OpenDate , StayDate , DetailDesc , sjFinish_date , yjFinish_date , XmFqGUID , VoucherTitle , _DataSource , gxtime , RoomStatus , Remark , YgArea , TaxServiceDirectory , TaxServiceDirectoryCode , AreaFullName , ProductGUID , CONVERT(BIGINT , scrm_timestamp_data) scrm_timestamp_data , #{LastTime} Version FROM p_Building(NOLOCK) WHERE CONVERT(BIGINT , scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , scrm_timestamp_data)
+	]]>
+	</select>
+	
+	<!-- 插入本地明源楼栋信息 -->
+	<insert id="TaskMYBuildingDetail_Insert">
+		INSERT INTO C_MYBuilding( BldGUID, BUGUID, ProjGUID, BldCode, BldName, ParentCode, BldFullName, XPos, YPos, DispMode, PlanUrl, BldProPerty, UnitNum, FloorNum, FloorList, IsBld, SaleRentable, PlanBldArea, FactBldArea, WorkGUID, BldAreacode, Cg, OpenDate, StayDate, DetailDesc, sjFinish_date, yjFinish_date, XmFqGUID, VoucherTitle, _DataSource, gxtime, RoomStatus, Remark, YgArea, TaxServiceDirectory, TaxServiceDirectoryCode, AreaFullName, ProductGUID, scrm_timestamp_data, CreateTime, Version) 
+		VALUES( #{BldGUID}, #{BUGUID}, #{ProjGUID}, #{BldCode}, #{BldName}, #{ParentCode}, #{BldFullName}, #{XPos}, #{YPos}, #{DispMode}, #{PlanUrl}, #{BldProPerty}, #{UnitNum}, #{FloorNum}, #{FloorList,jdbcType=CLOB}, #{IsBld}, #{SaleRentable}, #{PlanBldArea}, #{FactBldArea}, #{WorkGUID}, #{BldAreacode}, #{Cg}, CASE LEN(#{OpenDate}) WHEN 0 THEN NULL ELSE #{OpenDate} END, CASE LEN(#{StayDate}) WHEN 0 THEN NULL ELSE #{StayDate} END, #{DetailDesc}, CASE LEN(#{sjFinish_date}) WHEN 0 THEN NULL ELSE #{sjFinish_date} END, CASE LEN(#{yjFinish_date}) WHEN 0 THEN NULL ELSE #{yjFinish_date} END, #{XmFqGUID}, #{VoucherTitle}, #{_DataSource}, CASE LEN(#{gxtime}) WHEN 0 THEN NULL ELSE #{gxtime} END, #{RoomStatus}, #{Remark}, #{YgArea}, #{TaxServiceDirectory}, #{TaxServiceDirectoryCode}, #{AreaFullName}, #{ProductGUID}, #{scrm_timestamp_data}, GETDATE(), #{Version})
+	</insert>
+	
+	<!-- 插入楼栋数据 -->
+	<update id="TaskBuildingDetail_Insert">
+	<![CDATA[
+		DELETE B_Building WHERE ID IN( SELECT BldGUID FROM C_MYBuilding WHERE IsHandle = 0);
+		INSERT INTO B_Building( ID, PID, PCode, ProjectID, Code, Name, FullName, AreaFullName, IsBld, UnitNum, FloorNum, FloorList, ProductID, Creator, CreateTime, Editor, EditTime, IsDel, Status) SELECT DISTINCT A.BldGUID ID, A.XmFqGUID PID, A.ParentCode PCode, A.ProjGUID ProjectID, BldCode Code, BldName Name, BldFullName FullName, AreaFullName, IsBld, UnitNum, FloorNum, CONVERT(VARCHAR, FloorList) FloorList, ProductGUID ProductID, '99' Creator, getdate() CreateTime, NULL Editor, NULL EditTime, 0 IsDel, 1 Status FROM C_MYBuilding A WHERE A.IsHandle = 0;
+		UPDATE C_MYBuilding SET IsHandle = 1, HandleTime = getdate() WHERE IsHandle = 0;
+		INSERT INTO H_C_MYBuilding( BldGUID, BUGUID, ProjGUID, BldCode, BldName, ParentCode, BldFullName, XPos, YPos, DispMode, PlanUrl, BldProPerty, UnitNum, FloorNum, FloorList, IsBld, SaleRentable, PlanBldArea, FactBldArea, WorkGUID, BldAreacode, Cg, OpenDate, StayDate, DetailDesc, sjFinish_date, yjFinish_date, XmFqGUID, VoucherTitle, _DataSource, gxtime, RoomStatus, Remark, YgArea, TaxServiceDirectory, TaxServiceDirectoryCode, AreaFullName, ProductGUID, scrm_timestamp_data, CreateTime, Version) SELECT BldGUID, BUGUID, ProjGUID, BldCode, BldName, ParentCode, BldFullName, XPos, YPos, DispMode, PlanUrl, BldProPerty, UnitNum, FloorNum, FloorList, IsBld, SaleRentable, PlanBldArea, FactBldArea, WorkGUID, BldAreacode, Cg, OpenDate, StayDate, DetailDesc, sjFinish_date, yjFinish_date, XmFqGUID, VoucherTitle, _DataSource, gxtime, RoomStatus, Remark, YgArea, TaxServiceDirectory, TaxServiceDirectoryCode, AreaFullName, ProductGUID, scrm_timestamp_data, CreateTime, Version FROM C_MYBuilding WHERE IsHandle = 1;
+		DELETE FROM C_MYBuilding WHERE IsHandle = 1;
+	]]>
+	</update>
+	
+	<!-- 获取本地明源合同最后数据时间戳 -->
+	<select id="TaskMYContractDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM C_MYContract
+	</select>
+	
+	<!-- 获取明源合同列表 -->
+	<select id="MYContractList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT TOP 500 A.ContractGUID , A.BUGUID , A.ProjGUID , A.TradeGUID , A.RoomGUID , A.LastSaleGUID , A.LastSaleType , A.ContractNO , A.QSDate , A.BldArea , A.TnArea , A.Price , A.TnPrice , A.Total , A.CalMode , A.PayformName , A.DiscntValue , A.DiscntRemark , A.BldCjPrice , A.TnCjPrice , A.RoomTotal , A.ZxBz , A.ZxPrice , A.ZxTotal , A.IsZxkbrht , A.FsTotal , A.RmbHtTotal , A.Bz , A.ExRate , A.HtTotal , A.AjBank , A.AjTotal , A.AjYear , A.GjjBank , A.GjjTotal , A.GjjYear , A.JFDate , A.BcFa , A. Status , A.Ywy , A.CstGUID , A.OrderRemark , A.CreatedOn , A.CreatedBy , A.LastMender , A.ModiDate , A.AuditBy , A.AuditingDate , A.RoomBcTotal , A.FsRoomBcTotal , A.SjBcTotal , A.BcShr , A.BcShDate , A.BcJbr , A.BcJbDate , A.CloseDate , A.YwblDate , A.CloseReason , A.IsValid , A.Earnest , A.BaDate , A.WorkFlowGUID , A.ApproveStatus , A.AjRate , A.GjjRate , A.AdditionalYh , A.Zxzk , A.ZxzkMemo , A.HtType , A.Dlr , A.HtSerialNo , A.HtState , A.HtEdition , A.Zcfs , A.ShState , A.Zlsj , A.RoomCode , A.OPPID , A.Xslp , A.CstName_d , A.AccountID , A.ImportPc , A.ImportDate , A.ScEnvelop , A.ScFirstCstGUID , A.HtBaNo , A.ConStatus , A.ImportPcBak , A.ImportDateBak , A.ZqDate , A.IsImport , A.DisCountPlanGUID , A.ShareOut , A.ChgDate , A.ScBldArea , A.ScTnArea , A.CstAllGUID , A.CstAllName , A.SjjfDate , A.SjjfScDate , A.ZfwqDate , A.IsHandCreateFkxq , A.YyjfDate , A._DataSource , A.SjjfShState , A.BankJbr , A.AjBankJbr , A.HtqzDate , A.IsStaff , A.StaffName , A.FczStatus , A.HoldStatus , A.CjQd , A.QdTel , A.QdGrade , A.QdInfo , A.RoomStatus , A.IsUseEcommerce , A.EcommercePosID , A.EcommerceZk , A.EcommerceD , A.IsGxh , A.GxhCode , A.RecommendType , A.YsYzName , A.YsYzTel , A.YsYzCardID , A.YsYzRoomCode , A.EsYzName , A.EsYzTel , A.EsYzCardID , A.RecommendMemo , A.BaMender , A.BaMenderDate , A.JjTotal , A.IsInitial , A.InitialDate , A.ChannelAmount , A.ChannelCompany , A.TaxAmount , A.NoTaxAmount , CONVERT(BIGINT , A.scrm_timestamp_data) scrm_timestamp_data , A.OriOtherTotal , A.FactOtherTotal , A.OtherRemark , #{LastTime} Version FROM s_Contract(NOLOCK) A WHERE CONVERT(BIGINT , A.scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , A.scrm_timestamp_data)
+	]]>
+	</select>
+	
+	<!-- 插入本地明源合同数据 -->
+	<insert id="TaskMYContractDetail_Insert">
+		INSERT INTO C_MYContract( ContractGUID, BUGUID, ProjGUID, TradeGUID, RoomGUID, LastSaleGUID, LastSaleType, ContractNO, QSDate, BldArea, TnArea, Price, TnPrice, Total, CalMode, PayformName, DiscntValue, DiscntRemark, BldCjPrice, TnCjPrice, RoomTotal, ZxBz, ZxPrice, ZxTotal, IsZxkbrht, FsTotal, RmbHtTotal, Bz, ExRate, HtTotal, AjBank, AjTotal, AjYear, GjjBank, GjjTotal, GjjYear, JFDate, BcFa, Status, Ywy, CstGUID, OrderRemark, CreatedOn, CreatedBy, LastMender, ModiDate, AuditBy, AuditingDate, RoomBcTotal, FsRoomBcTotal, SjBcTotal, BcShr, BcShDate, BcJbr, BcJbDate, CloseDate, YwblDate, CloseReason, IsValid, Earnest, BaDate, WorkFlowGUID, ApproveStatus, AjRate, GjjRate, AdditionalYh, Zxzk, ZxzkMemo, HtType, Dlr, HtSerialNo, HtState, HtEdition, Zcfs, ShState, Zlsj, RoomCode, OPPID, Xslp, CstName_d, AccountID, ImportPc, ImportDate, ScEnvelop, ScFirstCstGUID, HtBaNo, ConStatus, ImportPcBak, ImportDateBak, ZqDate, IsImport, DisCountPlanGUID, ShareOut, ChgDate, ScBldArea, ScTnArea, CstAllGUID, CstAllName, SjjfDate, SjjfScDate, ZfwqDate, IsHandCreateFkxq, YyjfDate, _DataSource, SjjfShState, BankJbr, AjBankJbr, HtqzDate, IsStaff, StaffName, FczStatus, HoldStatus, CjQd, QdTel, QdGrade, QdInfo, RoomStatus, IsUseEcommerce, EcommercePosID, EcommerceZk, EcommerceD, IsGxh, GxhCode, RecommendType, YsYzName, YsYzTel, YsYzCardID, YsYzRoomCode, EsYzName, EsYzTel, EsYzCardID, RecommendMemo, BaMender, BaMenderDate, JjTotal, IsInitial, InitialDate, ChannelAmount, ChannelCompany, TaxAmount, NoTaxAmount, scrm_timestamp_data, OriOtherTotal, FactOtherTotal, OtherRemark, CreateTime, Version)
+		VALUES( #{ContractGUID}, #{BUGUID}, #{ProjGUID}, #{TradeGUID}, #{RoomGUID}, #{LastSaleGUID}, #{LastSaleType}, #{ContractNO}, CASE LEN(#{QSDate}) WHEN 0 THEN NULL ELSE #{QSDate} END, #{BldArea}, #{TnArea}, #{Price}, #{TnPrice}, #{Total}, #{CalMode}, #{PayformName}, #{DiscntValue}, #{DiscntRemark,jdbcType=CLOB}, #{BldCjPrice}, #{TnCjPrice}, #{RoomTotal}, #{ZxBz}, #{ZxPrice}, #{ZxTotal}, #{IsZxkbrht}, #{FsTotal}, #{RmbHtTotal}, #{Bz}, #{ExRate}, #{HtTotal}, #{AjBank}, #{AjTotal}, #{AjYear}, #{GjjBank}, #{GjjTotal}, #{GjjYear}, CASE LEN(#{JFDate}) WHEN 0 THEN NULL ELSE #{JFDate} END, #{BcFa}, #{Status}, #{Ywy}, #{CstGUID}, #{OrderRemark,jdbcType=CLOB}, CASE LEN(#{CreatedOn}) WHEN 0 THEN NULL ELSE #{CreatedOn} END, #{CreatedBy}, #{LastMender}, CASE LEN(#{ModiDate}) WHEN 0 THEN NULL ELSE #{ModiDate} END, #{AuditBy}, CASE LEN(#{AuditingDate}) WHEN 0 THEN NULL ELSE #{AuditingDate} END, #{RoomBcTotal}, #{FsRoomBcTotal}, #{SjBcTotal}, #{BcShr}, CASE LEN(#{BcShDate}) WHEN 0 THEN NULL ELSE #{BcShDate} END, #{BcJbr}, CASE LEN(#{BcJbDate}) WHEN 0 THEN NULL ELSE #{BcJbDate} END, CASE LEN(#{CloseDate}) WHEN 0 THEN NULL ELSE #{CloseDate} END, CASE LEN(#{YwblDate}) WHEN 0 THEN NULL ELSE #{YwblDate} END, #{CloseReason}, #{IsValid}, #{Earnest}, CASE LEN(#{BaDate}) WHEN 0 THEN NULL ELSE #{BaDate} END, #{WorkFlowGUID}, #{ApproveStatus}, #{AjRate}, #{GjjRate}, #{AdditionalYh}, #{Zxzk}, #{ZxzkMemo}, #{HtType}, #{Dlr}, #{HtSerialNo}, #{HtState}, #{HtEdition}, #{Zcfs}, #{ShState}, #{Zlsj}, #{RoomCode}, #{OPPID}, #{Xslp}, #{CstName_d}, #{AccountID}, #{ImportPc}, CASE LEN(#{ImportDate}) WHEN 0 THEN NULL ELSE #{ImportDate} END, #{ScEnvelop}, #{ScFirstCstGUID}, #{HtBaNo}, #{ConStatus}, #{ImportPcBak}, CASE LEN(#{ImportDateBak}) WHEN 0 THEN NULL ELSE #{ImportDateBak} END, CASE LEN(#{ZqDate}) WHEN 0 THEN NULL ELSE #{ZqDate} END, #{IsImport}, #{DisCountPlanGUID}, #{ShareOut}, CASE LEN(#{ChgDate}) WHEN 0 THEN NULL ELSE #{ChgDate} END, #{ScBldArea}, #{ScTnArea}, #{CstAllGUID}, #{CstAllName}, CASE LEN(#{SjjfDate}) WHEN 0 THEN NULL ELSE #{SjjfDate} END, CASE LEN(#{SjjfScDate}) WHEN 0 THEN NULL ELSE #{SjjfScDate} END, CASE LEN(#{ZfwqDate}) WHEN 0 THEN NULL ELSE #{ZfwqDate} END, #{IsHandCreateFkxq}, CASE LEN(#{YyjfDate}) WHEN 0 THEN NULL ELSE #{YyjfDate} END, #{_DataSource}, #{SjjfShState}, #{BankJbr}, #{AjBankJbr}, CASE LEN(#{HtqzDate}) WHEN 0 THEN NULL ELSE #{HtqzDate} END, #{IsStaff}, #{StaffName}, #{FczStatus}, #{HoldStatus}, #{CjQd}, #{QdTel}, #{QdGrade}, #{QdInfo}, #{RoomStatus}, #{IsUseEcommerce}, #{EcommercePosID}, #{EcommerceZk}, #{EcommerceD}, #{IsGxh}, #{GxhCode}, #{RecommendType}, #{YsYzName}, #{YsYzTel}, #{YsYzCardID}, #{YsYzRoomCode}, #{EsYzName}, #{EsYzTel}, #{EsYzCardID}, #{RecommendMemo}, #{BaMender}, CASE LEN(#{BaMenderDate}) WHEN 0 THEN NULL ELSE #{BaMenderDate} END, #{JjTotal}, #{IsInitial}, CASE LEN(#{InitialDate}) WHEN 0 THEN NULL ELSE #{InitialDate} END, #{ChannelAmount}, #{ChannelCompany}, #{TaxAmount}, #{NoTaxAmount}, #{scrm_timestamp_data}, #{OriOtherTotal}, #{FactOtherTotal}, #{OtherRemark}, GETDATE(), #{Version})
+	</insert>
+	
+	<!-- 插入合同数据 -->
+	<update id="TaskContractDetail_Insert">
+	<![CDATA[
+		DELETE A FROM C_MYContract A INNER JOIN( SELECT *, row_number() OVER( partition BY ContractGUID ORDER BY CreateTime DESC ) num FROM C_MYContract ) T ON A.ContractGUID = T.ContractGUID AND A.CreateTime = T.CreateTime AND T.num <> 1;
+	]]>
+	</update>
+	
+	<!-- 获取本地明源费用最后数据时间戳 -->
+	<select id="TaskMYFeeDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM C_MYFee
+	</select>
+	
+	<!-- 获取明源费用列表 -->
+	<select id="MYFeeList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT TOP 500 A.FeeGUID , A.TradeGUID , A.Sequence , A.Flag , A.lastDate , A.ItemType , A.ItemName , A.Amount , A.Bz , A.ExRate , A.RmbAmount , A.RmbYe , A.JmLateFee , A.Remark , A.Ye , A.IsChg , A.OutAmount , A.OutRmbAmount , A.PayEvent , A.PayLagQty , A.PayLagUnit , A.QkSpStatus , A.RoomCode , A.OPPID , A.YsAmount , A.YtAmount , A.State , A.Dfstate , A.ImportPc , A.ImportDate , A.cq_update , A.DsAmount , A.RmbDsAmount , A.OASpdh , A.IsRepeat , A.IsFromPay , A.IsCloseNoGetin , A._DataSource , A.TaxAmount , A.NoTaxAmount , A.TaxRate , CONVERT(BIGINT , A.scrm_timestamp_data) scrm_timestamp_data , #{LastTime} Version FROM s_Fee(NOLOCK) A WHERE CONVERT(BIGINT , A.scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , A.scrm_timestamp_data)
+	]]>
+	</select>
+	
+	<!-- 插入本地明源费用数据 -->
+	<insert id="TaskMYFeeDetail_Insert">
+		INSERT INTO C_MYFee( FeeGUID, TradeGUID, Sequence, Flag, lastDate, ItemType, ItemName, Amount, Bz, ExRate, RmbAmount, RmbYe, JmLateFee, Remark, Ye, IsChg, OutAmount, OutRmbAmount, PayEvent, PayLagQty, PayLagUnit, QkSpStatus, RoomCode, OPPID, YsAmount, YtAmount, State, Dfstate, ImportPc, ImportDate, cq_update, DsAmount, RmbDsAmount, OASpdh, IsRepeat, IsFromPay, IsCloseNoGetin, _DataSource, TaxAmount, NoTaxAmount, TaxRate, scrm_timestamp_data, CreateTime, Version)
+		VALUES( #{FeeGUID}, #{TradeGUID}, #{Sequence}, #{Flag}, CASE LEN(#{lastDate}) WHEN 0 THEN NULL ELSE #{lastDate} END, #{ItemType}, #{ItemName}, #{Amount}, #{Bz}, #{ExRate}, #{RmbAmount}, #{RmbYe}, #{JmLateFee}, #{Remark}, #{Ye}, #{IsChg}, #{OutAmount}, #{OutRmbAmount}, #{PayEvent}, #{PayLagQty}, #{PayLagUnit}, #{QkSpStatus}, #{RoomCode}, #{OPPID}, #{YsAmount}, #{YtAmount}, #{State}, #{Dfstate}, #{ImportPc}, CASE LEN(#{ImportDate}) WHEN 0 THEN NULL ELSE #{ImportDate} END, #{cq_update}, #{DsAmount}, #{RmbDsAmount}, #{OASpdh}, #{IsRepeat}, #{IsFromPay}, #{IsCloseNoGetin}, #{_DataSource}, #{TaxAmount}, #{NoTaxAmount}, #{TaxRate}, #{scrm_timestamp_data}, GETDATE(), #{Version})
+	</insert>
+	
+	<!-- 插入费用数据 -->
+	<update id="TaskFeeDetail_Insert">
+	<![CDATA[
+		DELETE A FROM C_MYFee A INNER JOIN( SELECT *, row_number() OVER( partition BY FeeGUID ORDER BY CreateTime DESC) num FROM C_MYFee) T ON A.FeeGUID = T.FeeGUID AND A.CreateTime = T.CreateTime AND T.num <> 1;
+		DELETE A FROM C_MYFee A LEFT JOIN MY.dotnet_erp25.dbo.s_Fee B ON A.FeeGUID = B.FeeGUID WHERE B.FeeGUID IS NULL;
+    ]]>
+	</update>
+	
+	<!-- 获取本地明源交易最后数据时间戳 -->
+	<select id="TaskMYTradeDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM C_MYTrade
+	</select>
+	
+	<!-- 获取明源交易列表 -->
+	<select id="MYTradeList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT TOP 500 A.TradeGUID , A.RoomGUID , A.OppGUID , A.msrepl_tran_version , A.JzDate , A.JzAmount , A.RgDateTime , A.CstGUID1 , A.CstGUID2 , A.CstGUID3 , A.CstGUID4 , A.CstAllGUID , A.CstAllName , A.CstAllTel , A.SkMemo , A.ProductZkfaGUID , A._DataSource , A.Jmje , A.yJmje , A.Jmqx , A.JmMode , A.BookingGUID , A.BaDate , A.BaseTotal , A.TaxRate , A.JzNoTaxAmount , A.JzTaxAmount , A.RoomStatus , A.XDOrderGUID , A.RGOrderGUID , A.ContractGUID , A.JzStatus , A.JzPzDate , A.CancelJzDate , A.CancelJzPzDate , A.PzStatus , A.IsGenerateFail , A.FailReason , A.BUGUID , A.ProjGUID , A.SfwqReason , A.YjhkDate , A.Remark , A.CwglRemark , CONVERT(BIGINT , A.scrm_timestamp_data) scrm_timestamp_data , #{LastTime} Version FROM s_Trade(NOLOCK) A WHERE CONVERT(BIGINT , A.scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , A.scrm_timestamp_data)
+	]]>
+	</select>
+	
+	<!-- 插入本地明源交易数据 -->
+	<insert id="TaskMYTradeDetail_Insert">
+		INSERT INTO C_MYTrade( TradeGUID, RoomGUID, OppGUID, msrepl_tran_version, JzDate, JzAmount, RgDateTime, CstGUID1, CstGUID2, CstGUID3, CstGUID4, CstAllGUID, CstAllName, CstAllTel, SkMemo, ProductZkfaGUID, _DataSource, Jmje, yJmje, Jmqx, JmMode, BookingGUID, BaDate, BaseTotal, TaxRate, JzNoTaxAmount, JzTaxAmount, RoomStatus, XDOrderGUID, RGOrderGUID, ContractGUID, JzStatus, JzPzDate, CancelJzDate, CancelJzPzDate, PzStatus, IsGenerateFail, FailReason, BUGUID, ProjGUID, SfwqReason, YjhkDate, Remark, CwglRemark, scrm_timestamp_data, CreateTime, Version)
+		VALUES( #{TradeGUID}, #{RoomGUID}, #{OppGUID}, #{msrepl_tran_version}, CASE LEN(#{JzDate}) WHEN 0 THEN NULL ELSE #{JzDate} END, #{JzAmount}, CASE LEN(#{RgDateTime}) WHEN 0 THEN NULL ELSE #{RgDateTime} END, #{CstGUID1}, #{CstGUID2}, #{CstGUID3}, #{CstGUID4}, #{CstAllGUID}, #{CstAllName}, #{CstAllTel}, #{SkMemo,jdbcType=CLOB}, #{ProductZkfaGUID}, #{_DataSource}, #{Jmje}, #{yJmje}, CASE LEN(#{Jmqx}) WHEN 0 THEN NULL ELSE #{Jmqx} END, #{JmMode}, #{BookingGUID}, CASE LEN(#{BaDate}) WHEN 0 THEN NULL ELSE #{BaDate} END, #{BaseTotal}, #{TaxRate}, #{JzNoTaxAmount}, #{JzTaxAmount}, #{RoomStatus}, #{XDOrderGUID}, #{RGOrderGUID}, #{ContractGUID}, #{JzStatus}, CASE LEN(#{JzPzDate}) WHEN 0 THEN NULL ELSE #{JzPzDate} END, CASE LEN(#{CancelJzDate}) WHEN 0 THEN NULL ELSE #{CancelJzDate} END, CASE LEN(#{CancelJzPzDate}) WHEN 0 THEN NULL ELSE #{CancelJzPzDate} END, #{PzStatus}, #{IsGenerateFail}, #{FailReason}, #{BUGUID}, #{ProjGUID}, #{SfwqReason}, CASE LEN(#{YjhkDate}) WHEN 0 THEN NULL ELSE #{YjhkDate} END, #{Remark}, #{CwglRemark}, #{scrm_timestamp_data}, GETDATE(), #{Version})
+	</insert>
+	
+	<!-- 插入交易数据 -->
+	<update id="TaskTradeDetail_Insert" statementType="CALLABLE">
+	<![CDATA[
+		DELETE A FROM C_MYTrade A INNER JOIN( SELECT *, row_number() OVER( partition BY TradeGUID ORDER BY CreateTime DESC) num FROM C_MYTrade) T ON A.TradeGUID = T.TradeGUID AND A.CreateTime = T.CreateTime AND T.num <> 1;
+     	exec dbo.P_SyncMYMonthYs_Insert;
+	]]>
+	</update>
+	
+	<!-- 获取本地明源订单最后数据时间戳 -->
+	<select id="TaskMYOrderDetailLast_Select" resultType="java.lang.Long">
+		SELECT ISNULL( MAX( CONVERT(BIGINT, scrm_timestamp_data)), 0) LastTime FROM C_MYOrder
+	</select>
+	
+	<!-- 获取明源订单列表 -->
+	<select id="MYOrderList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT TOP 500 A.OrderGUID , A.BUGUID , A.ProjGUID , A.TradeGUID , A.RoomGUID , A.LastSaleGUID , A.LastSaleType , A.PotocolNO , A.QSDate , A.EndDate , A.BldArea , A.TnArea , A.Price , A.TnPrice , A.Total , A.CalMode , A.PayformName , A.DiscntValue , A.DiscntRemark , A.BldCjPrice , A.TnCjPrice , A.RoomTotal , A.ZxBz , A.ZxPrice , A.ZxTotal , A.IsZxkbrht , A.FsTotal , A.RmbCjTotal , A.Bz , A.ExRate , A.CjTotal , A.Earnest , A.AjBank , A.AjTotal , A.AjYear , A.GjjBank , A.GjjTotal , A.GjjYear , A.OrderType , A. Status , A.Ywy , A.CstGUID , A.OrderRemark , A.CreatedOn , A.CreatedBy , A.LastMender , A.ModiDate , A.AuditBy , A.AuditingDate , A.IsValid , A.CloseDate , A.CloseReason , A.YwblDate , A.ReMark , A.WorkFlowGUID , A.ApproveStatus , A.JhqyDate , A.AdditionalYh , A.Zxzk , A.ZxzkMemo , A.Dlr , A.RgState , A.TfDate , A.RoomCode , A.OPPID , A.Xslp , A.CstName_d , A.AccountID , A.ImportPc , A.ImportDate , A.ScFirstCstGUID , A.ScEnvelop , A.ImportPcBak , A.ImportDateBak , A.IsImport , A.DisCountPlanGUID , A.QyCloseDate , A.QyCloseReason , A.ChgDate , A.CstAllGUID , A.CstAllName , A.RgOutLock , A.RgOutLockDate , A._DataSource , A.RgDelayDay , A.IsUseEcommerce , A.EcommercePosID , A.EcommerceZk , A.EcommerceD , A.JjTotal , A.TaxAmount , A.NoTaxAmount , CONVERT(BIGINT , A.scrm_timestamp_data) scrm_timestamp_data , A.OriOtherTotal , A.FactOtherTotal , A.OtherRemark , #{LastTime} Version FROM s_Order(NOLOCK) A WHERE CONVERT(BIGINT , A.scrm_timestamp_data) > #{LastTime} ORDER BY CONVERT(BIGINT , A.scrm_timestamp_data)
+	]]>
+	</select>
+	
+	<!-- 插入本地明源订单数据 -->
+	<insert id="TaskMYOrderDetail_Insert">
+		INSERT INTO C_MYOrder( OrderGUID, BUGUID, ProjGUID, TradeGUID, RoomGUID, LastSaleGUID, LastSaleType, PotocolNO, QSDate, EndDate, BldArea, TnArea, Price, TnPrice, Total, CalMode, PayformName, DiscntValue, DiscntRemark, BldCjPrice, TnCjPrice, RoomTotal, ZxBz, ZxPrice, ZxTotal, IsZxkbrht, FsTotal, RmbCjTotal, Bz, ExRate, CjTotal, Earnest, AjBank, AjTotal, AjYear, GjjBank, GjjTotal, GjjYear, OrderType, Status, Ywy, CstGUID, OrderRemark, CreatedOn, CreatedBy, LastMender, ModiDate, AuditBy, AuditingDate, IsValid, CloseDate, CloseReason, YwblDate, ReMark, WorkFlowGUID, ApproveStatus, JhqyDate, AdditionalYh, Zxzk, ZxzkMemo, Dlr, RgState, TfDate, RoomCode, OPPID, Xslp, CstName_d, AccountID, ImportPc, ImportDate, ScFirstCstGUID, ScEnvelop, ImportPcBak, ImportDateBak, IsImport, DisCountPlanGUID, QyCloseDate, QyCloseReason, ChgDate, CstAllGUID, CstAllName, RgOutLock, RgOutLockDate, _DataSource, RgDelayDay, IsUseEcommerce, EcommercePosID, EcommerceZk, EcommerceD, JjTotal, TaxAmount, NoTaxAmount, scrm_timestamp_data, OriOtherTotal, FactOtherTotal, OtherRemark, CreateTime, Version)
+		VALUES( #{OrderGUID}, #{BUGUID}, #{ProjGUID}, #{TradeGUID}, #{RoomGUID}, #{LastSaleGUID}, #{LastSaleType}, #{PotocolNO}, CASE LEN(#{QSDate}) WHEN 0 THEN NULL ELSE #{QSDate} END, CASE LEN(#{EndDate}) WHEN 0 THEN NULL ELSE #{EndDate} END, #{BldArea}, #{TnArea}, #{Price}, #{TnPrice}, #{Total}, #{CalMode}, #{PayformName}, #{DiscntValue}, #{DiscntRemark,jdbcType=CLOB}, #{BldCjPrice}, #{TnCjPrice}, #{RoomTotal}, #{ZxBz}, #{ZxPrice}, #{ZxTotal}, #{IsZxkbrht}, #{FsTotal}, #{RmbCjTotal}, #{Bz}, #{ExRate}, #{CjTotal}, #{Earnest}, #{AjBank}, #{AjTotal}, #{AjYear}, #{GjjBank}, #{GjjTotal}, #{GjjYear}, #{OrderType}, #{Status}, #{Ywy}, #{CstGUID}, #{OrderRemark,jdbcType=CLOB}, CASE LEN(#{CreatedOn}) WHEN 0 THEN NULL ELSE #{CreatedOn} END, #{CreatedBy}, #{LastMender}, CASE LEN(#{ModiDate}) WHEN 0 THEN NULL ELSE #{ModiDate} END, #{AuditBy}, CASE LEN(#{AuditingDate}) WHEN 0 THEN NULL ELSE #{AuditingDate} END, #{IsValid}, CASE LEN(#{CloseDate}) WHEN 0 THEN NULL ELSE #{CloseDate} END, #{CloseReason}, CASE LEN(#{YwblDate}) WHEN 0 THEN NULL ELSE #{YwblDate} END, #{ReMark,jdbcType=CLOB}, #{WorkFlowGUID}, #{ApproveStatus}, CASE LEN(#{JhqyDate}) WHEN 0 THEN NULL ELSE #{JhqyDate} END, #{AdditionalYh}, #{Zxzk}, #{ZxzkMemo}, #{Dlr}, #{RgState}, CASE LEN(#{TfDate}) WHEN 0 THEN NULL ELSE #{TfDate} END, #{RoomCode}, #{OPPID}, #{Xslp}, #{CstName_d}, #{AccountID}, #{ImportPc}, CASE LEN(#{ImportDate}) WHEN 0 THEN NULL ELSE #{ImportDate} END, #{ScFirstCstGUID}, #{ScEnvelop}, #{ImportPcBak}, CASE LEN(#{ImportDateBak}) WHEN 0 THEN NULL ELSE #{ImportDateBak} END, #{IsImport}, #{DisCountPlanGUID}, CASE LEN(#{QyCloseDate}) WHEN 0 THEN NULL ELSE #{QyCloseDate} END, #{QyCloseReason}, CASE LEN(#{ChgDate}) WHEN 0 THEN NULL ELSE #{ChgDate} END, #{CstAllGUID}, #{CstAllName}, #{RgOutLock}, CASE LEN(#{RgOutLockDate}) WHEN 0 THEN NULL ELSE #{RgOutLockDate} END, #{_DataSource}, #{RgDelayDay}, #{IsUseEcommerce}, #{EcommercePosID}, #{EcommerceZk}, #{EcommerceD}, #{JjTotal}, #{TaxAmount}, #{NoTaxAmount}, #{scrm_timestamp_data}, #{OriOtherTotal}, #{FactOtherTotal}, #{OtherRemark}, GETDATE(), #{Version})
+	</insert>
+	
+	<!-- 插入订单数据 -->
+	<update id="TaskOrderDetail_Insert">
+	<![CDATA[
+		DELETE A FROM C_MYOrder A INNER JOIN( SELECT *, row_number() OVER( partition BY OrderGUID ORDER BY CreateTime DESC) num FROM C_MYOrder) T ON A.OrderGUID = T.OrderGUID AND A.CreateTime = T.CreateTime AND T.num <> 1;
+	]]>
+	</update>
+	
+	<!-- 将自渠跟进逾期的客户置为无效 -->
+	<update id="OwnerChannelOverdueTime_Update">
+	<![CDATA[
+		INSERT  INTO B_CustomerPotentialFollowUp
+        SELECT  NEWID() AS ID ,
+                t.CustomerPotentialID AS CustomerID ,
+                Mobile AS CustomerMobile ,
+                Name AS CustomerName ,
+                t.ID AS ClueID ,
+                '99' ReportUserID ,
+                '系统' ReportUserName ,
+                '' ReportUserMobile ,
+                '69331990-DBF4-0A2F-80CD-7BC424AA8904' AS FollwUpType ,
+                '' AS FollwUpWay ,
+                '报备无效，无效原因(跟进逾期)' AS FollowUpContent ,
+                '' AS NextFollowUpDate ,
+                '' AS IntentionLevel ,
+                '' AS OrgID ,
+                '99' AS Creator ,
+                GETDATE() AS CreateTime ,
+                '99' AS Editor ,
+                GETDATE() AS EditeTime ,
+                0 AS IsDel ,
+                1 AS Status ,
+                '' AS RoleID ,
+                CustomerRank ,
+                IntentProjectID
+        FROM    b_clue t
+        WHERE   EXISTS ( SELECT *
+                         FROM   B_Clue a
+                                INNER JOIN B_ClueRule b ON a.RuleID = b.ID
+                                LEFT JOIN dbo.B_Opportunity c ON a.ID = c.ClueID
+                         WHERE  a.AdviserGroupID not in( '32C92DA0-DA13-4C21-A55E-A1D16955882C','46830C26-0E01-4041-8054-3865CCDD26AD','725FA5F6-EC92-4DC6-8D47-A8E74B7829AD','EB4AD331-F4AD-46D6-889A-D45575ECEE66')
+                                AND LEN(b.FollowUpOverdueDays) > 0
+                                AND b.FollowUpOverdueDays > 0
+                                AND LEN(a.TheLatestFollowUpDate) > 0
+                                AND CONVERT(DATE, DATEADD(DAY,
+                                                          ( FollowUpOverdueDays
+                                                            + 1 ),
+                                                          a.TheLatestFollowUpDate)) < GETDATE()
+                                AND a.status IN ( 1, 2 )
+                                AND a.ID = t.ID
+                                AND ISNULL(c.Status,0) != 5 );
+		UPDATE  b_clue
+		SET     status = 3 ,
+		        Editor = 'sys' ,
+		        EditeTime = GETDATE() ,
+		        InvalidTime = GETDATE() ,
+		        InvalidType = 12 ,
+		        InvalidReason = '跟进逾期'
+		WHERE   EXISTS ( SELECT *
+		                 FROM   B_Clue a
+		                        INNER JOIN B_ClueRule b ON a.RuleID = b.ID
+		                        LEFT JOIN dbo.B_Opportunity c ON a.ID = c.ClueID
+		                 WHERE  a.AdviserGroupID not in( '32C92DA0-DA13-4C21-A55E-A1D16955882C','46830C26-0E01-4041-8054-3865CCDD26AD','725FA5F6-EC92-4DC6-8D47-A8E74B7829AD','EB4AD331-F4AD-46D6-889A-D45575ECEE66')
+		                        AND LEN(b.FollowUpOverdueDays) > 0
+		                        AND b.FollowUpOverdueDays > 0
+		                        AND LEN(a.TheLatestFollowUpDate) > 0
+		                        AND CONVERT(DATE, DATEADD(DAY,
+		                                                  ( FollowUpOverdueDays + 1 ),
+		                                                  a.TheLatestFollowUpDate)) < GETDATE()
+		                        AND a.status IN ( 1, 2 )
+		                        AND B_Clue.ID = a.ID
+		                        AND ISNULL(c.Status,0) != 5 );
+		INSERT  INTO S_Message
+		        ( ID ,
+		          ProjectID ,
+		          BizID ,
+		          BizType ,
+		          Subject ,
+		          Content ,
+		          Sender ,
+		          SendTime ,
+		          MessageType ,
+		          Receiver ,
+		          IsNeedPush ,
+		          CreateTime ,
+		          Creator ,
+		          IsDel ,
+		          Status
+		        )
+		        SELECT  NEWID() AS ID ,
+		                IntentProjectID ,
+		                ID AS BizID ,
+		                'Clue' AS BizType ,
+		                '跟进逾期' AS Subject ,
+		                '跟进逾期' AS Content ,
+		                'sys' AS Sender ,
+		                GETDATE() AS SendTime ,
+		                '60C4BA4B-6610-442B-95AC-3517BF62CA92' AS MessageType ,
+		                ReportUserID AS Receiver ,
+		                1 AS IsNeedPush ,
+		                GETDATE() AS CreateTime ,
+		                'sys' AS Creator ,
+		                0 AS IsDel ,
+		                1 AS Status
+		        FROM    B_Clue a
+		        WHERE   Status = 3
+		                AND InvalidType = 12
+		                AND Editor = 'sys'
+		                AND CONVERT(DATE, EditeTime) = CONVERT(DATE, GETDATE())
+		                AND NOT EXISTS ( SELECT *
+		                                 FROM   s_message b
+		                                 WHERE  b.BizID = a.ID
+		                                        AND b.BizType = 'Clue'
+		                                        AND b.Subject = '跟进逾期' );
+    ]]>
+	</update>
+	
+	<!-- 插入媒体数据 -->
+	<insert id="TaskBizParamOptionDetail_Insert">
+	<![CDATA[
+		INSERT INTO C_MYBizParamOption SELECT ParamName , ScopeGUID , ParamValue , ParamCode , ParentCode , ParamLevel , IfEnd , IfSys , ID , ParamGUID , parentname , creatdate , sequence , bzts , isvalue , paramvalue2 , isCyfxfx , _DataSource , GETDATE() CreateTime , 0 [ Version ] , 0 IsHandle , NULL HandleTime FROM( SELECT A.* , ROW_NUMBER() OVER( PARTITION BY A.ParamGUID ORDER BY creatdate DESC) num FROM MY.dotnet_erp25.dbo.myBizParamOption A WHERE ParamName IN('s_CognizeAve' , 's_Medium') AND A.isvalue = 0 AND NOT EXISTS( SELECT ParamGUID FROM C_MYBizParamOption B WHERE A.ParamGUID = B.ParamGUID)) t WHERE t.num = 1;
+		DELETE FROM C_MYBizParamOption WHERE ParamGUID NOT IN( SELECT ParamGUID FROM MY.dotnet_erp25.dbo.myBizParamOption A WHERE A.ParamName IN('s_CognizeAve' , 's_Medium') AND A.isvalue = 0);
+    ]]>
+	</insert>
+	
+	<!-- 查询有效的佣金规则 -->
+	<select id="CommissionRule_Select" resultType="java.util.HashMap">
+		SELECT DISTINCT ProjectID , IdentityID FROM A_CommissionRule WHERE Status = 1 AND IsDel = 0 AND LEN(IdentityID) = 36
+	</select>
+	
+	<!-- 生成满足生效条件的线索 -->
+	<insert id="CommissionRecordsTemp_Create" statementType="CALLABLE">
+	<![CDATA[
+		{call dbo.PR_CreateCommRecordsTemp(#{ProjectID},#{IdentityID})}
+	]]>
+	</insert>
+	
+	<!-- 生成满足发放条件的线索  -->
+	<insert id="CommissionRecords_Create" statementType="CALLABLE">
+	<![CDATA[
+		{call dbo.PR_CreateCommRecords()}
+	]]>
+	</insert>
+	
+	<!-- 查询设置回收规则的项目 -->
+	<select id="RreclaimProject_Select" resultType="java.util.HashMap">
+		SELECT * FROM B_SalesCenterRule WHERE isdel=0 AND status=1
+	</select>
+	
+	<!-- 跟进超时回收  -->
+	<update id="RreclaimFollowup_Update">
+	<![CDATA[
+		declare @dt datetime
+		select @dt=getdate()
+		SELECT A.ID
+		INTO #tempOID
+		FROM dbo.B_Opportunity A
+		INNER JOIN B_SalesCenterRule b ON a.ProjectID=b.ProjectID AND b.IsDel=0 AND b.Status=1
+		INNER JOIN dbo.B_SalesGroupMember c ON a.SaleUserID=c.MemberID AND c.IsDel=0 AND c.Status=1 
+			AND c.ProjectID=#{ProjectID} AND c.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		INNER JOIN dbo.B_SalesGroup d ON c.ReceptionGroupID=d.ID AND d.IsDel=0 AND d.Status=1
+		WHERE   A.ProjectID = #{ProjectID} AND A.IsDel = 0 AND A.Status< 4
+		        AND A.TheLatestFollowUpDate IS NOT NULL AND LEN(A.SaleUserID) >0
+				AND (CASE d.Nature WHEN 1 THEN DATEADD(DAY,b.OwnerReleasePeriod,a.TheLatestFollowUpDate)
+						ELSE DATEADD(DAY,b.AgentReleasePeriod,a.TheLatestFollowUpDate) END)< GETDATE()
+		
+		DELETE FROM S_Message where BizType='Opportunity' and BizID in (select ID from #tempOID) 
+		
+		insert into B_CustomerPublicPool(ID,ClueID,OpportunityID,CustomerID,Name,Mobile,CustomerLevel,Reason
+			,TheFirstVisitDate,SaleUserID,SaleUserName,SaleTeamID,SaleTeamName,Creator,CreateTime)
+		select newid(),ClueID,a.ID,CustomerID,CustomerName,CustomerMobile,CustomerLevel,#{Reason}
+			,TheFirstVisitDate,SaleUserID,SaleUserName,c.id as SaleTeamID,c.name as SaleTeamName,'sys',@dt
+		from B_Opportunity a
+		left join B_SalesGroupMember b on a.saleuserid=b.memberid and b.isdel=0 and b.status=1
+		left join B_SalesGroup c on a.projectid=c.projectid and b.ReceptionGroupID=c.id and c.isdel=0 and c.status=1
+		where a.id in ( select ID from #tempOID )
+		
+		update B_Opportunity set SaleUserID=NULL,SaleUserName=NULL where id in ( select ID from #tempOID )
+		
+		drop table #tempOID
+	]]>
+	</update>
+	
+	<update id="RreclaimFollowup_Update1">
+	<![CDATA[
+		declare @dt datetime
+		select @dt=getdate()
+		SELECT A.ID
+		INTO #tempOID
+		FROM      dbo.B_Opportunity A
+		INNER JOIN B_SalesCenterRule b ON a.ProjectID=b.ProjectID AND b.IsDel=0 AND b.Status=1
+		INNER JOIN dbo.B_SalesGroupMember c ON a.SaleUserID=c.MemberID AND c.IsDel=0 AND c.Status=1 
+			AND c.ProjectID=#{ProjectID} AND c.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		INNER JOIN dbo.B_SalesGroup d ON c.ReceptionGroupID=d.ID AND d.IsDel=0 AND d.Status=1
+		WHERE   A.ProjectID = #{ProjectID} AND A.IsDel = 0 AND A.Status< 4
+		        AND A.TheLatestFollowUpDate IS NOT NULL AND LEN(A.SaleUserID) >0
+				AND (CASE d.Nature WHEN 1 THEN DATEADD(DAY,b.OwnerReleasePeriod,a.TheLatestFollowUpDate)
+						ELSE DATEADD(DAY,b.AgentReleasePeriod,a.TheLatestFollowUpDate) END)< GETDATE()
+		
+		update S_Message
+		set Status=0,Editor='sys',EditTime=@dt
+		where BizType='Opportunity'
+			 and BizID in (
+				select ID from #tempOID
+			 ) 
+		
+		INSERT INTO S_Message( ID, ProjectID,BizID,BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, Creator, CreateTime) 
+		select newid(),ProjectID,ID,'Opportunity','机会逾期回收','客户'+CustomerName+','+CustomerMobile+'逾期回收'
+		  ,'sys',@dt,'76D9C77E-CD2D-CB4C-4DBC-8F19CDAFE607',SaleUserID,'sys',@dt
+		from B_Opportunity 
+		where id in (
+			select ID from #tempOID
+		)
+		
+		INSERT INTO S_Message( ID, ProjectID,BizID,BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, Creator, CreateTime) 
+		select newid(),a.ProjectID,a.ID,'Opportunity','机会逾期回收','客户'+a.CustomerName+','+a.CustomerMobile+'逾期回收'
+		  ,'sys',@dt,'76D9C77E-CD2D-CB4C-4DBC-8F19CDAFE607',c.MemberID,'sys',@dt
+		from B_Opportunity  a
+		inner join [dbo].[B_SalesGroupMember] b on a.ProjectID=b.ProjectID and  a.SaleUserID=b.MemberID and b.isdel=0 and b.status=1
+		inner join [dbo].[B_SalesGroupMember] c on a.ProjectID=c.ProjectID and c.isdel=0 and c.status=1
+		where c.RoleID='A2C076C4-09D1-4B42-862D-8688A93320F4' and a.id  in (
+		 select ID from #tempOID
+		)
+		
+		insert into B_CustomerPublicPool(ID,ClueID,OpportunityID,CustomerID,Name,Mobile,CustomerLevel,Reason
+			,TheFirstVisitDate,SaleUserID,SaleUserName,SaleTeamID,SaleTeamName,Creator,CreateTime)
+		select newid(),ClueID,a.ID,CustomerID,CustomerName,CustomerMobile,CustomerLevel,#{Reason}
+			,TheFirstVisitDate,SaleUserID,SaleUserName,c.id as SaleTeamID,c.name as SaleTeamName,'sys',@dt
+		from B_Opportunity a
+		inner join B_SalesGroupMember b on a.saleuserid=b.memberid and b.isdel=0 and b.status=1
+		inner join B_SalesGroup c on a.projectid=c.projectid and b.ReceptionGroupID=c.id and c.isdel=0 and c.status=1
+		where a.id in (
+			select ID from #tempOID
+		)
+		
+		update B_Opportunity
+		set SaleUserID=NULL,SaleUserName=NULL
+		where id in (
+			select ID from #tempOID
+		)
+		
+		drop table #tempOID
+	]]>
+	</update>
+	
+	<!-- 服务-获取项目参数信息 -->
+	<select id="ShareServiceProjectParamerList_Select" resultType="java.util.HashMap">
+		SELECT
+			ID,
+			SnatchingMode, <!-- 0 抢单模式 0.手动分配模式 1.客储抢单模式 2.自动分配模式 -->
+			ShareSnatchingMode, <!-- 0 分享传播抢单模式(分享传播客户池分配设置) 0.手动分配模式 1.客储抢单模式 2.自动分配模式 -->
+			ShareSnatchingAutoModeType, <!-- 0 分享传播自动模式下类别 0.随机自动分配所有公共客户池资源 1. 顺序自动分配所有公共客户池资源 2. 每日自动随机分配[5个]客户资源3. 每日自动顺序分配[5个]客户资源 -->
+			SaleCustomerNotReportNum, <!-- 3 置业顾问沉淀非自有项目的客户几天 -->
+			HaveCustomerNotReportNum, <!-- 3 自有渠道沉淀非自有项目的客户几天 -->
+			MediumrCustomerNotReportNum, <!-- 3 中介同行沉淀非自有项目的客户几天 -->
+			AdminCustomerNotReportNum, <!-- 3 案场管理人员沉淀的客户几天 -->
+			DistributionCustomerNotReportNum, <!-- 3 分销渠道管理人员沉淀的客户几天 -->
+			PlainCustomerNotReportNum <!-- 3 普通用户沉淀的客户几天 -->
+		FROM dbo.B_Project WHERE Category=1 AND IsDel=0 AND Status=1 AND ID IN (SELECT ProjectID FROM A_ShareProject WHERE Status=1 AND IsDel=0)
+	</select>
+	
+	<!-- 服务-获取项目下的所有置业顾问 -->
+	<select id="ShareServiceSalesUserList_Select" resultType="java.util.HashMap">
+		WITH ProjectList AS
+		( SELECT * FROM dbo.B_Project WHERE Category=1 AND IsDel=0 AND Status=1 AND ID IN (SELECT ProjectID FROM A_ShareProject WHERE Status=1 AND IsDel=0))
+		SELECT A.MemberID,C.EmployeeName,C.Mobile,A.ProjectID,'0269F35E-B32D-4D12-8496-4E6E4CE597B7' AdviserGroupID,D.ID GroupID,
+		'0269F35E-B32D-4D12-8496-4E6E4CE597B7' JobID
+		FROM dbo.B_SalesGroupMember A
+		INNER JOIN ProjectList B ON A.ProjectID=B.ID
+		INNER JOIN B_SalesGroup D ON A.ReceptionGroupID=D.ID
+		INNER JOIN dbo.S_Account C ON A.MemberID=C.ID
+		WHERE A.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND A.IsDel=0 AND A.Status=1
+		ORDER BY A.ProjectID
+	</select>
+	
+	<!-- 服务-查询项目下的公共客户 -->
+	<select id="ShareServiceOppCustomerList_Select" resultType="java.util.HashMap">
+		SELECT
+			B.ID PublicID 
+		FROM
+			dbo.B_CustomerPublicPool B
+			LEFT JOIN dbo.B_Opportunity A ON A.ID = B.OpportunityID AND B.IsDel = 0
+			LEFT JOIN dbo.B_Clue C ON C.ID= A.ClueID AND A.IsDel= 0 
+		WHERE
+			A.ProjectID = #{projectID} AND ISNULL( A.SaleUserID, '' ) = ''
+	</select>
+	
+	<!-- 将客户分配给置业顾问 -->
+	<insert id="ShareServiceCustomerGGCList_Insert">
+	<![CDATA[
+		DECLARE @MessageInfo NVARCHAR(500)
+			EXEC [P_CustomerAllotOneSelf_Update] 
+			@UserID = N#{UserID},
+			@ProjectID = N#{ProjectID},
+			@OrgID = N#{OrgID},
+			@JobID = N#{JobID},
+			@PublicIDs = N#{PublicIDs},
+			@str1=@MessageInfo output 
+		SELECT @MessageInfo Msg
+	]]>
+	</insert>
+	
+</mapper>

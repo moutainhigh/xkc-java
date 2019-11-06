@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.house.BHouseplanMapper">
+	<!-- 置业计划详情 -->
+	<select id="HousePlan_Detail_Find" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+ 			 select top (1) A.*,B.RoomStru,C.Name,D.EmployeeName,D.Mobile From B_HousePlan A
+			inner join B_Room B on A.HouseID=B.ID and B.IsDel=0
+			inner join B_Project C on C.ID=A.ProjectID and C.IsDel=0
+			left join S_Account D on D.ID=A.SalesUserID
+			where 1=1 ${Parameter}  
+    	]]>
+	</select>
+	<!-- 微楼书详情 -->
+	<select id="MicroBuildingBook_Detail_Find" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+ 			select top (1) * From B_MicroBuildingBook where 1=1 ${Parameter}
+    	]]>
+	</select>
+</mapper>

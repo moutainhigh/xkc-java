@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.BAppupgradeMapper">
+	<!-- 获取版本信息-默认第一条 -->
+	<select id="SystemAppVersion_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT TOP 1 AppName, AppVersionCode, AppVersionName, UpgradeDesc, IsForceUpgrade, Model, Url 
+		FROM B_AppUpgrade 
+		where Status = 1 and IsDel = 0 and Platform = #{Platform} AND AppName = #{AppName} 
+		and (Model = 'All' OR Model = #{Model}) order by CreateTime desc
+	</select>
+	<!-- 获取APP版本信息 -->
+	<select id="SystemAppVersionList_Select" resultType="java.util.Map">
+		SELECT ID, Platform, AppName, AppVersionCode, Url 
+		FROM B_AppUpgrade 
+		where Status = 1 and IsDel = 0 and Platform in ('IOS_NEW','ANDROID_NEW') 
+	</select>
+</mapper>

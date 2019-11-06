@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerManagerMapper">
+
+    <select id="CustomerManagePageList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[
+    SELECT
+        tr.OpportunityID ,
+        tr.CustomerID ,
+        tr.CustomerName ,
+        STUFF(tr.CustomerMobile ,4,4,'****') CustomerMobile ,
+        CASE dbo.F_DictName(tr.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(tr.CustomerRank) END  CustomerRankName ,
+        tr.ClueStatus clueStatus,
+        tr.OpportunityStatus OpportunityStatus,
+        dbo.F_GetClueStatusName_xkc(tr.ClueStatus, tr.OpportunityStatus) CustomerStatus ,
+        dbo.F_GetProjectName(tr.ProjectID) AS IntentProjectName ,
+        dbo.F_DictName(tr.SourceType) OpportunitySource ,
+        dbo.F_GetMediaLargeName(tr.CognitiveChannel) CognitiveChannel ,
+        dbo.F_GetMediaChildName(tr.CognitiveChannelSub) CognitiveChannelSub ,
+        tr.SaleUserID ,
+        tr.SaleUserName ,
+        tr.TheFirstVisitDate ,
+        tr.ZJDF,
+        tr.TheLatestFollowUpDate ,
+        tr.CreateTime ,
+        tr.Gender ,
+        dbo.F_DictName(tr.SourceType) AS SourceType ,
+        tr.ReportUserID ,
+        tr.ReportUserName ,
+        tr.ReportUserMobile ,
+        tr.ChannelId ,
+        tr.ChannelName ,
+        tr.ReportTime ,
+        dbo.F_DictName(tr.Gender) GenderTxt,
+        dbo.F_GetSaleGroupName(tr.SaleUserID, tr.ProjectID) AS SaleTeamName,
+        STUFF(
+			( SELECT    ',' + r.RoomCode FROM dbo.B_Room r INNER JOIN dbo.B_Building b ON r.BuildingID=b.ID WHERE r.ID IN
+              (SELECT mt.RoomGUID FROM dbo.B_Opportunity o INNER JOIN dbo.B_CustomerAttach ca ON o.ID=ca.OpportunityID
+														INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID=ca.ID WHERE o.ID=tr.OpportunityID)
+        AND r.ProjectID in (select ID from B_Project where PID=#{paramMap.ProjectID}) FOR XML PATH('') )
+		, 1, 1, '') Room,
+        tr.SourceType SourceTypeID,
+        tr.CardID,
+        tr.CardType,
+        tr.SpareMobile,
+        tr.HomeAddress,
+        tr.Address Address,
+        tr.attrId
+          FROM      ( SELECT    b.ID OpportunityID ,
+                                b.CustomerID ,
+                                b.CustomerName ,
+                                b.CustomerMobile ,
+                                b.CustomerRank ,
+                                b.Status OpportunityStatus ,
+                                b.ProjectID ,
+                                b.OpportunitySource ,
+                                b.CognitiveChannel ,
+                                b.CognitiveChannelSub ,
+                                b.SaleUserID ,
+                                b.SaleUserName ,
+                                b.TheFirstVisitDate ,
+                                b.TheLatestFollowUpDate ,
+                                d.CreateTime ,
+                                a.Gender ,
+                                d.SourceType ,
+                                d.ReportUserID ,
+                                d.ReportUserName ,
+                                d.ReportUserMobile ,
+                                d.CreateTime AS ReportTime ,
+                                d.Status ClueStatus,
+                                SM.ReceptionGroupID SaleTeamID,
+                                CO.ID ChannelId,
+                                CO.OrgName ChannelName,
+                                d.ReportUserOrg,
+                                G.CreateTime  ZJDF,
+                                a.CardID CardID,
+                                a.CardType CardType,
+                                b.SpareMobile SpareMobile,
+                                ca.HomeAddress HomeAddress,
+                                ca.Address Address,
+                                ca.ID attrId
+                      FROM      B_Opportunity b
+                                LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_CustomerAttribute ca ON a.ID = ca.CustomerID
+                                LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
+                                LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg
+                                LEFT JOIN(
+									SELECT OpportunityID,MAX(CreateTime) CreateTime FROM dbo.B_CustomerFollowUp
+	 WHERE FollwUpType='69331990-DBF4-0A2F-80CD-7BC424AA8908'
+	   AND ProjectID=#{paramMap.ProjectID} ${paramMap.Where}
+	  GROUP BY OpportunityID
+								) G ON G.OpportunityID=b.ID
+                      WHERE     b.ProjectID=#{paramMap.ProjectID}
+								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
+                          FROM B_Opportunity b
+                                LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
+                                LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg AND CO.ProjectID = #{paramMap.ProjectID}
+                                LEFT JOIN(SELECT OpportunityID,MAX(CreateTime) CreateTime FROM dbo.B_CustomerFollowUp WHERE FollwUpType='69331990-DBF4-0A2F-80CD-7BC424AA8908' AND ProjectID=#{paramMap.ProjectID}
+                                            ${paramMap.Where}
+	                                        GROUP BY OpportunityID
+								          ) G ON G.OpportunityID=b.ID
+                                WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
+                      UNION
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
+                      FROM      B_Clue b
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
+                                LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{paramMap.ProjectID}
+                                AND b.SourceType  IS NOT NULL  AND b.SourceType<>'0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+                                AND NOT EXISTS ( SELECT ID
+                                                 FROM   B_Opportunity d
+                                                 WHERE  d.IsDel = 0
+                                                        AND d.ProjectID = #{paramMap.ProjectID}
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
+                               ${paramMap.ClueWhere}
+                    ) tm  where 1=1 ${paramMap.sqlWhere}
+                    ) ts where 1=1 ${paramMap.WhereLast}) tab WHERE tab.OpportunityID=b.ID)
+                      UNION ALL
+                      SELECT    b.ID OpportunityID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+                                b.CustomerRank ,
+                                0 OpportunityStatus ,
+                                b.IntentProjectID ProjectID ,
+                                b.SourceType OpportunitySource ,
+                                b.CognitiveChannel ,
+                                b.CognitiveChannelSub ,
+                                '' SaleUserID ,
+                                '' SaleUserName ,
+                                '' TheFirstVisitDate ,
+                                b.TheLatestFollowUpDate ,
+                                b.CreateTime ,
+                                (CASE WHEN ISNULL(b.Gender,'')='' THEN cp.Gender ELSE b.Gender END) AS Gender ,
+                                b.SourceType ,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+                                b.Status ClueStatus,
+                                '' SaleTeamID,
+                                CO.ID ChannelId,
+                                CO.OrgName ChannelName,
+                                b.ReportUserOrg,
+                                '' ZJDF,
+                                '' CardID,
+                                '' CardType,
+                                '' SpareMobile,
+                                '' HomeAddress,
+                                '' Address,
+                                '' attrId
+                      FROM      B_Clue b
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
+                                LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
+                      WHERE     EXISTS(
+									SELECT OpportunityID FROM (select OpportunityID from (
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
+                          FROM B_Opportunity b
+                                LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
+                                LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg AND CO.ProjectID = #{paramMap.ProjectID}
+                                LEFT JOIN(SELECT OpportunityID,MAX(CreateTime) CreateTime FROM dbo.B_CustomerFollowUp WHERE FollwUpType='69331990-DBF4-0A2F-80CD-7BC424AA8908' AND ProjectID=#{paramMap.ProjectID}
+                                            ${paramMap.Where}
+	                                        GROUP BY OpportunityID
+								          ) G ON G.OpportunityID=b.ID
+                                WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
+                      UNION
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
+                      FROM      B_Clue b
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
+                                LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{paramMap.ProjectID}
+                                AND b.SourceType  IS NOT NULL  AND b.SourceType<>'0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+                                AND NOT EXISTS ( SELECT ID
+                                                 FROM   B_Opportunity d
+                                                 WHERE  d.IsDel = 0
+                                                        AND d.ProjectID = #{paramMap.ProjectID}
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
+                               ${paramMap.ClueWhere}
+                    ) tm  where 1=1 ${paramMap.sqlWhere}
+                    ) ts where 1=1 ${paramMap.WhereLast}) tab
+									WHERE tab.OpportunityID=b.ID
+									)
+                    ) tr ${paramMap.updateWhere}
+        ]]>
+    </select>
+
+    <select id="CustomerNEWDetail_SelectGT" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+      C.Name CustomerName,<!--客户姓名 -->
+      STUFF(C.Mobile ,4,4,'****') CustomerMobile,<!--客户手机号-->
+      CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,<!--客储等级名称,客储等级-->
+      dbo.F_GetMediaLargeName(O.CognitiveChannel) CognitiveChannel,<!--媒体大类-->
+      dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,<!--媒体子类-->
+      dbo.F_DictName(Cl.SourceType) OpportunitySource,<!--客户来源-->
+      dbo.F_DictName(O.Commercial) Commercial,<!--业态需求-->
+      O.CreateTime,<!--创建时间-->
+      O.TheFirstVisitDate,<!--首次到访时间-->
+      dbo.F_GetZJDF(O.ID) ZJDF,<!--最近到访-->
+      O.TheLatestFollowUpDate,<!--最近跟进时间-->
+      dbo.F_DictName(O.IsLittleBooking) IsLittleBooking,<!--是否收小筹-->
+      dbo.F_GetSaleUserName(O.SaleUserID) SaleUserName,<!--置业顾问-->
+      dbo.F_DictName(O.CustomerLevel) CustomerLevel,<!--意向等级-->
+      dbo.F_DictName(O.PropertyIntention) PropertyIntention,<!--置业目的-->
+      dbo.F_CityName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
+      dbo.F_CityName(A.HomeArea) HomeArea,<!--居住区域-->
+      dbo.F_CityName(A.WorkArea) WorkArea,<!--工作区域-->
+      dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
+      A.Birthday,<!--生日-->
+      A.HomeAddress,<!--现居住地址-->
+      A.Address,<!--通信地址-->
+      dbo.F_DictName(A.PropertyNum) PropertyNum,<!--置业次数-->
+      dbo.F_DictName(A.Marriage) Marriage,<!--婚姻情况-->
+      dbo.F_DictName(A.Family) Family,<!--家庭结构-->
+      dbo.F_DictName(A.Industry) Industry,<!--所属行业-->
+      C.IsOwner,<!--是否业主-->
+      dbo.F_DictName(C.IsEmployee) IsEmployee,<!--是否员工&家属-->
+      dbo.F_DictName(C.CardType) CardType,<!--证件类型-->
+      C.CardID,<!--证件号码-->
+      dbo.F_DictName(C.AcceptFactor) AcceptFactor,<!--最认可因素-->
+      dbo.F_DictName(C.Gender) Gender,<!--性别-->
+      C.Creator,
+      '' NeedArea,<!--需求面积   现阶段无-->
+      '' IntertionTotal,<!--意向总价  现阶段无-->
+      Cl.ReportUserName,<!--渠道人员-->
+      Ch.OrgName,<!--渠道所属机构-->
+      <!--dbo.F_DictName(O.OpportunitySource) OpportunitySource,渠道来源-->
+      dbo.F_GetStatusName_xkc(O.Status) Status,<!--客户状态-->
+        O.SpareMobile SpareMobile
+       from B_Customer  C
+       left join B_CustomerAttribute A on A.CustomerID=C.ID and A.IsDel=0
+       left join B_Opportunity O on C.ID=O.CustomerID and C.IsDel=0
+       left join B_Clue Cl on Cl.ID=O.ClueID  AND Cl.ReportUserID=#{paramMap.ReportUserID}
+       left join B_ChannelOrg Ch on Ch.ID=Cl.ReportUserOrg
+       where O.IsDel=0 AND C.ID=#{paramMap.CustomerID} AND O.ProjectID=#{paramMap.ProjectID}
+    </select>
+
+    <select id="CustomerNEWDetail_SelectLT" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+      C.Name CustomerName,<!--客户姓名-->
+      STUFF(C.Mobile ,4,4,'****') CustomerMobile,<!--客户手机号-->
+      CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,<!--客储等级名称,客储等级-->
+      dbo.F_GetMediaLargeName(O.CognitiveChannel) CognitiveChannel,<!--媒体大类-->
+      dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,<!--媒体大类-->
+      dbo.F_DictName(O.SourceType) OpportunitySource,<!--客户来源-->
+      <!--dbo.F_DictName(O.Commercial) Commercial,业态需求-->
+      '' Commercial,<!--业态需求-->
+      O.CreateTime,<!--创建时间-->
+      ''TheFirstVisitDate,<!--首次到访时间-->
+      '' ZJDF,<!--最近到访-->
+      O.TheLatestFollowUpDate,<!--最近跟进时间-->
+      '' IsLittleBooking,<!--是否收小筹-->
+      '' SaleUserName,<!--置业顾问-->
+      '' CustomerLevel,<!--意向等级-->
+      <!--dbo.F_DictName(O.PropertyIntention) PropertyIntention,置业目的-->
+      '' PropertyIntention,<!--置业目的-->
+      dbo.F_CityName(A.DomicilePlace) DomicilePlace,<!--户籍所在地-->
+      dbo.F_CityName(A.HomeArea) HomeArea,<!--居住区域-->
+      dbo.F_CityName(A.WorkArea) WorkArea,<!--工作区域-->
+      dbo.F_DictName(A.AgeGroup) AgeGroup,<!--年龄段-->
+      ''Birthday,<!--生日-->
+      A.HomeAddress,<!--现居住地址-->
+      dbo.F_DictName(A.PropertyNum) PropertyNum,<!--置业次数-->
+      dbo.F_DictName(A.Marriage) Marriage,<!--婚姻情况-->
+      dbo.F_DictName(A.Family) Family,<!--家庭结构-->
+      dbo.F_DictName(A.Industry) Industry,<!--所属行业-->
+      C.IsOwner,<!--是否业主-->
+      '' IsEmployee,<!--是否员工&家属-->
+      dbo.F_DictName(C.CardType) CardType,<!--证件类型-->
+      C.CardID,<!--证件号码-->
+      dbo.F_DictName(C.AcceptFactor) AcceptFactor,<!--最认可因素-->
+      dbo.F_DictName(C.Gender) Gender,<!--性别-->
+      C.Creator,
+      '' NeedArea,<!--需求面积   现阶段无-->
+      '' IntertionTotal,<!--意向总价  现阶段无-->
+      O.ReportUserName,<!--渠道人员-->
+      Ch.OrgName,<!--渠道所属机构-->
+      <!--dbo.F_DictName(O.SourceType) OpportunitySource,渠道来源-->
+      case when O.Status=1 then '报备' when O.Status=2 then '确认带看' when O.Status=3 then '无效' when O.Status=41 then '丢失' end Status<!--客户状态-->
+       from B_CustomerPotential  C
+       left join B_CustomerPotentialAttribute A on A.CustomerPotentialID=C.ID and A.IsDel=0
+       left join B_Clue O on C.ID=O.CustomerPotentialID and C.IsDel=0  AND O.ID=#{paramMap.OpportunityID}
+       left join B_ChannelOrg Ch on Ch.ID=O.ReportUserOrg
+       where O.IsDel=0 AND C.ID=#{paramMap.CustomerID} AND O.IntentProjectID=#{paramMap.ProjectID}
+    </select>
+
+    <select id="CustomerNEWFollowUp_Select" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+			t.FollwUpUserName,
+			t.FollwUpUserMobile,
+			dbo.F_DictName(t.FollwUpType) FollwUpWay,
+			t.FollowUpContent,
+			t.CreateTime,
+      dbo.F_DictName(t.FollwUpUserRole) FollwUpUserRole,
+			dbo.F_DictName(t.CustomerRank) CustomerRank
+		 FROM (
+	SELECT
+			FollwUpUserName,
+			FollwUpUserMobile,
+			FollwUpType,
+			FollowUpContent,
+			CreateTime,
+			FollwUpUserRole,
+			CustomerRank FROM dbo.B_CustomerFollowUp WHERE ProjectID=#{paramMap.ProjectID}
+      AND (CustomerID = #{paramMap.CustomerID}
+      OR CustomerMobile = ( SELECT TOP 1 CustomerMobile FROM  dbo.B_Opportunity WHERE  ID = #{paramMap.OpportunityID} ))
+	UNION
+	SELECT
+			FollwUpUserName,
+			FollwUpUserMobile,
+			FollwUpType,
+			FollowUpContent,
+			CreateTime,
+			FollwUpUserRole,
+			CustomerRank FROM dbo.B_CustomerPotentialFollowUp WHERE  ProjectID=#{paramMap.ProjectID}
+      AND (CustomerPotentialID = #{paramMap.CustomerID}
+      OR CustomerPotentialMobile = ( SELECT TOP 1 CustomerMobile FROM  dbo.B_Opportunity WHERE  ID = #{paramMap.OpportunityID} ))
+			) t ORDER BY t.CreateTime DESC
+    </select>
+
+    <select id="CustomerNEWSignInfo_Select" parameterType="java.util.Map" resultType="java.util.Map">
+      <![CDATA[
+
+
+     SELECT  R.RoomCode ,
+        D.CstAllName ,
+        R.SaleStatus ,
+        D.QSDate ,
+        CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate
+             ELSE E.ZqDate
+        END ZqDate ,
+        D.PayformName ,
+        D.Total ,
+        E.RmbHtTotal + ( ( ~CAST(E.IsZxkbrht AS BIT) ) * E.ZxTotal )
+        + E.FactOtherTotal ContractAmount ,
+        F.FeeAmount ,
+        E.TradeGUID,
+        orgCity.OrgName cityName,
+        orgArea.OrgName areaName,
+        dbo.F_GetProjectName(p.id) AS IntentProjectName
+FROM    dbo.B_Opportunity A
+        JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
+        JOIN dbo.C_MYTrade C ON C.OppGUID = B.ID
+        JOIN dbo.B_Room R ON C.RoomGUID = R.ID
+        JOIN dbo.C_MYOrder D ON D.TradeGUID = C.TradeGUID
+        LEFT JOIN dbo.C_MYContract E ON E.TradeGUID = C.TradeGUID  AND E.CloseDate IS NULL
+        LEFT JOIN ( SELECT  sg.SaleGUID ,
+                            SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
+                    FROM    C_MYGetin (NOLOCK) sg
+                            JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+                    WHERE   sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+                            AND ( sg.ItemType LIKE '%房款%'
+                                  OR sg.ItemName = '其他'
+                                )
+                            AND ( sg.Status = ''
+                                  OR sg.Status IS NULL
+                                )
+                    GROUP BY sg.SaleGUID
+                  ) F ON F.SaleGUID = E.TradeGUID
+                  join B_Project P on C.ProjGUID = P.ID
+                    LEFT JOIN  S_Organization orgCity   ON  orgCity.ID = p.BUGUID
+                    LEFT JOIN S_Organization orgArea ON  orgArea.id = orgCity.PID
+				  WHERE   A.ID = (select top 1 ID from B_Opportunity where CustomerID=#{paramMap.CustomerID} and IntentProjectID=#{paramMap.ProjectID})
+    ]]>
+    </select>
+
+    <select id="CustomerNEWPayInfo_Select" parameterType="java.util.Map" resultType="java.util.Map">
+      <![CDATA[
+      SELECT B.ItemName AS MoneyTypeName ,
+      convert(nvarchar(50),cast(amount as money),1) AS  Payable ,
+      convert(nvarchar(50),cast(B.Ye as money),1) as Paid ,
+      Convert(nvarchar(50),B.CreateTime,23) AS PayableDate ,
+      Convert(nvarchar(50),B.lastDate,23) AS PaidDate
+      FROM    dbo.C_MYTrade A
+                INNER JOIN dbo.s_Fee B ON A.TradeGUID = B.TradeGUID
+                join B_Project P on A.ProjGUID = P.ID
+        WHERE a.CstAllGUID like CONCAT('%',#{paramMap.customerID},'%') and P.PID=#{paramMap.projectID}
+        order by B.Sequence
+      ]]>
+    </select>
+
+    <select id="CustomerPayMentsList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+                sg.GetinGUID,
+                sg.VouchGUID,sg.SaleGUID,
+                sg.SaleType,
+                sg.GetDate,
+                sg.Sequence,
+                sg.ItemType,
+                sg.ItemName,
+                Convert(nvarchar(36),Round(Amount,2)) Amount,
+                Bz,
+                Convert(nvarchar(36),Round(ExRate,2)) ExRate,
+                Convert(nvarchar(36),Round(RmbAmount,2))RmbAmount,
+                Status,
+                PreGetinGUID,
+                sg.FsettlCode,
+                sg.FsettleNo,
+                GetForm,
+                Convert(nvarchar(36),Round(BeforeYe,2))BeforeYe,
+                Convert(nvarchar(36),Round(BeforeRmbYe,2))BeforeRmbYe,
+                Convert(nvarchar(36),Round(AfterYe,2))AfterYe,
+                Convert(nvarchar(36),Round(AfterRmbYe,2))AfterRmbYe,
+                sg.Remark,
+                InSequence,
+                ZzdSequence,
+                YhPayform,
+                sg.RzBank,
+                Convert(nvarchar(36),Round(ZnTs,2)) ZnTs,
+                Convert(nvarchar(36),Round(YsZnj,2)) YsZnj,
+                Convert(nvarchar(36),Round(Jmje,2)) Jmje,
+                Convert(nvarchar(36),Round(TaxAmount,2)) TaxAmount,
+                Convert(nvarchar(36),Round(TaxRate,2)) TaxRate,
+                Convert(nvarchar(36),Round(NoTaxAmount,2)) NoTaxAmount,
+                sg.Version
+        FROM    C_MYGetin (NOLOCK) sg
+                JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+        WHERE   sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+                AND ( sg.ItemType LIKE '%房款%'
+                      OR sg.ItemName = '其他'
+                    )
+                AND ( sg.Status = ''
+                      OR sg.Status IS NULL
+                    )
+                AND sg.SaleGUID = #{tradeGUID}
+        ORDER BY GetDate
+    ]]>
+    </select>
+
+    <select id="SetExcelToCustomerChange_BakList1" parameterType="java.util.Map" resultType="java.util.Map">
+
+  SELECT
+					m.CustomerID,
+					m.CustomerName,
+					<!-- m.CustomerMobile, -->
+					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) &lt;&gt; '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
+					m.InvalidReason,<!--原因-->
+					CASE WHEN m.ComeOverdueTime ='1900-01-01' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,<!--到访逾期时间-->
+					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,<!--成交逾期时间-->
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,<!--确认人-->
+					m.ConfirmTime,<!--确认时间-->
+					m.ProjectID,<!--项目ID-->
+                    m.ProjectName,<!--项目名称-->
+					dbo.F_DictName(m.SourceType) SourceType,<!--渠道类型-->
+					m.ReportTime,<!--报备时间-->
+					CASE WHEN DATEDIFF(day,m.TheFirstVisitDate,'1900-01-01')=0 THEN NULL ELSE m.TheFirstVisitDate END TheFirstVisitDate,<!--首次到访时间-->
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+                    m.ChannelID ChannelID,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF<!--最近到访时间-->
+					 FROM (
+					 SELECT * FROM (
+						SELECT
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,<!--客户ID-->
+                                b.Name CustomerName ,<!--客户姓名-->
+                                b.Mobile CustomerMobile ,<!--客户手机号-->
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,<!--客储等级-->
+                                b.Status,<!--线索状态-->
+                                b.Status Statu,
+								                b.InvalidReason,<!--原因-->
+								                b.ComeOverdueTime,<!--到访逾期时间-->
+								                b.TradeOverdueTime,<!--成交逾期时间-->
+								                b.ConfirmUserId,<!--确认人-->
+								                b.ConfirmTime,<!--确认时间-->
+                                b.IntentProjectID ProjectID ,<!--意向项目ID-->
+								                b.IntentProjectName ProjectName,<!--项目名称-->
+                                b.SourceType,<!--渠道类型-->
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime , <!--报备时间-->
+								o.TheFirstVisitDate , <!--首访时间-->
+                                CO.ID ChannelID,
+                                CO.OrgName ChannelName,
+								o.ID OpportunityID
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{paramMap.ProjectID}
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{paramMap.ProjectID}
+                                AND b.Status&lt;&gt;3
+								) tm  WHERE 1=1 ${paramMap.sqlWhere}
+                                ) m
+
+								WHERE 1=1
+
+    </select>
+
+    <select id="SetExcelToCustomerChange_BakList" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[
+    SELECT
+        tr.OpportunityID ,
+        tr.CustomerID ,
+        tr.CustomerName ,
+        STUFF(tr.CustomerMobile ,4,4,'****') CustomerMobile ,
+        CASE dbo.F_DictName(tr.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(tr.CustomerRank) END  CustomerRankName ,
+        tr.ClueStatus clueStatus,
+        tr.OpportunityStatus OpportunityStatus,
+        dbo.F_GetClueStatusName_xkc(tr.ClueStatus, tr.OpportunityStatus) CustomerStatus ,
+        dbo.F_GetProjectName(tr.ProjectID) AS IntentProjectName ,
+        dbo.F_DictName(tr.SourceType) OpportunitySource ,
+        dbo.F_GetMediaLargeName(tr.CognitiveChannel) CognitiveChannel ,
+        dbo.F_GetMediaChildName(tr.CognitiveChannelSub) CognitiveChannelSub ,
+        tr.SaleUserID ,
+        tr.SaleUserName ,
+        tr.TheFirstVisitDate ,
+        tr.ZJDF,
+        tr.TheLatestFollowUpDate ,
+        tr.CreateTime ,
+        tr.Gender ,
+        dbo.F_DictName(tr.SourceType) AS SourceType ,
+        tr.ReportUserID ,
+        tr.ReportUserName ,
+        tr.ReportUserMobile ,
+        tr.ChannelId ,
+        tr.ChannelName ,
+        tr.ReportTime ,
+        dbo.F_DictName(tr.Gender) GenderTxt,
+        dbo.F_GetSaleGroupName(tr.SaleUserID, tr.ProjectID) AS SaleTeamName,
+        STUFF(
+			( SELECT    ',' + r.RoomCode FROM dbo.B_Room r INNER JOIN dbo.B_Building b ON r.BuildingID=b.ID WHERE r.ID IN
+              (SELECT mt.RoomGUID FROM dbo.B_Opportunity o INNER JOIN dbo.B_CustomerAttach ca ON o.ID=ca.OpportunityID
+														INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID=ca.ID WHERE o.ID=tr.OpportunityID)
+        AND r.ProjectID in (select ID from B_Project where PID=#{paramMap.ProjectID}) FOR XML PATH('') )
+		, 1, 1, '') Room,
+        tr.SourceType SourceTypeID,
+        tr.CardID,
+        tr.CardType,
+        tr.SpareMobile,
+        tr.HomeAddress,
+        tr.Address Address,
+        tr.attrId
+          FROM      ( SELECT    b.ID OpportunityID ,
+                                b.CustomerID ,
+                                b.CustomerName ,
+                                b.CustomerMobile ,
+                                b.CustomerRank ,
+                                b.Status OpportunityStatus ,
+                                b.ProjectID ,
+                                b.OpportunitySource ,
+                                b.CognitiveChannel ,
+                                b.CognitiveChannelSub ,
+                                b.SaleUserID ,
+                                b.SaleUserName ,
+                                b.TheFirstVisitDate ,
+                                b.TheLatestFollowUpDate ,
+                                d.CreateTime ,
+                                a.Gender ,
+                                d.SourceType ,
+                                d.ReportUserID ,
+                                d.ReportUserName ,
+                                d.ReportUserMobile ,
+                                d.CreateTime AS ReportTime ,
+                                d.Status ClueStatus,
+                                SM.ReceptionGroupID SaleTeamID,
+                                CO.ID ChannelId,
+                                CO.OrgName ChannelName,
+                                d.ReportUserOrg,
+                                G.CreateTime  ZJDF,
+                                a.CardID CardID,
+                                a.CardType CardType,
+                                b.SpareMobile SpareMobile,
+                                ca.HomeAddress HomeAddress,
+                                ca.Address Address,
+                                ca.ID attrId
+                      FROM      B_Opportunity b
+                                LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_CustomerAttribute ca ON a.ID = ca.CustomerID
+                                LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
+                                LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg
+                                LEFT JOIN(
+									SELECT OpportunityID,MAX(CreateTime) CreateTime FROM dbo.B_CustomerFollowUp
+	 WHERE FollwUpType='69331990-DBF4-0A2F-80CD-7BC424AA8908'
+	   AND ProjectID=#{paramMap.ProjectID} ${paramMap.Where}
+	  GROUP BY OpportunityID
+								) G ON G.OpportunityID=b.ID
+                      WHERE     b.ProjectID=#{paramMap.ProjectID}
+								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
+                          FROM B_Opportunity b
+                                LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
+                                LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg AND CO.ProjectID = #{paramMap.ProjectID}
+                                LEFT JOIN(SELECT OpportunityID,MAX(CreateTime) CreateTime FROM dbo.B_CustomerFollowUp WHERE FollwUpType='69331990-DBF4-0A2F-80CD-7BC424AA8908' AND ProjectID=#{paramMap.ProjectID}
+                                            ${paramMap.Where}
+	                                        GROUP BY OpportunityID
+								          ) G ON G.OpportunityID=b.ID
+                                WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
+                      UNION
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
+                      FROM      B_Clue b
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
+                                LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{paramMap.ProjectID}
+                                AND b.SourceType  IS NOT NULL  AND b.SourceType<>'0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+                                AND NOT EXISTS ( SELECT ID
+                                                 FROM   B_Opportunity d
+                                                 WHERE  d.IsDel = 0
+                                                        AND d.ProjectID = #{paramMap.ProjectID}
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
+                               ${paramMap.ClueWhere}
+                    ) tm  where 1=1 ${paramMap.sqlWhere}
+                    ) ts where 1=1 ${paramMap.WhereLast}) tab WHERE tab.OpportunityID=b.ID)
+                      UNION ALL
+                      SELECT    b.ID OpportunityID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+                                b.CustomerRank ,
+                                0 OpportunityStatus ,
+                                b.IntentProjectID ProjectID ,
+                                b.SourceType OpportunitySource ,
+                                b.CognitiveChannel ,
+                                b.CognitiveChannelSub ,
+                                '' SaleUserID ,
+                                '' SaleUserName ,
+                                '' TheFirstVisitDate ,
+                                b.TheLatestFollowUpDate ,
+                                b.CreateTime ,
+                                (CASE WHEN ISNULL(b.Gender,'')='' THEN cp.Gender ELSE b.Gender END) AS Gender ,
+                                b.SourceType ,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+                                b.Status ClueStatus,
+                                '' SaleTeamID,
+                                CO.ID ChannelId,
+                                CO.OrgName ChannelName,
+                                b.ReportUserOrg,
+                                '' ZJDF,
+                                '' CardID,
+                                '' CardType,
+                                '' SpareMobile,
+                                '' HomeAddress,
+                                '' Address,
+                                '' attrId
+                      FROM      B_Clue b
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
+                                LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
+                      WHERE     EXISTS(
+									SELECT OpportunityID FROM (select OpportunityID from (
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
+                          FROM B_Opportunity b
+                                LEFT JOIN B_Customer a ON a.ID = b.CustomerID
+                                LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
+                                LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=d.ReportUserOrg AND CO.ProjectID = #{paramMap.ProjectID}
+                                LEFT JOIN(SELECT OpportunityID,MAX(CreateTime) CreateTime FROM dbo.B_CustomerFollowUp WHERE FollwUpType='69331990-DBF4-0A2F-80CD-7BC424AA8908' AND ProjectID=#{paramMap.ProjectID}
+                                            ${paramMap.Where}
+	                                        GROUP BY OpportunityID
+								          ) G ON G.OpportunityID=b.ID
+                                WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
+                      UNION
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
+                      FROM      B_Clue b
+                                LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
+                                LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{paramMap.ProjectID}
+                                AND b.SourceType  IS NOT NULL  AND b.SourceType<>'0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+                                AND NOT EXISTS ( SELECT ID
+                                                 FROM   B_Opportunity d
+                                                 WHERE  d.IsDel = 0
+                                                        AND d.ProjectID = #{paramMap.ProjectID}
+                                                        AND d.ClueID = b.ID ) AND b.Status<>3
+                               ${paramMap.ClueWhere}
+                    ) tm  where 1=1 ${paramMap.sqlWhere}
+                    ) ts where 1=1 ${paramMap.WhereLast}) tab
+									WHERE tab.OpportunityID=b.ID
+									)
+                    ) tr ${paramMap.updateWhere}
+        ]]>
+    </select>
+</mapper>

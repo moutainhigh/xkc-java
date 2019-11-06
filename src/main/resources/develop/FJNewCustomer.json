@@ -1,0 +1,219 @@
+{
+  "ClueID": "",
+  "OpportunityID": "",
+  "CustomerID": "",
+  "Panel": [
+    {
+      "Name": "默认项",
+      "Type": "Normal",
+      "ListIndex": 1,
+      "Child": [
+        {
+          "ID": "149F778D-4244-46F6-908F-D33A363A5B58",
+          "Name": "姓名",
+          "Placeholder": "请输入姓名(必填)",
+          "Type": "Text",
+          "Value": "",
+          "ListIndex": 1,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 100,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "21685728-54C5-4268-8371-62413CE42841",
+          "Name": "手机",
+          "Placeholder": "",
+          "Type": "Mobile",
+          "Value": "",
+          "ListIndex": 2,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 20,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "E72C340D-4092-467A-9B8F-5138DBDCA43B",
+          "Name": "性别",
+          "Placeholder": "必填",
+          "Type": "OptionRadio",
+          "Value": "男",
+          "ValueID": "50827B18-5BCC-454C-B658-09AF4328D2A0",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "50F96B8D-78F7-4ED6-924A-02EF5069CC9F",
+          "Name": "来访方式",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "来访",
+          "ValueID": "E0C5FDD1-800B-39F5-1A20-C0A5A3C3B450",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 1,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "1FA31185-3B00-47AA-8F5E-7AA3D53205A5",
+          "Name": "置业顾问",
+          "Placeholder": "必填",
+          "Type": "AdviserPush",
+          "Value": "无",
+          "ValueID": "C4C09951-FA39-4982-AAD1-E72D9D4C3899",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "8F6CC088-D5DD-48D2-BA3B-3A7AA4A1DB36",
+          "Name": "来访时间",
+          "Placeholder": "必填",
+          "Type": "Date",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 0,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "MinDate": "Now",
+          "MaxDate": "",
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "F1725D6B-D1F7-4BC3-8C35-20FAB53A1602",
+          "Name": "渠道来源",
+          "Placeholder": "必填",
+          "Type": "Option",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 1,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 36,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        },
+        {
+          "ID": "BB66EE25-E48E-4A7B-BA1D-DB03FBC87500",
+          "Name": "备注",
+          "Placeholder": "请输入……",
+          "Type": "TextArea",
+          "Value": "",
+          "ListIndex": 3,
+          "IsMust": 0,
+          "IsHide": 0,
+          "IsMustShow": 1,
+          "IsEdit": 1,
+          "IsMulti": 0,
+          "MaxLength": 50,
+          "MaxSelectedNum": 0,
+          "NormalColor": "#FFFFFF",
+          "SelectedColor": "#FFFFFF",
+          "Partner": "",
+          "SubPartner": "",
+          "Verify": [
+
+          ],
+          "Option": [
+
+          ]
+        }
+      ]
+    }
+  ]
+}

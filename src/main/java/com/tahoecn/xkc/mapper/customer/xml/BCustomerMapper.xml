@@ -1,0 +1,1363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerMapper">
+    <insert id="CustomerGuidePrintDetail_Insert" parameterType="java.util.Map">
+        INSERT INTO dbo.B_CustomerGuide
+        ( ID ,
+        B_ClueAllocationID,
+        ProjectID ,
+        OpportunityID ,
+        CustomerID ,
+        CustomerMobile ,
+        CustomerGuideTemplate ,
+        CustomerInfoText ,
+        ChannelInfoText ,
+        FirstSalesUserText ,
+        PartnerText ,
+        ReportTimeText ,
+        FirstTimeText ,
+        RevisitTimeText ,
+        PrintingTimeText ,
+        PrintingAddressText ,
+        PrintingUserText ,
+        RiseText ,
+        MarkText ,
+        SerialNumberText ,
+        Creator ,
+        CreateTime ,
+        Editor ,
+        EditTime ,
+        IsDel ,
+        Status
+        )
+        VALUES  ( NEWID() ,
+        #{ID} ,
+        #{ProjectID} ,
+        #{OpportunityID} ,
+        #{CustomerID} ,
+        #{CustomerMobile} ,
+        #{CustomerGuideTemplate} ,
+        #{CustomerInfoText} ,
+        #{ChannelInfoText} ,
+        #{FirstSalesUserText} ,
+        #{PartnerText} ,
+        #{ReportTimeText} ,
+        #{FirstTimeText},
+        #{RevisitTimeText},
+        #{PrintingTimeText},
+        #{PrintingAddressText} ,
+        #{PrintingUserText} ,
+        #{RiseText} ,
+        #{MarkText} ,
+        #{SerialNumberText} ,
+        #{UserID} ,
+        GETDATE() ,
+        NULL ,
+        NULL ,
+        0 ,
+        1
+        )
+    </insert>
+    <update id="CustomerGuidePrintDetail_Update">
+        UPDATE dbo.B_ClueAllocation SET SerialNumber=#{SerialNumberText} WHERE ID=#{ID}
+    </update>
+
+    <select id="customerChangePageList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+            m.ClueID,
+            m.CustomerID,
+            m.CustomerName,
+            STUFF(m.CustomerMobile,4,4,'****') CustomerMobile ,
+            CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+            dbo.F_GetClueStatusName_xkc(m.Status, 0)                                                             Status,
+            m.InvalidReason,
+            m.ComeOverdueTime,
+            m.TradeOverdueTime,
+            dbo.F_GetSaleUserName(m.ConfirmUserId)                                                           ConfirmUserName,
+            m.ConfirmTime,
+            m.ProjectID,
+            dbo.F_DictName(m.SourceType)                                                                     SourceType,
+            m.ReportTime,
+            m.TheFirstVisitDate,
+            m.ReportUserID,
+            m.ReportUserName,
+            m.ReportUserMobile,
+            m.ChannelName,
+            m.OpportunityID,
+            dbo.F_GetZJDF(m.OpportunityID)                                                                   ZJDF,
+            STUFF((SELECT ',' + r.RoomCode
+            FROM dbo.B_Room r
+            INNER JOIN dbo.B_Building b ON r.BuildingID = b.ID
+            WHERE r.ID
+            IN
+            (SELECT mt.RoomGUID
+            FROM dbo.B_Opportunity o
+            INNER JOIN dbo.B_CustomerAttach ca ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID = ca.ID
+            WHERE o.ID = m.OpportunityID)
+            AND r.ProjectID in (select ID from B_Project where PID = #{projectID}) FOR XML PATH ('')), 1, 1,
+            '')                                                                                        Room,
+            dbo.F_GetClueStatusName_xkc('', m.OpportunityStatus)                                                 OpportunityStatus
+            FROM (
+            SELECT *
+            FROM (
+            SELECT DISTINCT b.ID                        ClueID,
+            b.CustomerPotentialID       CustomerID,
+            b.Name                      CustomerName,
+            b.Mobile                    CustomerMobile,
+            CASE
+            WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank
+            ELSE b.CustomerRank END CustomerRank,
+            b.Status,
+            b.InvalidReason,
+            b.ComeOverdueTime,
+            b.TradeOverdueTime,
+            b.ConfirmUserId,
+            b.ConfirmTime,
+            b.IntentProjectID           ProjectID,
+            b.SourceType,
+            b.SourceType                SourceTypeID,
+            b.ReportUserID,
+            b.ReportUserName,
+            b.ReportUserMobile,
+            b.CreateTime AS             ReportTime,
+            o.TheFirstVisitDate,
+            CO.id                       ChannelId,
+            CO.OrgName                  ChannelName,
+            b.ReportUserOrg,
+            o.ID                        OpportunityID,
+            o.Status                    OpportunityStatus
+            FROM B_Clue b
+            LEFT JOIN dbo.B_Opportunity o
+            ON b.ID = o.ClueID AND o.IsDel = 0 AND o.ProjectID = #{projectID}
+            LEFT JOIN B_ChannelOrg CO ON CO.ID = b.ReportUserOrg AND CO.IsDel = 0
+            LEFT JOIN dbo.B_CustomerAttach A
+            ON A.OpportunityID = o.ID AND A.IsDel = 0 AND A.ProjectID = #{projectID}
+            WHERE b.IsDel = 0
+            AND b.IntentProjectID = #{projectID}
+            AND b.SourceType IS NOT NULL
+            AND b.SourceType <> '0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+            ) t   where 1=1 ${sqlWhere}
+            ) m
+        ]]>
+    </select>
+    <select id="excelToCustomerChangeList" resultType="java.util.Map">
+        <!--
+            SELECT
+					m.num,
+					m.ClueID,
+					m.CustomerID,
+					m.CustomerName,
+					STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+
+					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
+					m.InvalidReason,
+					CASE WHEN m.ComeOverdueTime ='1900-01-01 00:00:00.000' THEN NULL ELSE m.ComeOverdueTime END ComeOverdueTime,
+					CASE WHEN DATEDIFF(day,m.TradeOverdueTime,'1900-01-01')=0 THEN NULL ELSE m.TradeOverdueTime END TradeOverdueTime,
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,
+					m.ConfirmTime,
+					m.ProjectID,
+            m.ProjectName,
+					dbo.F_DictName(m.SourceType) SourceType,
+					m.ReportTime,
+					CASE WHEN DATEDIFF(day,m.TheFirstVisitDate,'1900-01-01')=0 THEN NULL ELSE m.TheFirstVisitDate END TheFirstVisitDate,
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF,
+                STUFF(( SELECT    ',' + r.RoomCode FROM dbo.B_Room r INNER JOIN dbo.B_Building b ON r.BuildingID=b.ID WHERE r.ID
+                        IN
+														(SELECT mt.RoomGUID FROM dbo.B_Opportunity o INNER JOIN dbo.B_CustomerAttach ca ON o.ID=ca.OpportunityID
+														INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID=ca.ID WHERE o.ID=m.OpportunityID)
+                AND r.ProjectID in (select ID from B_Project where PID=#{projectID}) FOR XML PATH('') ), 1, 1, '') Room
+					 FROM (
+					 SELECT ROW_NUMBER() OVER(ORDER BY t.ReportTime DESC) num,* FROM (
+						SELECT
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,
+                                b.Status,
+								                b.InvalidReason,
+								                b.ComeOverdueTime,
+								                b.TradeOverdueTime,
+								                b.ConfirmUserId,
+								                b.ConfirmTime,
+                                b.IntentProjectID ProjectID ,
+								                b.IntentProjectName ProjectName,
+                                b.SourceType SourceTypeID,
+                                b.SourceType,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+								o.TheFirstVisitDate ,
+                                CO.OrgName ChannelName,
+                                b.ReportUserOrg,
+								o.ID OpportunityID
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID}
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+								LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID}
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{projectID}
+                                AND b.SourceType IS NOT NULL AND b.SourceType<>'0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+								) t  WHERE 1=1 ${sqlWhere}
+                                ) m
+
+								WHERE 1=1
+								-->
+        <![CDATA[
+        SELECT
+            m.ClueID,
+            m.CustomerID,
+            m.CustomerName,
+            STUFF(m.CustomerMobile,4,4,'****') CustomerMobile ,
+            CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+            dbo.F_GetClueStatusName_xkc(m.Status, 0)                                                             Status,
+            m.InvalidReason,
+            m.ComeOverdueTime,
+            m.TradeOverdueTime,
+            dbo.F_GetSaleUserName(m.ConfirmUserId)                                                           ConfirmUserName,
+            m.ConfirmTime,
+            m.ProjectID,
+            dbo.F_DictName(m.SourceType)                                                                     SourceType,
+            m.ReportTime,
+            m.TheFirstVisitDate,
+            m.ReportUserID,
+            m.ReportUserName,
+            m.ReportUserMobile,
+            m.ChannelName,
+            m.OpportunityID,
+            dbo.F_GetZJDF(m.OpportunityID)                                                                   ZJDF,
+            STUFF((SELECT ',' + r.RoomCode
+            FROM dbo.B_Room r
+            INNER JOIN dbo.B_Building b ON r.BuildingID = b.ID
+            WHERE r.ID
+            IN
+            (SELECT mt.RoomGUID
+            FROM dbo.B_Opportunity o
+            INNER JOIN dbo.B_CustomerAttach ca ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.C_MYTrade mt ON mt.OppGUID = ca.ID
+            WHERE o.ID = m.OpportunityID)
+            AND r.ProjectID in (select ID from B_Project where PID = #{projectID}) FOR XML PATH ('')), 1, 1,
+            '')                                                                                        Room,
+            dbo.F_GetClueStatusName_xkc('', m.OpportunityStatus)                                                 OpportunityStatus
+            FROM (
+            SELECT *
+            FROM (
+            SELECT DISTINCT b.ID                        ClueID,
+            b.CustomerPotentialID       CustomerID,
+            b.Name                      CustomerName,
+            b.Mobile                    CustomerMobile,
+            CASE
+            WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank
+            ELSE b.CustomerRank END CustomerRank,
+            b.Status,
+            b.InvalidReason,
+            b.ComeOverdueTime,
+            b.TradeOverdueTime,
+            b.ConfirmUserId,
+            b.ConfirmTime,
+            b.IntentProjectID           ProjectID,
+            b.SourceType,
+            b.SourceType                SourceTypeID,
+            b.ReportUserID,
+            b.ReportUserName,
+            b.ReportUserMobile,
+            b.CreateTime AS             ReportTime,
+            o.TheFirstVisitDate,
+            CO.id                       ChannelId,
+            CO.OrgName                  ChannelName,
+            b.ReportUserOrg,
+            o.ID                        OpportunityID,
+            o.Status                    OpportunityStatus
+            FROM B_Clue b
+            LEFT JOIN dbo.B_Opportunity o
+            ON b.ID = o.ClueID AND o.IsDel = 0 AND o.ProjectID = #{projectID}
+            LEFT JOIN B_ChannelOrg CO ON CO.ID = b.ReportUserOrg AND CO.IsDel = 0
+            LEFT JOIN dbo.B_CustomerAttach A
+            ON A.OpportunityID = o.ID AND A.IsDel = 0 AND A.ProjectID = #{projectID}
+            WHERE b.IsDel = 0
+            AND b.IntentProjectID = #{projectID}
+            AND b.SourceType IS NOT NULL
+            AND b.SourceType <> '0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+            ) t   where 1=1 ${sqlWhere}
+            ) m
+  ]]>
+    </select>
+    <select id="getDistributionList_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT co.ID,co.OrgName FROM dbo.B_ChannelOrg co
+            INNER JOIN dbo.B_PojectChannelOrgRel pc ON co.ID=pc.OrgID AND pc.IsDel=0 AND pc.Status=1  AND pc.ProjectID=#{projectID}
+            WHERE co.IsDel=0 AND co.Status=1  AND co.OrgCategory=1
+        ]]>
+    </select>
+    <select id="CustomerChange_BakPageList_Select" resultType="java.util.Map">
+        <![CDATA[
+  
+					SELECT 
+					m.ClueID,
+					m.CustomerID,
+					m.CustomerName,
+                    STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+                    m.CustomerMobile CustomerMobileWhole,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
+					m.InvalidReason,
+					m.ComeOverdueTime,
+					m.TradeOverdueTime,
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,
+					m.ConfirmTime,
+					m.ProjectID,
+					dbo.F_DictName(m.SourceType) SourceType,
+					m.ReportTime,
+					m.TheFirstVisitDate,
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF
+					 FROM (
+					 SELECT * FROM (
+						SELECT  
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+                                b.SpareMobile SpareMobile ,
+
+
+
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,
+                                b.Status,
+								b.InvalidReason,
+								b.ComeOverdueTime,
+								b.TradeOverdueTime,
+								b.ConfirmUserId,
+								b.ConfirmTime,
+                                b.IntentProjectID ProjectID ,
+                                b.SourceType,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+								o.TheFirstVisitDate ,
+                                CO.OrgName ChannelName,
+								o.ID OpportunityID,
+                b.Status Statu
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID}
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+								--LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID}
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{projectID} 
+
+
+
+								) t  WHERE 1=1 ${sqlWhere}
+                                ) m
+
+        ]]>
+    </select>
+    <select id="SetExcelToCustomerChange_BakList" resultType="java.util.Map">
+        <![CDATA[
+					SELECT
+					m.ClueID,
+					m.CustomerID,
+					m.CustomerName,
+                    STUFF(m.CustomerMobile ,4,4,'****') CustomerMobile,
+                    m.CustomerMobile CustomerMobileWhole,
+					CASE WHEN dbo.F_DictName(m.CustomerRank) <> '' THEN  dbo.F_DictName(m.CustomerRank) ELSE '1级' END CustomerRank,
+					dbo.F_GetClueStatusName_xkc(m.Status,0) Status,
+					m.InvalidReason,
+					m.ComeOverdueTime,
+					m.TradeOverdueTime,
+					dbo.F_GetSaleUserName(m.ConfirmUserId) ConfirmUserName,
+					m.ConfirmTime,
+					m.ProjectID,
+					dbo.F_DictName(m.SourceType) SourceType,
+					m.ReportTime,
+					m.TheFirstVisitDate,
+					m.ReportUserID ,
+					m.ReportUserName ,
+					m.ReportUserMobile ,
+					m.ChannelName,
+					m.OpportunityID,
+					dbo.F_GetZJDF(m.OpportunityID) ZJDF
+					 FROM (
+					 SELECT * FROM (
+						SELECT
+                                b.ID ClueID ,
+                                b.CustomerPotentialID CustomerID ,
+                                b.Name CustomerName ,
+                                b.Mobile CustomerMobile ,
+                                b.SpareMobile SpareMobile ,
+
+
+
+                                CASE WHEN o.CustomerRank IS NOT NULL THEN o.CustomerRank ELSE b.CustomerRank END CustomerRank,
+                                b.Status,
+								b.InvalidReason,
+								b.ComeOverdueTime,
+								b.TradeOverdueTime,
+								b.ConfirmUserId,
+								b.ConfirmTime,
+                                b.IntentProjectID ProjectID ,
+                                b.SourceType,
+                                b.ReportUserID ,
+                                b.ReportUserName ,
+                                b.ReportUserMobile ,
+                                b.CreateTime AS ReportTime ,
+								o.TheFirstVisitDate ,
+                                CO.OrgName ChannelName,
+								o.ID OpportunityID,
+                b.Status Statu
+                      FROM      B_Clue b
+								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID}
+								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
+								LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID}
+                      WHERE     b.IsDel = 0
+                                AND b.IntentProjectID = #{projectID}
+
+
+
+								) t  WHERE 1=1 ${sqlWhere}
+                                ) m
+
+            ]]>
+    </select>
+    <select id="CustomerChangeDetailAll_Select" resultType="java.util.Map">
+        <![CDATA[
+            select C.Name                                          CustomerName,
+            STUFF(C.Mobile, 4, 4, '****')                   CustomerMobile,
+            CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,
+            dbo.F_GetMediaLargeName(Cl.CognitiveChannel)    CognitiveChannel,
+            dbo.F_GetMediaChildName(Cl.CognitiveChannelSub) CognitiveChannelSub,
+            dbo.F_DictName(Cl.SourceType)             OpportunitySource,
+            dbo.F_DictName(O.Commercial)                    Commercial,
+            O.CreateTime,
+            O.TheFirstVisitDate,
+            dbo.F_GetZJDF(O.ID)                             ZJDF,
+            O.TheLatestFollowUpDate,
+            dbo.F_DictName(O.IsLittleBooking)               IsLittleBooking,
+            dbo.F_GetSaleUserName(O.SaleUserID)             SaleUserName,
+            dbo.F_DictName(O.CustomerLevel)                 CustomerLevel,
+            dbo.F_DictName(O.PropertyIntention)             PropertyIntention,
+            dbo.F_DictName(A.DomicilePlace)                 DomicilePlace,
+            dbo.F_DictName(A.HomeArea)                      HomeArea,
+            dbo.F_DictName(A.WorkArea)                      WorkArea,
+            dbo.F_DictName(A.AgeGroup)                      AgeGroup,
+            A.Birthday,
+            A.HomeAddress,
+            dbo.F_DictName(A.PropertyNum)                   PropertyNum,
+            dbo.F_DictName(A.Marriage)                      Marriage,
+            dbo.F_DictName(A.Family)                        Family,
+            dbo.F_DictName(A.Industry)                      Industry,
+            C.IsOwner,
+            dbo.F_DictName(C.IsEmployee)                    IsEmployee,
+            dbo.F_DictName(C.CardType)                      CardType,
+            C.CardID,
+            dbo.F_DictName(C.AcceptFactor)                  AcceptFactor,
+            dbo.F_DictName(C.Gender)                        Gender,
+            C.Creator,
+            ''                                              NeedArea,
+            ''                                              IntertionTotal,
+            Cl.ReportUserName,
+            Ch.OrgName,
+
+            dbo.F_GetStatusName_xkc(O.Status)                   Status
+
+            from B_Customer C
+            left join B_CustomerAttribute A on A.CustomerID = C.ID and A.IsDel = 0
+            left join B_Opportunity O on C.ID = O.CustomerID and C.IsDel = 0
+            left join B_Clue Cl on Cl.ID = O.ClueID
+            left join B_ChannelOrg Ch on Ch.ID = Cl.ReportUserOrg
+            where O.IsDel = 0
+            AND C.ID = #{CustomerID}
+            AND O.ProjectID = #{projectID}
+        ]]>
+    </select>
+    <select id="CustomerChangeDetailAll_Select2" resultType="java.util.Map">
+        <![CDATA[
+            select C.Name                                         CustomerName,
+            STUFF(C.Mobile, 4, 4, '****')                  CustomerMobile,
+            CASE dbo.F_DictName(O.CustomerRank) WHEN '' THEN '1级' WHEN NULL THEN '1级' ELSE dbo.F_DictName(O.CustomerRank) END  CustomerRank ,
+            dbo.F_GetMediaLargeName(O.CognitiveChannel)    CognitiveChannel,
+            dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,
+            dbo.F_DictName(O.SourceType)                   OpportunitySource,
+
+            ''                                             Commercial,
+            O.CreateTime,
+            ''                                             TheFirstVisitDate,
+            ''                                             ZJDF,
+            O.TheLatestFollowUpDate,
+            ''                                             IsLittleBooking,
+            ''                                             SaleUserName,
+            ''                                             CustomerLevel,
+
+            ''                                             PropertyIntention,
+            dbo.F_DictName(A.DomicilePlace)                DomicilePlace,
+            dbo.F_DictName(A.HomeArea)                     HomeArea,
+            dbo.F_DictName(A.WorkArea)                     WorkArea,
+            dbo.F_DictName(A.AgeGroup)                     AgeGroup,
+            ''                                             Birthday,
+            A.HomeAddress,
+            dbo.F_DictName(A.PropertyNum)                  PropertyNum,
+            dbo.F_DictName(A.Marriage)                     Marriage,
+            dbo.F_DictName(A.Family)                       Family,
+            dbo.F_DictName(A.Industry)                     Industry,
+            C.IsOwner,
+            ''                                             IsEmployee,
+            dbo.F_DictName(C.CardType)                     CardType,
+            C.CardID,
+            dbo.F_DictName(C.AcceptFactor)                 AcceptFactor,
+            dbo.F_DictName(C.Gender)                       Gender,
+            C.Creator,
+            ''                                             NeedArea,
+            ''                                             IntertionTotal,
+            O.ReportUserName,
+            Ch.OrgName,
+
+            case
+            when O.Status = 1 then '报备'
+            when O.Status = 2 then '确认带看'
+            when O.Status = 3 then '无效'
+            when O.Status = 41 then '丢失' end           Status
+
+            from B_CustomerPotential C
+            left join B_CustomerPotentialAttribute A on A.CustomerPotentialID = C.ID and A.IsDel = 0
+            left join B_Clue O on C.ID = O.CustomerPotentialID and C.IsDel = 0 AND O.ID = #{clueID}
+            left join B_ChannelOrg Ch on Ch.ID = O.ReportUserOrg
+            where O.IsDel = 0
+            AND C.ID = #{customerID}
+            AND O.IntentProjectID = #{projectID}
+        ]]>
+    </select>
+    <select id="getB_OpportunityByClueID" resultType="java.util.Map">
+        <![CDATA[
+            SELECT CustomerID
+            FROM dbo.B_Opportunity
+            WHERE ClueID = #{clueID}
+            AND IsDel = 0
+        ]]>
+    </select>
+    <!-- 验证是否是本项目老业主 -->
+    <select id="IsProjectOwner_Select" resultType="java.util.Map">
+        <![CDATA[
+          select a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+ 			and a.IsOwner=1 and b.ProjectID=#{ProjectID} and  (Mobile=#{Mobile} OR SpareMobile=#{Mobile})
+        ]]>
+    </select>
+    <select id="getB_CustomerPotential" resultType="java.util.Map">
+        <![CDATA[
+            SELECT  Mobile
+            FROM dbo.B_CustomerPotential
+            WHERE ID = #{customerID}
+        ]]>
+    </select>
+    <select id="getB_Customer" resultType="java.util.Map">
+        SELECT  Mobile FROM dbo.B_Customer WHERE ID = #{customerID}
+    </select>
+    <select id="CustomerFollowUp_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT t.FollwUpUserName,
+            t.FollwUpUserMobile,
+            dbo.F_DictName(t.FollwUpType) FollwUpWay,
+            t.FollowUpContent,
+            t.CreateTime,
+            dbo.F_DictName(t.FollwUpUserRole) FollwUpUserRole,
+            dbo.F_DictName(t.CustomerRank) CustomerRank
+            FROM (
+            SELECT FollwUpUserName,
+            FollwUpUserMobile,
+            FollwUpType,
+            FollowUpContent,
+            CreateTime,
+            FollwUpUserRole,
+            CustomerRank
+            FROM dbo.B_CustomerFollowUp
+            WHERE ProjectID = #{projectID}
+            AND CustomerMobile = #{mobile}
+            UNION
+            SELECT FollwUpUserName,
+            FollwUpUserMobile,
+            FollwUpType,
+            FollowUpContent,
+            CreateTime,
+            FollwUpUserRole,
+            CustomerRank
+            FROM dbo.B_CustomerPotentialFollowUp
+            WHERE ProjectID = #{projectID}
+            AND CustomerPotentialMobile = #{mobile}
+            ) t
+            ORDER BY t.CreateTime desc
+        ]]>
+    </select>
+
+    <select id="CustomerSignInfo_Select" resultType="java.util.Map">
+        <![CDATA[
+     SELECT  R.RoomCode ,
+        D.CstAllName ,
+        R.SaleStatus ,
+        D.QSDate ,
+        CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate
+             ELSE E.ZqDate
+        END ZqDate ,
+        D.PayformName ,
+        D.Total ,
+        E.RmbHtTotal + ( ( ~CAST(E.IsZxkbrht AS BIT) ) * E.ZxTotal )
+        + E.FactOtherTotal ContractAmount ,
+        F.FeeAmount ,
+        E.TradeGUID
+        FROM    dbo.B_Opportunity A
+        JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
+        JOIN dbo.C_MYTrade C ON C.OppGUID = B.ID
+        JOIN dbo.B_Room R ON C.RoomGUID = R.ID
+        JOIN dbo.C_MYOrder D ON D.TradeGUID = C.TradeGUID
+        LEFT JOIN dbo.C_MYContract E ON E.TradeGUID = C.TradeGUID
+        LEFT JOIN ( SELECT  sg.SaleGUID ,
+                            SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
+                    FROM    C_MYGetin (NOLOCK) sg
+                            JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+                    WHERE   sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+                            AND ( sg.ItemType LIKE '%房款%'
+                                  OR sg.ItemName = '其他'
+                                )
+                            AND ( sg.Status = ''
+                                  OR sg.Status IS NULL
+                                )
+                    GROUP BY sg.SaleGUID
+                  ) F ON F.SaleGUID = E.TradeGUID
+				  WHERE   A.ID = (select top 1 ID from B_Opportunity where CustomerID=#{customerID} and IntentProjectID=#{projectID})
+    ]]>
+    </select>
+    <select id="CustomerPayInfo_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT B.ItemName AS MoneyTypeName ,
+          convert(nvarchar(50),cast(amount as money),1) AS  Payable ,
+          convert(nvarchar(50),cast(B.Ye as money),1) as Paid ,
+          Convert(nvarchar(50),B.CreateTime,23) AS PayableDate ,
+          Convert(nvarchar(50),B.lastDate,23) AS PaidDate
+          FROM    dbo.C_MYTrade A
+                    INNER JOIN dbo.s_Fee B ON A.TradeGUID = B.TradeGUID
+                    join B_Project P on A.ProjGUID = P.ID
+            WHERE a.CstAllGUID like #{customerID} and P.PID=#{projectID}
+            order by B.Sequence
+        ]]>
+    </select>
+    <select id="CustomerSourceTypeChange_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT
+            dbo.F_DictName(b.SourceTypeOld) SourceTypeOld,
+            dbo.F_DictName(b.SourceType) SourceType,
+            dbo.F_ChannelName(b.ChannelOrgIDOld) ChannelOrgNameOld,
+            dbo.F_ChannelName(b.ChannelOrgID) ChannelOrgName,
+            dbo.F_GetReportUserName(b.ReportUserIDOld) ReportUserNameOld,
+            dbo.F_GetReportUserName(b.ReportUserID) ReportUserName,
+            b.CreateTime,
+            b.Reason,
+            b.Enclosure,
+          dbo.F_GetSaleUserName(b.Creator) Creator
+         FROM dbo.B_ChangeRecord b WHERE RecordType=1 AND CustomerID=#{customerID} AND ProjectID=#{projectID} ORDER BY CreateTime
+        ]]>
+    </select>
+    <select id="CustomerExtendProtect_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT
+            b.ArriveTimeOld,
+            b.ArriveTime,
+            b.TurnoverTimeOld,
+            b.TurnoverTime,
+            b.CreateTime,
+            b.Reason,
+            b.Enclosure,
+          dbo.F_GetSaleUserName(b.Creator) Creator
+         FROM dbo.B_ChangeRecord b WHERE RecordType=2 AND CustomerID=#{customerID} AND ProjectID=#{projectID} ORDER BY CreateTime
+        ]]>
+    </select>
+    <select id="CustomerSourceType_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT
+            dbo.F_DictName(b.SourceTypeOld) SourceTypeOld,
+            dbo.F_DictName(b.SourceType) SourceType,
+            b.CreateTime,
+            b.Reason,
+            b.Enclosure,
+          dbo.F_GetSaleUserName(b.Creator) Creator
+         FROM dbo.B_ChangeRecord b WHERE RecordType=4 AND CustomerID=#{customerID} AND ProjectID=#{projectID} ORDER BY CreateTime
+     ]]>
+    </select>
+    <select id="CustomerSetInvalid_Select" resultType="java.util.Map">
+        <![CDATA[
+          SELECT
+            b.CreateTime,
+            b.Reason,
+            b.Enclosure,
+          dbo.F_GetSaleUserName(b.Creator) Creator
+         FROM dbo.B_ChangeRecord b WHERE RecordType=5 AND CustomerID=#{customerID} AND ProjectID=#{projectID} ORDER BY CreateTime
+          ]]>
+    </select>
+
+    <select id="CustomerCognitiveChannel_Select" resultType="java.util.Map">
+        <![CDATA[
+        SELECT
+            dbo.F_GetMediaLargeName(b.CognitiveChannelOld) CognitiveChannelOld,
+            dbo.F_GetMediaLargeName(b.CognitiveChannel) CognitiveChannel,
+            b.CreateTime,
+            b.Reason,
+            b.Enclosure,
+          dbo.F_GetSaleUserName(b.Creator) Creator
+         FROM dbo.B_ChangeRecord b WHERE RecordType=5 AND CustomerID=#{customerID} AND ProjectID=#{projectID} ORDER BY CreateTime
+
+        ]]>
+    </select>
+    <select id="SourceTypeChangeList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+            b.ID ClueID,
+            dbo.F_DictName(b.SourceType) SourceType,
+            CO.OrgName ChannelName,
+            b.ReportUserID,
+            b.ReportUserName,
+            b.ReportUserMobile,
+            b.CreateTime ReportTime
+            FROM dbo.B_Clue b
+            LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg AND co.IsDel=0
+            WHERE b.IsDel=0
+            AND b.Mobile=#{Mobile}
+            AND b.IntentProjectID=#{projectID}
+            AND b.ID <> #{ClueID}
+            ${sqlWhere}
+        ]]>
+    </select>
+    <select id="SourceTypeChangeDetail_Update">
+        <![CDATA[
+          {call	 [dbo].[P_SourceTypeChange_Update](#{oldClueID,mode=IN},
+                                                  #{clueID,mode=IN},
+                                                  #{userID,mode=IN},
+                                                  #{reason,mode=IN},
+                                                  #{enclosure,mode=IN}
+          )}
+        ]]>
+    </select>
+    <select id="ExtendProtectDetail_Update">
+        <![CDATA[
+          {call	 [dbo].[P_ExtendProtectDetail_Update](#{protectNum,mode=IN},
+                                                  #{clueID,mode=IN},
+                                                  #{userID,mode=IN},
+                                                  #{reason,mode=IN},
+                                                  #{enclosure,mode=IN}
+          )}
+        ]]>
+    </select>
+    <select id="SetInvalidDetail_Update">
+        <![CDATA[
+          {call	 [dbo].[P_SetInvalidDetail_Update](
+                                                  #{clueID,mode=IN},
+                                                  #{userID,mode=IN},
+                                                  #{reason,mode=IN},
+                                                  #{enclosure,mode=IN}
+          )}
+        ]]>
+    </select>
+
+    <select id="ChangeSourceTypeDetail_Update">
+        <![CDATA[
+          {call	 [dbo].[P_ChangeSourceTypeDetail_Update](
+                                                  #{clueID,mode=IN},
+                                                  #{reason,mode=IN},
+                                                  #{SourceType,mode=IN},
+                                                   #{type,mode=IN},
+                                                  #{enclosure,mode=IN},
+                                                  #{userID,mode=IN}
+
+          )}
+        ]]>
+    </select>
+    <select id="ChangeCognitiveChannelDetail_Update">
+        <![CDATA[
+          {call	 [dbo].[P_ChangeCognitiveChannelDetail_Update](
+                                                  #{clueID,mode=IN},
+                                                  #{cognitiveChannel,mode=IN},
+                                                  #{reason,mode=IN},
+                                                  #{enclosure,mode=IN},
+                                                  #{userID,mode=IN},
+                                                  #{type,mode=IN}
+          )}
+        ]]>
+    </select>
+    <select id="CustomerGuidePageList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+            m.ID,
+            ISNULL(m.VisitAddress, '-')                   VisitAddress,
+            m.VisitTime,
+            m.OpportunityID,
+            ISNULL(m.SerialNumber, '-')                   SerialNumber,
+            m.PrintStatus,
+            m.CustomerID,
+            m.CustomerName,
+            STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
+            dbo.F_DictName(m.CustomerRank)                CustomerRank,
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
+            m.SaleUserID,
+            m.SaleUserName,
+            m.SalePartnerName,
+            m.TheFirstVisitDate,
+            m.TheLatestVisitDate,
+            m.ReportUserName,
+            dbo.F_DictName(m.AdviserGroupID)              SourceType,
+            m.CreateTime                                  ReportTime,
+            m.OrgName,
+            m.TheLatestFollowUpContent
+            FROM (
+            SELECT ca.ID,                                                                                 --到访记录
+            ca.VisitAddress,                                                                       --到访地
+            ca.OpportunityID,                                                                      --机会ID
+            ca.SerialNumber,                                                                       --流水号
+            CASE WHEN ISNULL(ca.SerialNumber, '') <> '' THEN '已打印' ELSE '未打印' END PrintStatus,
+            ca.VisitTime,                                                                          --来访时间
+            o.CustomerID,                                                                          --客户ID
+            o.CustomerName,                                                                        --客户姓名
+            o.CustomerMobile,                                                                      --客户手机号
+            o.CustomerRank,                                                                        --客储等级
+            o.Status,                                                                              --客户状态
+            o.SaleUserID,                                                                          --置业ID
+            o.SaleUserName,                                                                        --置业顾问
+            --o.SalePartnerName,		--接待顾问
+            CASE
+            WHEN DATEDIFF(MINUTE, ca.VisitTime, o.SalePartnerAllotTime) <= 0 THEN o.SalePartnerName
+            ELSE '-' END                                                      SalePartnerName, --接待顾问
+            o.TheFirstVisitDate,                                                                   --首访时间
+            o.TheLatestVisitDate,                                                                  --最近到访时间
+            c.ReportUserName,                                                                      --渠道人员
+            c.AdviserGroupID,                                                                      --渠道来源
+            c.CreateTime,                                                                          --报备时间
+            co.OrgName,                                                                            --所属机构
+            o.TheLatestFollowUpContent
+            FROM dbo.B_ClueAllocation ca
+            INNER JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
+            WHERE ca.IsDel = 0
+            AND ca.IsiPad = 1
+            AND ISNULL(c.AdviserGroupID, '-') = '32C92DA0-DA13-4C21-A55E-A1D16955882C' ${sql}
+            ) m
+        ]]>
+    </select>
+    <select id="CustomerGuideDownLoadByIDList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ROW_NUMBER() OVER (ORDER BY m.VisitTime DESC) num,
+            m.ID,
+            ISNULL(m.VisitAddress, '-')                   VisitAddress,
+            m.OpportunityID,
+            ISNULL(m.SerialNumber, '-')                   SerialNumber,
+            m.PrintStatus,
+            m.CustomerName,
+            STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
+            dbo.F_DictName(m.CustomerRank)                CustomerRank,
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
+            m.SaleUserName,
+            m.SalePartnerName,
+            m.TheFirstVisitDate,
+            m.TheLatestVisitDate,
+            m.ReportUserName,
+            dbo.F_DictName(m.AdviserGroupID)              SourceType,
+            m.CreateTime                                  ReportTime,
+            m.OrgName,
+            m.TheLatestFollowUpContent
+            FROM (
+            SELECT ca.ID,                                                                                 --到访记录
+            ca.VisitAddress,                                                                       --到访地
+            ca.OpportunityID,                                                                      --机会ID
+            ca.SerialNumber,                                                                       --流水号
+            CASE WHEN ISNULL(ca.SerialNumber, '') <> '' THEN '已打印' ELSE '未打印' END PrintStatus,
+            ca.VisitTime,                                                                          --来访时间
+            o.CustomerName,                                                                        --客户姓名
+            o.CustomerMobile,                                                                      --客户手机号
+            o.CustomerRank,                                                                        --客储等级
+            o.Status,                                                                              --客户状态
+            o.SaleUserName,                                                                        --置业顾问
+            CASE
+            WHEN DATEDIFF(MINUTE, ca.VisitTime, o.SalePartnerAllotTime) <= 0 THEN o.SalePartnerName
+            ELSE '-' END                                                      SalePartnerName, --接待顾问
+            --o.SalePartnerName,		--接待顾问
+            o.TheFirstVisitDate,                                                                   --首访时间
+            o.TheLatestVisitDate,                                                                  --最近到访时间
+            c.ReportUserName,                                                                      --渠道人员
+            c.AdviserGroupID,                                                                      --渠道来源
+            c.CreateTime,                                                                          --报备时间
+            co.OrgName,                                                                            --所属机构
+            o.TheLatestFollowUpContent
+            FROM dbo.B_ClueAllocation ca
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
+            WHERE 1 = 1 ${arr}
+            ) m
+        ]]>
+    </select>
+    <select id="CustomerGuideDownLoadList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ROW_NUMBER() OVER (ORDER BY m.VisitTime DESC) num,
+            m.ID,
+            ISNULL(m.VisitAddress, '-')                   VisitAddress,
+            m.OpportunityID,
+            ISNULL(m.SerialNumber, '-')                   SerialNumber,
+            m.PrintStatus,
+            m.CustomerName,
+            STUFF(m.CustomerMobile, 4, 4, '****')         CustomerMobile,--客户手机号
+            dbo.F_DictName(m.CustomerRank)                CustomerRank,
+            dbo.F_GetStatusName_xkc(m.Status)                 [Status],
+            m.SaleUserName,
+            m.SalePartnerName,
+            m.TheFirstVisitDate,
+            m.TheLatestVisitDate,
+            m.ReportUserName,
+            dbo.F_DictName(m.AdviserGroupID)              SourceType,
+            m.CreateTime                                  ReportTime,
+            m.OrgName,
+            m.TheLatestFollowUpContent
+            FROM (
+            SELECT ca.ID,                                                                                 --到访记录
+            ca.VisitAddress,                                                                       --到访地
+            ca.OpportunityID,                                                                      --机会ID
+            ca.SerialNumber,                                                                       --流水号
+            CASE WHEN ISNULL(ca.SerialNumber, '') <> '' THEN '已打印' ELSE '未打印' END PrintStatus,
+            ca.VisitTime,                                                                          --来访时间
+            o.CustomerName,                                                                        --客户姓名
+            o.CustomerMobile,                                                                      --客户手机号
+            o.CustomerRank,                                                                        --客储等级
+            o.Status,                                                                              --客户状态
+            o.SaleUserName,                                                                        --置业顾问
+            CASE
+            WHEN DATEDIFF(MINUTE, ca.VisitTime, o.SalePartnerAllotTime) <= 0 THEN o.SalePartnerName
+            ELSE '-' END                                                      SalePartnerName, --接待顾问
+            --o.SalePartnerName,		--接待顾问
+            o.TheFirstVisitDate,                                                                   --首访时间
+            o.TheLatestVisitDate,                                                                  --最近到访时间
+            c.ReportUserName,                                                                      --渠道人员
+            c.AdviserGroupID,                                                                      --渠道来源
+            c.CreateTime,                                                                          --报备时间
+            co.OrgName,                                                                            --所属机构
+            o.TheLatestFollowUpContent
+            FROM dbo.B_ClueAllocation ca
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
+            WHERE ca.IsDel = 0
+            AND ca.IsiPad = 1
+            AND ISNULL(c.AdviserGroupID, '-') = '32C92DA0-DA13-4C21-A55E-A1D16955882C' ${sqlWhere}
+            ) m
+        ]]>
+    </select>
+
+    <select id="getB_OpportunityById" resultType="java.util.Map">
+        <![CDATA[
+            select ID
+            from dbo.B_Opportunity
+            WHERE ID = #{opportunityID}
+        ]]>
+    </select>
+
+    <select id="CustomerNEWDetail_Select" resultType="java.util.Map">
+        <![CDATA[
+            select C.Name                                         CustomerName,
+               STUFF(C.Mobile, 4, 4, '****')                  CustomerMobile,
+               CASE dbo.F_DictName(O.CustomerRank)
+                   WHEN '' THEN '1级'
+                   WHEN NULL THEN '1级'
+                   ELSE dbo.F_DictName(O.CustomerRank) END    CustomerRank,
+               dbo.F_GetMediaLargeName(O.CognitiveChannel)    CognitiveChannel,
+               dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,
+               dbo.F_DictName(Cl.SourceType)            OpportunitySource,
+               dbo.F_DictName(O.Commercial)                   Commercial,
+               O.CreateTime,
+               O.TheFirstVisitDate,
+               dbo.F_GetZJDF(O.ID)                            ZJDF,
+               O.TheLatestFollowUpDate,
+               dbo.F_DictName(O.IsLittleBooking)              IsLittleBooking,
+               dbo.F_GetSaleUserName(O.SaleUserID)            SaleUserName,
+               dbo.F_DictName(O.CustomerLevel)                CustomerLevel,
+               dbo.F_DictName(O.PropertyIntention)            PropertyIntention,
+               dbo.F_DictName(A.DomicilePlace)                DomicilePlace,
+               dbo.F_DictName(A.HomeArea)                     HomeArea,
+               dbo.F_DictName(A.WorkArea)                     WorkArea,
+               dbo.F_DictName(A.AgeGroup)                     AgeGroup,
+               A.Birthday,
+               A.HomeAddress,
+               dbo.F_DictName(A.PropertyNum)                  PropertyNum,
+               dbo.F_DictName(A.Marriage)                     Marriage,
+               dbo.F_DictName(A.Family)                       Family,
+               dbo.F_DictName(A.Industry)                     Industry,
+               C.IsOwner,
+               dbo.F_DictName(C.IsEmployee)                   IsEmployee,
+               dbo.F_DictName(C.CardType)                     CardType,
+               C.CardID,
+               dbo.F_DictName(C.AcceptFactor)                 AcceptFactor,
+               dbo.F_DictName(C.Gender)                       Gender,
+               C.Creator,
+               ''                                             NeedArea,
+               ''                                             IntertionTotal,
+               Cl.ReportUserName,
+               Ch.OrgName,
+
+               dbo.F_GetStatusName_xkc(O.Status)                  Status
+
+             from B_Customer C
+                 left join B_CustomerAttribute A on A.CustomerID = C.ID and A.IsDel = 0
+                 left join B_Opportunity O on C.ID = O.CustomerID and C.IsDel = 0
+                 left join B_Clue Cl on Cl.ID = O.ClueID AND Cl.ReportUserID = #{reportUserID}
+                 left join B_ChannelOrg Ch on Ch.ID = Cl.ReportUserOrg
+            where O.IsDel = 0
+             AND C.ID = #{customerID}
+              AND O.ProjectID = #{projectID}
+        ]]>
+    </select>
+
+    <select id="CustomerNEWDetail_Select2" resultType="java.util.Map">
+        <![CDATA[
+            select C.Name                                         CustomerName,
+               STUFF(C.Mobile, 4, 4, '****')                  CustomerMobile,
+               CASE dbo.F_DictName(O.CustomerRank)
+                   WHEN '' THEN '1级'
+                   WHEN NULL THEN '1级'
+                   ELSE dbo.F_DictName(O.CustomerRank) END    CustomerRank,
+               dbo.F_GetMediaLargeName(O.CognitiveChannel)    CognitiveChannel,
+               dbo.F_GetMediaChildName(O.CognitiveChannelSub) CognitiveChannelSub,
+               dbo.F_DictName(O.SourceType)                   OpportunitySource,
+
+               ''                                             Commercial,
+               O.CreateTime,
+               ''                                             TheFirstVisitDate,
+               ''                                             ZJDF,
+               O.TheLatestFollowUpDate,
+               ''                                             IsLittleBooking,
+               ''                                             SaleUserName,
+               ''                                             CustomerLevel,
+
+               ''                                             PropertyIntention,
+               dbo.F_DictName(A.DomicilePlace)                DomicilePlace,
+               dbo.F_DictName(A.HomeArea)                     HomeArea,
+               dbo.F_DictName(A.WorkArea)                     WorkArea,
+               dbo.F_DictName(A.AgeGroup)                     AgeGroup,
+               ''                                             Birthday,
+               A.HomeAddress,
+               dbo.F_DictName(A.PropertyNum)                  PropertyNum,
+               dbo.F_DictName(A.Marriage)                     Marriage,
+               dbo.F_DictName(A.Family)                       Family,
+               dbo.F_DictName(A.Industry)                     Industry,
+               C.IsOwner,
+               ''                                             IsEmployee,
+               dbo.F_DictName(C.CardType)                     CardType,
+               C.CardID,
+               dbo.F_DictName(C.AcceptFactor)                 AcceptFactor,
+               dbo.F_DictName(C.Gender)                       Gender,
+               C.Creator,
+               ''                                             NeedArea,
+               ''                                             IntertionTotal,
+               O.ReportUserName,
+               Ch.OrgName,
+
+               case
+                   when O.Status = 1 then '报备'
+                   when O.Status = 2 then '确认带看'
+                   when O.Status = 3 then '无效'
+                   when O.Status = 41 then '丢失' end           Status
+
+        from B_CustomerPotential C
+                 left join B_CustomerPotentialAttribute A on A.CustomerPotentialID = C.ID and A.IsDel = 0
+                 left join B_Clue O on C.ID = O.CustomerPotentialID and C.IsDel = 0 AND O.ID = #{opportunityID}
+                 left join B_ChannelOrg Ch on Ch.ID = O.ReportUserOrg
+        where O.IsDel = 0
+          AND C.ID = #{customerID}
+          AND O.IntentProjectID = #{projectID}
+        ]]>
+    </select>
+
+    <select id="CustomerNEWFollowUp_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+                        t.FollwUpUserName,
+                        t.FollwUpUserMobile,
+                        dbo.F_DictName(t.FollwUpType) FollwUpWay,
+                        t.FollowUpContent,
+                        t.CreateTime,
+                  dbo.F_DictName(t.FollwUpUserRole) FollwUpUserRole,
+                        dbo.F_DictName(t.CustomerRank) CustomerRank
+                     FROM (
+                SELECT
+                        FollwUpUserName,
+                        FollwUpUserMobile,
+                        FollwUpType,
+                        FollowUpContent,
+                        CreateTime,
+                        FollwUpUserRole,
+                        CustomerRank FROM dbo.B_CustomerFollowUp WHERE ProjectID=#{projectID}
+                  AND (CustomerID = #{customerID}
+                  OR CustomerMobile = ( SELECT TOP 1 CustomerMobile FROM  dbo.B_Opportunity WHERE  ID = #{opportunityID} ))
+                UNION
+                SELECT
+                        FollwUpUserName,
+                        FollwUpUserMobile,
+                        FollwUpType,
+                        FollowUpContent,
+                        CreateTime,
+                        FollwUpUserRole,
+                        CustomerRank FROM dbo.B_CustomerPotentialFollowUp WHERE  ProjectID=#{projectID}
+                  AND (CustomerPotentialID = #{customerID}
+                  OR CustomerPotentialMobile = ( SELECT TOP 1 CustomerMobile FROM  dbo.B_Opportunity WHERE  ID = #{opportunityID} ))
+                        ) t ORDER BY t.CreateTime desc
+        ]]>
+    </select>
+    <select id="CustomerNEWSignInfo_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT  R.RoomCode ,
+                    D.CstAllName ,
+                    R.SaleStatus ,
+                    D.QSDate ,
+                    CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate
+                         ELSE E.ZqDate
+                    END ZqDate ,
+                    D.PayformName ,
+                    D.Total ,
+                    E.RmbHtTotal + ( ( ~CAST(E.IsZxkbrht AS BIT) ) * E.ZxTotal )
+                    + E.FactOtherTotal ContractAmount ,
+                    F.FeeAmount ,
+                    E.TradeGUID
+            FROM    dbo.B_Opportunity A
+                    JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
+                    JOIN dbo.C_MYTrade C ON C.OppGUID = B.ID
+                    JOIN dbo.B_Room R ON C.RoomGUID = R.ID
+                    JOIN dbo.C_MYOrder D ON D.TradeGUID = C.TradeGUID
+                    LEFT JOIN dbo.C_MYContract E ON E.TradeGUID = C.TradeGUID  AND E.CloseDate IS NULL
+                    LEFT JOIN ( SELECT  sg.SaleGUID ,
+                                        SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
+                                FROM    C_MYGetin (NOLOCK) sg
+                                        JOIN C_MYVoucher (NOLOCK) sv ON sv.VouchGUID = sg.VouchGUID
+                                WHERE   sv.VouchType IN ( '放款单', '收款单', '退款单', '转账单' )
+                                        AND ( sg.ItemType LIKE '%房款%'
+                                              OR sg.ItemName = '其他'
+                                            )
+                                        AND ( sg.Status = ''
+                                              OR sg.Status IS NULL
+                                            )
+                                GROUP BY sg.SaleGUID
+                              ) F ON F.SaleGUID = E.TradeGUID
+                              WHERE   A.ID = (select top 1 ID from B_Opportunity where CustomerID=#{customerID} and IntentProjectID=#{projectID})
+        ]]>
+    </select>
+    <select id="CustomerNEWPayInfo_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT B.ItemName AS MoneyTypeName ,
+                  convert(nvarchar(50),cast(amount as money),1) AS  Payable ,
+                  convert(nvarchar(50),cast(B.Ye as money),1) as Paid ,
+                  Convert(nvarchar(50),B.CreateTime,23) AS PayableDate ,
+                  Convert(nvarchar(50),B.lastDate,23) AS PaidDate
+                  FROM    dbo.C_MYTrade A
+                            INNER JOIN dbo.s_Fee B ON A.TradeGUID = B.TradeGUID
+                            join B_Project P on A.ProjGUID = P.ID
+                    WHERE a.CstAllGUID like #{customerID} and P.PID=#{projectID}
+                    order by B.Sequence
+        ]]>
+    </select>
+    <select id="getB_CustomerGuide" resultType="java.lang.Integer">
+        SELECT  COUNT(1)
+        FROM dbo.B_CustomerGuide
+        WHERE ProjectID = #{projectID}
+    </select>
+    <select id="getB_Project" resultType="java.lang.String">
+        SELECT TOP 1 SerialNumber
+        FROM dbo.B_Project
+        WHERE ID = #{projectID}
+        ORDER BY CreateTime DESC
+    </select>
+    <select id="getS_Account" resultType="java.lang.String">
+        SELECT EmployeeName
+        FROM dbo.S_Account
+        WHERE ID = #{userID}
+    </select>
+    <select id="CustomerGuidePrintDetail_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ca.ID,
+            ca.VisitAddress                                                              PrintingAddress, --打印地点
+            ca.VisitTime                                                                 ReVisitTime,     --复访时间
+            o.CustomerName,                                                                               --客户姓名
+            o.CustomerMobile,                                                                             --客户手机号
+            o.SaleUserName                                                               FirstSalesUser,  --置业顾问
+            CASE
+            WHEN DATEDIFF(MINUTE, ca.VisitTime, o.SalePartnerAllotTime) <= 0 THEN o.SalePartnerName
+            ELSE '-' END                                                             [Partner],       --接待顾问
+            --o.SalePartnerName [Partner],				--协作人
+            o.TheFirstVisitDate                                                          FirstVisitTime,  --首访时间
+            c.CreateTime                                                                 ReportTime,      --报备时间
+            p.CustomerGuideTemplate,                                                                      --带看确认单打印模板
+            p.Rise,                                                                                       --抬头
+            p.Mark,                                                                                       --符号
+            ca.SerialNumber,                                                                               --流水号
+            right('000000' + ltrim((CONVERT(INT, #{num1}) + ISNULL(#{num}, 0))), LEN(#{num1})) SerialNumberText,
+            co.OrgName,                                                                                   --所属机构
+            c.ReportUserName,                                                                             --渠道人员
+            c.ReportUserMobile,                                                                           --渠道人员电话
+            dbo.F_DictName(c.AdviserGroupID)                                             SourceType,      --渠道来源
+            GETDATE()                                                                    PrintingTime,    --打印时间
+            #{username}                                                                    PrintingUser,    --打印人
+            o.ProjectID,                                                                                  --项目ID
+            ca.CustomerID,                                                                                --客户ID
+            ca.OpportunityID,                                                                             --机会ID
+            p.Name  projectName,
+            CASE WHEN ISNULL(sacc.Mobile, '') <> '' THEN sacc.Mobile ELSE chuser.Mobile END SaleUserMobile,
+            #{userID}                                                                   UserID
+            FROM dbo.B_ClueAllocation ca
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
+            INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
+            LEFT JOIN dbo.B_Project p ON p.ID = o.ProjectID
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
+            left join dbo.S_Account sacc on o.SaleUserID = sacc.ID
+            left join B_ChannelUser chuser on o.SaleUserId = chuser.ID
+            WHERE ca.ID = #{id}
+        ]]>
+    </select>
+    <select id="CustomerLockRoomPageList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT dbo.F_DictName(m.AdviserGroupID) SourceType,
+            *
+            FROM (
+            SELECT clr.ID,
+            clr.ImgUrl,
+            clr.CreateTime,
+            CASE WHEN ISNULL(clr.CustomerName, '') <> '' THEN clr.CustomerName ELSE c.Name END Name,
+            c.Name                                                                             CustomerName,
+            STUFF(c.Mobile, 4, 4, '****')                                                      Mobile,--客户手机号
+            r.RoomCode,
+            r.HuXing,
+            r.YsBldArea,
+            dbo.F_GetSaleUserName(clr.Creator)                                                 SaleUserName,
+            cl.AdviserGroupID,
+            cl.ReportUserName,
+            cl.ReportUserMobile,--手机号
+            co.OrgName
+            FROM dbo.B_CustomerLockRoom clr
+            LEFT JOIN dbo.B_Customer c ON c.ID = clr.CustomerID
+            LEFT JOIN dbo.B_Room r ON r.ID = clr.RoomID
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
+            LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
+            WHERE clr.IsDel = 0 ${sqlWhere}
+            ) m
+        ]]>
+    </select>
+    <select id="CustomerLockRoomDownLoadByIDList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ROW_NUMBER() OVER (ORDER BY CreateTime DESC) num,
+            dbo.F_DictName(m.AdviserGroupID)             SourceType,
+            *
+            FROM (
+            SELECT clr.ID,
+            clr.ImgUrl,
+            clr.CreateTime,
+            CASE WHEN ISNULL(clr.CustomerName, '') <> '' THEN clr.CustomerName ELSE c.Name END Name,
+            c.Name                                                                             CustomerName,
+            STUFF(c.Mobile, 4, 4, '****')                                                      Mobile,--客户手机号
+            r.RoomCode,
+            r.HuXing,
+            r.YsBldArea,
+            dbo.F_GetSaleUserName(clr.Creator)                                                 SaleUserName,
+            cl.AdviserGroupID,
+            cl.ReportUserName,
+            cl.ReportUserMobile,--手机号
+            co.OrgName
+            FROM dbo.B_CustomerLockRoom clr
+            LEFT JOIN dbo.B_Customer c ON c.ID = clr.CustomerID
+            LEFT JOIN dbo.B_Room r ON r.ID = clr.RoomID
+            LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
+            LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
+            LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
+            WHERE 1 = 1 ${arr}
+            ) m
+        ]]>
+    </select>
+    <select id="CustomerLockRoomDownLoadList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ROW_NUMBER() OVER (ORDER BY CreateTime DESC) num,
+       dbo.F_DictName(m.AdviserGroupID)             SourceType,
+       *
+FROM (
+         SELECT clr.ID,
+                clr.ImgUrl,
+                clr.CreateTime,
+                CASE WHEN ISNULL(clr.CustomerName, '') <> '' THEN clr.CustomerName ELSE c.Name END Name,
+                c.Name                                                                             CustomerName,
+                STUFF(c.Mobile, 4, 4, '****')                                                      Mobile,--客户手机号
+                r.RoomCode,
+                r.HuXing,
+                r.YsBldArea,
+                dbo.F_GetSaleUserName(clr.Creator)                                                 SaleUserName,
+                cl.AdviserGroupID,
+                cl.ReportUserName,
+                cl.ReportUserMobile,--手机号
+                co.OrgName
+         FROM dbo.B_CustomerLockRoom clr
+                  LEFT JOIN dbo.B_Customer c ON c.ID = clr.CustomerID
+                  LEFT JOIN dbo.B_Room r ON r.ID = clr.RoomID
+                  LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
+                  LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
+                  LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
+         WHERE clr.IsDel = 0 ${sqlWhere}
+     ) m
+        ]]>
+    </select>
+
+    <!-- 线上预约客户列表 -->
+    <select id="mCustomerShareList_Select" resultType="java.util.Map" parameterType="java.util.Map">
+        <![CDATA[
+		SELECT
+			ROW_NUMBER() OVER(ORDER BY a.CreateTime) num,
+			a.ID,
+			b.ID OpportunityID,
+			c.ID ClueID,
+			b.CustomerID,
+			a.CustomerName,
+			a.CustomerMobile,
+			a.CustomerCount,
+			a.AppointmentTime,
+			dbo.F_GetClueStatusName_xkc(c.Status,b.Status) OpportunityStatus,
+			b.Status OpportunityStatusValue,
+			dbo.F_GetClueStatusName(c.Status,0) ClueStatus,
+			CASE WHEN ISNULL(b.SaleUserID,'') <> '' THEN 1 ELSE 0 END IsAlloc
+		FROM dbo.A_ShareCustomers a LEFT JOIN dbo.C_WXUser d ON d.ID = a.WXUserID
+											 LEFT JOIN dbo.B_Opportunity b ON b.CustomerMobile = d.Mobile
+											 LEFT JOIN dbo.B_Clue c ON c.ID = b.ClueID
+		WHERE b.ProjectID = #{ProjectID}
+				AND b.SaleUserID = #{UserID}
+				AND a.IsDel = 0
+
+        ]]>
+    </select>
+    <select id="findPrintNumByDate" resultType="java.lang.Integer">
+        SELECT count(ca.ID)
+        FROM dbo.B_ClueAllocation ca
+        WHERE ca.SerialNumber like #{id}
+    </select>
+
+    <select id="getMediaLarge" resultType="java.util.HashMap">
+        SELECT ID ,Name  FROM dbo.B_MediaLarge WHERE IsDel=0 AND Status=1
+    </select>
+
+    <select id="getMediaChild" resultType="java.util.HashMap" parameterType="string">
+        SELECT ID,MediaLargeID,Name FROM B_MediaChild WHERE  ProjectID=#{projectID}
+    </select>
+    
+    <!-- 判断是否是老业主 -->
+    <select id="isOwner" resultType="java.lang.String">
+		select top 1  a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+ 		and a.IsOwner=1 and b.ProjectID=#{projectId} and  (a.Mobile=#{mobile} or a.SpareMobile=#{mobile})
+	</select>
+</mapper>

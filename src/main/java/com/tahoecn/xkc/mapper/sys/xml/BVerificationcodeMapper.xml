@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.BVerificationcodeMapper">
+
+    <select id="checkAuthCode" parameterType="string" resultType="com.tahoecn.xkc.model.sys.BVerificationcode">
+        SELECT TOP
+        1 [ID],
+        [Mobile],
+        [VerificationCode],
+        [OverdueTime],
+        [CreateTime],
+        [IsDel],
+        [Status]
+        FROM
+        [B_VerificationCode]
+        WHERE
+        overduetime > getdate()
+        AND mobile = #{mobile}
+        ORDER BY
+        createtime DESC
+    </select>
+    <update id="VerificationCodeDetail_Insert" parameterType="java.lang.String">
+	    UPDATE   B_VerificationCode
+		SET      IsDel = 1
+		WHERE    Mobile = #{Mobile}
+    </update>
+    <!-- 获取验证码 -->
+    <select id="VerificationCodeDetail_Select" parameterType="java.lang.String" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT TOP 1
+			        Mobile ,
+			        VerificationCode ,
+			        OverdueTime ,
+			        CreateTime ,
+			        IsDel ,
+			        Status
+			FROM    B_VerificationCode
+			WHERE   IsDel = 0
+			        AND OverdueTime > GETDATE()
+			        AND Mobile = #{Mobile}
+			ORDER BY CreateTime DESC
+	    ]]>
+    </select>
+</mapper>

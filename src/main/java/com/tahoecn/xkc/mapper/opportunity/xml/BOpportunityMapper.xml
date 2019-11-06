@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper">
+    <select id="getCustomerCount" resultType="int">
+        SELECT COUNT(1) FROM dbo.B_Opportunity O
+		LEFT JOIN dbo.B_Clue C ON O.ClueID=C.ID
+		WHERE O.ProjectID=#{projectId} AND O.SaleUserID=(SELECT MemberID FROM dbo.B_SalesGroupMember WHERE ID=#{MemberID})
+    </select>
+	<!-- 客户确认归属 -->
+	<update id="mCustomerBelong_Update" statementType="CALLABLE">
+		{call P_CustomerBelong_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{OpportunityIDList})}
+	</update>
+	<!-- 客户确认归属 -->
+	<!-- <update id="mCustomerBelong_Update">
+		<![CDATA[
+			UPDATE dbo.B_Opportunity 
+			SET IsDel = 1,
+			EditeTime = GETDATE( ),
+			Editor = #{UserID} 
+			WHERE
+				ProjectID = #{ProjectID} 
+				AND IsDel = 0 
+				AND Status <> 6 
+				AND ISNULL( CustomerMobile, '' ) <> '' 
+				AND CustomerMobile IN ( SELECT CustomerMobile FROM dbo.B_Opportunity WHERE id IN (#{OpportunityIDList}) ) 
+				AND id NOT IN (#{OpportunityIDList})
+		]]>
+	</update> -->
+	<select id="getYQWGJ" parameterType="java.util.Map" resultType="java.util.Map">
+			<![CDATA[
+				SELECT A.ID 
+				FROM
+					dbo.B_Opportunity A
+					LEFT JOIN ( SELECT ProjectID, OverdueTime, ROW_NUMBER ( ) OVER ( PARTITION BY ProjectID ORDER BY VersionStartTime DESC ) num FROM B_OverdueRule ) B ON A.ProjectID = B.ProjectID 
+					AND B.num = 1 
+				WHERE
+					A.ProjectID = #{ProjectID} 
+					AND A.IsDel = 0 
+					AND A.Status <> 6 
+					AND A.TheLatestFollowUpDate IS NOT NULL 
+					AND (
+						DATEDIFF( DAY, DATEADD( DAY, ISNULL( B.OverdueTime, 7 ), A.TheLatestFollowUpDate ), GETDATE( ) ) >= 0 
+						AND A.Status IN ( 1, 2, 3 ) 
+					) 
+					AND ISNULL( A.SaleUserID, '' ) IN (#{AdviserIDList})
+			]]>
+	</select>
+	<select id="getYQWRG" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT A.ID 
+			FROM
+				dbo.B_Opportunity A
+				JOIN dbo.B_CustomerAttach B ON A.ID = B.OpportunityID
+				JOIN dbo.C_MYTrade C ON B.ID = C.OppGUID
+				JOIN C_MYBooking D ON C.TradeGUID = D.TradeGUID 
+			WHERE
+				A.ProjectID = #{ProjectID} 
+				AND D.Status = '排号' 
+				AND DATEDIFF( DAY, D.EndDate, GETDATE( ) ) >= 0 
+				AND A.SaleUserID IN (#{AdviserIDList})
+		]]>
+	</select>
+	<select id="getYQWQY" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT A.ID 
+			FROM
+				dbo.C_MYOrder D
+				LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+				LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+				LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+				JOIN dbo.B_Room E ON E.ID = D.RoomGUID 
+			WHERE
+				EXISTS ( SELECT ID FROM dbo.B_Project P WHERE D.ProjGUID = P.ID AND PID = #{ProjectID} ) 
+				AND D.OrderType = '认购' 
+				AND D.Status = '激活' 
+				AND D.JhqyDate IS NOT NULL 
+				AND ISNULL( A.SaleUserID, '' ) IN (#{AdviserIDList})
+				AND DATEDIFF( DAY, JhqyDate, GETDATE( ) ) >= 0 
+				AND DATEDIFF( DAY, JhqyDate, GETDATE( ) ) <= 3650
+		]]>
+	</select>
+	<select id="getYQWJK" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT A.ID 
+			FROM
+				dbo.C_MYContract D
+				LEFT JOIN dbo.C_MYTrade B ON D.TradeGUID = B.TradeGUID
+				LEFT JOIN dbo.B_CustomerAttach C ON C.ID = B.OppGUID
+				LEFT JOIN dbo.B_Opportunity A ON C.OpportunityID = A.ID
+				JOIN dbo.B_Room E ON E.ID = D.RoomGUID
+				JOIN (
+				SELECT
+					TradeGUID,
+					SUM ( Ye ) OverduePayment,
+					MAX ( DATEDIFF( DAY, ISNULL( lastDate, DATEADD( DAY, 1, GETDATE( ) ) ), GETDATE( ) ) ) OverduePaymentDay 
+				FROM
+					C_MYFee 
+				WHERE
+					Ye > 0 
+					AND ItemType LIKE '%房款%' 
+				GROUP BY
+					TradeGUID 
+				) F ON F.TradeGUID = D.TradeGUID 
+			WHERE
+				EXISTS ( SELECT ID FROM dbo.B_Project P WHERE D.ProjGUID = P.ID AND PID = #{ProjectID} ) 
+				AND D.Status = '激活' 
+				AND ISNULL( A.SaleUserID, '' ) IN (#{AdviserIDList})
+				AND F.OverduePaymentDay >= 0 
+				AND F.OverduePaymentDay <= 3650
+		]]>
+	</select>
+	
+	<update id="updateCustomerRecovery1" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE dbo.B_OpportunityGiveUp 
+		SET ApprovalStatus = 3,
+		EditeTime = GETDATE(),
+		Editor = #{UserID} 
+		WHERE
+			Status = 1 
+			AND ApprovalStatus = 0
+			AND OpportunityID IN (${OpportunityIDTable})
+	]]>
+	</update>
+	<update id="updateCustomerRecovery2" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE S_Message 
+		SET Status = 0,
+		Editor = #{UserID},
+		EditTime = GETDATE( ) 
+		WHERE
+			Status = 1 
+			AND BizType = 'Opportunity' 
+			AND BizID IN (#{OpportunityIDTable})
+	]]>
+	</update>
+	<update id="updateCustomerRecovery3" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE S_Message 
+		SET Status = 0,
+		Editor = #{UserID},
+		EditTime = GETDATE( ) 
+		WHERE
+			Status = 1 
+			AND BizType = 'OpportunityGiveUp' 
+			AND BizID IN ( SELECT ID FROM dbo.B_OpportunityGiveUp WHERE OpportunityID IN (#{OpportunityIDTable}) )
+	]]>
+	</update>
+	<update id="updateCustomerRecovery4" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE B_CustomerPublicPool 
+		SET IsDel = 1,
+			Editor = @UserID,
+			EditeTime = GETDATE( ) 
+		WHERE
+			OpportunityID IN (#{OpportunityIDTable});
+	]]>
+	</update>
+	<update id="updateCustomerRecovery5" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE B_Opportunity 
+		SET SaleUserID = '',
+			SaleUserName = '',
+			Editor = #{UserID},
+			EditeTime = GETDATE( ),
+			AllotUserID = #{UserID},
+			AllotTime = GETDATE( ) 
+		WHERE
+			id IN (#{OpportunityIDTable});
+	]]>
+	</update>
+	<!-- 回收-存储过程 -->
+	<update id="mCustomerRecovery_Update" statementType="CALLABLE">
+		{call P_CustomerRecovery_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{Code},#{AdviserIDList},#{OpportunityIDList})}
+	</update>
+	<!-- 客户分配置业顾问 -->
+	<update id="mCustomerAllotAdviser_Update" statementType="CALLABLE">
+		{call P_CustomerAllotAdviser_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{AdviserID},
+		#{Code},#{AdviserIDList},#{OpportunityIDList},#{LostIDList},#{PublicIDList})}
+	</update>
+	<!-- 公共池客户重新分配协作人置空 -->
+	<update id="mCustomerSalePartnerSetNull_Update" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE  a
+		SET     a.SalePartnerID = NULL ,
+		        a.SalePartnerName = NULL ,
+		        a.ReVisitAddress = NULL ,
+		        a.EditeTime = GETDATE() ,
+		        a.Editor = #{UserID}
+		FROM    dbo.B_Opportunity a
+		        LEFT JOIN dbo.B_CustomerPublicPool b ON a.ID = b.OpportunityID AND b.Status = 1
+		WHERE   b.ID IN ( SELECT    name
+		                  FROM      F_StrToTable(#{PublicIDList})
+		                  WHERE     name <> '' )
+		        OR a.ID IN ( SELECT name
+		                     FROM   F_StrToTable(#{PublicIDList})
+		                     WHERE  name <> '' ) 
+	 ]]>
+	</update>
+	<resultMap type ="java.util.Map" id= "ZYQDMap">
+	     <result column ="ClueID" property="ClueID" />
+	     <result column ="ClueStatus" property="ClueStatus"  />
+	     <result column ="IsAlloc" property="IsAlloc"  />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	</resultMap >
+	<resultMap type ="java.lang.Integer" id= "recordCount">
+     	<result column ="recordCount" property="recordCount"  />
+	</resultMap >
+	<!-- 自有渠道客户列表 -->
+	<select id="mCustomerZYQDList_Select" statementType="CALLABLE" resultMap="ZYQDMap,recordCount">
+		{call P_CustomerZYQDList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "DSMap">
+	     <result column ="LostID" property="LostID" />
+	     <result column ="OpportunityID" property="OpportunityID"  />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="LostTime" property="LostTime"  />
+	     <result column ="LostReason" property="LostReason"  />
+	</resultMap >
+	<!-- 丢失客户列表 -->
+	<select id="mCustomerDSList_Select" statementType="CALLABLE" resultMap="DSMap,recordCount">
+		{call P_CustomerDSList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "GJMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	     <result column ="IsCooperat" property="IsCooperat"  />
+	</resultMap >
+	<!-- 正常跟进列表 -->
+	<select id="mCustomerGJList_Select" statementType="CALLABLE" resultMap="GJMap,recordCount">
+		{call P_CustomerGJList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "ZDMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="CreateTime" property="CreateTime"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="IntentProjectName" property="IntentProjectName"  />
+	</resultMap >
+	<!-- 撞单客户列表 -->
+	<select id="mCustomerZDList_Select" statementType="CALLABLE" resultMap="ZDMap,recordCount">
+		{call P_CustomerZDList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "GGMap">
+	     <result column ="PublicID" property="PublicID" />
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="HSTime" property="HSTime"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	     <result column ="IsCooperat" property="IsCooperat"  />
+	</resultMap >
+	<!-- 公共客户列表 -->
+	<select id="mCustomerGGList_Select" statementType="CALLABLE" resultMap="GGMap,recordCount">
+		{call P_CustomerGGList_Select(#{ProjectID},#{AdviserID},
+		#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWJKMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="YQAmount" property="YQAmount"  />
+	     <result column ="YQNum" property="YQNum"  />
+	     <result column ="ReturnedAmount" property="ReturnedAmount"  />
+	     <result column ="ContractTime" property="ContractTime"  />
+	     <result column ="ContractAmount" property="ContractAmount"  />
+	     <result column ="ContractArea" property="ContractArea"  />
+	     <result column ="ContractRoom" property="ContractRoom"  />
+	</resultMap >
+	<!-- 逾期客户未交款列表 -->
+	<select id="mCustomerYQWJKList_Select" statementType="CALLABLE" resultMap="YQWJKMap,recordCount">
+		{call P_CustomerYQWJKList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{OverduePaymentStartDay},
+		#{OverduePaymentEndDay},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWQYMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="PlanContractTime" property="PlanContractTime"  />
+	     <result column ="OrderTime" property="OrderTime"  />
+	     <result column ="OrderAmount" property="OrderAmount"  />
+	     <result column ="OrderArea" property="OrderArea"  />
+	     <result column ="OrderRoom" property="OrderRoom"  />
+	</resultMap >
+	<!-- 逾期客户未签约列表 -->
+	<select id="mCustomerYQWQYList_Select" statementType="CALLABLE" resultMap="YQWQYMap,recordCount">
+		{call P_CustomerYQWQYList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{OverduePaymentStartDay},
+		#{OverduePaymentEndDay},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWRGMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="BookingTime" property="BookingTime"  />
+	</resultMap >
+	<!-- 逾期客户未认购列表 -->
+	<select id="mCustomerYQWRGList_Select" statementType="CALLABLE" resultMap="YQWRGMap,recordCount">
+		{call P_CustomerYQWRGList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "YQWGJMap">
+	     <result column ="OpportunityID" property="OpportunityID" />
+	     <result column ="AdviserName" property="AdviserName"  />
+	     <result column ="AdviserOrgName" property="AdviserOrgName"  />
+	     <result column ="CustomerName" property="CustomerName"  />
+	     <result column ="CustomerMobile" property="CustomerMobile"  />
+	     <result column ="CustomerLevel" property="CustomerLevel"  />
+	     <result column ="OpportunityStatus" property="OpportunityStatus"  />
+	     <result column ="OpportunitySource" property="OpportunitySource"  />
+	     <result column ="CustomerRank" property="CustomerRank"  />
+	     <result column ="YQTime" property="YQTime"  />
+	     <result column ="TheLatestFollowUpDate" property="TheLatestFollowUpDate"  />
+	     <result column ="TheLatestFollowUpWay" property="TheLatestFollowUpWay"  />
+	     <result column ="TheLatestFollowUpContent" property="TheLatestFollowUpContent"  />
+	</resultMap >
+	<!-- 逾期客户未跟进列表 -->
+	<select id="mCustomerYQWGJList_Select" statementType="CALLABLE" resultMap="YQWGJMap,recordCount">
+		{call P_CustomerYQWGJList_Select(#{ProjectID},#{AdviserID},#{Keyword},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "AdviserMap">
+	     <result column ="ID" property="ID" />
+	     <result column ="Name" property="Name"  />
+	     <result column ="OrgName" property="OrgName"  />
+	     <result column ="Value" property="Value"  />
+	</resultMap >
+	<!-- 客户置业顾问列表 -->
+	<select id="mCustomerAdviserList_Select" statementType="CALLABLE" resultMap="AdviserMap,recordCount">
+		{call P_CustomerAdviserList_Select(#{ProjectID},#{Code},#{Keyword},#{OverdueContractStartDay},
+		#{OverdueContractEndDay},#{OverduePaymentStartDay},#{OverduePaymentEndDay},#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "ACYQWQYMap">
+	     <result column ="ID" property="ID" />
+	     <result column ="Name" property="Name"  />
+	     <result column ="Value " property="Value"  />
+	     <result column ="Amount" property="Amount"  />
+	</resultMap >
+	<!-- 逾期未签约列表 -->
+	<select id="R_ACYQWQYList_Select" statementType="CALLABLE" resultMap="ACYQWQYMap,recordCount">
+		{call R_ACYQWQYList_Select(#{OrgID},#{UserID},#{RequestType},#{OverdueContractStartDay},#{OverdueContractEndDay},
+		#{PageIndex},#{PageSize})}
+	</select>
+	<resultMap type ="java.util.Map" id= "ACYQWJKMap">
+	     <result column ="ID" property="ID" />
+	     <result column ="Name" property="Name"  />
+	     <result column ="Value" property="Value"  />
+	     <result column ="Amount" property="Amount"  />
+	</resultMap >
+	<!-- 逾期未交款列表 -->
+	<select id="R_ACYQWJKList_Select" statementType="CALLABLE" resultMap="ACYQWJKMap,recordCount">
+		{call R_ACYQWJKList_Select(#{OrgID},#{UserID},#{RequestType},#{OverdueContractStartDay},#{OverdueContractEndDay},
+		#{PageIndex},#{PageSize})}
+	</select>
+	<!-- 逾期客户头部统计 -->
+	<select id="mCustomerYQCateList_Select" statementType="CALLABLE" resultType="java.util.Map">
+		{call P_CustomerYQCateList_Select(#{ProjectID},#{UserID},#{OrgID},#{JobCode})}
+	</select>
+	<!-- 客户管理分类 -->
+	<select id="mCustomerCateList_Select" statementType="CALLABLE" resultType="java.util.Map">
+		{call P_CustomerCateList_Select(#{ProjectID},#{UserID},#{OrgID},#{JobCode})}
+	</select>
+</mapper>

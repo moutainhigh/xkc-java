@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.rule.BClueruleMapper">
+
+	<!-- 删除渠道规则，根据ID -->
+	<update id="delClueruleById" parameterType="java.lang.String">
+		update B_ClueRule set IsDel=1 where ID = #{clueRuleId}
+	</update>
+	
+	<!-- 删除渠道规则，根据ID -->
+	<update id="updateAdviserGroup" parameterType="java.util.Map">
+		update B_ClueRule_AdviserGroup 
+		set ClueRuleID = 
+		(SELECT id FROM dbo.B_ClueRule WHERE IsDel=0 AND Creator='sys' AND ProtectSource=#{ProtectSource} AND ProjectID=#{ProjectID}) 
+		where ClueRuleID = #{clueRuleId}
+	</update>
+	
+	<!-- 设置规则启用禁用状态，根据ID -->
+	<update id="updateClueRuleStatusById" parameterType="java.util.Map">
+		update B_ClueRule set Status = #{status} where ID = #{clueRuleId}
+	</update>
+	
+	<!-- 设置规则群体启用禁用状态，根据ID -->
+	<update id="updateAdviserGroupStatusById" parameterType="java.util.Map">
+		update B_ClueRule_AdviserGroup set Status = #{status} where ClueRuleID = #{clueRuleId}
+	</update>
+	
+	<!-- 设置规则群体启用禁用状态，根据ID -->
+	<update id="updateAdviserGroupById" parameterType="java.util.Map">
+		<!-- UPDATE B_ClueRule_AdviserGroup 
+			SET ClueRuleID = #{id},
+			Editor = '{UserID}',
+			EditTime = getdate( ) 
+		WHERE
+			AdviserGroupID IN ( { grouplist } ) 
+			AND ClueRuleID IN 
+			( SELECT ID FROM B_ClueRule 
+				WHERE ProjectID = '{ProjectID}' 
+				AND ProtectSource = '{ProtectSource}' 
+				AND IsDel = 0 AND Status = 1 
+			)  -->
+	</update>
+
+    <select id="getRegisterRule" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        a.*,
+        b.AdviserGroupID
+        FROM
+        B_ClueRule a
+        INNER JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID
+        WHERE
+        a.IsDel= 0
+        AND a.Status= 1
+        AND a.ProjectID= #{ProjectID}
+        AND b.AdviserGroupID= #{AdviserGroupID}
+    </select>
+    <!-- 验证是否重复报备 -->
+    <select id="IsRepeatedReg_Select" resultType="java.util.Map" parameterType="java.util.Map">
+	    <![CDATA[
+			select ID from B_Clue where Status in(1,2) 
+			and Mobile=#{Mobile} and IntentProjectID =#{IntentProjectID} and ReportUserID=#{ReportUserID}
+	    ]]>
+  </select>
+    <!-- 验证是否存在一条有效线索模式为报备保护 -->
+    <select id="IsExistReportProtectClue_Select" resultType="java.util.Map" parameterType="java.util.Map">
+	    <![CDATA[
+			select a.ID from B_Clue a 
+			inner join B_ClueRule b on a.RuleID = b.ID
+			where b.RuleType=0 and (a.Status=1 or a.Status=2) and a.IsDel=0 
+			and a.IntentProjectID=#{IntentProjectID} and a.Mobile=#{Mobile}
+	    ]]>
+	</select>
+    <!-- 验证是否存在销售机会（不区分机会状态） -->
+    <select id="IsExistOpportunity_Select" resultType="java.util.Map" parameterType="java.util.Map">
+	    <![CDATA[
+			select ID from B_Opportunity
+			where CustomerMobile=#{CustomerMobile} and ProjectID=#{ProjectID} AND IsDel = 0 AND Status <> 6
+	    ]]>
+	</select>
+
+    <select id="getOpp" resultType="java.util.Map" parameterType="string">
+        select * from B_Opportunity
+        where
+        status in(1,2,3,4,5)
+        and CustomerMobile=#{CustomerMobile} and ProjectID=#{ProjectID}
+    </select>
+</mapper>

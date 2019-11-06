@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.dict.BTagMapper">
+	<!-- 获取Tag列表信息 -->
+	<select id="BTaglist" resultType="java.util.HashMap" parameterType="string">
+	<![CDATA[
+    	SELECT ID, Name DictName   FROM B_Tag WHERE IsDel = 0 AND Status = 1 AND Creator = #{UserID} ORDER BY Name
+    ]]>
+	</select>
+</mapper>

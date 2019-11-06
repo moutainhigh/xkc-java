@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.user.SAccountusertypeMapper">
+
+	<!-- 用户密码信息 -->
+	<select id="SalesUserPwdDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<!-- 原逻辑 -->
+		<!-- SELECT Password ReOldPassword, #{OldPassword} OldPassword 
+		FROM S_AccountUserType WHERE UserName IN( SELECT UserName FROM S_Account WHERE ID = #{UserID} 
+		and AccountType = '1') -->
+		<![CDATA[
+			SELECT Password ReOldPassword, #{OldPassword} OldPassword
+			FROM S_Account WHERE ID = #{UserID} and AccountType != '1'
+	    ]]>
+	</select>
+	<!-- 修改用户密码资料 -->
+	<update id="SalesUserPwdDetail_Update" parameterType="java.util.Map">
+		<!-- 原逻辑 -->
+		<!-- UPDATE S_AccountUserType SET Password = #{Password}
+			WHERE UserName IN( SELECT UserName FROM S_Account WHERE ID = #{UserID} and AccountType = '1') -->
+		<![CDATA[
+			UPDATE S_Account SET Password = #{Password}
+			WHERE ID = #{UserID} and AccountType != '1'
+	    ]]>
+	</update>
+	<!-- 修改用户密码资料 -->
+	<update id="SalesUserForgetPwdDetail_Update" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE S_Account SET Password = #{Password}
+			WHERE Mobile = #{Mobile} and AccountType != '1'
+	    ]]>
+	</update>
+	<!-- 修改用户密码资料 -->
+	<update id="SAccountusertypePassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE S_AccountUserType SET Password = #{Password}
+			WHERE UserName = #{UserName}
+	    ]]>
+	</update>
+</mapper>

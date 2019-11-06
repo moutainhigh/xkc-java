@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.rule.RuleAppMapper">
+    <select id="getChanelorgList" resultType="com.tahoecn.xkc.model.channel.BChannelorg">
+        SELECT a.* FROM B_ChannelOrg a
+        INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectID}
+        WHERE a.IsDel=0 AND a.OrgCategory=1 and a.Status=1
+  </select>
+
+
+    <select id="getFenxiao" resultType="com.tahoecn.xkc.model.vo.BClueruleGourpVo">
+        select a.id,a.ClueRuleID,a.AdviserGroupID as DictID, b.OrgName DictName
+        from B_ClueRule_AdviserGroup a
+        inner JOIN [B_ChannelOrg] b ON b.ID=a.AdviserGroupID AND b.IsDel=0 and b.Status=1
+        INNER JOIN B_PojectChannelOrgRel c ON b.ID=c.OrgID AND c.IsDel=0 AND c.ProjectID=#{projectId}
+        where a.IsDel=0 and ClueRuleID in (select id from B_ClueRule  where isdel=0 and ProjectID=#{projectId} and ProtectSource=#{protectSource})
+        and a.ClueRuleID= #{clueRuleId}
+    </select>
+
+    <select id="getZiyouOrTuijian" resultType="com.tahoecn.xkc.model.vo.BClueruleGourpVo">
+        select a.id,a.ClueRuleID,a.AdviserGroupID as DictID, ISNULL(b.DictName,c.OrgName) DictName
+        from B_ClueRule_AdviserGroup a
+        left join [dbo].[S_Dictionary] b on a.AdviserGroupID=b.id and b.IsDel=0 and b.status=1
+        LEFT JOIN [B_ChannelOrg] c ON c.ID=a.AdviserGroupID AND c.IsDel=0
+        where a.IsDel=0 and ClueRuleID in (select id from B_ClueRule  where isdel=0 and ProjectID=#{projectId} and ProtectSource=#{protectSource})
+        and a.ClueRuleID= #{clueRuleId}
+    </select>
+
+    <select id="ClueRuleUnassignedOneList_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT Id,DictName Name FROM dbo.S_Dictionary WHERE IsDel=0 AND PID='5316B9EF-2AA7-43BA-A8C8-14A5CA368C95' AND Status=1 AND Ext1=#{protectSource} AND id NOT IN
+            (
+            SELECT b.AdviserGroupID FROM dbo.B_ClueRule a
+            INNER JOIN B_ClueRule_AdviserGroup b ON a.ID=b.ClueRuleID AND b.IsDel=0
+             WHERE a.IsDel=0 AND a.ProjectID=#{projectId} AND a.ProtectSource=#{protectSource}
+            )
+        ]]>
+
+    </select>
+
+    <select id="ClueRuleUnassignedTwoList_Select" resultType="java.util.Map">
+        <![CDATA[
+             SELECT a.Id,a.OrgName Name FROM B_ChannelOrg a
+             INNER JOIN B_PojectChannelOrgRel b ON a.ID=b.OrgID AND b.IsDel=0 AND b.ProjectID=#{projectId}
+            WHERE a.IsDel=0 AND a.OrgCategory=1 and a.Status=1 AND a.id NOT IN
+            (
+            SELECT b.AdviserGroupID FROM dbo.B_ClueRule a
+            INNER JOIN B_ClueRule_AdviserGroup b ON a.ID=b.ClueRuleID AND b.IsDel=0
+             WHERE a.IsDel=0 AND a.ProjectID=#{projectId} AND a.ProtectSource=#{protectSource}
+            )
+        ]]>
+    </select>
+</mapper>

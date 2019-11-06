@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.RuleRemindMapper">
+
+	<!-- 查询设置回收规则的项目 -->
+	<select id="RemindRuleList_Select" resultType="java.util.HashMap">
+		SELECT * FROM
+		B_RemindRule WHERE IsDel=0 AND Status=1 AND VersionEndTime IS NULL
+	</select>
+	
+	<!-- 渠道消息是否开启状态 -->
+	<select id="ChannelMessageList_Select" resultType="java.util.HashMap">
+	    SELECT * FROM dbo.B_RemindChannel WHERE isdel = 0
+	</select>
+
+	<!-- 今日待回访(下次跟进逾期) -->
+	<select id="WaitingForTodayList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		select a.ID as BizID,SaleUserID as Receiver,a.ProjectID
+		from  B_CustomerFollowUp b
+		inner join B_Opportunity a on a.id=b.OpportunityID and a.IsDel=0 and a.Status=1 AND a.ProjectID=#{ProjectID}
+		left join S_Message c on a.id=c.BIZID and a.SaleUserID=c.Receiver and c.isdel=0 and c.status=1  and c.MessageType='487F2C39-779D-097B-455B-799AC0B3CBB4'
+		INNER JOIN dbo.B_RemindRule d ON d.ProjectID=a.ProjectID AND d.Status=1 AND d.IsDel=0  and d.WaitForVisit=1 AND d.VersionEndTime IS NULL
+		where  b.IsDel=0 and b.Status=1 and convert(date,b.NextFollowUpDate)=convert(date,getdate()) and c.id is NULL AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=a.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
+	]]>
+	</select>
+
+	<!-- 跟进逾期提醒(距离上一次跟进时间超过天数-跟进逾期前天数=当前时间-最后跟进时间) -->
+	<select id="FollowUpOverdueList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT a.ID AS BizID,a.SaleUserID as Receiver,a.ProjectID,DATEADD(d,c.OwnerReleasePeriod,a.TheLatestFollowUpDate) as Ext2  FROM dbo.B_Opportunity a
+		LEFT JOIN dbo.S_Message b ON b.BizID=a.id AND b.Receiver=a.SaleUserID AND b.IsDel=0 AND b.Status=1 AND b.MessageType='12D36558-A8A1-20D4-58E5-612338026AE7'
+		INNER JOIN B_SalesCenterRule c ON c.ProjectID=a.ProjectID AND c.IsDel=0 AND c.Status=1 AND c.ProjectID=#{ProjectID}
+		INNER JOIN B_RemindRule d ON d.ProjectID=a.ProjectID AND d.IsDel=0 AND d.Status=1 AND d.OverdueFollowupAgo=1 AND ISNULL(d.OverdueFollowupAgoTime,0)>0 AND d.VersionEndTime IS NULL AND d.ProjectID=#{ProjectID}
+		WHERE a.IsDel=0 AND a.Status<3 AND a.ProjectID=#{ProjectID} AND b.ID IS NULL AND c.OwnerReleasePeriod-ISNULL(d.OverdueFollowupAgoTime,0)=datediff(day,a.TheLatestFollowUpDate,GETDATE())
+		AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=a.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
+	]]>
+	</select>
+
+	<!-- 逾期未认购 -->
+	<select id="OverdueSubList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT a.OpportunityID as BizID,a.UserID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,-ISNULL(#{Time},0),b.BgnDate))=convert(date,getdate())
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
+		LEFT JOIN dbo.S_Message d ON d.BizID=c.ID AND d.Receiver=c.SaleUserID AND d.IsDel=0 AND d.Status=1 AND d.MessageType=#{MessageType}
+		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=8 AND d.ID IS NULL AND a.ProjectID=#{ProjectID} AND a.SalesStatus=8 AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=c.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
+	]]>
+	</select>
+
+	<!-- 逾期未签约 -->
+	<select id="OverdueSignList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+	  	select a.ID as BizID,a.SaleUserID as Receiver,f.JhqyDate as Ext2
+		from B_Opportunity a
+		LEFT JOIN dbo.S_Message b ON b.BizID=a.ID AND b.Receiver=a.SaleUserID AND b.IsDel=0 AND b.Status=1 AND b.MessageType=#{MessageType}
+		inner join B_CustomerAttach e on a.id=e.OpportunityID and e.isdel=0 and e.SalesStatus=4
+		inner join s_Trade g on e.id=g.oppguid
+		inner join s_order f on g.[TradeGUID]=f.[TradeGUID]
+		where a.IsDel=0 and a.Status=4 and a.ProjectID=#{ProjectID} AND b.id IS NULL
+		and datediff(day,GETDATE(),f.JhqyDate)=ISNULL(#{Time},0)
+		AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=a.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
+    ]]>
+	</select>
+
+	<!-- 回款逾期 -->
+	<select id="OverduePaymentList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+	    SELECT a.OpportunityID as BizID,c.SaleUserID as Receiver,e.lastDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYTrade b ON a.ID=b.OppGUID
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0 AND c.ProjectID=#{ProjectID}
+		LEFT JOIN S_Message d ON d.BizID=c.ID AND d.IsDel=0 AND d.Status=1 AND d.Receiver=c.SaleUserID AND d.MessageType=#{MessageType}
+		INNER JOIN(
+			select FeeGUID,a.TradeGUID,a.lastDate as lastDate
+			from s_Fee a
+			inner join s_Trade b on a.TradeGUID=b.TradeGUID
+			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(-#{Time},0),a.lastDate))=convert(date,getdate())
+		) e ON e.TradeGUID=b.TradeGUID
+		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=4 AND a.ProjectID=#{ProjectID} and d.ID is null
+		AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=c.SaleUserID AND RoleID IN('0269F35E-B32D-4D12-8496-4E6E4CE597B7'))
+    ]]>
+	</select>
+
+	<!-- 认购逾期 -->
+	<select id="OverdueSubMList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+	    SELECT a.OpportunityID as BizID,d.MemberID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,b.BgnDate)=convert(date,getdate())
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
+		INNER JOIN dbo.B_SalesGroupMember d ON d.ProjectID=#{ProjectID} AND d.IsDel=0 AND d.Status=1 AND d.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message e ON e.BizID=c.ID AND e.Receiver=d.MemberID AND e.IsDel=0 AND e.Status=1 AND e.MessageType=#{MessageType} and isnull(e.Ext2,'')<>'' AND CONVERT(DATE,e.Ext2)=convert(date,getdate())
+		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=8 AND e.ID IS NULL AND a.ProjectID=#{ProjectID} AND a.SalesStatus=8
+    ]]>
+	</select>
+
+	<!-- 认购逾期前 -->
+	<select id="OverdueSubMBeforeList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+        SELECT a.OpportunityID as BizID,d.MemberID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,ISNULL(#{Time},0),b.BgnDate))=convert(date,getdate())
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
+		INNER JOIN dbo.B_SalesGroupMember d ON d.ProjectID=#{ProjectID} AND d.IsDel=0 AND d.Status=1 AND d.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message e ON e.BizID=c.ID AND e.Receiver=d.MemberID AND e.IsDel=0 AND e.Status=1 AND e.MessageType=#{MessageType} and isnull(e.Ext2,'')<>'' AND CONVERT(DATE,e.Ext2)>convert(date,getdate())
+		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=8 AND e.ID IS NULL AND a.ProjectID=#{ProjectID} AND a.SalesStatus=8
+    ]]>
+	</select>
+
+	<!-- 认购逾期后 -->
+	<select id="OverdueSubMAfterList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+        SELECT a.OpportunityID as BizID,d.MemberID as Receiver,b.BgnDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYBooking b ON b.OppGUID=a.ID AND CONVERT(DATE,DATEADD(DAY,ISNULL(#{Time},0),b.BgnDate))=convert(date,getdate())
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0
+		INNER JOIN dbo.B_SalesGroupMember d ON d.ProjectID=#{ProjectID} AND d.IsDel=0 AND d.Status=1 AND d.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message e ON e.BizID=c.ID AND e.Receiver=d.MemberID AND e.IsDel=0 AND e.Status=1 AND e.MessageType=#{MessageType} and isnull(e.Ext2,'')<>'' AND CONVERT(DATE,e.Ext2)<convert(date,getdate())
+		WHERE a.IsDel=0 AND a.Status=1 AND a.SalesStatus=8 AND e.ID IS NULL AND a.ProjectID=#{ProjectID} AND a.SalesStatus=8
+    ]]>
+	</select>
+
+	<!-- 逾期未签约 -->
+	<select id="OverdueSignMList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		select a.ID as BizID,h.MemberID as Receiver,f.JhqyDate as Ext2
+		from B_Opportunity a
+		inner join B_CustomerAttach e on a.id=e.OpportunityID and e.isdel=0 and e.SalesStatus=4
+		inner join s_Trade g on e.id=g.oppguid
+		inner join s_order f on g.[TradeGUID]=f.[TradeGUID]
+		INNER JOIN dbo.B_SalesGroupMember h ON h.ProjectID=#{ProjectID} AND h.IsDel=0 AND h.Status=1 AND h.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message b ON b.BizID=a.ID AND b.Receiver=h.MemberID AND b.IsDel=0 AND b.Status=1 AND b.MessageType=#{MessageType} and isnull(b.Ext2,'')<>'' and datediff(day,GETDATE(),b.Ext2)=0
+		WHERE a.IsDel=0 and a.Status=4 and a.ProjectID=#{ProjectID} AND b.id IS NULL AND datediff(day,GETDATE(),f.JhqyDate)=0
+    ]]>
+	</select>
+
+	<!-- 逾期未签约前 -->
+	<select id="OverdueSignMBeforeList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		select a.ID as BizID,h.MemberID as Receiver,f.JhqyDate as Ext2
+		from B_Opportunity a
+		inner join B_CustomerAttach e on a.id=e.OpportunityID and e.isdel=0 and e.SalesStatus=4
+		inner join s_Trade g on e.id=g.oppguid
+		inner join s_order f on g.[TradeGUID]=f.[TradeGUID]
+		INNER JOIN dbo.B_SalesGroupMember h ON h.ProjectID=#{ProjectID} AND h.IsDel=0 AND h.Status=1 AND h.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message b ON b.BizID=a.ID AND b.Receiver=h.MemberID AND b.IsDel=0 AND b.Status=1 AND b.MessageType=#{MessageType} and isnull(b.Ext2,'')<>'' and datediff(day,GETDATE(),b.Ext2)>0
+		WHERE a.IsDel=0 and a.Status=4 and a.ProjectID=#{ProjectID} AND b.id IS NULL AND datediff(day,GETDATE(),f.JhqyDate)=#{Time}
+    ]]>
+	</select>
+
+	<!-- 逾期未签约后 -->
+	<select id="OverdueSignMAfterList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		select a.ID as BizID,h.MemberID as Receiver,f.JhqyDate as Ext2
+		from B_Opportunity a
+		inner join B_CustomerAttach e on a.id=e.OpportunityID and e.isdel=0 and e.SalesStatus=4
+		inner join s_Trade g on e.id=g.oppguid
+		inner join s_order f on g.[TradeGUID]=f.[TradeGUID]
+		INNER JOIN dbo.B_SalesGroupMember h ON h.ProjectID=#{ProjectID} AND h.IsDel=0 AND h.Status=1 AND h.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message b ON b.BizID=a.ID AND b.Receiver=h.MemberID AND b.IsDel=0 AND b.Status=1 AND b.MessageType=#{MessageType} and isnull(b.Ext2,'')<>'' and datediff(day,GETDATE(),b.Ext2)<0
+		WHERE a.IsDel=0 and a.Status=4 and a.ProjectID=#{ProjectID} AND b.id IS NULL AND datediff(day,GETDATE(),f.JhqyDate)=#{Time}
+    ]]>
+	</select>
+
+	<!-- 回款逾期 -->
+	<select id="OverdueUnPaymentMList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT a.OpportunityID as BizID,e.MemberID as Receiver,d.lastDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYTrade b ON a.ID=b.OppGUID
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0 AND c.ProjectID=#{ProjectID}
+		INNER JOIN(
+		select FeeGUID,a.TradeGUID,a.lastDate as lastDate
+			from s_Fee a
+			inner join s_Trade b on a.TradeGUID=b.TradeGUID
+			where  Ye<>0 and  CONVERT(DATE,a.lastDate)=convert(date,getdate())
+		) d ON d.TradeGUID=b.TradeGUID
+		INNER JOIN dbo.B_SalesGroupMember e ON e.ProjectID=c.ProjectID AND e.IsDel=0 AND e.Status=1 AND e.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message f ON f.BizID=a.ID AND f.Receiver=e.MemberID AND f.IsDel=0 AND f.Status=1 AND f.MessageType=#{MessageType} and isnull(f.Ext2,'')<>'' and CONVERT(DATE,f.Ext2)=CONVERT(date,GETDATE())
+		WHERE a.IsDel=0 AND a.Status=1 AND f.ID IS null AND a.SalesStatus=4 AND a.ProjectID=#{ProjectID}
+	]]>
+	</select>
+
+	<!-- 回款逾期前 -->
+	<select id="OverdueUnPaymentMBeforeList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+        SELECT a.OpportunityID as BizID,e.MemberID as Receiver,d.lastDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYTrade b ON a.ID=b.OppGUID
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0 AND c.ProjectID=#{ProjectID}
+		INNER JOIN(
+		select FeeGUID,a.TradeGUID,a.lastDate as lastDate
+			from s_Fee a
+			inner join s_Trade b on a.TradeGUID=b.TradeGUID
+			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(#{Time},0),a.lastDate))=CONVERT(date,GETDATE())
+		) d ON d.TradeGUID=b.TradeGUID
+		INNER JOIN dbo.B_SalesGroupMember e ON e.ProjectID=c.ProjectID AND e.IsDel=0 AND e.Status=1 AND e.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message f ON f.BizID=a.ID AND f.Receiver=e.MemberID AND f.IsDel=0 AND f.Status=1 AND f.MessageType=#{MessageType} and isnull(f.Ext2,'')<>'' and CONVERT(DATE,f.Ext2)>CONVERT(date,GETDATE())
+		WHERE a.IsDel=0 AND a.Status=1 AND f.ID IS null AND a.SalesStatus=4 AND a.ProjectID=#{ProjectID}
+    ]]>
+	</select>
+
+	<!-- 回款逾期后 -->
+	<select id="OverdueUnPaymentMAfterList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+        SELECT a.OpportunityID as BizID,e.MemberID as Receiver,d.lastDate as Ext2 FROM dbo.B_CustomerAttach a
+		INNER JOIN dbo.C_MYTrade b ON a.ID=b.OppGUID
+		INNER JOIN dbo.B_Opportunity c ON c.ID=a.OpportunityID AND c.IsDel=0 AND c.ProjectID=#{ProjectID}
+		INNER JOIN(
+		select FeeGUID,a.TradeGUID,a.lastDate as lastDate
+			from s_Fee a
+			inner join s_Trade b on a.TradeGUID=b.TradeGUID
+			where  Ye<>0 and  CONVERT(DATE,DATEADD(d,ISNULL(#{Time},0),a.lastDate))=CONVERT(date,GETDATE())
+		) d ON d.TradeGUID=b.TradeGUID
+		INNER JOIN dbo.B_SalesGroupMember e ON e.ProjectID=c.ProjectID AND e.IsDel=0 AND e.Status=1 AND e.RoleID IN('A2C076C4-09D1-4B42-862D-8688A93320F4','3BC23001-BC31-4594-8463-C7DA89C0FB36')
+		LEFT JOIN dbo.S_Message f ON f.BizID=a.ID AND f.Receiver=e.MemberID AND f.IsDel=0 AND f.Status=1 AND f.MessageType=#{MessageType} and isnull(f.Ext2,'')<>'' and CONVERT(DATE,f.Ext2)<CONVERT(date,GETDATE())
+		WHERE a.IsDel=0 AND a.Status=1 AND f.ID IS null AND a.SalesStatus=4 AND a.ProjectID=#{ProjectID}
+    ]]>
+	</select>
+	
+	<!-- 渠道消息推送开始 -->
+	<!-- 客户认筹提醒 -->
+	<select id="RecognizeRemindList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT 
+		c.ID BizID,
+		'Clue' BizType,
+		ca.ProjectID,
+		c.ReportUserID Receiver,
+		o.CustomerName,
+		o.CustomerMobile
+		FROM dbo.C_MYBooking myb 
+		INNER JOIN dbo.B_CustomerAttach ca ON ca.ID=myb.OppGUID
+		INNER JOIN dbo.B_Opportunity o ON o.ID=ca.OpportunityID 
+		INNER JOIN dbo.B_Clue c ON c.ID=o.ClueID 
+		INNER JOIN dbo.B_ClueRule cr ON c.RuleID=cr.ID AND cr.ProtectSource =#{Source}
+		WHERE  ( myb.Status<>'关闭' or (myb.Status='关闭' AND myb.CloseYy='转认购'))
+        AND o.ProjectID=#{ProjectID} 
+        AND DATEDIFF(DAY,myb.CreateTime,GETDATE())=0
+		AND NOT EXISTS(
+				SELECT  BizID,ProjectID,Receiver ReportUserID FROM dbo.S_Message m
+				 WHERE Subject='客户认筹提醒' 
+				 AND m.MessageType='FE54E9CB-C0EC-45A9-B139-A47BAC9DA7CF' 
+				AND m.ProjectID=o.ProjectID 
+				AND m.Receiver=c.ReportUserID 
+				AND m.BizID=c.ID
+		)
+    ]]>
+	</select>
+	
+	<!-- 客户认购提醒 -->
+	<select id="OverdueSubRemindList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT
+			c.ID BizID,
+			'Clue' BizType,
+			ca.ProjectID,
+			c.ReportUserID Receiver,
+			o.CustomerName,
+			o.CustomerMobile 
+		FROM
+			dbo.C_MYOrder myo
+			LEFT JOIN dbo.C_MYTrade myt ON myo.TradeGUID= myt.TradeGUID
+			INNER JOIN dbo.B_CustomerAttach ca ON ca.ID= myt.OppGUID
+			INNER JOIN dbo.B_Opportunity o ON o.ID= ca.OpportunityID
+			INNER JOIN dbo.B_Clue c ON c.ID= o.ClueID
+			INNER JOIN dbo.B_ClueRule cr ON c.RuleID= cr.ID 
+			AND cr.ProtectSource =#{Source} 
+		WHERE
+			(
+				myo.Status<> '关闭' 
+			OR ( myo.Status= '关闭' AND myo.CloseReason= '转签约' )) 
+			AND o.ProjectID= #{ProjectID} 
+			AND DATEDIFF(
+				DAY,
+				myo.QSDate,
+			GETDATE()) = 0 
+			AND NOT EXISTS (
+				SELECT
+					BizID,
+					ProjectID,
+					Receiver ReportUserID 
+				FROM
+					dbo.S_Message m 
+				WHERE
+					Subject = '客户认购提醒' 
+					AND m.MessageType= '814E3403-C0F3-43DC-9763-7C175595DA0F' 
+					AND m.ProjectID= o.ProjectID 
+					AND m.Receiver= c.ReportUserID 
+				AND m.BizID= c.ID
+			)
+    ]]>
+	</select>
+	
+	<!-- 客户签约提醒 -->
+	<select id="OverdueSignRemindList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT
+			t.BizID,
+			t.BizType,
+			t.ProjectID,
+			t.ZqDate,
+			t.ReportUserID Receiver,
+			t.CustomerName,
+			t.CustomerMobile 
+		FROM
+			(SELECT
+					c.ID BizID,
+					'Clue' BizType,
+					ca.ProjectID,
+				CASE
+						
+						WHEN myc.ChgDate >= myc.ZqDate THEN
+						myc.ChgDate ELSE myc.ZqDate 
+					END ZqDate,
+				c.ReportUserID,
+				myc.Status,
+				o.CustomerName,
+				o.CustomerMobile 
+			FROM
+				dbo.C_MYContract myc
+				LEFT JOIN dbo.C_MYTrade myt ON myc.TradeGUID= myt.TradeGUID
+				INNER JOIN dbo.B_CustomerAttach ca ON ca.ID= myt.OppGUID
+				INNER JOIN dbo.B_Opportunity o ON o.ID= ca.OpportunityID
+				INNER JOIN dbo.B_Clue c ON c.ID= o.ClueID
+				INNER JOIN dbo.B_ClueRule cr ON c.RuleID= cr.ID 
+				AND cr.ProtectSource =#{Source} 
+			) t 
+		WHERE
+			t.Status<> '关闭' 
+			AND t.ProjectID= #{ProjectID} 
+			AND DATEDIFF(
+				DAY,
+				t.ZqDate,
+			GETDATE()) = 0 
+			AND NOT EXISTS (
+			SELECT
+				BizID,
+				ProjectID,
+				Receiver ReportUserID 
+			FROM
+				dbo.S_Message m 
+			WHERE
+				Subject = '客户签约提醒' 
+				AND m.MessageType= '0F45C158-A9B0-40A9-B9DD-6333A4E99245' 
+				AND m.ProjectID= t.ProjectID 
+				AND m.Receiver= t.ReportUserID 
+			AND m.BizID= t.BizID 
+		)
+	]]>
+	</select>
+	
+	<!-- 客户退房提醒 -->
+	<select id="CheckOutRemindList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT
+			c.ID BizID,
+			'Clue' BizType,
+			ca.ProjectID,
+			c.ReportUserID Receiver,
+			o.CustomerName,
+			o.CustomerMobile 
+		FROM
+			dbo.C_MYContract myc
+			INNER JOIN dbo.C_MYTrade myt ON myc.TradeGUID= myt.TradeGUID
+			INNER JOIN dbo.B_CustomerAttach ca ON ca.ID= myt.OppGUID
+			INNER JOIN dbo.B_Opportunity o ON o.ID= ca.OpportunityID
+			INNER JOIN dbo.B_Clue c ON c.ID= o.ClueID
+			INNER JOIN dbo.B_ClueRule cr ON c.RuleID= cr.ID 
+			AND cr.ProtectSource =#{Source} 
+		WHERE
+			myc.Status= '关闭' 
+			AND myc.CloseReason= '退房' 
+			AND DATEDIFF(
+				DAY,
+				myc.CloseDate,
+			GETDATE()) = 0 
+			AND NOT EXISTS (
+				SELECT
+					BizID,
+					ProjectID,
+					Receiver ReportUserID 
+				FROM
+					dbo.S_Message m 
+				WHERE
+					Subject = '客户退房提醒' 
+					AND m.MessageType= 'EB7423A9-3C97-4E87-BDF2-2C1DDCC55FE2' 
+					AND m.ProjectID= o.ProjectID 
+					AND m.Receiver= c.ReportUserID 
+				AND m.BizID= c.ID
+			)
+	]]>
+	</select>
+	
+	<!-- 客户无效提醒 -->
+	<select id="CustomerInvalidRemindList_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT
+			c.id BizID,
+			'Clue' BizType,
+			c.IntentProjectID ProjectID,
+			c.ReportUserID Receiver,
+			c.Name CustomerName,
+			c.Mobile CustomerMobile 
+		FROM
+			dbo.B_Clue c
+			LEFT JOIN dbo.B_CustomerPotential cp ON c.CustomerPotentialID= cp.ID
+			INNER JOIN dbo.B_ClueRule cr ON c.RuleID= cr.ID 
+			AND cr.ProtectSource=#{Source} 
+		WHERE
+			c.Status= 3 
+			AND c.IntentProjectID= #{ProjectID}
+			AND DATEDIFF(
+				DAY,
+				c.InvalidTime,
+			GETDATE()) = 0 
+			AND NOT EXISTS (
+			SELECT
+				BizID,
+				ProjectID,
+				Receiver ReportUserID 
+			FROM
+				dbo.S_Message m 
+			WHERE
+				Subject = '客户无效提醒' 
+				AND m.MessageType= '3698A744-03D6-4715-A642-70455A1C7E9A' 
+				AND m.ProjectID= c.IntentProjectID 
+				AND m.Receiver= c.ReportUserID 
+			AND m.BizID= c.ID
+			)
+	]]>
+	</select>
+	
+	<!-- 跟进逾期提醒(距离上一次跟进时间超过天数-跟进逾期前天数=当前时间-最后跟进时间) -->
+	<select id="FollowUpOverdueListZQ_Select" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT a.ID AS BizID,a.ReportUserID as Receiver,a.IntentProjectID ProjectID,DATEADD(d,c.FollowUpOverdueDays,a.TheLatestFollowUpDate) as Ext2 FROM dbo.B_Clue a
+		LEFT JOIN dbo.S_Message b ON b.BizID=a.id AND b.Receiver=a.ReportUserID AND b.IsDel=0 AND b.Status=1 AND b.MessageType='12D36558-A8A1-20D4-58E5-612338026AE7'
+		INNER JOIN dbo.B_ClueRule c ON c.ID = a.RuleID AND c.IsDel=0 AND c.Status=1 AND c.ProjectID=#{ProjectID}
+		LEFT JOIN dbo.B_Opportunity d ON d.ClueID = a.ID AND d.IsDel = 0 AND d.Status = 1 AND d.ProjectID = #{ProjectID}
+		WHERE a.IsDel=0 AND a.Status!= 3 AND ISNULL(d.Status,0) != 5 AND a.IntentProjectID=#{ProjectID} 
+		AND b.ID IS NULL AND c.FollowUpOverdueDays-3=datediff(day,a.TheLatestFollowUpDate,GETDATE())
+		AND EXISTS(SELECT id FROM dbo.B_SalesGroupMember WHERE ProjectID=#{ProjectID} AND IsDel=0 AND Status=1 AND MemberID=a.ReportUserID 
+		AND RoleID IN('48FC928F-6EB5-4735-BF2B-29B1F591A582','9584A4B7-F105-44BA-928D-F2FBA2F3B4A4','B0BF5636-94AD-4814-BB67-9C1873566F29','WSD12580-003A-6505-B211-C2C2C2C2C2C2'))
+	]]>
+	</select>
+	<!-- 渠道消息推送结束 -->
+
+	<!-- 跟进即将逾期消息更新为无效 -->
+	<update id="ToFollowOverdueDate_Update">
+	<![CDATA[
+		  update [S_Message]  set status=2 ,editor='系统2' where ext2 < getdate() and  messagetype='12D36558-A8A1-20D4-58E5-612338026AE7' and Status=1
+	]]>
+	</update>
+
+	<!-- 写入消息 -->
+	<insert id="RemindMessage_Insert">
+		INSERT INTO S_Message( ID, ProjectID,BizID,BizType, Subject, Content, Sender, SendTime, MessageType, Receiver, Creator, CreateTime,Ext1,Ext2) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(NEWID(),
+			#{item.ProjectID},
+			#{item.BizID},
+			#{item.BizType},
+			#{item.Subject},
+			#{item.Content},
+			'sys',
+			GETDATE(),
+			#{item.MessageType},
+			#{item.Receiver},
+			'sys',
+			GETDATE(),
+			#{item.Ext1},
+			#{item.Ext2})
+		</foreach>
+	</insert>
+
+</mapper>

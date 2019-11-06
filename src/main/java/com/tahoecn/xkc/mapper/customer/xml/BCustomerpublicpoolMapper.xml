@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper">
+	<!-- 客户公共池查询 -->
+	<select id="mCustomerGGCList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  PublicID ,
+	            OpportunityID ,
+	            CustomerID,
+	            AdviserName ,
+	            AdviserOrgName ,
+	            CustomerName ,
+	            CustomerMobile ,
+	            IntentionLevel ,
+	            OpportunityStatus ,
+	            OpportunitySource ,
+	            CustomerRank ,
+	            CONVERT(varchar(100), HSTime, 120) as HSTime ,
+	            CONVERT(varchar(100), TheLatestFollowUpDate, 120) as TheLatestFollowUpDate ,
+	            TheLatestFollowUpWay ,
+	            TheLatestFollowUpContent
+    		FROM    ( SELECT    B.ID PublicID ,
+                        A.ID OpportunityID ,
+                        A.CustomerID,
+                        dbo.F_GetSaleUserName(B.SaleUserID) AdviserName ,
+                        dbo.F_GetSaleGroupName(B.SaleUserID, A.ProjectID) AdviserOrgName ,
+                        A.CustomerName ,
+                        REPLACE(A.CustomerMobile,
+                                SUBSTRING(A.CustomerMobile, 4, 4), '****') CustomerMobile ,
+                        dbo.F_DictName(A.CustomerLevel) IntentionLevel ,
+                        dbo.F_GetStatusName_xkc(A.Status) OpportunityStatus ,
+                        dbo.F_DictName(A.OpportunitySource) OpportunitySource ,
+                        dbo.F_DictName(A.CustomerRank) CustomerRank ,
+						B.CreateTime HSTime ,
+                        A.TheLatestFollowUpDate,
+                        dbo.F_DictName(A.TheLatestFollowUpWay) TheLatestFollowUpWay ,
+                        A.TheLatestFollowUpContent ,
+                        ROW_NUMBER() OVER ( ${ORDER} ) num
+              FROM      dbo.B_CustomerPublicPool B
+                        LEFT JOIN dbo.B_Opportunity A ON A.ID = B.OpportunityID AND B.IsDel = 0
+                        LEFT JOIN dbo.B_Clue C ON C.ID=A.ClueID AND A.IsDel=0
+              WHERE     A.ProjectID = #{ProjectID}
+                        AND A.IsDel = 0
+                        AND ISNULL(A.SaleUserID,'') = ''
+                        ${WHERE}
+                        
+            ) t
+	    WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+	            AND t.num <= ${PageIndex} * ${PageSize}
+		]]>
+	</select>
+	<select id="mCustomerGGCList_Select_count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT  COUNT(1) recordCount
+		    FROM    dbo.B_CustomerPublicPool B
+		            LEFT JOIN dbo.B_Opportunity A ON A.ID = B.OpportunityID AND B.IsDel = 0 and A.Status <> 6
+		    WHERE   A.ProjectID = #{ProjectID}
+		            AND ISNULL(A.SaleUserID,'') = ''
+		            AND A.IsDel = 0
+		           ${WHERE}
+		]]>
+	</select>
+	<select id="GGCGrab_Select1" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(1) 
+			FROM
+				dbo.B_CustomerPublicPool A
+				LEFT JOIN dbo.B_Clue b ON b.ID  = a.ClueID 
+				AND b.IntentProjectID  = #{ProjectID} 
+			WHERE
+				A.Editor= #{UserID} 
+				AND DATEDIFF( DAY, A.EditeTime, GETDATE( ) ) = 0 
+				AND b.IntentProjectID  = #{ProjectID} 
+		]]>
+	</select>
+	<select id="GGCGrab_Select2" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(1)
+			FROM
+				dbo.B_CustomerPublicPool A
+				LEFT JOIN dbo.B_Opportunity b ON b.ID  = a.OpportunityID 
+				AND b.ProjectID  = #{ProjectID} 
+			WHERE
+				A.Editor= #{UserID} 
+				AND DATEDIFF( DAY, A.EditeTime, GETDATE( ) ) = 0 
+				AND b.ProjectID  = #{ProjectID}
+		]]>
+	</select>
+	<!-- 客户分享传播池查询 -->
+	<select id="mCustomerSharePageList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT *
+			FROM  ( SELECT 
+			        ROW_NUMBER() OVER(ORDER BY ASP.CreateTime) num,
+			        ASP.ID FXCBID,
+			        ASP.WXUserID,
+			        CWXU.Mobile CustomerMobile,
+			        CWXU.NickName CustomerName,
+			        CASE ASP.Category WHEN 0 THEN dbo.F_GetMediaChildName(ASQP.SID) 
+			                          WHEN 1 THEN '自然访客'
+			                          WHEN 2 THEN '置业顾问'
+			                          WHEN 3 THEN '自渠'
+			                          WHEN 4 THEN '案场管理人员'
+			                          WHEN 5 THEN '中介同行'
+			                          WHEN 6 THEN '中介同行负责人'
+			                          WHEN 7 THEN '普通用户' END SourceType,
+			        ASP.CreateTime
+			     FROM dbo.A_SharePool ASP
+			                                LEFT JOIN dbo.C_WXUser CWXU ON CWXU.ID = ASP.WXUserID 
+			                                LEFT JOIN dbo.A_ShareProject ASPR ON ASPR.ID = ASP.ShareProjectID 
+			                                LEFT JOIN dbo.A_ShareQRCodeParameter ASQP ON ASQP.ID= ASP.ShareWXUserID AND ASQP.Category = 1
+			                                WHERE ASP.ShareProjectID = (SELECT ID FROM dbo.A_ShareProject WHERE ProjectID = #{ProjectID})
+			                AND ASP.Status = 1
+			                AND ASP.IsDel =0
+			                ${Where}
+			            ) t
+			    WHERE   t.num > ( ${PageIndex} - 1 ) * ${PageSize}
+			            AND t.num <= ${PageIndex} * ${PageSize}
+		]]>
+	</select>
+	<select id="mCustomerSharePageList_Select_count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(1) recordCount
+		     FROM dbo.A_SharePool ASP
+			     LEFT JOIN dbo.C_WXUser CWXU ON CWXU.ID = ASP.WXUserID 
+			     LEFT JOIN dbo.A_ShareProject ASPR ON ASPR.ID = ASP.ShareProjectID 
+			     LEFT JOIN dbo.A_ShareQRCodeParameter ASQP ON ASQP.ID= ASP.ShareWXUserID AND ASQP.Category = 1
+			WHERE ASP.ShareProjectID = (SELECT ID FROM dbo.A_ShareProject WHERE ProjectID = #{ProjectID})
+		    	AND ASP.Status = 1 AND ASP.IsDel =0 ${Where}
+		]]>
+	</select>
+	<select id="FXCBGrab_Select1" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT  COUNT(1)  
+			FROM  dbo.A_SharePool  A  
+			LEFT  JOIN  dbo.B_Opportunity  B  ON  B.CustomerMobile  =  A.Mobile  AND  B.ProjectID  =  #{ProjectID}  
+			WHERE  A.Editor=#{UserID}  AND  DATEDIFF(DAY,A.EditeTime,GETDATE())=0  AND  A.Status  =  2  AND  a.IsDel  =  0
+			and  A.ShareProjectID  =  (select  ID  from  A_ShareProject  where  ProjectID  =  #{ProjectID})
+		]]>
+	</select>
+	<select id="FXCBGrab_Select2" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT  COUNT(1)  
+			FROM  dbo.A_SharePool  A  
+			LEFT JOIN dbo.B_Clue B ON B.Mobile = A.Mobile AND B.IntentProjectID  =  #{ProjectID}  
+			WHERE A.Editor=#{UserID} AND  DATEDIFF(DAY,A.EditeTime,GETDATE())=0 AND A.Status = 2 AND a.IsDel = 0
+			and  A.ShareProjectID  =  (select  ID  from  A_ShareProject  where  ProjectID  = #{ProjectID})
+		]]>
+	</select>
+	<select id="mGetPublicPoolDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT a.ID as PublicID,
+				b.ID as OpportunityID,
+				c.ID as ClueID,
+      			b.CustomerName as Name,
+      			b.CustomerMobile as Mobile,
+				b.Status as OpportunityStatus,
+				c.Status as ClueStatus,
+      			a.IsDel as IsDel
+			 FROM dbo.B_CustomerPublicPool a LEFT JOIN dbo.B_Opportunity b ON b.ID = a.OpportunityID 
+												LEFT JOIN dbo.B_Clue c ON c.ID = a.ClueID
+                        WHERE a.ID = #{PublicID}
+		]]>
+	</select>
+	<!-- 公共池抢客 -->
+	<select id="mCustomerGGCList_Insert" statementType="CALLABLE">
+		{call P_CustomerAllotOneSelf_Update(#{ProjectID},#{UserID},#{OrgID},#{JobID},#{PublicIDs},
+		#{MessageInfo,mode=OUT,jdbcType=VARCHAR})}
+	</select>
+	<!-- 获取自渠所在组织 -->
+	<select id="fromBSalesGroupMember" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT b.Name as OrgName,
+				b.ID as OrgID, 
+				(CASE b.Nature 
+					WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F'
+					WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A'
+					WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A'
+					WHEN 6 THEN 'FC09F0DF-D3DF-4378-91C0-7146EC451F43'
+					WHEN 7 THEN 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'
+				END) as AdviserGroupID
+			FROM dbo.B_SalesGroupMember a LEFT JOIN dbo.B_SalesGroup b ON b.ID = a.ReceptionGroupID 
+			WHERE a.MemberID = #{UserID} AND a.ProjectID = #{ProjectID} AND a.IsDel = 0 AND a.RoleID = #{RoleID}
+		]]>
+	</select>
+	<!-- 创建线索 -->
+	<insert id="newBClue" parameterType="java.util.Map">
+	<![CDATA[
+		INSERT INTO dbo.B_Clue
+		        ( ID ,
+		          CustomerPotentialID ,
+		          Name ,
+		          LastName ,
+		          FirstName ,
+		          Gender ,
+		          Mobile ,
+		          CognitiveChannel ,
+		          CognitiveChannelSub ,
+		          TheLatestFollowUpDate ,
+		          TheLatestFollowUpContent ,
+		          TheLatestFollowUpWay ,
+		          FollowupCount ,
+		          IntentProjectID ,
+		          IntentProjectName ,
+		          CustomerLevel ,
+		          CustomerRank ,
+		          Remark ,
+		          SourceType ,
+		          ReportUserID ,
+		          ReportUserName ,
+		          ReportUserMobile ,
+		          ReportUserOrg ,
+		          RuleID ,
+		          InvalidType ,
+		          InvalidTime ,
+		          InvalidReason ,
+		          ComeOverdueTime ,
+		          TradeOverdueTime ,
+		          UserBehaviorID ,
+		          AdviserGroupID ,
+		          IsSelect ,
+		          ConfirmTime ,
+		          Creator ,
+		          CreateTime ,
+		          Editor ,
+		          EditeTime ,
+		          IsDel ,
+		          Status ,
+		          ConfirmUserId ,
+		          NextFollowUpDate ,
+		          ChannelUserID ,
+		          ChannelTaskID ,
+		          ChannelCollaborator ,
+		          ReportMethod ,
+		          WXUserID ,
+		          IsShare ,
+		          ShareLogDetailID
+		        )
+		SELECT ${NewClueID},
+				CustomerPotentialID,
+				Name ,
+		          LastName ,
+		          FirstName ,
+		          Gender ,
+		          Mobile ,
+		          NULL ,
+		          NULL ,
+		          GETDATE() ,
+		          '公共池抢客所得' ,
+		          '69331990-DBF4-0A2F-80CD-7BC424AA8928' ,
+		          FollowupCount ,
+		          IntentProjectID ,
+		          IntentProjectName ,
+		          CustomerLevel ,
+		          CustomerRank ,
+		          Remark ,
+		          SourceType ,
+		          #{UserID},
+		          dbo.F_GetSaleUserName(#{UserID}),
+		          dbo.F_GetSaleMobile(#{UserID}),
+		          #{OrgName} ,
+		          RuleID ,
+		          NULL ,
+		          NULL ,
+		          NULL ,
+		          NULL ,
+		          NULL ,
+		          UserBehaviorID ,
+		          #{AdviserGroupID} ,
+		          IsSelect ,
+		          ConfirmTime ,
+		          #{UserID} ,
+		          GETDATE() ,
+		          null ,
+		          null ,
+		          0 ,
+		          1 ,
+		          ConfirmUserId ,
+		          NextFollowUpDate ,
+		          ChannelUserID ,
+		          ChannelTaskID ,
+		          ChannelCollaborator ,
+		          ReportMethod ,
+		          '' ,
+		          0 ,
+		          ''
+				FROM dbo.B_Clue WHERE ID = #{ClueID}
+		]]>
+	</insert>
+	<!-- 添加跟进记录 -->
+	<insert id="insBCustomerPotentialFollowUp" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT INTO dbo.B_CustomerPotentialFollowUp
+		        ( ID ,
+		          CustomerPotentialID ,
+		          CustomerPotentialName ,
+		          CustomerPotentialMobile ,
+		          ClueID ,
+		          FollwUpUserID ,
+		          FollwUpUserName ,
+		          FollwUpUserMobile ,
+		          FollwUpType ,
+		          FollwUpWay ,
+		          FollowUpContent ,
+		          NextFollowUpDate ,
+		          IntentionLevel ,
+		          OrgID ,
+		          Creator ,
+		          CreateTime ,
+		          Editor ,
+		          EditeTime ,
+		          IsDel ,
+		          Status ,
+		          FollwUpUserRole ,
+		          CustomerRank ,
+		          ProjectID
+		        )
+		SELECT 
+				NEWID(),
+				CustomerPotentialID,
+				#{CustomerPotentialName},
+				#{CustomerPotentialMobile},
+				#{NewClueID},
+				#{UserID},
+		        dbo.F_GetSaleUserName(#{UserID}),
+		        dbo.F_GetSaleMobile(#{UserID}),
+				'',
+				'',
+				'公共客户池抢客所得',
+				NULL,
+				'',
+				#{OrgID},
+				#{UserID},
+				GETDATE(),
+				NULL,
+				NULL,
+				0,
+				1,
+				'48FC928F-6EB5-4735-BF2B-29B1F591A582',
+				'',
+				#{ProjectID}
+		 FROM dbo.B_Clue WHERE ID = #{ClueID}		
+		]]>
+	</insert>
+	<!-- 分享传播池客户信息 -->
+	<select id="mShareCustomerList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT 
+				ASP.ID FXCBID,
+				ASP.WXUserID,
+				CWXU.Mobile,
+				CWXU.NickName,
+				CWXU.Gender,
+				ASP.ShareWXUserID,
+				ASQP.SID MediaChildID,
+				BMC.MediaLargeID,
+				ASP.Category,
+		    	#{SaleUserName} SaleUserName
+			 FROM dbo.A_SharePool ASP
+				LEFT JOIN dbo.C_WXUser CWXU ON CWXU.ID = ASP.WXUserID 
+				LEFT JOIN dbo.A_ShareProject ASPR ON ASPR.ID = ASP.ShareProjectID 
+				LEFT JOIN dbo.A_ShareQRCodeParameter ASQP ON ASQP.ID= ASP.ShareWXUserID AND ASQP.Category = 1
+				LEFT JOIN dbo.B_MediaChild BMC ON BMC.ID = ASQP.SID  AND BMC.ProjectID = ASPR.ProjectID
+			WHERE ASP.Status = 1 AND ASP.IsDel =0
+				AND EXISTS (SELECT * from dbo.F_StrToTable(#{FXCBIDs}) AS a WHERE a.name = ASP.ID)
+		]]>
+	</select>
+</mapper>

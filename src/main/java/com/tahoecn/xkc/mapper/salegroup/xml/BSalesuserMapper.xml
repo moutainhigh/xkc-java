@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.salegroup.BSalesuserMapper">
+
+
+    <select id="UserSalesList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        b.ID,
+        a.Name,
+        c.Name,
+        c.ID
+        FROM
+        B_SalesUser a
+        LEFT JOIN dbo.B_SalesGroupMember b ON a.ID= b.MemberID
+        AND b.IsDel= 0
+        AND b.Status= 1
+        LEFT JOIN dbo.B_SalesGroup c ON b.ReceptionGroupID= c.ID
+        AND c.IsDel= 0
+        AND c.Status= 1
+        <where>
+            a.IsDel= 0
+            AND a.Status= 1
+            AND b.RoleID= '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+            <if test="projectID!=null and projectID!=''">
+                AND b.ProjectID =#{projectID}
+            </if>
+            <if test="teamID!=null and teamID!=''">
+                AND c.ID =#{teamID}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 分享小程序 -->
+    <select id="mShareAppDetail_Select" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+     SELECT
+      A.ID,
+			A.Name,
+			A.Name DevelopersName,
+			#{imgSiteUrl}+#{Url} ImgUrl,
+			#{WXDetailPagePath} PagePath
+	 FROM dbo.A_ShareProject A 
+	 WHERE A.ID = #{ShareProjectID} AND A.IsDel = 0 AND A.Status = 1 
+    </select>
+    <select id="mShareAppDetail_Select1" resultType="String" parameterType="java.util.HashMap">
+     SELECT TOP 1 ImgSrc FROM dbo.A_ShareBanner
+		WHERE IsDel=0 AND Status=1 AND Category=1 AND ShareProjectID=#{ShareProjectID} AND ImgType=0 
+		ORDER BY ListIndex ASC,CreateTime DESC
+    </select>
+
+    <select id="mLFLogin_Select" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        SELECT  TOP 1 *
+        FROM    ( SELECT    A.ID UserID ,
+        A.Name ,
+        A.TelPhone Mobile ,
+        A.HeadImg ,
+        CASE ISNULL(B.ReceptionGroupID, '')
+        WHEN '' THEN B.ProjectID
+        ELSE B.ReceptionGroupID
+        END OrgID ,
+        CASE ISNULL(C.Name, '')
+        WHEN '' THEN P.Name
+        ELSE C.Name
+        END OrgPath ,
+        B.ProjectID ,
+        P.Name ProjectName ,
+        B.RoleID JobID ,
+        dbo.F_DictCode(B.RoleID) JobCode ,
+        dbo.F_DictName(B.RoleID) JobName ,
+        ISNULL(U.AccountType, S.AccountType) AccountType ,
+        CASE C.Nature
+        WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' <!---外展-->
+        WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' <!---外呼-->
+        WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' <!---拦截-->
+        WHEN 6 THEN 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' <!---圈层-->
+        WHEN 7 THEN 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' <!---外拓-->
+        ELSE ''
+        END ChannelTypeID ,
+        ISNULL(U.Password, S.Password) Password ,
+        #{Password} RePassword ,
+        p.IsNoAllotRole ,
+        p.AllowDeviceType , <!--允许登录设备类型 0.都不允许 1.只允许APP登录 2.只允许ipad登录 3.允许所有设备登录-->
+        ( CASE WHEN P.AllowDeviceType = 2
+        OR P.AllowDeviceType = 3 THEN 0
+        ELSE 1
+        END ) AllowDeviceTypeSort ,
+        CASE WHEN UP.ProjectID = B.ProjectID
+        THEN ( CASE WHEN UPJ.JobCode = ( dbo.F_DictCode(B.RoleID) )
+        THEN 0
+        ELSE 1
+        END )
+        ELSE ( CASE WHEN UPJ.JobCode = ( dbo.F_DictCode(B.RoleID) )
+        THEN 2
+        ELSE 3
+        END )
+        END PSort ,
+        S.Status AccountStatus ,
+        P.IsOffSiteSale, <!---是否开启异地销售 1.开启 0.不开启-->
+        P.IsLocationValidate  <!---是否开启地理位置验证 1.开启 0.不开启-->
+        FROM      B_SalesUser A
+        INNER JOIN B_SalesGroupMember B ON A.ID = B.MemberID
+        AND B.IsDel = 0
+        AND B.Status = 1
+        INNER JOIN B_Project P ON P.ID = b.ProjectID
+        AND P.IsDel = 0
+        AND P.Status = 1
+        INNER JOIN S_Account S ON A.ID = S.ID
+        AND S.IsDel = 0
+        LEFT JOIN B_SalesGroup C ON C.ID = B.ReceptionGroupID
+        AND C.IsDel = 0
+        AND C.Status = 1
+        LEFT JOIN S_AccountUserType U ON S.UserName = U.UserName
+        LEFT JOIN S_AccountUserProject UP ON UP.UserID = S.ID
+        LEFT JOIN S_AccountUserProjectJob UPJ ON UPJ.UserID = S.ID
+        AND UPJ.ProjectID = B.ProjectID
+        WHERE     A.IsDel = 0
+        AND A.Status = 1
+        AND B.RoleID = '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' <!---销支角色-->
+        AND (S.UserName = LTRIM(RTRIM(#{UserName})) or S.Mobile = #{Mobile})
+        ) T
+        ORDER BY T.AllowDeviceTypeSort ,
+        T.PSort ,
+        T.IsNoAllotRole ,
+        T.Name
+    </select>
+</mapper>

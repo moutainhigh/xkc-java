@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BClueMapper">
+
+
+    <select id="BrokerClueDetail_Select" resultType="java.util.HashMap" >
+        SELECT TOP
+        1 *
+        FROM
+        (
+        SELECT
+        ID,
+        Name,
+        Mobile,
+        dbo.F_GetProjectAlias ( IntentProjectID ) IntentProjectName,
+        Remark,
+        '' AS 'ReportUserID',
+        '' AS 'ReportUserName',
+        '' AS 'ReportUserMobile',
+        CASE
+
+        WHEN Status BETWEEN 1
+        AND 2 THEN
+        CreateTime
+        WHEN Status = 3 THEN
+        InvalidTime
+        WHEN Status = 4 THEN
+        EditeTime
+        END 'CreateTime',
+        CASE
+
+        WHEN Status BETWEEN 1
+        AND 2 THEN
+        '报备'
+        WHEN Status BETWEEN 3
+        AND 4 THEN
+        '无效'
+        END 'statu',
+        SourceType
+        FROM
+        B_Clue ( NOLOCK )
+        WHERE
+        ID = #{ClueID} UNION
+        SELECT
+        cl.ID,
+        ISNULL( cl.Name, bop.CustomerName ) 'Name',
+        bop.CustomerMobile 'Mobile',
+        dbo.F_GetProjectAlias ( bop.ProjectID ) IntentProjectName,
+        cl.Remark,
+        bop.SaleUserID 'ReportUserID',
+        bop.SaleUserName 'ReportUserName',
+        bsu.TelPhone AS 'ReportUserMobile',
+        bop.CreateTime,
+        CASE
+
+        WHEN bop.Status= 1 THEN
+        '报备'
+        WHEN bop.Status= 2 THEN
+        '到访'
+        WHEN bop.Status= 3 THEN
+        '到访'
+        WHEN bop.Status = 4 THEN
+        '认购'
+        WHEN bop.Status= 5 THEN
+        '签约'
+        WHEN bop.Status= 6 THEN
+        '无效'
+        WHEN bop.Status= 7 THEN
+        '退房'
+        END 'statu',
+        cl.SourceType
+        FROM
+        B_Opportunity ( NOLOCK ) bop
+        LEFT JOIN B_SalesUser ( NOLOCK ) bsu ON bop.SaleUserID= bsu.ID
+        LEFT JOIN B_Clue ( NOLOCK ) cl ON bop.ClueID= cl.ID
+        WHERE
+        bop.ClueID= #{ClueID}
+        ) dt
+        ORDER BY
+        dt.CreateTime DESC;
+    </select>
+
+    <select id="TrackList_Select" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        1 AS sort,
+        '报备' AS Name,
+        createtime AS TractTime
+        FROM
+        b_clue
+        WHERE
+        id = #{ClueID} UNION
+        SELECT
+        2 AS sort,
+        '到访' AS Name,
+        TheFirstVisitDate AS TractTime
+        FROM
+        B_Opportunity
+        WHERE
+        clueid = #{ClueID} UNION
+        SELECT
+        *
+        FROM
+        (
+        SELECT TOP
+        1 3 AS sort,
+        '认购 ' AS 'Name',
+        ( CASE WHEN d.ChgDate IS NOT NULL THEN d.ChgDate ELSE d.QSDate END ) AS TrackTime
+        FROM
+        B_Opportunity a
+        LEFT JOIN B_CustomerAttach b ON b.OpportunityID = a.ID
+        LEFT JOIN C_MYTrade c ON c.OppGUID = b.ID
+        LEFT JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+        AND d.CloseReason NOT IN ( '退房', '换房', '其它变更', '作废', '特批折扣' )
+        WHERE
+        ClueID = #{ClueID}
+        AND d.OrderGUID IS NOT NULL
+        ORDER BY
+        d.qsdate
+        ) t1 UNION
+        SELECT
+        *
+        FROM
+        (
+        SELECT TOP
+        1 4 AS sort,
+        '签约' AS 'Name',
+        ( CASE WHEN d.ChgDate> d.ZqDate THEN d.ChgDate ELSE d.ZqDate END ) AS TrackTime
+        FROM
+        B_Opportunity bop
+        LEFT JOIN B_CustomerAttach bca ON bca.OpportunityID = bop.ID
+        LEFT JOIN C_MYTrade b ON b.OppGUID = bca.ID
+        LEFT JOIN C_MYContract d ON b.TradeGUID = d.TradeGUID
+        AND d.CloseReason NOT IN ( '退房', '换房', '其它变更', '作废', '特批折扣' )
+        WHERE
+        ClueID = #{ClueID}
+        AND d.ContractGUID IS NOT NULL
+        ORDER BY
+        d.qsdate
+        ) t2 UNION
+        SELECT
+        *
+        FROM
+        (
+        SELECT TOP
+        1 5 AS sort,
+        '退房 ' AS 'Name',
+        CASE
+
+        WHEN d.CloseDate IS NOT NULL THEN
+        d.CloseDate ELSE e.CloseDate
+        END AS TrackTime
+        FROM
+        B_Opportunity a
+        LEFT JOIN B_CustomerAttach b ON b.OpportunityID = a.ID
+        LEFT JOIN C_MYTrade c ON c.OppGUID = b.ID
+        LEFT JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+        LEFT JOIN C_MYContract e ON c.TradeGUID = e.TradeGUID
+        WHERE
+        ClueID = #{ClueID}
+        AND ( d.CloseReason= '退房' OR e.CloseReason= '退房' )
+        ORDER BY
+        d.CloseDate
+        ) t3 UNION
+        SELECT
+        6 AS sort,
+        '无效(' + InvalidReason + ')' AS 'Name',
+        InvalidTime AS 'TrackTime'
+        FROM
+        B_Clue
+        WHERE
+        ID = #{ClueID}
+        AND status = 3
+        ) tt
+        WHERE
+        TractTime IS NOT NULL
+        ORDER BY
+        sort desc,
+        TractTime  desc
+    </select>
+
+    <select id="IsExistReportProtectClue_Select" resultType="java.util.HashMap" parameterType="string">
+            <![CDATA[
+    select a.ID from B_Clue a
+    inner join B_ClueRule b on a.RuleID = b.ID
+    where b.RuleType=0 and (a.Status=1 or a.Status=2) and a.IsDel=0
+    and a.IntentProjectID=#{IntentProjectID} and a.Mobile=#{Mobile}
+    ]]>
+    </select>
+
+
+        <!-- 案场助手统计 -->
+    <select id="CaseFieDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+    <![CDATA[
+		SELECT  ( SELECT    COUNT(*)
+		          FROM      [B_Clue]
+		          WHERE     Status = 1
+		                    AND IsDel = 0
+		                    AND IntentProjectID = #{ProjectID}
+		        ) AS ToBeConfirmed ,
+		        ( SELECT    COUNT(*)
+		          FROM      [B_Clue]
+		          WHERE     Status = 3
+		                    AND IsDel = 0
+		                    AND IntentProjectID = #{ProjectID}
+		        ) AS Invalid ,
+		        ( SELECT    COUNT(*)
+		          FROM    [B_Clue] AS c
+			        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+			        LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+			        LEFT JOIN dbo.B_ClueRule r ON c.RuleID = r.ID AND r.ProtectSource = 0
+					WHERE   ( o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899')
+			        AND c.status = 2
+			        AND c.IsDel = 0
+			        AND (select top 1 bc.ID from B_CustomerFollowUp bc WHERE bc.OpportunityID = o.ID AND bc.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND bc.FollwUpUserID=#{UserID}) IS NOT NULL
+			        AND c.IntentProjectID = #{ProjectID}
+			        AND ( CASE WHEN r.IsPreIntercept = 1
+		                   THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
+		                                            c.CreateTime) < GETDATE() THEN 1
+		                               ELSE 0
+		                          END )
+		                   ELSE 1
+		              END ) = 1 
+		        ) AS ToBeDistribution ,
+		        ( SELECT    COUNT(*)
+		          FROM      [B_Clue] AS c
+		                    LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		                    LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+		          WHERE     o.SaleUserID IS NOT NULL
+		                    AND c.Status = 2
+		                    AND c.IsDel = 0
+		                    AND c.IntentProjectID = #{ProjectID}
+		        ) AS Distribution ,
+		        0 AS Call
+     ]]>
+    </select>
+    <!-- 客户信息 -->
+    <select id="CaseFieCustomerDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT  c.[ID] ,
+		        c.[CustomerPotentialID] ,
+		        c.[Name] ,
+		        c.[LastName] ,
+		        c.[FirstName] ,
+		        ISNULL(c.[Gender],'50827B18-5BCC-454C-B658-09AF4328D2A0') Gender ,
+		        c.[Mobile] ,
+		        c.[IntentProjectID] ,
+		        c.[IntentProjectName] ,
+		        c.[Remark] ,
+		        c.[SourceType] ,
+		        c.[ReportUserID] ,
+		        c.[ReportUserName] ,
+		        c.[ReportUserMobile] ,
+		        c.[ReportUserOrg] ,
+		        c.[RuleID] ,
+		        c.[InvalidType] ,
+		        CONVERT(VARCHAR(16), c.[InvalidTime], 20) AS [InvalidTime] ,
+		        c.[InvalidReason] ,
+		        CONVERT(VARCHAR(16), c.[ComeOverdueTime], 20) AS [ComeOverdueTime] ,
+		        CONVERT(VARCHAR(16), c.[TradeOverdueTime], 20) AS [TradeOverdueTime] ,
+		        c.[UserBehaviorID] ,
+		        c.[AdviserGroupID] ,
+		        c.[IsSelect] ,
+		        CONVERT(VARCHAR(16), c.[ConfirmTime], 20) AS [ConfirmTime] ,
+		        c.[Creator] ,
+		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+		        c.[Editor] ,
+		        CONVERT(VARCHAR(16), c.[EditeTime], 20) AS [EditeTime] ,
+		        c.[IsDel] ,
+		        c.[Status] ,
+		        c.[ConfirmUserId] ,
+		        u.name AS TokerUserName ,
+		        ISNULL(d.DictName,'自然访客') AS SourceName ,
+		        o.SaleUserID ,
+		        CASE WHEN o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		             THEN NULL
+		             ELSE o.SaleUserName
+		        END SaleUserName ,
+		        #{SiteUrl} + su.HeadImg SaleHeadImg ,
+		        dbo.F_GetSaleGroupName(o.SaleUserID, o.ProjectID) GroupName ,
+		        dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) CustomerTag ,
+		        
+		        co.OrgName AS SourceTypeName ,
+		        CONVERT(VARCHAR(16), TheFirstVisitDate, 20) FirstComeTime ,
+		        o.FirstVisitAddress VisitAddress
+			FROM    [B_Clue] AS c
+		        LEFT JOIN B_ChannelUser u ON c.reportuserid = u.id
+		        LEFT JOIN B_Opportunity o ON o.clueid = c.id
+		        LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		        LEFT JOIN B_ChannelOrg co ON co.id = u.ChannelOrgID
+		        LEFT JOIN B_ChannelOrg co1 ON co1.id = co.PID
+		        LEFT JOIN S_Dictionary d ON c.SourceType = d.id
+		WHERE   c.id = #{ClueID}
+	     ]]>
+    </select>
+    <!-- 获取顾问接待组数 -->
+    <select id="DayTotalCount_Select" parameterType="String" resultType="java.util.HashMap">
+		<![CDATA[
+	    	SELECT
+				c.DayTotalCount
+			FROM
+				CustomerFJAdviserList_Select c
+			WHERE
+				c.RoleID IN ( '0269F35E-B32D-4D12-8496-4E6E4CE597B7' ) 
+				AND c.ProjectID=#{ProjectID}
+				and c.ID=#{SaleUserID}
+	    ]]>
+	</select>
+    <!-- 客户无效信息 -->
+    <select id="CaseFieInvalDetail_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT  ul.name AS ClCreator ,
+			        CONVERT(VARCHAR(16), cl.CreateTime, 20) AS ClCreateTime ,
+			        o.SaleUserName AS ClSaleUserName
+			FROM    [B_Clue] cl
+			        LEFT JOIN B_ChannelUser ul ON cl.reportuserid = ul.id
+			        LEFT JOIN B_Opportunity o ON o.clueid = cl.id
+			WHERE   cl.Mobile = #{Mobile}
+			        AND cl.status = 2
+			        AND cl.IsDel = 0
+	     ]]>
+     </select>
+     <!-- 验证是否存超过到访保护期 -->
+    <select id="IsOverdueCome_Select" parameterType="java.util.Map" resultType="java.util.Map">
+	    <![CDATA[
+			SELECT dbo.F_IsVisit(b.id,getdate(),a.ComeOverdueTime) as IsOverdueCome
+                 FROM   b_clue a
+                        INNER JOIN B_Opportunity b ON a.id = b.ClueID
+                 WHERE  a.Status IN ( 1, 2 )
+                        AND b.Status = 2
+						and a.id=#{ClueID}
+	     ]]>
+     </select>
+     <!-- 扫码确认线索无效后，更新线索信息 -->
+     <update id="ClueConfirmInvalid_Update" parameterType="java.util.Map">
+	     UPDATE  B_Clue
+		SET     InvalidType = #{InvalidType} ,
+		        InvalidReason = #{InvalidReason} ,
+		        InvalidTime = #{VisitTime} ,
+		        ConfirmTime = #{VisitTime} ,
+		        ConfirmUserId = #{ConfirmUserId} ,
+		        Status = 3
+		WHERE   id = #{ClueID}
+     </update>
+     <!-- 根据手机号、项目id获取有效线索 -->
+     <select id="RuleClueList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+     	<![CDATA[
+			select a.*,b.RuleType from B_Clue a
+			inner join B_ClueRule b
+			on a.RuleID = b.ID
+			where 
+			a.Status in (1,2) and b.Status=1
+			and IntentProjectID = #{IntentProjectID} and Mobile=#{Mobile} and ReportUserID <> #{ReportUserID}
+		]]>
+     </select>
+     <select id="ClueConfirm_Update"  statementType="CALLABLE">
+     	<![CDATA[
+     	{call dbo.PR_SceneConfirmation(#{VisitTime},#{ConfirmUserId},#{ClueID}, #{ProjectID},#{TradeOverdueTime})}
+		]]>
+     </select>
+     <!-- 待确认查询 -->
+     <select id="CaseFieToBeConfirmedList_Select" parameterType="java.lang.String" resultType="java.util.Map">
+     	<![CDATA[
+	     	SELECT  c.[ID] ,
+	        c.[CustomerPotentialID] ,
+	        c.[Name] ,
+	        c.[LastName] ,
+	        c.[FirstName] ,
+	        c.[Gender] ,
+	        c.[Mobile] ,
+	        c.[IntentProjectID] ,
+	        c.[IntentProjectName] ,
+	        c.[Remark] ,
+	        c.[SourceType] ,
+	        c.[ReportUserID] ,
+	        c.[ReportUserName] ,
+	        c.[ReportUserMobile] ,
+	        c.[ReportUserOrg] ,
+	        c.[RuleID] ,
+	        c.[InvalidType] ,
+	        c.[InvalidTime] ,
+	        c.[InvalidReason] ,
+	        c.[ComeOverdueTime] ,
+	        c.[TradeOverdueTime] ,
+	        c.[UserBehaviorID] ,
+	        c.[AdviserGroupID] ,
+	        c.[IsSelect] ,
+	        c.[ConfirmTime] ,
+	        c.[Creator] ,
+	        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+	        c.[Editor] ,
+	        c.[EditeTime] ,
+	        c.[IsDel] ,
+	        c.[Status] ,
+	        c.[ConfirmUserId] ,
+	        u.name AS TokerUserName
+		FROM    [B_Clue] AS c
+		        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		WHERE   c.status = ${Status}
+		        AND c.IntentProjectID = #{ProjectID} ${sqlWhere}
+		        AND c.IsDel = 0
+		ORDER BY c.ConfirmTime DESC ,
+		        c.CreateTime DESC
+		]]>
+     </select>
+     <!-- 待分配 -->
+     <select id="CaseFieDistributionList_Select" parameterType="java.lang.String" resultType="java.util.Map">
+     	<![CDATA[
+     		SELECT  c.[ID] ,
+		        c.[CustomerPotentialID] ,
+		        c.[Name] ,
+		        c.[LastName] ,
+		        c.[FirstName] ,
+		        c.[Gender] ,
+		        c.[Mobile] ,
+		        c.[IntentProjectID] ,
+		        c.[IntentProjectName] ,
+		        c.[Remark] ,
+		        c.[SourceType] ,
+		        c.[ReportUserID] ,
+		        c.[ReportUserName] ,
+		        c.[ReportUserMobile] ,
+		        c.[ReportUserOrg] ,
+		        c.[RuleID] ,
+		        c.[InvalidType] ,
+		        c.[InvalidTime] ,
+		        c.[InvalidReason] ,
+		        c.[ComeOverdueTime] ,
+		        c.[TradeOverdueTime] ,
+		        c.[UserBehaviorID] ,
+		        c.[AdviserGroupID] ,
+		        c.[IsSelect] ,
+		        c.[ConfirmTime] ,
+		        c.[Creator] ,
+		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+		        c.[Editor] ,
+		        c.[EditeTime] ,
+		        c.[IsDel] ,
+		        c.[Status] ,
+		        c.[ConfirmUserId] ,
+		        u.name AS TokerUserName ,
+		        NULL SaleUserID
+		FROM    [B_Clue] AS c
+		        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		        LEFT JOIN B_Opportunity o ON c.id = o.ClueID
+		        LEFT JOIN dbo.B_ClueRule r ON c.RuleID = r.ID
+		                                      AND r.ProtectSource = 0
+		WHERE   ( o.ID IS NULL
+		          OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		        )
+		        AND c.status = 2
+		        AND c.IsDel = 0
+		        AND (select top 1 bc.ID from B_CustomerFollowUp bc WHERE bc.OpportunityID = o.ID AND bc.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND bc.FollwUpUserID=#{UserID}) IS NOT NULL
+		        AND c.IntentProjectID = #{ProjectID}
+		        AND ( CASE WHEN r.IsPreIntercept = 1
+		                   THEN ( CASE WHEN DATEADD(minute, r.PreInterceptTime,
+		                                            c.CreateTime) < GETDATE() THEN 1
+		                               ELSE 0
+		                          END )
+		                   ELSE 1
+		              END ) = 1 ${sqlWhere}
+		ORDER BY c.CreateTime DESC
+     	]]>
+     </select>
+     <!-- 报备信息列表 -->
+     <select id="CaseFielInquiriesList_Select" parameterType="java.lang.String" resultType="java.util.Map">
+     	<![CDATA[
+     		SELECT  c.[ID] ,
+		        c.[CustomerPotentialID] ,
+		        c.[Name] ,
+		        c.[LastName] ,
+		        c.[FirstName] ,
+		        c.[Gender] ,
+		        c.[Mobile] ,
+		        c.[IntentProjectID] ,
+		        c.[IntentProjectName] ,
+		        c.[Remark] ,
+		        c.[SourceType] ,
+		        c.[ReportUserID] ,
+		        c.[ReportUserName] ,
+		        c.[ReportUserMobile] ,
+		        c.[ReportUserOrg] ,
+		        c.[RuleID] ,
+		        c.[InvalidType] ,
+		        c.[InvalidTime] ,
+		        c.[InvalidReason] ,
+		        c.[ComeOverdueTime] ,
+		        c.[TradeOverdueTime] ,
+		        c.[UserBehaviorID] ,
+		        c.[AdviserGroupID] ,
+		        c.[IsSelect] ,
+		        c.[ConfirmTime] ,
+		        c.[Creator] ,
+		        CONVERT(VARCHAR(16), c.[CreateTime], 20) AS [CreateTime] ,
+		        c.[Editor] ,
+		        c.[EditeTime] ,
+		        c.[IsDel] ,
+		        c.[Status] ,
+		        c.[ConfirmUserId] ,
+		        u.name AS TokerUserName ,
+		        o.SaleUserName
+		FROM    [B_Clue] AS c
+		        LEFT JOIN B_Opportunity o ON o.clueid = c.id
+		        LEFT JOIN B_ChannelUser u ON c.creator = u.id
+		WHERE   c.IntentProjectID = #{ProjectID} ${sqlWhere}
+		        AND c.IsDel = 0
+		ORDER BY c.CreateTime DESC
+     	]]>
+     </select>
+     
+     <select id="selectCustomerStatus" resultType="com.tahoecn.xkc.model.clue.CStatus">
+		select * from (
+		select '报备' as status ,createtime as statusTime from b_clue where
+		id =#{clueId}
+		union
+		select '到访' as status ,TheFirstVisitDate as statusTime from B_Opportunity
+		where clueid=#{clueId}
+		union
+		select * from (
+		SELECT
+		top 1 '认购 ' as status, (CASE WHEN d.ChgDate IS NOT NULL THEN d.ChgDate
+		ELSE d.QSDate END) as statusTime
+		FROM B_Opportunity a
+		left join B_CustomerAttach b on b.OpportunityID = a.ID
+		left JOIN C_MYTrade c ON c.OppGUID = b.ID
+		left JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID AND d.CloseReason NOT
+		IN ('退房', '换房', '其它变更', '作废', '特批折扣')
+		WHERE ClueID=#{clueId} AND d.OrderGUID IS NOT NULL
+		order by d.qsdate
+		) t1
+		union
+		select * from (
+		select top 1 '签约' as status,(CASE WHEN d.ChgDate>d.ZqDate THEN d.ChgDate
+		ELSE d.ZqDate END) as statusTime
+		FROM B_Opportunity bop
+		left join B_CustomerAttach bca on bca.OpportunityID = bop.ID
+		left JOIN C_MYTrade b ON b.OppGUID = bca.ID
+		left JOIN C_MYContract d ON b.TradeGUID = d.TradeGUID AND d.CloseReason
+		NOT IN ('退房', '换房', '其它变更', '作废', '特批折扣')
+		WHERE ClueID=#{clueId} AND d.ContractGUID IS NOT NULL
+		order by d.qsdate
+		) t2
+		union
+		select * from (
+		SELECT
+		top 1 '退房 ' as status, case when d.CloseDate is not null then d.CloseDate
+		else e.CloseDate end as statusTime
+		FROM B_Opportunity a
+		left join B_CustomerAttach b on b.OpportunityID = a.ID
+		left JOIN C_MYTrade c ON c.OppGUID = b.ID
+		left JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+		left join C_MYContract e on c.TradeGUID = e.TradeGUID
+		WHERE ClueID=#{clueId} and (d.CloseReason='退房' or e.CloseReason='退房')
+		order by d.CloseDate
+		) t3
+		UNION
+		SELECT '无效('+InvalidReason+')' as status ,InvalidTime as statusTime
+		FROM B_Clue WHERE ID=#{clueId} and status=3
+
+		) tt
+		where statusTime is not null
+		order by statusTime desc
+	</select>
+
+	<!-- 验证是否重复报备 -->
+	<select id="isRepeatedReg" resultType="java.lang.String">
+		select ID from B_Clue where Status in(1,2)
+		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID=#{reportUserId}
+	</select>
+	<!-- 验证是否已经被他人报备 -->
+	<select id="isProtected" resultType="java.lang.String">
+		select ID from B_Clue where Status in(1,2)
+		and Mobile=#{mobile} and IntentProjectID =#{projectId} and ReportUserID &lt;&gt; #{reportUserId}
+	</select>
+
+    <select id="IsProjectOwner_Select" resultType="java.util.HashMap" parameterType="string">
+        select a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+        and a.IsOwner=1 and b.ProjectID=#{projectId} and  Mobile=#{mobile}
+    </select>
+
+    <select id="getCustomerID" parameterType="string" resultType="java.util.HashMap">
+        select b.ID from B_Opportunity a
+        inner join B_Customer b on a.CustomerID = b.ID
+        where a.id=#{oppID};
+    </select>
+
+    <insert id="CustomerTrack_Insert">
+        INSERT INTO [B_CustomerTrack]
+        (
+        [ID],[CustomerID],[CustomerMobile] ,[CustomerName],[OpportunityID]
+        ,[TrackTime],[TrackUserID],[TrackUserName],[TrackUserMobile],[TrackType],[Creator]
+        ,[CreateTime],[IsDel],[Status]
+        )
+        select newid(),#{customerID},Mobile,[Name],#{oppID},GETDATE(),ReportUserID,ReportUserName
+        ,ReportUserMobile,'CA60462F-8767-4AC0-B2EC-5BCB092CE014',ReportUserID,GETDATE(),0,1
+        from b_clue where ID=#{clueID};
+    </insert>
+
+    <update id = "updateComeOverdueTimeByDay">
+        update B_Clue set ComeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendArriveProDays},ComeOverdueTime),23)
+        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01' and DATEDIFF(DAY,  GETDATE(),ComeOverdueTime) &gt;= 0
+        AND RuleID  = #{clueRuleId} and status in (1,2)
+    </update>
+
+    <update id = "updateComeOverdueTimeByDate">
+        update B_Clue set ComeOverdueTime = #{extendArriveProEndDate}
+        where ComeOverdueTime IS NOT NULL AND CONVERT(DATE, ComeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),ComeOverdueTime) &gt;= 0
+        AND RuleID  = #{clueRuleId} and status in (1,2)
+    </update>
+
+    <update id = "updateTradeOverdueTimeByDay">
+        update B_Clue set TradeOverdueTime = CONVERT(VARCHAR(100),DATEADD(DAY,#{extendSigningProDays},TradeOverdueTime),23)
+        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),TradeOverdueTime) &gt;= 0
+        AND RuleID  = #{clueRuleId} and status in (1,2)
+    </update>
+
+    <update id = "updateTradeOverdueTimeByDate">
+        update B_Clue set TradeOverdueTime = #{extendSigningProEndDate}
+        where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),TradeOverdueTime) &gt;= 0
+        AND RuleID  = #{clueRuleId} and status in (1,2)
+    </update>
+</mapper>

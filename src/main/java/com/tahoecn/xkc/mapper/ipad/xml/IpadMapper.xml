@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.ipad.IpadMapper">
+
+	<select id="mLFProjectList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  C.ID AreaID ,
+		        C.OrgName AreaName ,
+		        B.ID OrganizationID ,
+		        B.OrgName OrganizationName ,
+		        A.ID ProjectID ,
+		        A.Name ProjectName ,
+		        IsNoAllotRole
+		FROM    dbo.B_Project (NOLOCK) A
+		        JOIN dbo.S_Organization (NOLOCK) B ON A.BUGUID = B.ID
+		        JOIN dbo.S_Organization (NOLOCK) C ON B.PID = C.ID
+		        JOIN dbo.B_SalesGroupMember sgm ON sgm.ProjectID = A.ID
+		                                           AND sgm.IsDel = 0
+		                                           AND sgm.Status = 1
+		                                           AND sgm.RoleID = '8100EAF4-FBCE-408B-A51D-B7247A3ADB19'
+		                                           AND sgm.MemberID = #{UserID}
+		WHERE   A.Level = 1
+		        AND A.IsDel = 0
+		        AND A.Status = 1
+		        AND A.IsNoAllotRole = 0]]>
+		        <if test="ProjectName!=null and ProjectName!=''">
+		         	AND A.Name LIKE CONCAT('%',#{ProjectName},'%')
+		        </if>
+		<![CDATA[ORDER BY C.OrgName ,
+		        A.Name
+	    ]]>
+	</select>
+	
+	<select id="mUserProjectChange_Update_valid" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT UserID FROM S_AccountUserProject WHERE UserID = #{UserID}
+		]]>
+	</select>
+	
+	<insert id="mUserProjectChange_Update_insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT INTO S_AccountUserProject VALUES(#{UserID}, #{ProjectID})
+		]]>
+	</insert>
+	
+	<update id="mUserProjectChange_Update_update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE S_AccountUserProject SET ProjectID = #{ProjectID} WHERE UserID = #{UserID}
+		]]>
+	</update>
+	
+	<select id="Project_Detail_FindById" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    select * from  B_Project where ID=#{ID}
+	    ]]>
+	</select>
+	
+	<select id="mLFCustomerDetailByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT  
+	            o.ProjectID ,
+	            dbo.F_ChannelName(o.ClueID) AS ChannelName ,
+	            o.CustomerID ,
+	            o.CustomerName ,
+	            c.Mobile CustomerMobile,
+	            ISNULL(c.Gender,cc.Gender) Gender,
+	            dbo.F_DictName(ISNULL(c.Gender,cc.Gender)) AS CustomerGender ,
+	            o.OpportunitySource ,
+	            dbo.F_DictName(o.OpportunitySource) AS OpportunitySourceName ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.TelPhone ELSE su1.TelPhone END) SaleUserMoblie ,
+	            (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+				      #{SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
+	            o.VisitsCount ,
+	            dbo.F_GetDayProjectTotalCount(CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END, o.ProjectID) AS DayTotalCount,
+	            c.Remark,
+	            cc.CreateTime ReportTime,
+	            o.TheFirstVisitDate,
+	            (SELECT TOP 1 VisitTime FROM dbo.B_ClueAllocation WHERE ClueID = o.ClueID ORDER BY VisitTime DESC) VisitTime,
+	            dbo.F_GetSaleCustomerTag(o.CustomerID, o.SaleUserID) AS CustomerTag
+	    FROM    dbo.B_Opportunity AS o
+	            INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+	            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+	            LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+	            LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID AND sgm.IsDel = 0 AND sgm.Status = 1 AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND sgm.ProjectID = #{ProjectID}
+	            LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+	            LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+	            LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID AND sgm1.IsDel = 0 AND sgm1.Status = 1 AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7' AND sgm1.ProjectID = #{ProjectID}
+	            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+	    WHERE c.Mobile = #{Mobile} AND o.ProjectID = #{ProjectID}   
+	    ]]>
+	</select>
+	
+	<select id="sCustomerPotentialClue" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT AdviserGroupID, RuleType, clueID ID, clueName Name, IsChoose FROM V_CustomerPotentialClue
+   		WHERE  1=1   ${WHERE}
+		]]>
+	</select>
+	
+	<select id="mLFCustomerPotentialDetailByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT top 1 cc.IntentProjectID ProjectID ,
+		        dbo.F_ChannelName(cc.ID) AS ChannelName ,
+		        cc.CustomerPotentialID ,
+		        cp.Name CustomerName ,
+		        cp.Mobile CustomerMobile ,
+		        cp.Gender ,
+		        dbo.F_DictName(cp.Gender) AS CustomerGender,
+		        cr.RuleType 
+		FROM    dbo.B_CustomerPotential cp
+		        LEFT JOIN dbo.B_Clue cc ON cc.CustomerPotentialID = cp.ID and cc.Status <= 2
+		        LEFT JOIN dbo.B_ClueRule cr ON cc.RuleID = cr.ID
+		WHERE   cp.Mobile = #{Mobile}
+		        AND cc.IntentProjectID = #{ProjectID}
+		 ]]>
+	</select>
+	
+	<select id="mCustomerPublicPoolByMobile_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  top 1 *
+		FROM    dbo.B_CustomerPublicPool cpp
+		        INNER JOIN dbo.B_Opportunity o ON cpp.OpportunityID = o.ID
+		                                          AND cpp.IsDel = 0
+		WHERE   o.CustomerMobile = #{Mobile}
+		        AND o.ProjectID = #{ProjectID}
+	   ]]>
+	</select>
+	
+	<select id="mCustomerClueStatus_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT TOP 1 Status FROM dbo.B_Clue WHERE ID = #{clueID} ORDER BY CreateTime DESC
+	   ]]>
+	</select>
+	
+	<select id="mLFCustomerNeedFPList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		  SELECT a.* FROM (SELECT n.*, ROW_NUMBER() OVER (  ORDER BY n.ReportTime DESC ) num  FROM   ( SELECT    o.ProjectID ,
+		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
+		                    o.CustomerID ,
+		                    o.CustomerName ,
+		                    c.Mobile CustomerMobile ,
+		                    c.Gender ,
+		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    cc.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    cc.SourceType,
+		                    o.SpareMobile
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    INNER JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                                              AND cc.IsDel = 0
+		                                              AND cc.Status <= 2        
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
+		          WHERE     o.ProjectID = #{pmap.ProjectID}
+		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
+		        ) n WHERE 1=1 ${pmap.WHERE}
+		        ) a WHERE   a.num > (#{pmap.PageIndex}-1) * #{pmap.PageSize}
+        AND a.num <= #{pmap.PageIndex} * #{pmap.PageSize}
+	    ]]>
+	</select>
+	
+	<select id="mLFCustomerNeedFPList_Select_count" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		  SELECT count(1) FROM   ( SELECT    o.ProjectID ,
+		                    dbo.F_ChannelName(o.ClueID) AS ChannelName ,
+		                    o.CustomerID ,
+		                    o.CustomerName ,
+		                    c.Mobile CustomerMobile ,
+		                    c.Gender ,
+		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    cc.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    cc.SourceType,
+		                    o.SpareMobile
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    INNER JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                                              AND cc.IsDel = 0
+		                                              AND cc.Status <= 2        
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = cc.ID
+		          WHERE     o.ProjectID = #{pmap.ProjectID}
+		                    AND o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
+		          ) n WHERE 1=1 ${pmap.WHERE}
+		          ]]>
+		          <!-- UNION ALL
+		          SELECT    c.IntentProjectID ProjectID ,
+		                    dbo.F_ChannelName(c.ID) AS ChannelName ,
+		                    c.CustomerPotentialID ,
+		                    cp.Name CustomerName ,
+		                    cp.Mobile CustomerMobile ,
+		                    cp.Gender ,
+		                    dbo.F_DictName(cp.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    vc.ClueName OpportunitySourceName ,
+		                    c.CreateTime ReportTime,
+		                    ca.VisitTime,
+		                    c.SourceType
+		          FROM      dbo.B_CustomerPotential cp
+		                    LEFT JOIN dbo.B_Clue c ON c.CustomerPotentialID = cp.ID
+		                                              AND c.IsDel = 0
+		                                              AND c.Status <= 2
+		                    LEFT JOIN dbo.B_ClueRule cr ON cr.ID = c.RuleID 
+		                    LEFT JOIN dbo.B_Opportunity o ON c.ID = o.ClueID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.ClueID = c.ID
+		                    LEFT JOIN V_CustomerPotentialClue vc ON vc.ClueID = c.ID
+		          WHERE (cr.RuleType = 0 OR (cr.RuleType = 1 AND c.Status = 2)) AND (o.ID IS NULL OR o.SaleUserID = 'C4C09951-FA39-4982-AAD1-E72D9D4C3899') AND ISNULL(o.SalePartnerID,'') = ''
+		                    AND c.IntentProjectID = #{pmap.ProjectID} 
+		        ) n WHERE 1=1 ${pmap.WHERE}-->
+	</select>
+	
+	<select id="mLFReceptRecordList_Select_forSaleUser" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+				SELECT a.*,count(1) Num	from( SELECT
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.TelPhone ELSE su1.TelPhone END) TelPhone,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+					        #{pmap.SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg 
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
+		                                                            AND sgm.IsDel = 0
+		                                                            AND sgm.Status = 1
+		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm.ProjectID = #{pmap.ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg ON (sgm.ReceptionGroupID = sg.ID AND sg.IsDel=0)
+		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                            AND sgm1.IsDel=0 
+		                                                            AND sgm1.Status=1 
+		                                                            AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm1.ProjectID = #{pmap.ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		                    LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		          WHERE     o.IsDel = 0
+		                    AND o.Status > 0
+		                    AND o.Status <> 6
+		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND o.ProjectID = #{pmap.ProjectID}
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
+		                    ${pmap.WHERE}
+		                    ) a where a.SaleUserID!='' and a.SaleUserID is not null and a.GroupName is not null and a.GroupName!=''
+		        GROUP BY a.SaleUserID,a.SaleUserName,a.GroupName,a.SaleHeadImg,a.TelPhone
+		]]>
+	</select>
+	
+	<select id="mLFReceptRecordList_Select_forSaleUser_ByID"  parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+				SELECT a.*,count(1) Num	from( SELECT
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.TelPhone ELSE su1.TelPhone END) TelPhone,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+					        (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg 
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
+		                                                            AND sgm.IsDel = 0
+		                                                            AND sgm.Status = 1
+		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm.ProjectID = #{ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg ON (sgm.ReceptionGroupID = sg.ID AND sg.IsDel=0)
+		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                            AND sgm1.IsDel=0 
+		                                                            AND sgm1.Status=1 
+		                                                            AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm1.ProjectID = #{ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		                    LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		          WHERE     o.IsDel = 0
+		                    AND o.Status > 0
+		                    AND o.Status <> 6
+		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND o.ProjectID = #{ProjectID}
+		                    AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{UserID}) IS NOT NULL
+		                    ) a where a.SaleUserID=#{SaleUserID} and a.GroupName is not null and a.GroupName!=''
+		        GROUP BY a.SaleUserID,a.SaleUserName,a.GroupName,a.SaleHeadImg,a.TelPhone
+		]]>
+	</select>
+	
+	<select id="mLFReceptRecordList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		                    o.ProjectID ,
+		                    o.CustomerID ,
+		                    o.CustomerName ,
+		                    c.Mobile CustomerMobile ,
+		                    c.Gender ,
+		                    dbo.F_DictName(c.Gender) AS CustomerGender ,
+		                    o.OpportunitySource ,
+		                    dbo.F_DictName(o.OpportunitySource) AS OpportunitySourceName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN o.SaleUserID ELSE o.SalePartnerID END) SaleUserID ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN su.Name ELSE su1.Name END) SaleUserName ,
+		                    (CASE WHEN ca.IsOld = 0 OR ISNULL(o.SalePartnerID,'') = '' THEN sg.Name ELSE sg1.Name END) GroupName,
+					              #{pmap.SiteUrl} + (CASE WHEN ISNULL(o.SalePartnerID,'') = '' THEN su.HeadImg ELSE su1.HeadImg END) SaleHeadImg ,
+		                    cc.CreateTime ReportTime,
+		                    ca.VisitTime
+		          FROM      dbo.B_Opportunity AS o
+		                    INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		                    LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID
+		                                                            AND sgm.IsDel = 0
+		                                                            AND sgm.Status = 1
+		                                                            AND sgm.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm.ProjectID = #{pmap.ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		                    LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		                    LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                            AND sgm1.IsDel=0 
+		                                                            AND sgm1.Status=1 
+		                                                            AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                            AND sgm1.ProjectID = #{pmap.ProjectID}
+		                    LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		                    LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		                    LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		          WHERE     o.IsDel = 0
+		                    AND o.Status > 0
+		                    AND o.Status <> 6
+		                    AND ISNULL(o.SaleUserID,'') != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		                    AND o.ProjectID = #{pmap.ProjectID}
+		                    ${pmap.WHERE}
+		    ]]>
+	</select>
+	
+	<select id="mLFReceptRecordCustomerList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  
+		            o.ProjectID ,
+		            o.CustomerID ,
+		            o.CustomerName ,
+		            STUFF(c.Mobile,4,4,'****') CustomerMobile,
+		            dbo.F_DictName(c.Gender) CustomerGender ,
+		            dbo.F_DictName(o.OpportunitySource) OpportunitySourceName ,
+		            o.SaleUserID ,
+		            su.Name SaleUserName ,
+		            sg.Name GroupName,
+		            #{pmap.SiteUrl} + su.HeadImg SaleHeadImg,
+		            o.SalePartnerID ,
+		            (CASE WHEN ca.IsOld = 1 THEN su1.Name ELSE '' END) SalePartnerName,
+		            (CASE WHEN ca.IsOld = 1 THEN sg1.Name ELSE '' END) SalePartnerGroupName,
+		            (CASE WHEN ca.IsOld = 1 THEN #{pmap.SiteUrl} + su1.HeadImg ELSE '' END) SalePartnerHeadImg,
+		            c.Remark,
+		            cc.ReportUserName ReportName,
+		            cc.ReportUserMobile ReportMobile,
+		            cc.CreateTime ReportTime,
+		            o.TheFirstVisitDate ,
+		            ca.VisitTime
+		    FROM    dbo.B_Opportunity AS o
+		            INNER JOIN dbo.B_Customer AS c ON o.CustomerID = c.ID
+		            LEFT JOIN dbo.B_SalesUser su ON o.SaleUserID = su.ID
+		            LEFT JOIN dbo.B_SalesGroupMember sgm ON o.SaleUserID = sgm.MemberID 
+		                                                    AND sgm.IsDel=0 AND sgm.Status=1 
+		                                                    AND sgm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                    AND sgm.ProjectID = #{pmap.ProjectID}
+		            LEFT JOIN dbo.B_SalesGroup sg ON sgm.ReceptionGroupID = sg.ID
+		            LEFT JOIN dbo.B_SalesUser su1 ON o.SalePartnerID = su1.ID
+		            LEFT JOIN dbo.B_SalesGroupMember sgm1 ON o.SalePartnerID = sgm1.MemberID 
+		                                                    AND sgm1.IsDel=0 AND sgm1.Status=1 
+		                                                    AND sgm1.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+		                                                    AND sgm1.ProjectID = #{pmap.ProjectID}
+		            LEFT JOIN dbo.B_SalesGroup sg1 ON sgm1.ReceptionGroupID = sg1.ID
+		            LEFT JOIN dbo.B_Clue cc ON o.ClueID = cc.ID
+		            LEFT JOIN dbo.B_ClueAllocation ca ON ca.OpportunityID = o.ID
+		    WHERE o.IsDel = 0
+		        AND o.Status > 0
+		        AND o.Status <> 6
+		        AND o.SaleUserID IS NOT NULL AND o.SaleUserID ! = ''
+		        AND o.SaleUserID != 'C4C09951-FA39-4982-AAD1-E72D9D4C3899'
+		        AND o.ProjectID = #{pmap.ProjectID}
+		        AND (select top 1 c.ID from B_CustomerFollowUp c WHERE c.OpportunityID = o.ID AND c.FollwUpWay='E30825AA-B894-4A5F-AF55-24CAC34C8F1F' AND c.FollwUpUserID=#{pmap.UserID}) IS NOT NULL
+		        AND (o.SaleUserID = #{pmap.SaleUserID} OR o.SalePartnerID = #{pmap.SaleUserID}) ${pmap.WHERE}
+		    ORDER BY ca.VisitTime DESC    
+	    ]]>
+	</select>
+	
+	<insert id="addSaleUserSign" parameterType="java.util.Map">
+		INSERT INTO Sale_User_Sign
+			(
+				ID,
+				SalesSupervisorID,
+				SaleUserID,
+				SignInDateTime,
+				SignInDate,
+				SortDateTime,
+				SortCode
+			)
+		VALUES(
+				#{ID},
+				#{SalesSupervisorID},
+				#{SaleUserID},
+				GETDATE(),
+				GETDATE(),
+				GETDATE(),
+				#{SortCode}
+		)
+	</insert>
+	
+	<select id="getMaxSortByDate" resultType="java.lang.Long">
+		SELECT ISNULL(MAX(SortCode),0) from Sale_User_Sign
+		WHERE SignInDate = #{SignInDate} AND SalesSupervisorID=#{SalesSupervisorID}
+	</select>
+	
+	<update id="updateSortCodeAndTime" parameterType="java.util.Map">
+		UPDATE Sale_User_Sign SET
+			SortDateTime = GETDATE(),
+			SortCode = #{SortCode}
+		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
+	</update>
+	
+	<update id="updateSortCode" parameterType="java.util.Map">
+		UPDATE Sale_User_Sign SET
+			SortCode = #{SortCode}
+		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
+	</update>
+	
+	<select id="selectByDateAndSaleUserID" resultType="java.util.HashMap" parameterType="java.util.Map">
+		SELECT * FROM Sale_User_Sign
+		WHERE SalesSupervisorID = #{SalesSupervisorID} AND SaleUserID=#{SaleUserID} AND SignInDate=#{SignInDate}
+	</select>
+	
+	<select id="selectSaleUserStatus" parameterType="java.util.Map" resultType="java.util.HashMap">
+		SELECT * FROM Sale_User_Status WHERE StatusDate=#{StatusDate} AND SaleUserID=#{SaleUserID}
+	</select>
+	
+	<insert id="insertSaleUserStatus" parameterType="java.util.Map">
+		INSERT INTO Sale_User_Status (ID,StatusDate,Status,SaleUserID) VALUES (#{ID},#{StatusDate},#{Status},#{SaleUserID})
+	</insert>
+	
+	<update id="updateSaleUserStatus" parameterType="java.util.Map">
+		UPDATE Sale_User_Status SET Status=#{Status} WHERE ID=#{ID}
+	</update>
+</mapper>

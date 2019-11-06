@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.uc.CsUcUserMapper">
+    <select id="findUserByOrgId" resultType="com.tahoecn.xkc.model.vo.UserVo">
+        SELECT
+        u.id id,
+        u.fd_sid sid,
+        u.fd_name NAME,
+        u.fd_username username,
+        u.fd_org_id_tree orgIdTree,
+        u.fd_org_name_tree orgNameTree,
+        u.fd_org_id orgId,
+        u.fd_org_name orgName,
+        u.fd_order seq,
+        u.fd_lock lockStatus,
+        u.fd_available available,
+        u.fd_isdelete isdelete,
+        u.fd_update_sign updateSign,
+        u.create_time gmtCreate,
+        u.update_time gmtModified
+        FROM
+        cs_uc_user u
+        where
+        u.fd_isdelete = '-1'
+        <if test="orgId != null and '' != orgId">
+            and u.fd_org_id = #{orgId}
+        </if>
+    </select>
+    
+    <select id="userForm" resultType="com.tahoecn.xkc.model.vo.UserVo">
+    	select distinct u.* from cs_uc_user u
+    	<if test="isFrom">
+    		left join cs_form_inst f on u.fd_username = f.owner_id
+    	</if>
+    	<where>
+    		<if test="tel != null and tel != ''">
+				and u.fd_tel = #{tel}
+			</if>
+			<if test="username != null and username != ''">
+				and u.fd_username = #{username}
+			</if>
+    		<if test="isFrom">
+    			<if test="project != null and project != ''">
+					and f.project_code = #{project}
+				</if>
+				<if test="processStateCode != null and processStateCode != ''">
+					and f.process_state_code = #{processStateCode}
+				</if>
+				<if test="createDateStart != null">
+		            AND f.creation_date <![CDATA[ >= ]]> #{createDateStart}
+		        </if>
+		        <if test="createDateEnd != null">
+		            AND f.creation_date is not null AND f.creation_date <![CDATA[ <= ]]> #{createDateEnd}
+		        </if>
+    		</if>
+    	</where>
+    </select>
+    <select id="findUsersByUsername" resultType="com.tahoecn.xkc.model.vo.UserVo">
+        SELECT
+        u.id id,
+        u.fd_sid sid,
+        u.fd_name NAME,
+        u.fd_username username,
+        u.fd_org_id_tree orgIdTree,
+        u.fd_org_name_tree orgNameTree,
+        u.fd_org_id orgId,
+        u.fd_org_name orgName,
+        u.fd_order seq,
+        u.fd_lock lockStatus,
+        u.fd_available available,
+        u.fd_isdelete isdelete,
+        u.fd_update_sign updateSign,
+        u.create_time gmtCreate,
+        u.update_time gmtModified
+        FROM
+        cs_uc_user u
+        where
+        u.fd_isdelete = '-1'
+        <if test="username != null and '' != username and usercode != null and '' != usercode">
+            and(u.fd_name like concat('%',#{username},'%') or  u.fd_username like concat('%',#{usercode},'%') )
+        </if>
+    </select>
+    
+    <insert id="TaskUCUserChangeDetail_Insert">
+    <![CDATA[
+		IF CHARINDEX('fd_sid' , #{fd_sid}) = 0 BEGIN INSERT dbo.C_UCUserChange( dataSid , opType , dataType , nanoTime , result , fd_sid , fd_create_time , fd_update_time , fd_name , fd_username , fd_user_type , fd_order , fd_position , fd_email , fd_available , fd_org_id_tree , fd_org_name_tree , fd_org_id , fd_org_name , fd_isdelete , fd_gender , fd_top_photo_url , CreateTime) VALUES( #{dataSid} , #{opType} , #{dataType} , #{nanoTime} , #{result} , #{fd_sid} , #{fd_create_time} , #{fd_update_time} , #{fd_name} , #{fd_username} , #{fd_user_type} , #{fd_order} , #{fd_position} , #{fd_email} , #{fd_available} , #{fd_org_id_tree} , #{fd_org_name_tree} , #{fd_org_id} , #{fd_org_name} , #{fd_isdelete} , #{fd_gender} , #{fd_top_photo_url} , GETDATE()) INSERT dbo.C_UCUser( fdSid , fdCreateTime , fdUpdateTime , fdName , fdUsername , fdUserType , fdOrder , fdPosition , fdEmail , fdAvailable , fdOrgIdTree , fdOrgNameTree , fdOrgId , fdOrgName , fdIsdelete , fdGender , fdTopPhotoUrl , CreateTime , Version , IsHandle) VALUES( #{fd_sid} , #{fd_create_time} , #{fd_update_time} , #{fd_name} , #{fd_username} , #{fd_user_type} , #{fd_order} , #{fd_position} , #{fd_email} , #{fd_available} , #{fd_org_id_tree} , #{fd_org_name_tree} , #{fd_org_id} , #{fd_org_name} , #{fd_isdelete} , #{fd_gender} , #{fd_top_photo_url} , GETDATE() , 'Change' , 0) IF NOT EXISTS( SELECT ID FROM dbo.S_Account WHERE UserName = #{fd_username}) BEGIN INSERT dbo.S_Account( ID , UserName , Password , AccountType , EmployeeCode , EmployeeName , Gender , OfficeMail , AuthCompanyID , ProductID , Creator , CreateTime , Status , IsDel) SELECT dbo.F_GetGUID(#{fd_sid}) , #{fd_username} , 'C8837B23FF8AAA8A2DDE915473CE0991' , 1 , #{fd_username} , #{fd_name} , CASE WHEN #{fd_gender} = 1 THEN 1 ELSE 0 END , #{fd_email} , '17BA4307-D05A-4A57-8729-FC1BD45302B6' , '10A9328C-2ADF-4797-A666-92E2E4CD92A1' , '99' , GETDATE() , CASE WHEN #{fd_available} = 1 THEN 1 ELSE 0 END , CASE WHEN #{fd_isdelete} = 1 THEN 1 ELSE 0 END END ELSE BEGIN UPDATE A SET A.EmployeeName = #{fd_name} , A.OfficeMail = #{fd_email} , A.Gender = CASE WHEN #{fd_gender} = 1 THEN 1 ELSE 0 END , A. Status = CASE WHEN #{fd_available} = 1 THEN 1 ELSE 0 END , A.IsDel = CASE WHEN #{fd_isdelete} = 1 THEN 1 ELSE 0 END , A.Editor = '99' , A.EditTime = GETDATE() FROM dbo.S_Account A WHERE A.UserName = #{fd_username} END END
+    ]]>
+    </insert>
+</mapper>

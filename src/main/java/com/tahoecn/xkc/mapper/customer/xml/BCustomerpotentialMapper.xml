@@ -1,0 +1,1068 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper">
+	
+	<delete id="mCustomerPotentialTagDetail_Insert_delete" parameterType="java.util.Map">
+		<![CDATA[
+		DELETE  dbo.B_CustomerPotentialTag
+		WHERE   CustomerPotentialID = #{CustomerID}
+	        AND Creator = #{UserID}
+		]]>
+	</delete>
+	
+	<insert id="mCustomerPotentialTagDetail_Insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerPotentialTag
+	        ( ID,
+	          CustomerPotentialID,
+	          TagName,
+	          Creator,
+	          CreateTime,
+	          Editor,
+	          EditeTime,
+	          IsDel,
+	          Status
+	        )
+	        SELECT  NEWID() ID ,
+	                #{CustomerID},
+	                name,
+	                #{UserID},
+	                GETDATE(),
+	                #{UserID},
+	                GETDATE(),
+	                0,
+	                1
+	        FROM    ( SELECT   DISTINCT
+	                            name
+	                  FROM      F_StrToTable(#{TagName})
+	                  WHERE     name <> ''
+	                ) T
+	    ]]>
+	</insert>
+	
+	<select id="mUserFollowPotentialList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  ClueID ,
+	        CustomerID ,
+	        CustomerName ,
+	        CustomerMobile ,
+	        dbo.F_GetReportCustomerPotentialTag(t.CustomerID, t.ReportUserID) AS CustomerTag ,
+	        dbo.F_DictName(t.TheLatestFollowUpWay) AS TheLatestFollowUpWay ,
+	        dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate ,
+	        TheLatestFollowUpContent ,
+	        dbo.F_DictName(t.CustomerLevel) IntentionLevel ,
+	        dbo.F_DictName(ISNULL(t.CustomerRank,
+	                              '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+	        dbo.F_GetClueStatusName_xkc(t.ClueStatusValue, t.OpportunityStatusValue) AS ClueStatus ,
+	        IsCare ,
+	        CASE WHEN OpportunityID IS NULL THEN 0
+	             ELSE 1
+	        END IsAlloc
+	FROM    ( SELECT    * ,
+	                    ROW_NUMBER() OVER ( ORDER BY TheLatestFollowUpDate desc) num
+	          FROM      ( SELECT    t.ID ClueID ,
+	                                t.CustomerPotentialID CustomerID ,
+	                                t.Name CustomerName ,
+	                                t.Mobile CustomerMobile ,
+	                                t.CustomerLevel ,
+	                                ISNULL(tt.CustomerRank, t.CustomerRank) CustomerRank ,
+	                                t.Status ClueStatusValue ,
+	                                ISNULL(tt.Status, 0) OpportunityStatusValue ,
+	                                dbo.F_FormatDate(t.TheLatestFollowUpDate) AS TheLatestFollowUpDate ,
+	                                CASE WHEN t.TheLatestFollowUpDate IS NULL
+	                                     THEN '无跟进信息'
+	                                     ELSE t.TheLatestFollowUpContent
+	                                END TheLatestFollowUpContent ,
+	                                t.TheLatestFollowUpWay ,
+	                                tt.ID OpportunityID ,
+	                                t.ReportUserID ,
+	                                t.ReportUserName ,
+	                                dbo.F_GetClueIsCare(t.ID, t.ReportUserID) IsCare ,
+	                                t.CreateTime ,
+	                                ( CASE WHEN ISNULL(tt.Status, 0) > 0
+	                                       THEN tt.Status + 10
+	                                       ELSE T.Status
+	                                  END ) Status
+	                      FROM      dbo.B_Clue t
+	                                LEFT JOIN B_Opportunity tt ON t.ID = tt.ClueID
+	                                                              AND tt.IsDel = 0
+	                                                              AND tt.Status > 0
+	                      WHERE     t.IsDel = 0
+	                                AND t.Status > 0
+	                                AND t.ReportUserID = #{UserID}
+	                                AND t.IntentProjectID = #{ProjectID}
+	                    ) m
+	          WHERE     IsCare = 1
+	        ) t
+	WHERE   t.num > ( #{PageIndex} - 1 ) * #{PageSize}
+	        AND t.num <= #{PageIndex} * #{PageSize}
+		]]>
+	</select>
+	
+	<select id="mUserFollowPotentialList_Select_count" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM    ( SELECT    t.ID ClueID ,
+		                    t.CustomerPotentialID CustomerID ,
+		                    t.Name CustomerName ,
+		                    t.Mobile CustomerMobile ,
+		                    t.CustomerLevel ,
+		                    t.CustomerRank ,
+		                    t.Status ClueStatusValue ,
+		                    ISNULL(tt.Status, 0) OpportunityStatusValue ,
+		                    dbo.F_FormatDate(t.TheLatestFollowUpDate) AS TheLatestFollowUpDate ,
+		                    CASE WHEN t.TheLatestFollowUpDate IS NULL THEN '无跟进信息'
+		                         ELSE t.TheLatestFollowUpContent
+		                    END TheLatestFollowUpContent ,
+		                    t.TheLatestFollowUpWay ,
+		                    tt.ID OpportunityID ,
+		                    t.ReportUserID ,
+		                    t.ReportUserName ,
+		                    dbo.F_GetClueIsCare(t.ID, t.ReportUserID) IsCare ,
+		                    t.CreateTime ,
+		                    ( CASE WHEN ISNULL(tt.Status, 0) > 0 THEN tt.Status + 10
+		                           ELSE T.Status
+		                      END ) Status
+		          FROM      dbo.B_Clue t
+		                    LEFT JOIN B_Opportunity tt ON t.ID = tt.ClueID
+		                                                  AND tt.IsDel = 0
+		                                                  AND tt.Status > 0
+		          WHERE     t.IsDel = 0
+		                    AND t.Status > 0
+		                    AND t.ReportUserID = #{UserID}
+		                    AND t.IntentProjectID = #{ProjectID}
+		        ) t
+		WHERE   IsCare = 1
+		]]>
+	</select>
+	
+	<delete id="mUserFollowPotentialDetail_Insert_delete" parameterType="java.util.Map">
+		 <![CDATA[
+		 DELETE  dbo.B_ClueFocus
+		 WHERE     ClueID = #{ClueID}
+         AND Creator = #{UserID}
+		 ]]>
+	</delete>
+	
+	<insert id="mUserFollowPotentialDetail_Insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO dbo.B_ClueFocus
+        ( ID ,
+            ClueID ,
+            CustomerPotentialID ,
+            Creator ,
+            CreateTime ,
+            Editor ,
+            EditTime ,
+            IsDel ,
+            Status
+			)
+        SELECT  NEWID() ,
+                ID ,
+                CustomerPotentialID ,
+                #{UserID} Creator ,
+                GETDATE(),
+                #{UserID},
+                GETDATE(),
+                0,
+                1
+        FROM    dbo.B_Clue
+        WHERE   id = #{ClueID}
+		]]>
+	</insert>
+	
+	<delete id="mUserFollowPotentialDetail_Delete" parameterType="java.util.Map">
+		<![CDATA[
+		DELETE    dbo.B_ClueFocus
+		WHERE     ClueID = #{ClueID}
+        AND Creator = #{UserID}
+		]]>
+	</delete>
+	
+	<select id="mCustomerPotentialCopyList_Insert" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+	    SELECT ID, Name DictName  FROM B_Tag WHERE IsDel = 0 AND Status = 1 AND Creator = #{UserID} ORDER BY Name
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialZQBaseDetail_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  c.ID ClueID ,
+		        c.CustomerPotentialID CustomerID ,
+		        c.Name CustomerName ,
+		        c.Mobile CustomerMobile ,
+		        dbo.F_DictName(c.Gender) CustomerGender ,
+		        dbo.F_GetReportCustomerPotentialTag(c.CustomerPotentialID,
+		                                            c.ReportUserID) AS CustomerTag ,
+		        dbo.F_DictName(c.CustomerLevel) CustomerLevel ,
+		        dbo.F_DictName(ISNULL(o.CustomerRank,
+		                              '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+		        dbo.F_GetClueStatusName_xkc(c.Status, o.Status) ClueStatus ,
+		        dbo.F_FormatDate(c.TheLatestFollowUpDate) TheLatestFollowUpDate ,
+		        c.TheLatestFollowUpContent ,
+		        c.Remark CustomerRemark ,
+		        c.CreateTime ,
+		        CASE WHEN o.ID IS NULL THEN 0
+		             ELSE 1
+		        END IsAlloc ,
+		        c.ReportUserID ,
+		        c.SourceType ,
+		        dbo.F_GetSaleUserName(o.SaleUserID) SaleUserName,
+		        c.ChannelTaskID
+		FROM    dbo.B_Clue c
+		        LEFT JOIN dbo.B_Opportunity o ON o.ClueID = c.ID
+		WHERE   c.ID = #{ClueID}
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialZQTractDetail_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT TOP 1
+		        *
+		FROM    ( SELECT    1 AS Sort ,
+		                    '报备' AS Name ,
+		                    CreateTime AS TractTime
+		          FROM      dbo.B_Clue
+		          WHERE     ID = #{ClueID}
+		          UNION
+		          SELECT    2 AS Sort ,
+		                    '到访' AS Name ,
+		                    TheFirstVisitDate AS TractTime
+		          FROM      dbo.B_Opportunity
+		          WHERE     ClueID = #{ClueID}
+		          UNION
+		          SELECT    *
+		          FROM      ( SELECT TOP 1
+		                                3 AS Sort ,
+		                                '认购 ' AS 'Name' ,
+		                                d.QSDate AS TrackTime
+		                      FROM      B_Opportunity a
+		                                LEFT JOIN B_CustomerAttach b ON b.OpportunityID = a.ID
+		                                LEFT JOIN C_MYTrade c ON c.OppGUID = b.ID
+		                                LEFT JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+		                                                         AND d.CloseReason NOT IN (
+		                                                         '退房', '换房', '其它变更',
+		                                                         '作废', '特批折扣' )
+		                      WHERE     a.ClueID = #{ClueID}
+		                      ORDER BY  d.qsdate
+		                    ) t1
+		          UNION
+		          SELECT    *
+		          FROM      ( SELECT TOP 1
+		                                4 AS Sort ,
+		                                '签约' AS 'Name' ,
+		                                d.QSDate AS TrackTime
+		                      FROM      B_Opportunity bop
+		                                LEFT JOIN B_CustomerAttach bca ON bca.OpportunityID = bop.ID
+		                                LEFT JOIN C_MYTrade b ON b.OppGUID = bca.ID
+		                                LEFT JOIN C_MYContract d ON b.TradeGUID = d.TradeGUID
+		                                                            AND d.CloseReason NOT IN (
+		                                                            '退房', '换房', '其它变更',
+		                                                            '作废', '特批折扣' )
+		                      WHERE     bop.ClueID = #{ClueID}
+		                      ORDER BY  d.qsdate
+		                    ) t2
+		          UNION
+		          SELECT    *
+		          FROM      ( SELECT TOP 1
+		                                5 AS Sort ,
+		                                '退房 ' AS 'Name' ,
+		                                CASE WHEN d.CloseDate IS NOT NULL
+		                                     THEN d.CloseDate
+		                                     ELSE e.CloseDate
+		                                END AS TrackTime
+		                      FROM      B_Opportunity a
+		                                LEFT JOIN B_CustomerAttach b ON b.OpportunityID = a.ID
+		                                LEFT JOIN C_MYTrade c ON c.OppGUID = b.ID
+		                                LEFT JOIN C_MYOrder d ON c.TradeGUID = d.TradeGUID
+		                                LEFT JOIN C_MYContract e ON c.TradeGUID = e.TradeGUID
+		                      WHERE     a.ClueID = #{ClueID}
+		                                AND ( d.CloseReason = '退房'
+		                                      OR e.CloseReason = '退房'
+		                                    )
+		                      ORDER BY  d.CloseDate
+		                    ) t3
+		          UNION
+		          SELECT    6 AS Sort ,
+		                    '无效(' + InvalidReason + ')' AS 'Name' ,
+		                    InvalidTime AS 'TrackTime'
+		          FROM      dbo.B_Clue
+		          WHERE     ID = #{ClueID}
+		                    AND status = 3
+		        ) tt
+		WHERE   TractTime IS NOT NULL
+		ORDER BY sort DESC ,
+		        TractTime DESC 
+	    ]]>
+	</select>
+	
+	<select id="mChannelTaskListZQ_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT DISTINCT b.ID ,
+		    B.Name
+		FROM dbo.B_ChannelTask b
+		    LEFT JOIN dbo.B_ChannelTask_ChannelUser a ON a.ChannelTaskID = b.ID
+		        AND a.IsDel = 0
+		        AND a.Status = 2
+		WHERE   b.IsDel = 0
+		    AND b.Status = 2 ${WHERE}
+	    ]]>
+	</select>
+	
+	<select id="mChannelTaskGetByClueID_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT a.id,a.Name FROM dbo.B_ChannelTask a LEFT JOIN dbo.B_Clue b ON a.ID = b.ChannelTaskID
+		WHERE b.ID = #{ClueID}
+	    ]]>
+	</select>
+	
+	<select id="SystemDictionaryZQRZTJList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  A.ID ID ,
+		        A.DictName Name
+		FROM    dbo.S_Dictionary A
+		WHERE   A.ID = ( CASE #{ChannelTypeID}
+		                   WHEN '0E88065E-AF3E-4905-8809-7BD30610323F'
+		                        THEN '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1'
+		                   WHEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A'
+		                        THEN '266E0F4F-2EE1-4305-9115-49DDE2186D57'
+		                   WHEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A'
+		                        THEN 'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2'
+		                   WHEN 'FC09F0DF-D3DF-4378-91C0-7146EC451F43'
+		                        THEN '8FDFDE89-E1F1-43DE-9094-92D77B22FC1F'
+		                   WHEN 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'
+		                        THEN '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF'
+		                   ELSE '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1'
+		                 END )
+	    ]]>
+	</select>
+	
+	<select id="CustomerPotentialClueDetail_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  *
+		FROM    dbo.V_Clue
+		WHERE   IsDel = 0
+		        AND  ID in (select ClueID from B_Opportunity where ID = #{ClueID} and IsDel = 0 and Status <> 6 UNION SELECT #{ClueID})
+		 ]]>
+	</select>
+	
+	<select id="mCustomerPotentialFollowUpList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT a.* FROM (SELECT t.*, ROW_NUMBER() OVER ( ORDER BY t.CreateTime DESC ) num  FROM ( SELECT    ClueID ,
+		                    CustomerPotentialID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerPotentialFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND CustomerPotentialMobile = ( SELECT TOP 1
+		                                                            Mobile
+		                                                    FROM    dbo.B_Clue
+		                                                    WHERE   ID = #{pmap.ClueID}
+		                                                  )
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                 
+		                    AND FollowUpContent IS NOT NULL AND FollowUpContent != ''                                          
+		          UNION ALL
+		          SELECT    OpportunityID ,
+		                    CustomerID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND CustomerMobile = ( SELECT TOP 1
+		                                                    Mobile
+		                                           FROM     dbo.B_Clue
+		                                           WHERE    ID = #{pmap.ClueID}
+		                                         )
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                          
+		        ) t ) a
+		    WHERE   a.num > (#{pmap.PageIndex}-1) * #{pmap.PageSize}
+        AND a.num <= #{pmap.PageIndex} * #{pmap.PageSize}
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialFollowUpList_Select_Count" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		SELECT  COUNT(1)
+		FROM    ( SELECT    ClueID ,
+		                    CustomerPotentialID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerPotentialFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND CustomerPotentialMobile = ( SELECT TOP 1
+		                                                            Mobile
+		                                                    FROM    dbo.B_Clue
+		                                                    WHERE   ID = #{pmap.ClueID}
+		                                                  )
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                 
+		                    AND FollowUpContent IS NOT NULL AND FollowUpContent != ''                                          
+		          UNION ALL
+		          SELECT    OpportunityID ,
+		                    CustomerID CustomerID ,
+		                    FollwUpUserMobile ,
+		                    dbo.F_DictName(FollwUpType) AS Mode ,
+		                    CASE WHEN ISNULL(FollwUpUserID, '99') = '99' THEN '系统:'
+		                         ELSE ISNULL(FollwUpUserName, '') + '('
+		                              + dbo.F_DictName(FollwUpUserRole) + '): '
+		                    END + ISNULL(FollowUpContent, '') AS Remarks ,
+		                    dbo.F_FormatDate(CreateTime) AS Time ,
+		                    CreateTime
+		          FROM      dbo.B_CustomerFollowUp
+		          WHERE     IsDel = 0
+		                    AND Status = 1
+		                    AND CustomerMobile = ( SELECT TOP 1
+		                                                    Mobile
+		                                           FROM     dbo.B_Clue
+		                                           WHERE    ID = #{pmap.ClueID}
+		                                         )
+		                    AND ProjectID = ( SELECT TOP 1 IntentProjectID FROM dbo.B_Clue WHERE  ID = #{pmap.ClueID})                                          
+		        ) T
+	    ]]>
+	</select>
+	
+	<update id="mCustomerPotentialZQDetail_Update_step1" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  dbo.B_CustomerPotential
+		SET     Name = #{Name},
+		        LastName = #{LastName},
+		        FirstName = #{FirstName},
+		        Mobile = #{Mobile},
+		        Gender = #{Gender},
+		        CardType = #{CardType},
+		        CardID = #{CardID},
+		        AcceptFactor = #{AcceptFactor},
+		        Remark = #{Remark},
+		        OrgID = #{OrgID},
+		        Editor = #{UserID},
+		        EditeTime = GETDATE()
+		WHERE   ID = #{CustomerID}
+		]]>
+	</update>
+	
+	<select id="mCustomerPotentialZQDetail_Update_valid_1" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  CustomerPotentialID
+        FROM    dbo.B_CustomerPotentialAttribute
+        WHERE   CustomerPotentialID = #{CustomerID}
+		]]>
+	</select>
+	
+	<insert id="mCustomerPotentialZQDetail_Update_step2" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerPotentialAttribute
+                ( ID ,
+                  CustomerPotentialID ,
+                  AgeGroup ,
+                  DomicilePlace ,
+                  HomeAddress ,
+                  HomeArea ,
+                  WorkArea ,
+                  Marriage ,
+                  Family ,
+                  Industry ,
+                  Creator ,
+                  CreateTime ,
+                  PropertyNum 
+                )
+        VALUES  ( NEWID() ,
+                  #{CustomerID},
+                  #{AgeGroup},
+                  #{DomicilePlace},
+                  #{HomeAddress},
+                  #{HomeArea},
+                  #{WorkArea},
+                  #{Marriage},
+                  #{Family},
+                  #{Industry},
+                  #{UserID},
+                  GETDATE(),
+                  #{PropertyNum}
+                ) 
+		]]>
+	</insert>
+	
+	<update id="mCustomerPotentialZQDetail_Update_step3" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_CustomerPotentialAttribute
+        SET     AgeGroup = #{AgeGroup},
+                DomicilePlace = #{DomicilePlace},
+                HomeAddress = #{HomeAddress},
+                HomeArea = #{HomeArea},
+                WorkArea = #{WorkArea},
+                Marriage = #{Marriage},
+                Family = #{Family},
+                Industry = #{Industry},
+                PropertyNum = #{PropertyNum},
+                Editor = #{UserID},
+                EditeTime = GETDATE()
+        WHERE   CustomerPotentialID = #{CustomerID}
+		]]>
+	</update>
+	
+	<delete id="mCustomerPotentialZQDetail_Update_step4" parameterType="java.util.Map">
+		<![CDATA[
+		DELETE  dbo.B_CustomerPotentialTag
+		WHERE   CustomerPotentialID = #{CustomerID}
+        AND Creator = #{UserID}
+		]]>
+	</delete>
+	
+	<insert id="mCustomerPotentialZQDetail_Update_step5" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerPotentialTag
+        ( ID ,
+          CustomerPotentialID ,
+          TagName ,
+          Creator ,
+          CreateTime ,
+          IsDel ,
+          Status
+        )
+        SELECT  NEWID() ID ,
+                #{CustomerID} CustomerID ,
+                name ,
+                #{UserID},
+                GETDATE(),
+                0 ,
+                1
+        FROM    F_StrToTable(#{CustomerTag})
+        WHERE   name <> ''
+		]]>
+	</insert>
+	<update id="mCustomerPotentialZQDetail_Update_step6" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_Clue
+		SET     Name = #{Name},
+		        Mobile = #{Mobile},
+		        FollowupCount = ISNULL(FollowupCount, 0) + 1 ,
+		        CognitiveChannel = #{CognitiveChannel},
+		        CognitiveChannelSub = #{CognitiveChannelSub},
+		        LastName = #{LastName},
+		        FirstName = #{FirstName},
+		        Remark = #{Remark},
+		        Editor = #{UserID},
+		        EditeTime = GETDATE()
+		WHERE   ID = #{ClueID}
+		]]>
+	</update>
+	
+	<insert id="P_ClueCustomerRank" parameterType="java.util.Map" statementType="CALLABLE">
+		{call dbo.P_ClueCustomerRank(#{ClueID},#{CustomerID},#{CustomerRank},#{UserID},#{UpDownStatus})}
+	</insert>
+	
+	<update id="CustomerPotentialClueFollowUpDetail_Update" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  A
+		SET     A.CustomerLevel = B.IntentionLevel ,
+		        A.TheLatestFollowUpDate = B.CreateTime ,
+		        A.TheLatestFollowUpContent = B.FollowUpContent ,
+		        A.TheLatestFollowUpWay = B.FollwUpWay ,
+		        A.NextFollowUpDate = B.NextFollowUpDate ,
+		        A.FollowupCount = ISNULL(A.FollowupCount, 0) + 1 ,
+		        A.Editor = #{UserID},
+		        A.EditeTime = GETDATE()
+		FROM    B_Clue A
+		        JOIN ( SELECT TOP 1
+		                        ClueID ,
+		                        IntentionLevel ,
+		                        FollwUpWay ,
+		                        FollowUpContent ,
+		                        NextFollowUpDate ,
+		                        CreateTime
+		               FROM     dbo.B_CustomerPotentialFollowUp
+		               WHERE    ClueID = #{ClueID}
+		                        AND LEN(FollwUpWay) > 0
+		                        AND LEN(IntentionLevel) > 0
+		               ORDER BY CreateTime DESC
+		             ) B ON A.ID = B.ClueID
+		WHERE   A.ID = #{ClueID}
+	    ]]>
+	</update>
+	
+	<select id="mChannelTaskDetail_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  ID ,
+		        ProjectID ,
+		        Name ,
+		        TaskType ,
+		        TaskCode ,
+		        StartTime ,
+		        EndTime ,
+		        TaskAreaID ,
+		        TaskAreaName ,
+		        WorkStartTime ,
+		        WorkEndTime ,
+		        WorkRange ,
+		        CustomerTarget ,
+		        Creator
+		FROM    dbo.B_ChannelTask a
+		WHERE   a.ID = #{ChannelTaskID}
+		]]>
+	</select>
+	
+	<select id="UnconfirmedClueByClueId_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select * from b_clue
+		where ID=#{ClueId} and IsDel=0
+	    ]]>
+	</select>
+	
+	<select id="IsOverdueCome_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		 SELECT dbo.F_IsVisit(b.id,getdate(),a.ComeOverdueTime) as IsOverdueCome
+                 FROM   b_clue a
+                        INNER JOIN B_Opportunity b ON a.id = b.ClueID
+                 WHERE  a.Status IN (1, 2)
+                        AND b.Status = 2
+						and a.id= #{ClueID}
+    	]]>
+	</select>
+	
+	<select id="IsExistOpportunity_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select ID from B_Opportunity where  CustomerMobile=#{CustomerMobile} and ProjectID=#{ProjectID} AND IsDel = 0 AND Status <> 6
+	    ]]>
+	</select>
+	
+	<select id="RuleClueList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select a.*,b.RuleType from B_Clue a
+		inner join B_ClueRule b
+		on a.RuleID = b.ID
+		where 
+		a.Status in (1,2) and b.Status=1
+		and IntentProjectID = #{IntentProjectID} and Mobile= #{Mobile} and ReportUserID<>#{ReportUserID}
+	    ]]>
+	</select>
+	
+	<select id="IsOwner_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select ID from B_Customer
+		where Status=1
+		and IsOwner=1 and (Mobile= #{Mobile} or SpareMobile=#{Mobile})
+	    ]]>
+	</select>
+	
+	<select id="IsProjectOwner_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
+	 	and a.IsOwner=1 and b.ProjectID=#{ProjectID} and  (Mobile= #{Mobile} or SpareMobile=#{Mobile})
+	    ]]>
+	</select>
+	
+	<select id="ValidOpp_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select * from B_Opportunity
+		where 
+		status in(1,2,3,4,5)
+		and CustomerMobile=#{CustomerMobile} and ProjectID=#{ProjectID}
+	    ]]>
+	</select>
+	
+	<select id="IsRepeatedReg_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select ID from B_Clue where Status in(1,2) 
+		and Mobile=#{Mobile} and IntentProjectID =#{IntentProjectID} and ReportUserID=#{ReportUserID}
+	    ]]>
+	</select>
+	
+	<select id="IsExistReportProtectClue_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		select a.ID from B_Clue a 
+		inner join B_ClueRule b on a.RuleID = b.ID
+		where b.RuleType=0 and (a.Status=1 or a.Status=2) and a.IsDel=0 
+		and a.IntentProjectID=#{IntentProjectID} and a.Mobile=#{Mobile}
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialZQDetail_Insert_valid_1" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  ID
+                FROM    dbo.B_CustomerPotential
+                WHERE   ID = #{CustomerID}
+		]]>
+	</select>
+	<insert id="mCustomerPotentialZQDetail_Insert_step1" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerPotential
+                ( ID ,
+                  Name ,
+                  LastName ,
+                  FirstName ,
+                  Mobile ,
+                  Gender ,
+                  CardType ,
+                  CardID ,
+                  AcceptFactor ,
+                  Remark ,
+                  OrgID ,
+                  Creator ,
+                  CreateTime ,
+                  isDel ,
+                  Status
+                )
+        VALUES  ( #{CustomerID},
+                  #{Name},
+                  #{LastName},
+                  #{FirstName},
+                  #{Mobile},
+                  #{Gender},
+                  #{CardType},
+                  #{CardID},
+                  #{AcceptFactor},
+                  #{Remark},
+                  #{OrgID},
+                  #{UserID},
+                  GETDATE(),
+                  0 ,
+                  1
+                )
+		]]>
+	</insert>
+	
+	<update id="mCustomerPotentialZQDetail_Insert_step2" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  dbo.B_CustomerPotential
+        SET     Name = #{Name},
+                LastName = #{LastName},
+                FirstName = #{FirstName},
+                Mobile = #{Mobile},
+                Gender = #{Gender},
+                CardType = #{CardType},
+                CardID = #{CardID},
+                AcceptFactor = #{AcceptFactor},
+                Remark = #{Remark},
+                OrgID = #{OrgID},
+                Editor = #{UserID},
+                EditeTime = GETDATE()
+        WHERE   ID = #{CustomerID}
+		]]>
+	</update>
+	
+	<select id="mCustomerPotentialZQDetail_Insert_valid_2" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  CustomerPotentialID
+                FROM    dbo.B_CustomerPotentialAttribute
+                WHERE   CustomerPotentialID = #{CustomerID}
+		]]>
+	</select>
+	
+	<insert id="mCustomerPotentialZQDetail_Insert_step3" parameterType="java.util.Map" >
+		<![CDATA[
+		INSERT  INTO B_CustomerPotentialAttribute
+                ( ID ,
+                  CustomerPotentialID ,
+                  AgeGroup ,
+                  DomicilePlace ,
+                  HomeAddress ,
+                  HomeArea ,
+                  WorkArea ,
+                  Marriage ,
+                  Family ,
+                  Industry ,
+                  Creator ,
+                  CreateTime ,
+                  PropertyNum 
+                )
+        VALUES  ( NEWID() ,
+                  #{CustomerID},
+                  #{AgeGroup},
+                  #{DomicilePlace},
+                  #{HomeAddress},
+                  #{HomeArea},
+                  #{WorkArea},
+                  #{Marriage},
+                  #{Family},
+                  #{Industry},
+                  #{UserID},
+                  GETDATE(),
+                  #{PropertyNum}
+                ) 
+		]]>
+	</insert>
+	
+	<update id="mCustomerPotentialZQDetail_Insert_step4" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE  B_CustomerPotentialAttribute
+        SET     AgeGroup = #{AgeGroup},
+                DomicilePlace = #{DomicilePlace},
+                HomeAddress = #{HomeAddress},
+                HomeArea = #{HomeArea},
+                WorkArea = #{WorkArea},
+                Marriage = #{Marriage},
+                Family = #{Family},
+                Industry = #{Industry},
+                PropertyNum = #{PropertyNum},
+                Editor = #{UserID},
+                EditeTime = GETDATE()
+        WHERE   CustomerPotentialID = #{CustomerID}
+		]]>
+	</update>
+	
+	<insert id="mCustomerPotentialZQDetail_Insert_step5" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_Clue
+        ( ID ,
+          CustomerPotentialID ,
+          Name ,
+          LastName ,
+          FirstName ,
+          Gender ,
+          Mobile ,
+          ReportUserID ,
+          ReportUserName ,
+          ReportUserMobile ,
+          SourceType ,
+          CognitiveChannel ,
+          CognitiveChannelSub ,
+          IntentProjectID ,
+          IntentProjectName ,
+          AdviserGroupID ,
+          RuleID ,
+          InvalidType ,
+          InvalidReason ,
+          InvalidTime ,
+          ComeOverdueTime ,
+          TradeOverdueTime ,
+          IsSelect ,
+          ConfirmUserId ,
+          ConfirmTime ,
+          Remark ,
+          ChannelTaskID ,
+          ChannelUserID ,
+          Creator ,
+          CreateTime ,
+          Status
+        )
+VALUES  ( #{ClueID},
+          #{CustomerID},
+          #{Name},
+          #{LastName},
+          #{FirstName},
+          #{Gender},
+          #{Mobile},
+          #{UserID},
+          dbo.F_GetReportUserName(#{UserID}) ,
+          dbo.F_GetReportUserMobile(#{UserID}) ,
+          #{SourceType},
+          #{CognitiveChannel},
+          #{CognitiveChannelSub},
+          #{IntentProjectID},
+          dbo.F_GetProjectName(#{IntentProjectID}) ,
+          #{AdviserGroupID},
+          #{RuleID},
+          #{InvalidType},
+          #{InvalidReason},
+          #{InvalidTime},
+          #{ComeOverdueTime},
+          #{TradeOverdueTime},
+          #{IsSelect},
+          #{ConfirmUserId},
+          GETDATE(),
+          #{Remark},
+          #{ChannelTaskID},
+          #{ChannelUserID},
+          #{UserID},
+          GETDATE(),
+          2
+        )
+		]]>
+	</insert>
+	
+	<delete id="mCustomerPotentialZQDetail_Insert_step6" parameterType="java.util.Map">
+		<![CDATA[
+		DELETE  dbo.B_CustomerPotentialTag
+		WHERE   CustomerPotentialID = #{CustomerID}
+		        AND Creator = #{UserID}
+		]]>
+	</delete>
+	
+	<insert id="mCustomerPotentialZQDetail_Insert_step7" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerPotentialTag
+        ( ID ,
+          CustomerPotentialID ,
+          TagName ,
+          Creator ,
+          CreateTime ,
+          Editor ,
+          EditeTime ,
+          IsDel ,
+          Status
+        )
+        SELECT  NEWID() ID ,
+                #{CustomerID} CustomerID ,
+                name,
+                #{UserID} TagName ,
+                GETDATE(),
+                #{UserID},
+                GETDATE(),
+                0 ,
+                1
+        FROM    F_StrToTable(#{CustomerTag})
+        WHERE   name <> ''
+		]]>
+	</insert>
+	
+	<update id="mCustomerPotentialZQDetail_Insert_step8">
+		<![CDATA[
+		UPDATE  B_Opportunity
+        SET     ClueID = #{ClueID},
+                EditeTime = GETDATE() ,
+                Editor = '99'
+        WHERE   ID = #{OppID}
+        ]]>
+	</update>
+	<select id="mCustomerPotentialZQDetail_Insert_step9" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+        SELECT  b.ID CustomerID
+        FROM    B_Opportunity a
+                INNER JOIN B_Customer b ON a.CustomerID = b.ID
+        WHERE   a.id = #{OppID}
+        ]]>
+	</select>
+	
+	<select id="CustomerPotentialMobileSearchDetail_Insert_select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  ID ClueID
+		FROM    dbo.B_Clue
+		WHERE   Mobile = #{Mobile}
+		        AND IntentProjectID = #{ProjectID}
+		]]>
+	</select>
+	
+	<insert id="CustomerPotentialMobileSearchDetail_Insert" parameterType="java.util.Map">
+		<![CDATA[
+		INSERT  INTO B_CustomerPotentialMobileSearch
+        ( ID ,
+          ProjectID ,
+          Mobile ,
+          JobCode ,
+          ClueID ,
+          Creator ,
+          CreateTime
+        )
+	VALUES  ( NEWID() ,
+	          #{ProjectID},
+	          #{Mobile},
+	          #{JobCode},
+	          #{ClueID},
+	          #{UserID},
+	          GETDATE()
+	        )	
+		]]>
+	</insert>
+	
+	<select id="CustomerPotentialDetail_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT * FROM V_CustomerPotential WHERE IsDel = 0 AND Mobile = #{Mobile} ORDER BY CreateTime
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialZQList_Select" parameterType="java.util.Map" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT  ClueID ,
+		        CustomerID ,
+		        CustomerName ,
+		        CustomerMobile ,
+		        dbo.F_GetReportCustomerPotentialTag(t.CustomerID, t.ReportUserID) AS CustomerTag ,
+		        dbo.F_DictName(t.TheLatestFollowUpWay) AS TheLatestFollowUpWay ,
+		        dbo.F_FormatDate(TheLatestFollowUpDate) TheLatestFollowUpDate ,
+		        TheLatestFollowUpContent ,
+		        dbo.F_DictName(t.CustomerLevel) IntentionLevel ,
+		        dbo.F_DictName(ISNULL(t.CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) AS CustomerRank ,
+		        dbo.F_GetClueStatusName_xkc(t.ClueStatusValue, t.OpportunityStatusValue) AS ClueStatus ,
+		        IsCare ,
+		        Status ,
+		        SpareMobile,
+		        CASE WHEN OpportunityID IS NULL THEN 0
+		             ELSE 1
+		        END IsAlloc
+		FROM    ( SELECT    * ,
+		                    ROW_NUMBER() OVER ( ${ORDER} ) num
+		          FROM      ( SELECT    t.ID ClueID ,
+		                                t.CustomerPotentialID CustomerID ,
+		                                t.Name CustomerName ,
+		                                t.Mobile CustomerMobile ,
+		                                t.CustomerLevel ,
+		                                ISNULL(tt.CustomerRank, t.CustomerRank) CustomerRank ,
+		                                t.Status ClueStatusValue ,
+		                                ISNULL(tt.Status, 0) OpportunityStatusValue ,
+		                                t.TheLatestFollowUpDate ,
+		                                CASE WHEN t.TheLatestFollowUpDate IS NULL
+		                                     THEN '无跟进信息'
+		                                     ELSE t.TheLatestFollowUpContent
+		                                END TheLatestFollowUpContent ,
+		                                t.TheLatestFollowUpWay ,
+		                                tt.ID OpportunityID ,
+		                                tt.SpareMobile,
+		                                t.ReportUserID ,
+		                                t.ReportUserName ,
+		                                dbo.F_GetClueIsCare(t.ID, t.ReportUserID) IsCare ,
+		                                t.CreateTime ,
+		                                ( CASE WHEN t.Status != 3 AND ISNULL(tt.Status, 0) > 0
+		                                       THEN tt.Status + 10
+		                                       ELSE T.Status
+		                                  END ) Status
+		                      FROM      dbo.B_Clue t
+		                                LEFT JOIN B_Opportunity tt ON t.ID = tt.ClueID
+		                                                              AND tt.IsDel = 0
+		                                                              AND tt.Status > 0
+		                      WHERE     1=1 ${WHEREINNER}
+		                                AND t.IsDel = 0
+		                                AND t.Status > 0
+		                    ) m
+		          WHERE     1 = 1 ${WHERE}
+		        ) t
+		WHERE   t.num > ( #{PageIndex} - 1 ) * #{PageSize}
+		        AND t.num <= #{PageIndex} * #{PageSize}
+	    ]]>
+	</select>
+	
+	<select id="mCustomerPotentialZQList_Select_count" parameterType="java.util.Map" resultType="java.lang.Long">
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+		FROM    ( SELECT    t.ID ClueID ,
+		                    t.Name CustomerName ,
+		                    t.Mobile CustomerMobile ,
+		                    dbo.F_DictName(t.CustomerLevel) IntentionLevel ,
+		                    dbo.F_DictName(ISNULL(t.CustomerRank, '41FA0234-F8AE-434F-8BCD-6E9BE1D059DA')) CustomerRank ,
+		                    dbo.F_GetClueIsCare(t.ID, t.ReportUserID) IsCare ,
+		                    ( CASE WHEN t.Status != 3 AND ISNULL(tt.Status, 0) > 0
+		                                       THEN tt.Status + 10
+		                                       ELSE T.Status
+		                                  END ) Status                                       
+		          FROM      dbo.B_Clue t
+		                    LEFT JOIN B_Opportunity tt ON t.ID = tt.ClueID
+		                                                  AND tt.IsDel = 0
+		                                                  AND tt.Status > 0
+		          WHERE     1=1 ${WHEREINNER}
+		                    AND t.IsDel = 0
+		                    AND t.Status > 0
+		        ) t
+		WHERE   1 = 1 ${WHERE}
+		]]>
+	</select>
+
+</mapper>

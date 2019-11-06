@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.channel.BChanneluserMapper">
+
+    <select id="AgenApproverList" resultType="hashmap">
+        <![CDATA[
+select * from (
+select bc.Approver ID,sa.[EmployeeName] Name from B_ChannelUser bc
+left join [dbo].[S_Account] sa on bc.Approver=sa.id
+where sa.IsDel=0 and sa.[Status]=1 and bc.Approver is not null and bc.Approver<>''
+group by bc.Approver,sa.EmployeeName
+UNION
+SELECT bc1.ID,bc1.Name FROM dbo.B_ChannelUser bc
+INNER JOIN dbo.B_ChannelUser bc1 ON bc.Approver=bc1.ID AND bc1.Status=1 AND bc1.IsDel=0 AND bc1.Job=0
+WHERE bc.IsDel=0 AND bc.Status=1 AND bc.Approver IS NOT NULL AND bc.Approver<>''
+) u where u.name is not null and u.name<>''
+    ]]>
+    </select>
+
+    <insert id="ChannelDetail_InsertN" parameterType="com.tahoecn.xkc.model.dto.ChannelInsertDto">
+        INSERT INTO [dbo].[B_ChannelUser] (
+        ID,
+        UserName,
+        ChannelTypeID,
+        ChannelType,
+        [Password],
+        Mobile,
+        Name,
+        ChannelOrgCode,
+        ChannelOrgID,
+        Job,
+        ApprovalStatus,
+        Approver,
+        ApprovalDate,
+        Creator,
+        CreateTime,
+        IsDel,
+        Status
+        )
+        VALUES
+        (
+        #{leaderID},
+        #{userName},
+        '32C92DA0-DA13-4C21-A55E-A1D16955882C',
+        '中介同行',
+        UPPER (
+        SUBSTRING ( sys.fn_sqlvarbasetostr ( HashBytes ( 'MD5', '123321' )), 3, 32 )),
+        #{mobile},
+        #{name},
+        #{orgCode},
+        #{orgID},
+        0,
+        1,
+        #{userID},
+        getdate(),
+        #{userID},
+        getdate(),
+        0,
+        #{status}
+        )
+    </insert>
+
+    <update id="ChannelStatus_UpdateN">
+        UPDATE [dbo].[B_ChannelUser] SET [Status]=#{Status},Editor=#{UserID},EditeTime=getdate()
+        WHERE ChannelOrgID=#{ID} AND Job=0
+    </update>
+
+    <select id="ChannelAgenUserNameIsExist_SelectN" resultType="integer" parameterType="string">
+        <![CDATA[  select count(1) ct from B_ChannelUser where UserName=#{UserName} and IsDel=0 ${sqlWhere} ]]>
+    </select>
+
+    <select id="ChannelAgenMobileIsExist_SelectN" resultType="integer" parameterType="string">
+       <![CDATA[ select count(1) ct from B_ChannelUser where Mobile=#{Mobile} and IsDel=0 ${sqlWhere} ]]>
+    </select>
+
+    <select id="ChannelUserCurrency_Find" resultType="java.util.HashMap" parameterType="string">
+        <!--SELECT *,dbo.F_DictName(ChannelTypeID) 'ChannelType'
+        FROM B_ChannelUser where ( UserName=#{Mobile})
+        and IsDel=0 and Status=1
+        -->
+
+        SELECT
+        *,
+        dbo.F_DictName ( ChannelTypeID ) 'ChannelType'
+        FROM
+        B_ChannelUser
+        WHERE
+        ( Mobile = #{Mobile} )
+        AND IsDel = 0
+        AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
+
+    </select>
+
+    <select id="BrokerMyCenter_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        select
+        case when LJAmount is null then 0 else cast(LJAmount as decimal(15,2)) end as LJAmount
+        ,
+        case when YJAmount is null then 0 else cast(YJAmount as decimal(15,2)) end as YJAmount
+        ,
+        case when DJAmount is null then 0 else cast(DJAmount as decimal(15,2)) end as DJAmount
+        ,
+        case when BBCount is null then 0 else cast(BBCount as decimal(15,2)) end as BBCount
+        ,
+        case when DFCount is null then 0 else cast(DFCount as decimal(15,2)) end as DFCount
+        ,
+        case when RGCount is null then 0 else cast(RGCount as decimal(15,2)) end as RGCount
+        ,
+        case when QYCount is null then 0 else cast(QYCount as decimal(15,2)) end as QYCount
+        ,(select count(*) from S_Message where Receiver = #{BrokerID} and IsRead<>1) as NoReadMesCnt
+        from (select id as BrokerID from B_ChannelUser
+        where id=#{BrokerID}) t
+        left join
+        (
+        select BrokerID,sum(BBCount) as BBCount from (select ReportUserID as BrokerID,count(a.id) as BBCount from B_Clue a left join B_Opportunity b on a.id  = b.clueid
+        group by ReportUserID,a.Status,b.ID,b.Status
+        having a.Status in(1,2) and b.ID is null or (b.id is not null and b.Status=1)) p
+        group by BrokerID
+        ) a on t.BrokerID = a.BrokerID
+
+        left join
+        (select BrokerID, sum(CommissionAmount) as YJAmount from A_CommissionRecords
+        group by BrokerID,Status
+        having Status=3) b
+        on t.BrokerID = b.BrokerID
+        left join
+        (select BrokerID, sum(CommissionAmount) as DJAmount from A_CommissionRecords
+        group by BrokerID,Status
+        having Status=2) c
+        on t.BrokerID = c.BrokerID
+        left join
+        (select BrokerID,sum(CommissionAmount) as LJAmount from A_CommissionRecords
+        group by BrokerID ) d on t.BrokerID = d.BrokerID
+        left join
+        (
+        select a.ReportUserID as BrokerID,count(a.id) as DFCount from B_Clue a inner join B_Opportunity b on a.id  = b.clueid
+        WHERE a.InvalidType=0
+        group by a.ReportUserID,b.Status
+        having (b.Status=2  or b.Status=3)
+        ) e on t.BrokerID = e.BrokerID
+        left join
+        (
+        select BrokerID,sum(RGCount) as RGCount from (select a.ReportUserID as BrokerID,count(a.id) as RGCount from B_Clue a inner join B_Opportunity b on a.id  = b.clueid
+        group by a.ReportUserID,b.Status
+        having  b.Status=4) aa
+        group by BrokerID
+        ) f on t.BrokerID = f.BrokerID
+        left join
+        (
+        select a.ReportUserID as BrokerID,count(a.id) as QYCount from B_Clue a inner join B_Opportunity b on a.id  = b.clueid
+        group by a.ReportUserID,b.Status
+        having b.Status=5
+        ) g on t.BrokerID = g.BrokerID
+        ]]>
+    </select>
+
+    <update id="mBrokerChannelUserCardDetail_Update" >
+        UPDATE B_ChannelUser
+        SET CertificatesName = #{CertificatesName},
+        CertificatesType =#{CertificatesType},
+        CertificatesNo = #{CertificatesNo},
+        CertificatesPicFace = #{CertificatesPicFace},
+        CertificatesPicBack = #{CertificatesPicBack}
+        WHERE
+        ID = #{UserID};
+    </update>
+
+    <update id="mBrokerChannelUserBankCardDetail_Update" >
+        UPDATE B_ChannelUser
+        SET BankCardPerson = #{BankCardPerson},
+        BankCardCreate = #{BankCardCreate},
+        BankCard = #{BankCard},
+        BankCardProvince = #{BankCardProvince},
+        BankCardCity = #{BankCardCity},
+        BankCardArea = #{BankCardArea},
+        BankCardBranch = #{BankCardBranch},
+        BankCardPic = #{BankCardPic}
+        WHERE
+        ID = #{UserID};
+    </update>
+
+    <select id="mBrokerChannelUserDetail_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+    SELECT ID,Name,Mobile,dbo.F_DictName(Gender) 'Gender',Gender 'GenderID',dbo.F_DictName(ChannelTypeID) as 'ChannelType',ChannelTypeID,Password,CertificatesName,dbo.F_DictName(CertificatesType) as 'CertificatesTypeName',CertificatesType,
+CertificatesNo,CertificatesPicFace,CertificatesPicBack,BankCardPerson,BankCard,BankCardCreate,HeadImg,
+dbo.F_CityName(BankCardProvince) as 'BankCardProvinceName',BankCardProvince,dbo.F_CityName(BankCardCity) as 'BankCardCityName',BankCardCity,dbo.F_CityName(BankCardArea) as 'BankCardAreaName',BankCardArea,BankCardBranch,BankCardPic
+FROM B_ChannelUser WHERE ID=#{UserID};
+    ]]>
+    </select>
+
+    <update id="mBrokerChannelUserDetail_Upate">
+        UPDATE B_ChannelUser SET Name=#{Name},Gender=#{Gender},Mobile=#{Mobile},ChannelTypeID=#{ChannelTypeID}
+        WHERE ID=#{UserID};
+    </update>
+
+    <select id="ChannelUser_Find" resultType="java.util.Map" parameterType="string">
+       SELECT
+        *,
+        dbo.F_DictName ( ChannelTypeID ) 'ChannelType'
+        FROM
+        B_ChannelUser
+        WHERE
+        ( UserName = #{Mobile} or Mobile=#{Mobile} )
+        AND PASSWORD = upper(#{Password})
+        AND IsDel = 0
+        AND ChannelTypeID IN ( '32C92DA0-DA13-4C21-A55E-A1D16955882C', '46830C26-0E01-4041-8054-3865CCDD26AD', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', 'EB4AD331-F4AD-46D6-889A-D45575ECEE66' )
+
+        <!-- SELECT *
+        FROM B_ChannelUser where (Mobile=#{Mobile} or UserName=#{Mobile}) and Password=#{Password}-->
+    </select>
+    
+    <select id="ChannelUser_Detail_FindById" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.channel.BChanneluser">
+		<![CDATA[
+	    SELECT 	'1' as ProjectID, OrgCode,pid ,OrgName, [B_ChannelUser].* 
+	    FROM 	[B_ChannelUser]
+				left join B_ChannelOrg on [B_ChannelUser].ChannelOrgID=B_ChannelOrg.id
+		where 	[B_ChannelUser].id=#{ID}  order by  createtime  desc
+		
+	    ]]>
+	</select>
+	
+	<!-- 修改密码-判断原密码是否正确 -->
+	<select id="ChannelUserPassWord_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.channel.BChanneluser">
+		<![CDATA[
+		    SELECT * FROM B_ChannelUser 
+		    WHERE ID=#{UserID} and Password = #{OldPassword}
+	    ]]>
+	</select>
+	<!-- 修改密码 -->
+	<update id="ChannelUserPassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+		    UPDATE B_ChannelUser SET Password = #{Password} 
+    		WHERE ID=#{UserID} and Password = #{OldPassword}
+	    ]]>
+	</update>
+	<!-- 忘记密码修改 -->
+	<update id="ChannelUserForgetPassWord_Update" parameterType="java.util.Map">
+		<![CDATA[
+		    UPDATE B_ChannelUser SET Password = #{Password} 
+    		WHERE Mobile = #{Mobile}
+	    ]]>
+	</update>
+	<!-- 删除兼职成员 -->
+	<delete id="mChannelTempPerson_Delete" parameterType="java.util.Map" >
+		<![CDATA[
+		    UPDATE B_ChannelTask_ChannelUser
+			SET IsDel=1,Status = 3
+			WHERE ChannelUserID=#{ChannelUserID} AND  ChannelTaskID IN (
+				SELECT ID FROM dbo.B_ChannelTask WHERE Creator=#{UserID}
+			)
+	    ]]>
+	</delete>
+
+	<!-- 专员考勤 -->
+	<select id="mChannelCheckClockTotal_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT
+		SUM((CASE WHEN CheckType=0 THEN 1 ELSE 0 END)) CheckIn,
+		SUM((CASE WHEN CheckType=1 THEN 1 ELSE 0 END)) CheckOut
+		FROM dbo.B_CheckClockRecord a
+		LEFT JOIN dbo.B_ChannelUser b ON a.Creator = b.ID
+		WHERE a.IsDel = 0 AND a.Status = 1 AND b.ReportUserID IS NOT NULL
+		AND a.ChannelTaskID=#{ChannelTaskID}
+		AND a.CheckDate =#{CheckDate}
+	    ]]>
+	</select>
+
+	<!-- 详细考勤 -->
+	<select id="mChannelTaskCheckClockList_Select" parameterType="String" resultType="java.util.Map">
+		<![CDATA[
+		SELECT  ct.TaskAreaID ID ,
+	            a.ChannelUserName Name ,
+	            a.ChannelUserMobile Mobile ,
+	            cu.HeadImg HeadImg ,
+	            ic.CheckInTime,
+	            oc.CheckOutTime ,
+	            dbo.GetPYFirst(a.ChannelUserName) FirstChar
+	    FROM    dbo.B_ChannelTask_ChannelUser a
+	            LEFT JOIN dbo.B_ChannelUser cu ON a.ChannelUserID = cu.ID
+	            LEFT JOIN dbo.B_ChannelTask ct ON a.ChannelTaskID = ct.ID AND ct.IsDel = 0
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckInTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 0
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) ic ON a.ChannelUserID = ic.Creator
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckOutTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 1
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) oc ON a.ChannelUserID = oc.Creator AND oc.CheckOutTime > ic.CheckInTime
+	    WHERE a.IsDel = 0  AND ChannelTaskID = #{ChannelTaskID} ${where}
+	    ]]>
+	</select>
+
+	<!-- 打卡状态查询 -->
+	<select id="mChannelCheckClockPage_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT MAX(CreateTime) LastCheckTime,COUNT(1) AllCount,TaskAreaName
+		FROM dbo.B_CheckClockRecord
+		WHERE ChannelTaskID=#{ChannelTaskID}
+			  AND CheckDate=#{CheckDate}
+			  AND Creator=  #{UserID}
+		GROUP BY TaskAreaName
+	    ]]>
+	</select>
+
+	<!-- 详细考勤数量统计 -->
+	<select id="mChannelTaskCheckClockList_SelectAllCount" parameterType="java.util.Map" resultType="int" >
+		<![CDATA[
+		SELECT  COUNT(1) recordCount
+	    FROM    dbo.B_ChannelTask_ChannelUser a
+	            LEFT JOIN dbo.B_ChannelUser cu ON a.ChannelUserID = cu.ID
+	            LEFT JOIN dbo.B_ChannelTask ct ON a.ChannelTaskID = ct.ID AND ct.IsDel = 0
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckInTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 0
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) ic ON a.ChannelUserID = ic.Creator
+	            LEFT JOIN (SELECT   Creator ,
+	                        MAX(CreateTime) CheckOutTime
+	               FROM     B_CheckClockRecord
+	               WHERE    CheckType = 1
+	                        AND ChannelTaskID = #{ChannelTaskID}
+	                        AND CheckDate = #{CheckDate}
+	               GROUP BY Creator) oc ON a.ChannelUserID = oc.Creator AND oc.CheckOutTime > ic.CheckInTime
+	    WHERE a.IsDel = 0  AND ChannelTaskID = #{ChannelTaskID}
+    ]]>
+    </select>
+
+    <!-- 考勤信息查询 -->
+	<select id="mChannelCheckClockPerson_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT CreateTime,TaskAreaName,CheckType FROM dbo.B_CheckClockRecord
+		WHERE CheckDate=#{CheckDate} AND Creator=#{UserID} ORDER BY CreateTime ASC
+	    ]]>
+	</select>
+
+	<!-- 考勤信息数量统计 -->
+	<select id="mChannelCheckClockPerson_SelectAllCount" parameterType="java.util.Map" resultType="int">
+		<![CDATA[
+		SELECT COUNT(1) recordCount FROM dbo.B_CheckClockRecord
+		WHERE CheckDate=#{CheckDate} AND Creator=#{UserID}
+	    ]]>
+	</select>
+
+	<!-- 兼职考勤日历打卡信息 -->
+		<select id="mChannelCheckClockCountDaily_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+		SELECT CONVERT(VARCHAR(100), CheckDate,111) CheckDate,COUNT(1) CheckCount FROM dbo.B_CheckClockRecord
+		WHERE Creator=#{UserID} AND YEAR(CreateTime) = LEFT(#{CurrentMonth},4)  AND MONTH(CreateTime)=RIGHT(#{CurrentMonth},2)
+		GROUP BY CheckDate
+	    ]]>
+	</select>
+
+    <select id="getChannelOrgID" parameterType="string" resultType="string">
+            <![CDATA[
+     select CASE WHEN LEN(b.PID)>0 THEN b.PID else ChannelOrgID END ChannelOrgID from B_ChannelUser a
+     inner join B_ChannelOrg b on a.ChannelOrgID = b.ID
+     where
+     a.ID=#{UserID} and
+     a.ChannelTypeID='32C92DA0-DA13-4C21-A55E-A1D16955882C'
+        ]]>
+    </select>
+
+    <select id="GetReportUserInfo_Select" resultType="java.util.HashMap" parameterType="string">
+
+        select id as ReportUserID,
+        [name] AS ReportUserName,
+        Mobile AS ReportUserMobile,
+        ChannelOrgID AS ReportUserOrg,
+        (
+        SELECT TOP
+        1 a.id
+        FROM
+        B_ClueRule a
+        INNER JOIN B_ClueRule_AdviserGroup b ON a.ID= b.ClueRuleID
+        WHERE
+        ProjectID = #{IntentProjectID}
+        AND AdviserGroupID = #{ChannelIdentify}
+        AND a.Status= 1
+        AND a.IsDel= 0
+        ORDER BY
+        VersionStartTime DESC
+        ) AS RuleID
+        FROM
+        B_ChannelUser
+        WHERE
+        id = #{UserID}
+    </select>
+    
+    <!-- 考勤异常 -->
+    <select id="mChannelUserAbnormal_Select" parameterType="String" resultType="java.util.HashMap">
+	SELECT  Name,AbnormalDesc,Mobile,HeadImg
+	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
+	                    ChannelUserName Name ,
+	                    AbnormalDesc ,
+	                    ChannelUserMobile Mobile,
+	                    #{SiteUrl}+ HeadImg HeadImg
+	          FROM      B_ChannelUserAbnormal cua
+	          LEFT JOIN dbo.B_SalesUser su ON su.ID = cua.ChannelUserID 
+	          WHERE     ChannelTaskID = #{ChannelTaskID}
+	        ) n
+	WHERE   n.RowNum = 1
+        
+    </select>
+    
+    <!-- 考勤异常数量统计 -->
+    <select id="mChannelUserAbnormal_SelectAllCount" parameterType="java.util.Map" resultType="int">
+	SELECT  COUNT(1) recordCount
+	FROM    ( SELECT    ROW_NUMBER() OVER ( PARTITION BY ChannelUserID,AbnormalType ORDER BY cua.CreateTime DESC ) RowNum ,
+	                    ChannelUserName Name ,
+	                    AbnormalDesc ,
+	                    ChannelUserMobile Mobile,
+	                    #{SiteUrl}+ HeadImg HeadImg
+	          FROM      B_ChannelUserAbnormal cua
+	          LEFT JOIN dbo.B_SalesUser su ON su.ID = cua.ChannelUserID 
+	          WHERE     ChannelTaskID = #{ChannelTaskID}
+	        ) n
+	WHERE   n.RowNum = 1
+        
+    </select>
+    <!-- 获取分销渠道所属机构ID -->
+    <select id="GetChannelOrgID_Select" resultType="java.util.Map" parameterType="java.util.Map">
+    <![CDATA[
+		select CASE WHEN LEN(b.PID)>0 THEN b.PID else ChannelOrgID END ChannelOrgID from B_ChannelUser a
+		inner join B_ChannelOrg b on a.ChannelOrgID = b.ID
+		 where 
+		 a.ID=#{UserID} and 
+		 a.ChannelTypeID='32C92DA0-DA13-4C21-A55E-A1D16955882C'
+
+    ]]>
+    </select>
+    <select id="ChannelOrgList_Select" resultType="java.util.Map">
+        <![CDATA[
+            Select
+                   a.ID,
+                   a.OrgCode,
+                   a.OrgName,
+                   a.CreateTime,
+                   Responsible,
+                   Mobile
+            From B_ChannelOrg a
+            Where 1 = 1
+              and isnull(a.PID, '') = ''
+              And a.IsDel = 0
+              AND a.Status = 1 ${sql}
+        ]]>
+    </select>
+    <select id="getB_PojectChannelOrgRel" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM B_PojectChannelOrgRel
+        WHERE OrgID = #{OrgID}
+        AND ProjectID = #{ProjectID}
+    </select>
+
+    <insert id="insertBChannelUser" parameterType="java.util.Map">
+        INSERT INTO dbo.B_ChannelUser
+        ( ID ,
+        UserName ,
+        Password ,
+        Mobile ,
+        Name ,
+        Gender ,
+        ChannelTypeID,
+        Creator ,
+        CreateTime ,
+        IsDel ,
+        Status
+        )
+        SELECT id,UserName,Password,Mobile,EmployeeName,Gender,(
+        SELECT CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
+        INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID AND b.ID=#{ID}
+        WHERE a.IsDel=0),#{UserID},GETDATE(),0,1 FROM dbo.S_Account WHERE id=#{MemberID}
+    </insert>
+    <insert id="ChannelOrgImport_Insert_B_PojectChannelOrgRel">
+        INSERT INTO dbo.B_PojectChannelOrgRel(ID, OrgID, ProjectID, Creator, CreateTime, IsDel, Status)
+        VALUES (NEWID(), #{orgID}, #{projectID}, #{userID}, GETDATE(), 0, 1)
+    </insert>
+    <insert id="ChannelOrgImport_Insert_B_ClueRule_AdviserGroup">
+        INSERT INTO dbo.B_ClueRule_AdviserGroup(ID, ClueRuleID, AdviserGroupID, Creator, CreateTime, IsDel, Status)
+        VALUES (NEWID(), #{RuleIDs}, #{OrgID}, #{UserID}, GETDATE(), 0, 1)
+    </insert>
+
+    <select id="AgenList_SelectN" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT
+        cu.ID,cu.UserName,cu.Mobile as MobileSt,cu.Mobile,cu.CertificatesType,
+        cu.Name,d3.DictName as Gender,cu.CertificatesNo,cu.CertificatesPicFace,cu.CertificatesPicBack,
+        cu.BankCardPerson,cu.BankCardCreate,cu.BankCard,cu.BankCardPic,cu.ChannelOrgID,cu.CreateTime,cu.[Status],
+        case cu.[Status] when 0 then '禁用' when 1 then '启用' else '' end as StatusName,cu.ApprovalDate,
+        o.OrgName as ChannelOrgName,o.OrgShortName as ChannelOrgShortName,o.OrgCode as ChannelOrgCode,cu.ChannelTypeID,d.DictName,
+        d2.DictName as CertificatesTypeName,a1.[EmployeeName] as InviterName,
+        case cu.ApprovalStatus  when '0' then '待审核' when '1' then '通过' when '2' then '不通过' else '待审核' end as ApprovalStatuss
+        ,a.[EmployeeName] as ApproverName
+        FROM dbo.B_ChannelUser cu
+        left join S_Dictionary d on cu.ChannelTypeID=d.id
+        left join S_Dictionary d2 on cu.CertificatesType=d2.id
+        left join S_Dictionary d3 on cu.Gender=d3.id
+        left join S_Account a on cu.Approver=a.id
+        left join S_Account a1 on cu.Inviter=a1.id
+        left join B_ChannelOrg o on cu.ChannelOrgID=o.ID
+        WHERE 1=1 and cu.IsDel=0 ${where}
+        order by cu.createtime desc
+        ]]>
+    </select>
+
+    <select id="AgenChannelTypeList_SelectN" resultType="java.util.HashMap" >
+        SELECT
+        ID,
+        DictName
+        FROM
+        [S_Dictionary]
+        WHERE
+        PID = '5316B9EF-2AA7-43BA-A8C8-14A5CA368C95'
+        AND ID IN ( 'EB4AD331-F4AD-46D6-889A-D45575ECEE66', '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD', '46830C26-0E01-4041-8054-3865CCDD26AD' )
+        AND IsDel = 0
+        AND [Status] = 1
+        ORDER BY
+        ListIndex
+    </select>
+
+    <select id="ChannelUser_Detail_FindByIdN" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        SELECT
+        cu.ID,
+        cu.UserName ,
+        cu.ID 'UserID',
+        cu.Name ,
+        dbo.F_DictName (
+        ISNULL( cu.Gender, '50827B18-5BCC-454C-B658-09AF4328D2A0' )) Gender,
+        ISNULL( cu.Gender, '50827B18-5BCC-454C-B658-09AF4328D2A0' ) GenderID,
+        cu.HeadImg ,
+        dbo.F_DictName ( cu.ChannelTypeID ) 'ChannelType',
+        cu.ChannelTypeID ,
+        '1' IsPass,
+        cu.Mobile ,
+        cu.Job,
+        cu.ChannelOrgID,
+        cu.ApprovalStatus,
+        (
+        CASE
+
+        WHEN cu.CertificatesType IS NOT NULL
+        AND cu.CertificatesType<> ''
+        AND cu.CertificatesName IS NOT NULL
+        AND cu.CertificatesName<> ''
+        AND cu.CertificatesNo IS NOT NULL
+        AND cu.CertificatesNo<> ''
+        AND cu.CertificatesPicFace IS NOT NULL
+        AND cu.CertificatesPicFace<> ''
+        AND cu.CertificatesPicBack IS NOT NULL
+        AND cu.CertificatesPicBack<> '' THEN
+        1 ELSE 0
+        END
+        ) IsCard,
+        ISNULL(( CASE WHEN BankCard = '' THEN 0 WHEN BankCard <> '' THEN 1 END ), 0 ) IsBankCard,
+        o.OrgCode ChannelOrgCode,
+        o.OrgName ChannelOrgName,
+        cu.CertificatesName,
+        cu.CertificatesType,
+        cu.CertificatesNo,
+        cu.CertificatesPicFace,
+        cu.CertificatesPicBack,
+        cu.BankCard,
+        cu.BankCardPerson,
+        cu.BankCardBranch,
+        cu.BankCardPic,
+        cu.BankCardCreate
+        FROM
+        dbo.B_ChannelUser cu
+        LEFT JOIN dbo.B_ChannelOrg o ON cu.ChannelOrgID= o.ID
+        AND o.IsDel= 0
+        AND o.[Status] = 1
+        WHERE
+        cu.ID = #{id}
+        AND cu.IsDel= 0
+        AND cu.[Status] =1
+        ]]>
+    </select>
+
+
+    <select id="mChannelStoreUserList_SelectN" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        SELECT
+        bo.ID AS ID,
+        bo.Name AS Name,
+        bo.CustomerNumber,
+        bo.Mobile AS Mobile,
+        bo.ApprovalStatus,
+        bo.Gender,
+        bo.volume
+        FROM
+        ChannelUser_List_Select AS bo
+        LEFT JOIN B_ChannelOrg co ON bo.ChannelOrgID=co.ID
+        WHERE
+        (bo.ChannelOrgID = #{StoreID} OR co.NewPID=#{StoreID})
+        AND bo.IsDel = '0'
+        AND bo.Job<> 0 ${sqlWhere}
+        AND bo.Status = 1 ${Parameter}
+        ORDER BY
+        bo.ApprovalStatus ASC,
+        bo.CreateTime DESC,
+        bo.ApprovalDate DESC
+         ]]>
+    </select>
+    <select id="ChannelOrgRuleInfoDetail_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT ID AS ProjectID,Name AS ProjectName,
+            (SELECT TOP 1 b.ID
+            FROM B_ClueRule a
+            LEFT JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID AND b.IsDel=0
+            WHERE a.IsDel=0 AND a.Status=1
+            AND a.ProjectID=#{projectId} AND b.AdviserGroupID=#{adviserGroupID}) AS ID,
+            (SELECT TOP 1 B.ClueRuleID
+            FROM B_ClueRule a
+            LEFT JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID AND b.IsDel=0
+            WHERE a.IsDel=0 AND a.Status=1
+            AND a.ProjectID=#{projectId} AND b.AdviserGroupID=#{adviserGroupID}) AS ClueRuleID,
+            (SELECT TOP 1 b.AdviserGroupID
+            FROM B_ClueRule a
+            LEFT JOIN B_ClueRule_AdviserGroup b ON a.ID = b.ClueRuleID AND b.IsDel=0
+            WHERE a.IsDel=0 AND a.Status=1
+            AND a.ProjectID=#{projectId} AND b.AdviserGroupID=#{adviserGroupID}) AS AdviserGroupID
+            FROM dbo.B_Project
+            WHERE ID=#{projectId}
+    ]]>
+    </select>
+
+    <update id="ChannelUserDetail_UpateN" parameterType="string">
+        UPDATE B_ChannelUser SET Name=#{name},Gender=#{gender}
+        WHERE ID=#{userID} ;
+    </update>
+
+    <select id="CustomerCount" parameterType="string" resultType="int">
+        SELECT COUNT ( 1 ) FROM Clue_List_Select WHERE ReportUserID = #{id}
+    </select>
+
+    <update id="QuitUser_Update" parameterType="string">
+        INSERT INTO dbo.B_QuitUser ( ID, UserType, UserID, Status, IsDel, Creator, CreateTime, Editor, EditeTime )
+        VALUES
+        ( NEWID(), 3, #{id}, 1, 0, #{userID}, GETDATE(), NULL, NULL )
+    </update>
+
+
+    <select id="mCustomerTCList_SelectN" resultType="java.util.HashMap" parameterType="string">
+        SELECT
+        [ID],
+        [CustomerName],
+        [CreateTime],
+        [CustomerMobile],
+        [AdviserName],
+        [CustomerState],
+        [Creator],
+        [genjinTime],
+        Followupdate,
+        Status,
+        [rengouTime],
+        [wuxiao],
+        ReportUserID,
+        [laifang],
+        [renchou],
+        [rengou],
+        [duishi],
+        [cluestatus]
+        FROM
+        [Clue_List_Select]
+        WHERE
+        <if test="keyWord!=null and keyWord!=''">
+        ( CustomerName LIKE  concat('%',#{keyWord},'%')  OR CustomerMobile LIKE concat('%',#{keyWord},'%')  )
+            AND
+        </if>
+         ReportUserID = #{userID}
+        ORDER BY
+        CreateTime desc
+    </select>
+
+    <update id="mCustomerTCTransfer_Update" parameterType="string">
+        UPDATE dbo.B_Clue
+        SET ReportUserID = #{transferID},
+        ReportUserName = ( SELECT TOP 1 Name FROM dbo.B_ChannelUser WHERE ID = #{transferID} ),
+        ReportUserMobile = ( SELECT TOP 1 Mobile FROM dbo.B_ChannelUser WHERE ID = #{transferID} ),
+        Editor = #{userID},
+        EditeTime = GETDATE()
+        WHERE
+        ID IN (
+        ${ids})
+    </update>
+
+    <select id="checkUser" resultType="java.util.Map" parameterType="string">
+        SELECT TOP 1
+        *
+        FROM
+        B_ChannelUser
+        WHERE
+        ( UserName = #{username} OR Mobile = #{mobile} )
+        AND IsDel = 0
+        AND Status =1
+    </select>
+
+    <select id="getUserInfo" parameterType="string" resultType="java.util.Map">
+        SELECT
+        ID,
+        UserName,
+        Mobile,
+        Name,
+        Gender,
+        ChannelTypeID,
+        ChannelType,
+        Job
+        FROM
+        B_ChannelUser
+        WHERE
+        ID = #{id}
+    </select>
+</mapper>

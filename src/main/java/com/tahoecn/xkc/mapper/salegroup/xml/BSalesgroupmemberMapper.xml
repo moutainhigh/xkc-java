@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.salegroup.BSalesgroupmemberMapper">
+    <select id="SalesGroupMemberList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[
+            SELECT a.ID UserID,e.EmployeeName Name,a.ReceptionGroupID,b.UserName,b.TelPhone,a.RoleID,
+            CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN '项目营销负责人'
+            WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN '自有渠道负责人'
+            WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN '案场销售团队负责人'
+            WHEN '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' THEN '销管组'
+            --WHEN 'E417A997-9A91-4D22-8428-9C2C2C560656' THEN '销支组'
+            WHEN '97F5E202-2D3B-4935-BA91-4AFD5C5578FC' THEN '策划组'
+            WHEN 'B0BF5636-94AD-4814-BB67-9C1873566F29' THEN '自有渠道团队负责人'
+            WHEN 'WSD12580-003A-6505-B211-C2C2C2C2C2C2' THEN '自有渠道团队负责人_2.0'
+            WHEN '48FC928F-6EB5-4735-BF2B-29B1F591A582' THEN '自有渠道团队人员'
+            WHEN '938935B7-4131-4E61-A811-4323A7F193A2' THEN '案场销售负责人'
+            WHEN '0269F35E-B32D-4D12-8496-4E6E4CE597B7' THEN '案场销售团队人员'
+            END TitleName,
+            o.FullPath OrgName,
+            CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN 'XMYXFZR'
+            WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN 'ZYQDFZR'
+            WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN 'ACXSTDRY'
+            WHEN '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' THEN 'XZZ'
+            --WHEN 'E417A997-9A91-4D22-8428-9C2C2C560656' THEN 'XZZ'
+            WHEN '97F5E202-2D3B-4935-BA91-4AFD5C5578FC' THEN 'CHZ'
+            WHEN 'B0BF5636-94AD-4814-BB67-9C1873566F29' THEN 'ZYQDTDRY'
+            WHEN 'WSD12580-003A-6505-B211-C2C2C2C2C2C2' THEN 'ZYQDTDRY'
+            WHEN '48FC928F-6EB5-4735-BF2B-29B1F591A582' THEN 'ZYQDTDRY'
+            WHEN '938935B7-4131-4E61-A811-4323A7F193A2' THEN 'ACXSFZR'
+            WHEN '0269F35E-B32D-4D12-8496-4E6E4CE597B7' THEN 'ACXSTDRY'
+            END ShortCode,
+            CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN '0'
+            WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN '0'
+            WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN '1'
+            WHEN '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' THEN '0'
+            --WHEN 'E417A997-9A91-4D22-8428-9C2C2C560656' THEN '0'
+            WHEN '97F5E202-2D3B-4935-BA91-4AFD5C5578FC' THEN '0'
+            WHEN 'B0BF5636-94AD-4814-BB67-9C1873566F29' THEN '1'
+            WHEN 'WSD12580-003A-6505-B211-C2C2C2C2C2C2' THEN '1'
+            WHEN '48FC928F-6EB5-4735-BF2B-29B1F591A582' THEN '0'
+            WHEN '938935B7-4131-4E61-A811-4323A7F193A2' THEN '0'
+            WHEN '0269F35E-B32D-4D12-8496-4E6E4CE597B7' THEN '0'
+            END IsLeadingOfficial
+            FROM B_SalesGroupMember a
+            INNER JOIN dbo.B_SalesUser b ON b.ID=a.MemberID AND b.IsDel=0 AND b.Status=1
+            left join B_SalesGroup c on c.ID=a.ReceptionGroupID
+            INNER JOIN dbo.S_Dictionary d ON d.ID=a.RoleID AND d.IsDel=0 AND d.PID='54E311BD-943C-41E6-BF09-42191198C229'
+            INNER JOIN dbo.S_Account e ON e.ID=a.MemberID AND e.IsDel=0 AND e.Status=1
+            left JOIN S_Organization o ON e.UserOrgID = o.ID AND o.IsDel = 0
+            WHERE a.IsDel=0 and a.RoleID!='E417A997-9A91-4D22-8428-9C2C2C560656'
+             AND a.ProjectID<>'' AND a.ProjectID=#{ProjectID}  AND ISNULL(c.IsDel,0)<>1 ORDER BY d.ListIndex
+        ]]>
+    </select>
+
+
+    <select id="SalesGroupTeamNoAddedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[
+          SELECT DISTINCT a.[ID] UserID,a.[UserName],a.[EmployeeName] Name,b.FullPath OrgName,a.AccountType AccountType,a.Mobile Mobile,a.Status Status
+            FROM S_Account a
+            --left JOIN dbo.S_JobsUserRel jur ON a.IsDel = 0 AND a.ID = jur.AccountID
+            --left JOIN dbo.S_Jobs j ON jur.JobID = j.ID AND j.IsDel = 0
+            --left JOIN S_Organization o ON j.JobOrgID = o.ID AND o.IsDel = 0
+            LEFT JOIN dbo.S_Organization b ON b.ID=a.UserOrgID AND b.IsDel=0
+            where a.isdel=0 and a.status=1
+            and a.id not in (
+            select memberid
+            from B_SalesGroupMember
+            where isdel=0 and status=1 and ProjectID= #{paramMap.ProjectID} ${paramMap.whereOne})
+            ${paramMap.where}
+        ]]>
+    </select>
+
+    <select id="SalesGroupTeamAlreadyAddedList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[
+            SELECT DISTINCT a.ID UserID,b.UserName,b.EmployeeName Name,o.FullPath OrgName,b.AccountType AccountType,b.Mobile Mobile,b.Status Status,
+            CASE a.RoleID WHEN 'A2C076C4-09D1-4B42-862D-8688A93320F4' THEN '0'
+            WHEN '9584A4B7-F105-44BA-928D-F2FBA2F3B4A4' THEN '0'
+            WHEN '3BC23001-BC31-4594-8463-C7DA89C0FB36' THEN '1'
+            WHEN '8100EAF4-FBCE-408B-A51D-B7247A3ADB19' THEN '0'
+            WHEN '97F5E202-2D3B-4935-BA91-4AFD5C5578FC' THEN '0'
+            WHEN 'B0BF5636-94AD-4814-BB67-9C1873566F29' THEN '1'
+            WHEN 'WSD12580-003A-6505-B211-C2C2C2C2C2C2' THEN '1'
+            WHEN '48FC928F-6EB5-4735-BF2B-29B1F591A582' THEN '0'
+            WHEN '938935B7-4131-4E61-A811-4323A7F193A2' THEN '0'
+            WHEN '0269F35E-B32D-4D12-8496-4E6E4CE597B7' THEN '0'
+            END IsLeadingOfficial
+            FROM B_SalesGroupMember a
+            INNER JOIN S_Account b ON b.ID=a.MemberID AND b.IsDel=0 and b.Status=1
+            left join B_SalesGroup c on c.ID=a.ReceptionGroupID
+            INNER JOIN dbo.S_Dictionary d ON d.ID=a.RoleID AND d.IsDel=0 AND d.PID='54E311BD-943C-41E6-BF09-42191198C229'
+            left JOIN S_Organization o ON b.UserOrgID = o.ID AND o.IsDel = 0
+            INNER JOIN dbo.B_SalesUser z ON z.ID=a.MemberID AND z.IsDel=0 AND z.Status=1
+            WHERE a.IsDel=0 AND ISNULL(c.IsDel,0)<>1 ${paramMap.where} and a.RoleID!='E417A997-9A91-4D22-8428-9C2C2C560656'
+        ]]>
+    </select>
+
+
+    <select id="getChannelOrgId" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT TOP 1 CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
+			INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID and b.IsDel=0
+            AND b.ID=#{ID}
+    </select>
+
+    <select id="getChannelOrgId2" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT TOP 1 CASE a.Nature WHEN 3 THEN '0E88065E-AF3E-4905-8809-7BD30610323F' WHEN 4 THEN 'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A' WHEN 5 THEN '8D70D821-3BD4-46D1-8342-8B16C4BE642A' when 6 then 'FC09F0DF-D3DF-4378-91C0-7146EC451F43' when 7 then 'C07D5987-ACDD-40B8-9CBD-6257AA59C88C' END FROM dbo.B_SalesGroup a
+        INNER JOIN dbo.B_SalesGroupMember b ON a.ID=b.ReceptionGroupID and b.IsDel=0
+        AND b.MemberID=#{memberId}
+        AND b.RoleID IN('B0BF5636-94AD-4814-BB67-9C1873566F29','WSD12580-003A-6505-B211-C2C2C2C2C2C2','48FC928F-6EB5-4735-BF2B-29B1F591A582')
+        WHERE a.IsDel=0 and a.Status=1 ORDER BY b.CreateTime DESC
+    </select>
+
+    <select id="SalesGroupMemberExistProject_Select" parameterType="java.util.Map" resultType="com.tahoecn.xkc.model.vo.SalesGroupMemberExistProjectVo">
+        <![CDATA[
+            SELECT TOP 1
+                    su.Name UserName,
+                    p.Name ProjectName
+            FROM    dbo.B_SalesGroupMember sgm
+                    INNER JOIN dbo.B_SalesUser su ON su.ID = sgm.MemberID
+                    INNER JOIN dbo.B_Project p ON p.ID = sgm.ProjectID
+            WHERE   sgm.IsDel = 0
+                    AND sgm.Status = 1
+                    AND (sgm.MemberID = #{MemberID} OR sgm.ID = #{MemberID})
+                    AND sgm.RoleID = #{RoleID}
+                    AND ProjectID != #{ProjectID}
+            ORDER BY sgm.CreateTime DESC
+        ]]>
+    </select>
+    <select id="getSaleGroupName" parameterType="java.util.Map" resultType="java.util.Map">
+	    SELECT  A.ReceptionGroupID,P.Name as pName,G.Name as gName
+	        FROM    B_SalesGroupMember A
+	                LEFT JOIN B_SalesGroup G ON A.ReceptionGroupID = G.ID
+	                LEFT JOIN B_Project P ON A.ProjectID = P.ID
+	        WHERE   A.ProjectID = #{ProjectID}
+	                AND A.MemberID = #{SaleUserID}
+	                AND A.Status = 1
+	                AND A.IsDel = 0
+	                AND A.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
+    </select>
+</mapper>

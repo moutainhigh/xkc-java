@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.project.VProjectroomMapper">
+
+	<!-- 获取项目房间列表信息 -->
+	<select id="ProjectRoomList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  RoomID ,
+			        RoomStatus ,
+			        RoomSaleStatus ,
+			        ProjectName ,
+			        BuildingName ,
+			        RoomUnit ,
+			        FloorNum ,
+			        FloorIndex ,
+			        RoomFloorName ,
+			        RoomName ,
+			        RoomArea ,
+			        RoomPrice ,
+			        RoomTotal ,
+			        RoomType
+			FROM    [V_ProjectRoom_xkc]
+			WHERE   BuildingID = #{BuildingID} ${sqlWhere}
+			ORDER BY RoomUnit ,
+			        FloorIndex*1 DESC ,
+			        RoomIndex*1
+    ]]>
+	</select>
+	<!-- 获取项目房间列表信息(营销经理) -->
+	<select id="ProjectRoomListYXJL_Select" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[
+			SELECT  RoomID ,
+		        RoomStatus ,
+		        RoomSaleStatus ,
+		        ProjectName ,
+		        BuildingName ,
+		        RoomUnit ,
+		        FloorNum ,
+		        FloorIndex ,
+		        RoomFloorName ,
+		        RoomName ,
+		        RoomArea ,
+		        RoomPrice ,
+		        RoomTotal ,
+		        RoomType
+		FROM    [V_ProjectRoom]
+		WHERE   BuildingID = #{BuildingID}
+		ORDER BY RoomUnit ,
+		        FloorIndex DESC ,
+		        RoomIndex
+    ]]>
+	</select>
+
+    <select id="RoomTypeList_Select" resultType="java.util.HashMap" parameterType="string">
+        <![CDATA[
+        SELECT DISTINCT
+        RoomType
+        FROM
+        V_ProjectRoom
+        WHERE
+        RoomType <> ''
+        AND BuildingID = #{BuildingID}
+        ]]>
+    </select>
+</mapper>
