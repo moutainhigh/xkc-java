@@ -346,7 +346,7 @@
 		WHERE   id = #{ClueID}
      </update>
      <!-- 根据手机号、项目id获取有效线索 -->
-     <select id="RuleClueList_Select" parameterType="java.util.Map" resultType="java.util.Map">
+     <select id="RuleClueList_Select" resultType="java.util.Map">
      	<![CDATA[
 			select a.*,b.RuleType from B_Clue a
 			inner join B_ClueRule b

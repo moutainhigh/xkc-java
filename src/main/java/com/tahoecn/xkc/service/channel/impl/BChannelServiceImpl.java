@@ -600,10 +600,11 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
 		Map<String, Object> msg = new HashMap<String, Object>();
         msg.put("IsExsitOpp", false);
         //查询项目下存在该手机号的有效线索
-        List<Map<String,Object>> clues = bClueMapper.RuleClueList_Select(phone, projectId,channelRegisterModel.getChannelUserId());
+        List<Map<String,Object>> clues = bClueMapper.RuleClueList_Select(projectId,phone,channelRegisterModel.getChannelUserId());
         //该项目已经存在已确认线索
         for(Map<String,Object> c : clues){
-        	if((int)c.get("Status") == 2){
+        	Number cStatus = (Number) c.get("Status");
+        	if(cStatus.intValue() == 2){
         		//报备保护
         		if (channelRegisterModel.getUserRule().getRuleType() == 0){
         			msg.put("InvalidType", 4);
