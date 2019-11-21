@@ -3,8 +3,6 @@
  */
 package com.tahoecn.xkc.common.utils;
 
-import com.tahoecn.log.Log;
-import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.model.sys.SAccount;
 
 /**
@@ -13,9 +11,6 @@ import com.tahoecn.xkc.model.sys.SAccount;
  * @desc
  */
 public class ThreadLocalUtils {
-
-
-	private static final Log log = LogFactory.get();
 
 	private static final ThreadLocal<SAccount> LOCAL = new ThreadLocal<>();
 
@@ -38,10 +33,6 @@ public class ThreadLocalUtils {
 	 * @return
 	 */
 	public static String getUserName() {
-		if (LOCAL.get() == null) {
-			log.error("LOCAL.get() is null");
-			return "";
-		}
 		return LOCAL.get().getUserName();
 	}
 
