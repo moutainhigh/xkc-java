@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tahoecn.xkc.service.sys.ISLogsService;
 import com.tahoecn.xkc.service.uc.CsUcUserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -70,10 +71,15 @@ public class GlobalInterceptor implements HandlerInterceptor {
 			log.info("parameters-" + parameter + ":" + request.getParameter(parameter));
 		}
 
-		log.info("=====================================================================");
-
 		RequestWrapper requestWrapper = new RequestWrapper(request);
 		String body = requestWrapper.getBody();
+
+		if (StringUtils.isNotBlank(body)) {
+			log.info("body params: {}", body);
+		}
+
+		log.info("=====================================================================");
+
 		try {
 			Map<String,Object> logMap = new HashMap<String,Object>();
 			logMap.put("BizID", "xkc");
