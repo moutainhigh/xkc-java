@@ -355,7 +355,6 @@
                       FROM      B_Clue b
 								LEFT JOIN dbo.B_Opportunity o ON b.ID=o.ClueID AND o.IsDel =0 AND o.ProjectID=#{projectID}
 								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
-								--LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID}
                       WHERE     b.IsDel = 0
                                 AND b.IntentProjectID = #{projectID} 
 
