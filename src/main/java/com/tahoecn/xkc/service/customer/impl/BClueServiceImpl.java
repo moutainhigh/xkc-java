@@ -547,12 +547,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 //            clue.setReportUserOrg((String) paramMap.get("newReportUserOrg"));
 //        }
         //如果有上级机构,填入上级机构的id 如果没有 直接填登录人orgid
-        if (map.get("ReportUserOrg")!=null){
-            String ReportUserOrg= (String) map.get("ReportUserOrg");
+        if (map.get("ReportUserOrg") != null) {
+            String ReportUserOrg = (String) map.get("ReportUserOrg");
             BChannelorg byId = channelorgService.getById(ReportUserOrg);
-            if (StringUtils.isNotBlank(byId.getNewPID())){
+            if (byId != null && StringUtils.isNotBlank(byId.getNewPID())) {
                 clue.setReportUserOrg(byId.getNewPID());
-            }else {
+            } else {
                 clue.setReportUserOrg(ReportUserOrg);
             }
         }
