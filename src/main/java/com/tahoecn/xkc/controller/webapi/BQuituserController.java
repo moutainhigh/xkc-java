@@ -5,6 +5,7 @@ import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.service.quit.IBQuituserService;
@@ -64,6 +65,17 @@ public class BQuituserController extends TahoeBaseController {
             @RequestParam(required = true) String UserName,
             @RequestParam(required = true) String TeamName,
             @RequestParam(required = true) String IsDispose) {
+        // 防sql注入过滤
+        PageSize = SqlInjectionUtil.filter(PageSize);
+        PageIndex = SqlInjectionUtil.filter(PageIndex);
+        ProjectID = SqlInjectionUtil.filter(ProjectID);
+        IsExcel = SqlInjectionUtil.filter(IsExcel);
+        Name = SqlInjectionUtil.filter(Name);
+        Mobile = SqlInjectionUtil.filter(Mobile);
+        UserName = SqlInjectionUtil.filter(UserName);
+        TeamName = SqlInjectionUtil.filter(TeamName);
+        IsDispose = SqlInjectionUtil.filter(IsDispose);
+
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ProjectID",ProjectID);
@@ -140,6 +152,17 @@ public class BQuituserController extends TahoeBaseController {
             @RequestParam(required = true) String UserName,
             @RequestParam(required = true) String TeamName,
             @RequestParam(required = true) String IsDispose) {
+        // 防sql注入过滤
+        PageSize = SqlInjectionUtil.filter(PageSize);
+        PageIndex = SqlInjectionUtil.filter(PageIndex);
+        ProjectID = SqlInjectionUtil.filter(ProjectID);
+        IsExcel = SqlInjectionUtil.filter(IsExcel);
+        Name = SqlInjectionUtil.filter(Name);
+        Mobile = SqlInjectionUtil.filter(Mobile);
+        UserName = SqlInjectionUtil.filter(UserName);
+        TeamName = SqlInjectionUtil.filter(TeamName);
+        IsDispose = SqlInjectionUtil.filter(IsDispose);
+
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("ProjectID",ProjectID);

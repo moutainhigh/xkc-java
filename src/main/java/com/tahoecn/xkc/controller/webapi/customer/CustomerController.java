@@ -10,6 +10,7 @@ import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.common.utils.LocalDateTimeUtils;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -65,8 +66,22 @@ public class CustomerController extends TahoeBaseController {
                                                 String TheFirstVisitDate_Start,
                                                 String TheFirstVisitDate_End,
                                                     Integer OpportunityStatus,String isExcel) {
-        StringBuffer sqlWhere = new StringBuffer();
+        // 防sql注入过滤
+        projectID = SqlInjectionUtil.filter(projectID);
+        CustomerName = SqlInjectionUtil.filter(CustomerName);
+        CustomerMobile = SqlInjectionUtil.filter(CustomerMobile);
+        ReportUserName = SqlInjectionUtil.filter(ReportUserName);
+        ReportUserMobile = SqlInjectionUtil.filter(ReportUserMobile);
+        CustomerRank = SqlInjectionUtil.filter(CustomerRank);
+        type = SqlInjectionUtil.filter(type);
+        SourceType = SqlInjectionUtil.filter(SourceType);
+        ReportTime_Start = SqlInjectionUtil.filter(ReportTime_Start);
+        ReportTime_End = SqlInjectionUtil.filter(ReportTime_End);
+        TheFirstVisitDate_Start = SqlInjectionUtil.filter(TheFirstVisitDate_Start);
+        TheFirstVisitDate_End = SqlInjectionUtil.filter(TheFirstVisitDate_End);
+        isExcel = SqlInjectionUtil.filter(isExcel);
 
+        StringBuffer sqlWhere = new StringBuffer();
 
         //客户姓名
         if (StringUtils.isNotEmpty(CustomerName)) {
