@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -860,6 +860,12 @@ public class AppKCController extends TahoeBaseController {
             if(paramMap.get("TaskStatus") != null) {
             	TaskStatus = (String)paramMap.get("TaskStatus").toString();
             }
+
+			if (StringUtils.isBlank(JobCode)
+					|| (!JobCode.equals("ZQ") && !JobCode.equals("JZ"))){
+				return Result.errormsg(1, "任务列表查询-参数错误或缺失");
+			}
+
             int PageIndex = (int)paramMap.get("PageIndex");//页面索引
             int PageSize = (int)paramMap.get("PageSize");//每页数量
             
