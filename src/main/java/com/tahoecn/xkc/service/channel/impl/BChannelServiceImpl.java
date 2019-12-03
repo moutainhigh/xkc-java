@@ -621,7 +621,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
             return msg;
         }
         if (clues.size() == 1){//该手机号线索已存在，此条件下需要进一步证明规则类型
-            int ruleType = (int) clues.get(0).get("RuleType");
+            int ruleType = ((Number) clues.get(0).get("RuleType")).intValue();
             if (channelRegisterModel.getUserRule().getRuleType() == ruleType && ruleType == 1){//线索为竞争带看，并且当前渠道用户规则也为竞争带看
             	msg.put("Tag", true);
             	msg.put("InvalidType", 0);
@@ -630,7 +630,7 @@ public class BChannelServiceImpl extends ServiceImpl<BClueMapper,BClue> implemen
             	msg.put("InvalidType", 4);
             }
         }else{//该手机号存在多条线索，说明报备模式为竞争带看
-            int ruleType = (int) clues.get(0).get("RuleType");
+            int ruleType = ((Number) clues.get(0).get("RuleType")).intValue();
             if (channelRegisterModel.getUserRule().getRuleType() == ruleType){//当前渠道的报备规则也为竞争带看
             	msg.put("Tag", true);
             	msg.put("InvalidType", 0);
