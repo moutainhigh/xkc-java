@@ -38,7 +38,7 @@ public class RegisterRuleBaseModel implements Serializable {
 		ComeOverdueTime = comeOverdueTime;
 	}
 	public String getTradeOverdueTime() {
-		if (this.ProtectRule == null || this.ProtectRule.getIsSelect() == 1 || this.ProtectRule.getProtectTime() == 0 || this.ProtectRule.getIsPermanent() == 1)
+		if (this.ProtectRule == null || this.ProtectRule.getIsSelect() == 0 || this.ProtectRule.getProtectTime() == 0 || this.ProtectRule.getIsPermanent() == 1)
             return "";
         //如果是按天计算，则在当前日期增加天数作为成交逾期时间，否则在当前时间增加天数作为成交逾期时间
         Calendar calendar = Calendar.getInstance();

@@ -668,7 +668,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         String message = null;
         //获取线索
         JSONObject rule = getClue(clueID);
-        message = String.format("有效带看(%s)，成交保护期截止到(%s)",rule.getString("TradeOverdueTime"),rule.getString("ReportUserName"));
+        message = String.format("有效带看(%s)，成交保护期截止到(%s)",rule.getString("ReportUserName"),rule.getString("TradeOverdueTime"));
         return message;
     }
 	
