@@ -204,8 +204,12 @@ public class ChannelController extends TahoeBaseController {
     @Transactional(rollbackFor = Exception.class)
     public Result ChannelDetail_InsertN(ChannelInsertDto insertDto) {
         try{
+
+            String bizlicense = insertDto.getBizlicense();
             // 防sql注入过滤
             ChannelInsertDto channelInsertDto = SqlInjectionUtil.filterObject(insertDto);
+            // 图片url不过滤
+            channelInsertDto.setBizlicense(bizlicense);
 
             if (StringUtils.isEmpty(channelInsertDto.getOrgID())){
                 //首先查询这个项目下机构名称是否重复
