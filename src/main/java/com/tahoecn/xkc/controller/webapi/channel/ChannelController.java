@@ -204,8 +204,20 @@ public class ChannelController extends TahoeBaseController {
     @Transactional(rollbackFor = Exception.class)
     public Result ChannelDetail_InsertN(ChannelInsertDto insertDto) {
         try{
-
             String bizlicense = insertDto.getBizlicense();
+
+            if (StringUtils.isNotBlank(bizlicense)) {
+                // 截取后缀
+                String suffix = bizlicense.substring(bizlicense.lastIndexOf(".") + 1);
+                boolean isImg = suffix.equalsIgnoreCase("jpg")
+                        || suffix.equalsIgnoreCase("jpeg")
+                        || suffix.equalsIgnoreCase("bmp")
+                        || suffix.equalsIgnoreCase("png");
+                if (!isImg) {
+                    return Result.errormsg(90,"附件请选择格式为*.jpg、*.bmp、*.png、*.jpeg 的图片");
+                }
+            }
+
             // 防sql注入过滤
             ChannelInsertDto channelInsertDto = SqlInjectionUtil.filterObject(insertDto);
             // 图片url不过滤
