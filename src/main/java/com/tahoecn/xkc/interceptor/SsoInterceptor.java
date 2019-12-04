@@ -23,6 +23,7 @@ import com.tahoecn.xkc.service.sys.ISAccountService;
 import com.tahoecn.xkc.service.uc.CsUcUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.HandlerMethod;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,9 @@ public class SsoInterceptor extends SSOSpringInterceptor {
 
 	@Autowired
 	private ISAccountService accountService;
+
+	@Value("${webEnvDomainName}")
+	private String webEnvDomainName;
 
 	/**
 	 * 在处理请求之前要做的动作
@@ -81,6 +85,29 @@ public class SsoInterceptor extends SSOSpringInterceptor {
 				e.printStackTrace();
 			}
 			return false;
+		}
+
+		// 项目准备 分销中介、推荐渠道的跨域问题处理
+		if (request.getRequestURI().contains("/webapi/channel")) {
+			String referer = request.getHeader("Referer");
+			boolean isCorrectDomain = false;
+
+			if (StringUtils.isNotBlank(referer)) {
+				String[] split = webEnvDomainName.split(",");
+
+				for (String str : split) {
+					if (referer.trim().startsWith(str)) {
+						isCorrectDomain = true;
+						break;
+					}
+				}
+			}
+
+			// 判断是否跨域请求
+			if (!isCorrectDomain) {
+				sendError(response);
+				return false;
+			}
 		}
 
 		String LtpaTokenCookie = CookieHelper.getCookie(request, SSOConfig.getInstance().getOaCookieName());
