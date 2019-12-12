@@ -163,6 +163,10 @@ public class AppUserController extends TahoeBaseController {
             map.put("Password", SecureUtil.md5(Password).toUpperCase());
 //            if("JZ".equals(JobCode.toUpperCase())){
             	if(Password.equals(RePassword)){
+            	    if(!validPasswordFormat(Password)){
+                        return Result.errormsg(90, "新密码必须是6到12位的字母或数字");
+                    }
+
                     List<BChanneluser> obj = iBChanneluserService.ChannelUserPassWord_Select(map);//修改密码-判断原密码是否正确
                     if (obj != null && obj.size() > 0){
                         iBChanneluserService.ChannelUserPassWord_Update(map);
@@ -247,6 +251,10 @@ public class AppUserController extends TahoeBaseController {
             	return Result.errormsg(1,"验证码验证失败");
             }
             if(Password.equals(RePassword)){
+                if(!validPasswordFormat(Password)){
+                    return Result.errormsg(90, "新密码必须是6到12位的字母或数字");
+                }
+
             	//3.查询是否为UC用户
                 QueryWrapper<SAccount> wrapper1 = new  QueryWrapper<SAccount>();
                 wrapper1.eq("Mobile", Mobile);
@@ -285,6 +293,22 @@ public class AppUserController extends TahoeBaseController {
     		e.printStackTrace();
     		return Result.errormsg(1, "系统异常，请联系管理员");
     	}
+    }
+
+    /**
+     * 用户密码校验
+     * @return
+     */
+    private boolean validPasswordFormat(String password) {
+        String regex = "^[0-9A-Za-z]{6,12}$";
+
+        if (password == null
+                || "".equals(password.trim())
+                || !password.matches(regex)) {
+            return false;
+        }
+
+        return true;
     }
 
 }
