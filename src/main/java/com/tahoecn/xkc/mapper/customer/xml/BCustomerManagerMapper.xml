@@ -247,7 +247,15 @@
        from B_Customer  C
        left join B_CustomerAttribute A on A.CustomerID=C.ID and A.IsDel=0
        left join B_Opportunity O on C.ID=O.CustomerID and C.IsDel=0
-       left join B_Clue Cl on Cl.ID=O.ClueID  AND Cl.ReportUserID=#{paramMap.ReportUserID}
+       left join B_Clue Cl on Cl.ID=O.ClueID
+        <choose>
+            <when test="paramMap.ReportUserID != null and paramMap.ReportUserID != ''">
+                AND Cl.ReportUserID=#{paramMap.ReportUserID}
+            </when>
+            <otherwise>
+                AND (Cl.ReportUserID IS NULL OR Cl.ReportUserID = '')
+            </otherwise>
+        </choose>
        left join B_ChannelOrg Ch on Ch.ID=Cl.ReportUserOrg
        where O.IsDel=0 AND C.ID=#{paramMap.CustomerID} AND O.ProjectID=#{paramMap.ProjectID}
     </select>
