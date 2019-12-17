@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -195,6 +196,8 @@ public class AppUserController extends TahoeBaseController {
         String RePassword = (String) paramMap.get("RePassword");
         String OldPassword = (String) paramMap.get("OldPassword");
         String UserID = (String) paramMap.get("UserID");
+        String jobCode = (String) paramMap.get("JobCode");
+
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("OldPassword", OldPassword);
         map.put("UserID", UserID);
@@ -204,6 +207,11 @@ public class AppUserController extends TahoeBaseController {
         	wrapper.eq("ID", UserID);
         	SAccount s = iISAccountService.getOne(wrapper);
         	if(s == null){
+        	    // 如果是小蜜蜂的话 SAccount会没记录
+                if (StringUtils.isNotBlank(jobCode) && "JZ".equalsIgnoreCase(jobCode)) {
+                    return Result.ok("用户密码修改成功");
+                }
+
         		return Result.errormsg(91, "用户信息不正确");
         	}else if(s != null && s.getAccountType() == 1){
         		return Result.errormsg(91, "请到泰信重置修改密码");
@@ -252,7 +260,7 @@ public class AppUserController extends TahoeBaseController {
                 wrapper1.eq("Mobile", Mobile);
                 List<SAccount> sAccount = iISAccountService.list(wrapper1);
                 if(sAccount == null || sAccount.size() == 0){
-                	return Result.errormsg(91, "用户信息不正确");
+
                 }else if(sAccount != null && sAccount.size() > 1){
                 	return Result.errormsg(91, "根据手机号查询存在多个用户，请联系系统管理员");
                 }else if(sAccount != null && sAccount.get(0).getAccountType() == 1){
@@ -276,7 +284,13 @@ public class AppUserController extends TahoeBaseController {
 	                    iSAccountusertypeService.SAccountusertypePassWord_Update(SecureUtil.md5(Password).toUpperCase(),Channeluser.get(0).getUserName());
 //	                    return Result.ok("用户修改密码成功");
                 	}
+                }else {
+                    // 两张表都搜索不到此用户
+                    if (sAccount == null || sAccount.size() == 0) {
+                        return Result.errormsg(91, "用户信息不正确");
+                    }
                 }
+
                 return Result.ok("用户密码修改成功");
             }else{
             	return Result.errormsg(90, "密码与确认密码不一致");
