@@ -236,7 +236,7 @@
     <select id="CustomerNEWSignInfo_Select" resultType="java.util.Map">
         <![CDATA[
             SELECT  R.RoomCode ,
-                    D.CstAllName ,
+                    C.CstAllName ,
                     R.SaleStatus ,
                     D.QSDate ,
                     CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate

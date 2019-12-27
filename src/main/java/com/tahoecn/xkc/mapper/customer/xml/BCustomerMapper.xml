@@ -603,7 +603,7 @@
     <select id="CustomerSignInfo_Select" resultType="java.util.Map">
         <![CDATA[
      SELECT  R.RoomCode ,
-        D.CstAllName ,
+        C.CstAllName ,
         R.SaleStatus ,
         D.QSDate ,
         CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate
@@ -620,7 +620,7 @@
         JOIN dbo.C_MYTrade C ON C.OppGUID = B.ID
         JOIN dbo.B_Room R ON C.RoomGUID = R.ID
         JOIN dbo.C_MYOrder D ON D.TradeGUID = C.TradeGUID
-        LEFT JOIN dbo.C_MYContract E ON E.TradeGUID = C.TradeGUID
+        LEFT JOIN dbo.C_MYContract E ON E.TradeGUID = C.TradeGUID AND E.CloseDate IS NULL
         LEFT JOIN ( SELECT  sg.SaleGUID ,
                             SUM(ISNULL(sg.RmbAmount, 0)) AS FeeAmount
                     FROM    C_MYGetin (NOLOCK) sg
@@ -634,7 +634,18 @@
                                 )
                     GROUP BY sg.SaleGUID
                   ) F ON F.SaleGUID = E.TradeGUID
-				  WHERE   A.ID = (select top 1 ID from B_Opportunity where CustomerID=#{customerID} and IntentProjectID=#{projectID})
+				  WHERE   A.ID = (
+                                    SELECT
+                                        TOP 1 opp.ID
+                                    FROM
+                                        B_Opportunity opp,
+                                        B_Clue cc
+                                    WHERE
+                                        opp.ClueID = cc.ID
+                                    AND opp.IntentProjectID =#{ projectID }
+                                    AND cc.IntentProjectID =#{ projectID }
+                                    AND cc.CustomerPotentialID =#{ customerID }
+                                )
     ]]>
     </select>
     <select id="CustomerPayInfo_Select" resultType="java.util.Map">
@@ -1119,7 +1130,7 @@
     <select id="CustomerNEWSignInfo_Select" resultType="java.util.Map">
         <![CDATA[
             SELECT  R.RoomCode ,
-                    D.CstAllName ,
+                    C.CstAllName ,
                     R.SaleStatus ,
                     D.QSDate ,
                     CASE WHEN E.ChgDate >= E.ZqDate THEN E.ChgDate
