@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,6 +93,16 @@ public class BSaleGroupMemberController extends TahoeBaseController {
 			@RequestParam(required = true) String RoleID, @RequestParam(required = true) String Tp,
 			@RequestParam(required = true) String PageIndex, @RequestParam(required = true) String PageSize,
 			String Kw) {
+		// 防sql注入过滤
+		ProjectID = SqlInjectionUtil.filter(ProjectID);
+		ReceptionGroupID = SqlInjectionUtil.filter(ReceptionGroupID);
+		UserID = SqlInjectionUtil.filter(UserID);
+		RoleID = SqlInjectionUtil.filter(RoleID);
+		Tp = SqlInjectionUtil.filter(Tp);
+		PageIndex = SqlInjectionUtil.filter(PageIndex);
+		PageSize = SqlInjectionUtil.filter(PageSize);
+		Kw = SqlInjectionUtil.filter(Kw);
+
 		Map<String, Object> result = new HashMap<String, Object>();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ProjectID", ProjectID);

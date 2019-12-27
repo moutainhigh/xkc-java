@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +46,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "APP-客储接口", value = "APP-客储接口")
 @RequestMapping("/app/KC")
 public class AppKCController extends TahoeBaseController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AppKCController.class);
 	
 	@Value("${SiteUrl}")
 	private String SiteUrl;
@@ -838,9 +844,12 @@ public class AppKCController extends TahoeBaseController {
 		Result re=new Result();
     	try{
     		// 直接将json信息打印出来
-    		System.out.println(jsonParam.toJSONString());
-    		Map paramMap = (HashMap)jsonParam.get("_param");
-    		String UserID = (String)paramMap.get("UserID").toString();//用户ID
+			LOGGER.info("查询入参：{}", jsonParam.toJSONString());
+    		Map initMap = (HashMap)jsonParam.get("_param");
+    		// 进行sql注入过滤
+    		Map paramMap = SqlInjectionUtil.filterMap(initMap, false);
+
+			String UserID = (String)paramMap.get("UserID").toString();//用户ID
             String ProjectID = (String)paramMap.get("ProjectID").toString();//打卡日期
             String JobCode = (String)paramMap.get("JobCode").toString();//任务ID
             String ChannelTaskCode = "";
@@ -851,6 +860,12 @@ public class AppKCController extends TahoeBaseController {
             if(paramMap.get("TaskStatus") != null) {
             	TaskStatus = (String)paramMap.get("TaskStatus").toString();
             }
+
+			if (StringUtils.isBlank(JobCode)
+					|| (!JobCode.equals("ZQ") && !JobCode.equals("JZ"))){
+				return Result.errormsg(1, "任务列表查询-参数错误或缺失");
+			}
+
             int PageIndex = (int)paramMap.get("PageIndex");//页面索引
             int PageSize = (int)paramMap.get("PageSize");//每页数量
             
