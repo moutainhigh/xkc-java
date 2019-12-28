@@ -34,9 +34,6 @@ public class JwtTokenUtil {
      */
     public static String createToken(String id, String username, boolean isRememberMe) {
         long expiration = isRememberMe ? EXPIRATION_REMEMBER : EXPIRATION;
-        if (!isRememberMe) {
-            expiration = DateCalcUtil.getRemainSecondsOneDay(new Date());
-        }
         //可以将基本不重要的对象信息放到claims中，此处信息不多,见简单直接放到配置内
 //        HashMap<String,Object> claims = new HashMap<String,Object>();
 //        claims.put("id", id);
@@ -51,7 +48,7 @@ public class JwtTokenUtil {
                 .setId(id)
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                //.setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .compact();
     }
 
