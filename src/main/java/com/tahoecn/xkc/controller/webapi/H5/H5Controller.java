@@ -9,7 +9,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.security.SecureUtil;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
-import com.tahoecn.xkc.common.utils.*;
+import com.tahoecn.xkc.common.utils.JwtTokenUtil;
+import com.tahoecn.xkc.common.utils.NetUtil;
+import com.tahoecn.xkc.common.utils.PhoneUtil;
+import com.tahoecn.xkc.common.utils.QRCodeUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
@@ -39,7 +42,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,9 +62,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/H5")
 public class H5Controller extends TahoeBaseController {
-
-    /** redis 根据userId存token */
-    private static final String LOGIN_USER_ID_KEY="LOGIN_USER_ID_KEY";
 
     @Autowired
     private IABrokerprojectService brokerprojectService;
@@ -113,9 +112,6 @@ public class H5Controller extends TahoeBaseController {
 
     @Autowired
     private PotentialCustomerServiceImpl potentialCustomerService;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @ApiOperation(value = "获取城市", notes = "获取城市")
     @RequestMapping(value = "/mBrokerCityList_Select", method = {RequestMethod.POST})
@@ -285,9 +281,6 @@ public class H5Controller extends TahoeBaseController {
             }
         }
         String token = JwtTokenUtil.createToken((String) user.get("UserID"), (String) user.get("UserName"), false);
-        // redis设置token
-        setLoginRedisToken((String) user.get("UserID"), token, DateCalcUtil.getRemainSecondsOneDay(new Date()));
-
         //放到响应头部
 //        response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
         user.put("token",JwtTokenUtil.TOKEN_PREFIX+token);
@@ -930,17 +923,5 @@ public class H5Controller extends TahoeBaseController {
 //        return user;
 //    }
 
-    /**
-     * 登录时设置redis中的缓存token
-     * @param userId
-     *          用户唯一ID
-     * @param token
-     *          值
-     * @param seconds
-     *          过期秒数
-     */
-    private void setLoginRedisToken(String userId, String token, int seconds) {
-        String key = LOGIN_USER_ID_KEY + "_" + userId;
-        redisTemplate.opsForValue().set(key, token, seconds, TimeUnit.SECONDS);
-    }
+
 }

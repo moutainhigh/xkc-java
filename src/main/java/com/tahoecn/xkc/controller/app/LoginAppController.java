@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.security.SecureUtil;
-import com.tahoecn.xkc.common.utils.DateCalcUtil;
 import com.tahoecn.xkc.common.utils.JwtTokenUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -46,8 +45,6 @@ public class LoginAppController extends TahoeBaseController {
 
     /** redis 统计用户输错密码次数用 */
     private static final String LOGIN_COUNT_KEY = "LOGIN_COUNT_KEY";
-    /** redis 根据userId存token */
-    private static final String LOGIN_USER_ID_KEY="LOGIN_USER_ID_KEY";
 
     @Autowired
     private ISAppdeviceService iSAppdeviceService;
@@ -233,10 +230,7 @@ public class LoginAppController extends TahoeBaseController {
         map.remove("OutUserIsShowHouseStyle");
         map.remove("AccountStatus");
 
-        // 获取token
         String token = JwtTokenUtil.createToken(UserID, UserName, false);
-        // redis设置token
-        setLoginRedisToken(UserID, token, DateCalcUtil.getRemainSecondsOneDay(new Date()));
         //放到响应头部
         response.setHeader(JwtTokenUtil.TOKEN_HEADER, JwtTokenUtil.TOKEN_PREFIX + token);
 
@@ -595,9 +589,6 @@ public class LoginAppController extends TahoeBaseController {
             logMap.put("Ext4", (String)paramMap.get("AppName"));
             logMap.put("Data", jsonParam.toJSONString());
             iSLogsService.SystemLogsDetail_Insert(logMap, request);
-
-            // 注销redis token
-            handleLoginOutToken((String)paramMap.get("UserID"));
             
     		return Result.ok("案场登出成功,账号:" + (String)paramMap.get("UserName"));
     	}catch (Exception e) {
@@ -712,28 +703,5 @@ public class LoginAppController extends TahoeBaseController {
     private void resetLoginCount(String userName) {
         String keys = LOGIN_COUNT_KEY + "_" + userName;
         redisTemplate.delete(keys);
-    }
-
-    /**
-     * 登录时设置redis中的缓存token
-     * @param userId
-     *          用户唯一ID
-     * @param token
-     *          值
-     * @param seconds
-     *          过期秒数
-     */
-    private void setLoginRedisToken(String userId, String token, int seconds) {
-        String key = LOGIN_USER_ID_KEY + "_" + userId;
-        redisTemplate.opsForValue().set(key, token, seconds, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 用户redis token注销
-     * @param userId
-     */
-    private void handleLoginOutToken(String userId){
-        String key = LOGIN_USER_ID_KEY + "_" + userId;
-        redisTemplate.delete(key);
     }
 }
