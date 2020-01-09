@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.service.assignment;
 
+import com.tahoecn.xkc.model.assignment.BProjectsharemanualconfigure;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.model.user.CWxuser;
 import com.tahoecn.xkc.model.vo.AppAssignmentPrameterVO;
@@ -43,4 +44,14 @@ public interface AppAssignmentService {
      * @Description //TODO  分配客户给顾问
      **/
     List<String> savePropertyOrSinceTheCanal(String thisUserId, String projectId, String jobId, List<AppAssignmentPrameterVO> sharePoolVOList, String adviserId);
+
+    /*
+     * @Author zwc   zwc_503@163.com
+     * @Date 16:56 2020/1/7
+     * @Param
+     * @return
+     * @Version 1.0
+     * @Description //TODO 查看是否显示 ‘潜客手动分配’ 节点
+     **/
+    List<BProjectsharemanualconfigure> checkAssignmentFlag(String thisUserId, String projectId, String jobId);
 }
