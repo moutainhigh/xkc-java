@@ -114,8 +114,7 @@ public class AppAssignmentServiceImpl implements AppAssignmentService {
         sharepoolQueryWrapper.eq("IsDel", 0);
         List<ASharepool> sharepoolList = aSharepoolMapper.selectList(sharepoolQueryWrapper);
         if (CollectionUtils.isEmpty(sharepoolList)) {
-            // 待分配的假报备客户为空，返回前台空
-            return null;
+            throw new RuntimeException("当前登录人所属项目的sharepoolList数据为空，故不处理");
         }
         // 取出其中的WXUserId
         List<String> wxUserIdList = sharepoolList.stream().map(ASharepool::getWXUserID).collect(Collectors.toList());
@@ -181,8 +180,19 @@ public class AppAssignmentServiceImpl implements AppAssignmentService {
         }
         // 取出其中的memberId集合
         List<String> memberIdList = salesgroupmemberList.stream().map(BSalesgroupmember::getMemberID).collect(Collectors.toList());
+        // 去C_WXUser表中查数据
+        // 去B_SaleGroupMember表中查数据
+        QueryWrapper<CWxuser> wxuserQueryWrapper = new QueryWrapper<>();
+        wxuserQueryWrapper.in("BindChannelUserID", memberIdList);
+        wxuserQueryWrapper.eq("IsDel", 0);
+        List<CWxuser> wxuserList = cWxuserMapper.selectList(wxuserQueryWrapper);
+        if (CollectionUtils.isEmpty(wxuserList)) {
+            throw new RuntimeException("当前登录人所属项目的绑定后的wxuserList数据为空，故不处理");
+        }
+        // 取出其中的memberId集合
+        List<String> bindChannelUserIdList = wxuserList.stream().map(CWxuser::getBindChannelUserID).collect(Collectors.toList());
         // 去B_SalesUser表中查数据 并返回
-        List<BSalesuser> salesuserList = bSalesuserMapper.selectBatchIds(memberIdList);
+        List<BSalesuser> salesuserList = bSalesuserMapper.selectBatchIds(bindChannelUserIdList);
         return salesuserList;
     }
 
@@ -264,5 +274,30 @@ public class AppAssignmentServiceImpl implements AppAssignmentService {
             aSharepoolMapper.updateById(sharepool);
         }
         return sharePoolIdList;
+    }
+
+    /*
+     * @Author zwc   zwc_503@163.com
+     * @Date 16:56 2020/1/7
+     * @Param
+     * @return
+     * @Version 1.0
+     * @Description //TODO 查看是否显示 ‘潜客手动分配’ 节点
+     **/
+    @Override
+    public List<BProjectsharemanualconfigure> checkAssignmentFlag(String thisUserId, String projectId, String jobId) {
+        // 首先获取到项目对象
+        BProject project = bProjectMapper.selectById(projectId);
+        // 判断 shareSnatchingMode 字段为0的情况（指定分配）其他情况不做处理
+        if (project.getShareSnatchingMode().intValue() != 0) {
+            throw new RuntimeException("当前登录人所属项目的shareSnatchingMode字段不为0，故不处理");
+        }
+        // 根据项目id和当前登录人id，查询B_ProjcetShareManualConfigure表查询数据，取出其中的childId
+        QueryWrapper<BProjectsharemanualconfigure> projectsharemanualconfigureQueryWrapper = new QueryWrapper<>();
+        projectsharemanualconfigureQueryWrapper.eq("ProjectID", projectId);
+        projectsharemanualconfigureQueryWrapper.eq("DistributionUserID", thisUserId);
+        projectsharemanualconfigureQueryWrapper.eq("IsDel", 0);
+        List<BProjectsharemanualconfigure> projectsharemanualconfigureList = bProjectsharemanualconfigureMapper.selectList(projectsharemanualconfigureQueryWrapper);
+        return projectsharemanualconfigureList;
     }
 }
