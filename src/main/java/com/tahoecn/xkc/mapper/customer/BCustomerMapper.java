@@ -136,4 +136,7 @@ public interface BCustomerMapper extends BaseMapper<BCustomer> {
      * 判断是否老业主
      */
     String isOwner(@Param("projectId") String projectId, @Param("mobile") String mobile);
+
+
+    List<Map<String, Object>> getCustomerForSingle();
 }
