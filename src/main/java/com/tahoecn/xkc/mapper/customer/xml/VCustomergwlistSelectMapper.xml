@@ -1717,12 +1717,14 @@ VALUES  ( #{OpportunityID},
                 AND IntentProjectID = #{ProjectID}
                 AND Mobile = #{Mobile}
                 AND Status IN ( 1, 2 )
-                AND ID NOT IN ( SELECT  ClueID
-                                FROM    dbo.B_Opportunity
-                                WHERE   IntentProjectID = #{ProjectID}
-                                        AND Mobile = #{Mobile}
-                                        AND Status <> 1
-                                        AND IsDel = 0 )
+                AND ID NOT IN ( SELECT
+									ClueID
+								FROM
+									dbo.B_Opportunity o
+								WHERE
+									o.CustomerMobile = #{ Mobile }
+								AND o.Status <> 1
+								AND o.IsDel = 0)
 		]]>
 	</insert>
 	
@@ -1740,12 +1742,14 @@ VALUES  ( #{OpportunityID},
 	        AND IntentProjectID = #{ProjectID}
 	        AND Mobile = #{Mobile}
 	        AND Status IN ( 1, 2 )
-	        AND ID NOT IN ( SELECT  ClueID
-	                        FROM    dbo.B_Opportunity
-	                        WHERE   IntentProjectID = #{ProjectID}
-	                                AND Mobile = #{Mobile}
-	                                AND Status <> 1
-	                                AND IsDel = 0 )
+	        AND ID NOT IN ( SELECT
+								ClueID
+							FROM
+								dbo.B_Opportunity o
+							WHERE
+								o.CustomerMobile = #{ Mobile }
+							AND o.Status <> 1
+							AND o.IsDel = 0 )
     ]]>
 	</update>
 	
