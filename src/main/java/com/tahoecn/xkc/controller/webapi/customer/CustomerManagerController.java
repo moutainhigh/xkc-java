@@ -203,6 +203,7 @@ public class CustomerManagerController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("客户信息","CustomerName"));
         entity.add(new ExcelExportEntity("手机号","CustomerMobile"));
         entity.add(new ExcelExportEntity("客储等级","CustomerRankName"));
+        entity.add(new ExcelExportEntity("意向等级","CustomerLevel"));
         entity.add(new ExcelExportEntity("客户状态","CustomerStatus"));
         entity.add(new ExcelExportEntity("渠道类型","SourceType"));
         entity.add(new ExcelExportEntity("所属机构","ChannelName"));

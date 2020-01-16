@@ -568,6 +568,11 @@ public class BSalesgroupmemberServiceImpl extends ServiceImpl<BSalesgroupmemberM
 				leaderRoleId = "B0BF5636-94AD-4814-BB67-9C1873566F29";
 				leaderRoleName = "自有渠道团队负责人";
 			} else {
+				// 案场销售团队添加新成员，直接返回，否则的话会导致原先负责人消失
+				if(StringUtil.isNotNull(Ids)){
+					return Result.ok("成功");
+				}
+
 				leaderRoleId = "3BC23001-BC31-4594-8463-C7DA89C0FB36";
 				leaderRoleName = "案场销售团队负责人";
 			}
