@@ -237,11 +237,9 @@ public class AppAssignmentServiceImpl implements AppAssignmentService {
             adviserGroupId = AppAssignmentConstants.SINCE_THE_CANAL_ROLE_ID;
         }
         // 定义AsharePool表中的ID，用于逻辑删
-        List<String> sharePoolIdList = Lists.newArrayList();
+        List<String> sharePoolWXUserIdList = Lists.newArrayList();
         // 定义公共的AshareLogDetail对象用于新增
         ASharelogdetail sharelogdetail;
-        // 定义公共的Asharepool对象用于逻辑删
-        ASharepool sharepool;
         // 遍历组装对象
         for (AppAssignmentPrameterVO prameterVO : sharePoolVOList) {
             // 重新指向地址
@@ -263,17 +261,21 @@ public class AppAssignmentServiceImpl implements AppAssignmentService {
             // 新增入库
             aSharelogdetailMapper.insert(sharelogdetail);
             // 返回前台处理成功的分享池数据ID集合
-            sharePoolIdList.add(prameterVO.getThisId());
-            // 将分享池sharePool中的数据逻辑删
-            sharepool = new ASharepool();
-            // 赋值
-            sharepool.setEditor(thisUserId);
-            sharepool.setEditeTime(new Date());
-            sharepool.setIsDel(1);
-            sharepool.setId(prameterVO.getThisId());
-            aSharepoolMapper.updateById(sharepool);
+            sharePoolWXUserIdList.add(prameterVO.getWxUserId());
         }
-        return sharePoolIdList;
+        // 将分享池sharePool中的数据逻辑删
+        // 定义公共的Asharepool对象用于逻辑删
+        ASharepool sharepool = new ASharepool();
+        // 赋值
+        sharepool.setEditor(thisUserId);
+        sharepool.setEditeTime(new Date());
+        sharepool.setIsDel(1);
+        // 定义逻辑删的条件
+        QueryWrapper<ASharepool> sharepoolQueryWrapper = new QueryWrapper<>();
+        sharepoolQueryWrapper.in("WXUserID", sharePoolWXUserIdList);
+        sharepoolQueryWrapper.eq("IsDel", 0);
+        aSharepoolMapper.update(sharepool, sharepoolQueryWrapper);
+        return sharePoolWXUserIdList;
     }
 
     /*
