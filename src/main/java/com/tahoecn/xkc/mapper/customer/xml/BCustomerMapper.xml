@@ -1372,7 +1372,7 @@ FROM (
 	</select>
 
     <select id="getCustomerForSingle" resultType="java.util.HashMap">
-        select top 10 name,mobile,idNumber,salerName,firstReadTime,reportTime,channelCompany,finishTime,finishNo
+        select name,mobile,idNumber,salerName,firstReadTime,reportTime,RTrim(channelCompany) channelCompany,finishTime,finishNo
         from V_CustomerForSingle order by ReportTime
     </select>
 </mapper>
