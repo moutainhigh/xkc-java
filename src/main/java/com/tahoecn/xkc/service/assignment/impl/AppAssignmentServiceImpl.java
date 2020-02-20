@@ -137,7 +137,8 @@ public class AppAssignmentServiceImpl implements AppAssignmentService {
         shareqrcodeparameterQueryWrapper.eq("IsDel", 0);
         List<AShareqrcodeparameter> shareqrcodeparameterList = aShareqrcodeparameterMapper.selectList(shareqrcodeparameterQueryWrapper);
         if (CollectionUtils.isEmpty(shareqrcodeparameterList)) {
-            throw new RuntimeException("当前登录人所属项目的shareqrcodeparameterList数据为空，故不处理");
+            return null;
+//            throw new RuntimeException("当前登录人所属项目的shareqrcodeparameterList数据为空，故不处理");
         }
         // 取出分享二维码表中的id集合（这个id集合就是sharelogdetailList中的shareLogId集合）
         List<String> shareLogIdListWithWXUserIdList = shareqrcodeparameterList.stream().map(AShareqrcodeparameter::getId).collect(Collectors.toList());
