@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Maps;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.CostomerReport;
@@ -65,6 +66,15 @@ public class ReportController extends TahoeBaseController {
     @RequestMapping(value = "/CustomerRank_Select", method = {RequestMethod.GET})
     public Result CustomerRank_Select(String orglevel, String orgID, String startDate, String endDate,String AccountID,
                                       String isSelect,String dl) {
+        // 仿sql注入过滤
+        orglevel = SqlInjectionUtil.filter(orglevel);
+        orgID = SqlInjectionUtil.filter(orgID);
+        startDate = SqlInjectionUtil.filter(startDate);
+        endDate = SqlInjectionUtil.filter(endDate);
+        AccountID = SqlInjectionUtil.filter(AccountID);
+        isSelect = SqlInjectionUtil.filter(isSelect);
+        dl = SqlInjectionUtil.filter(dl);
+
         startDate = startDate + " 00:00:00";
         endDate = endDate + " 23:59:59";
         StringBuilder sqlWhere = new StringBuilder();
@@ -160,6 +170,15 @@ public class ReportController extends TahoeBaseController {
     @RequestMapping(value = "/ChannelCustomerReport_Select", method = {RequestMethod.GET})
     public Result ChannelCustomerReport_Select(String orglevel, String orgID, String startDate, String endDate,String AccountID,
                                       String isSelect,String IsExcel) {
+        // 防sql注入过滤
+        orglevel = SqlInjectionUtil.filter(orglevel);
+        orgID = SqlInjectionUtil.filter(orgID);
+        startDate = SqlInjectionUtil.filter(startDate);
+        endDate = SqlInjectionUtil.filter(endDate);
+        AccountID = SqlInjectionUtil.filter(AccountID);
+        isSelect = SqlInjectionUtil.filter(isSelect);
+        IsExcel = SqlInjectionUtil.filter(IsExcel);
+
         startDate = startDate + " 00:00:00";
         endDate = endDate + " 23:59:59";
         StringBuilder sqlWhere = new StringBuilder();

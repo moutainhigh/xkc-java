@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -952,7 +954,12 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	public Result mCustomerPotentialZQList_Select(JSONObject paramAry) {
 		Result re = new Result();
 		try {
-			GWCustomerPageModel model = JSONObject.parseObject(paramAry.toJSONString(),GWCustomerPageModel.class);
+		    // 防sql注入过滤
+            Map<String, Object> tmpMap = (Map<String, Object>)paramAry;
+            tmpMap = SqlInjectionUtil.filterMap(tmpMap, false);
+            paramAry = JSON.parseObject(JSON.toJSONString(tmpMap));
+
+            GWCustomerPageModel model = JSONObject.parseObject(paramAry.toJSONString(),GWCustomerPageModel.class);
 	        StringBuilder whereSb = new StringBuilder();
 	        StringBuilder whereinnerSb = new StringBuilder();
 	        StringBuilder orderSb = new StringBuilder();

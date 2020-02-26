@@ -291,7 +291,7 @@
 	<update id="mChannelLeaderQuit_Update3" parameterType="java.util.Map">
 		<![CDATA[
 		UPDATE a
-		SET a.ReportUserID=#{NewUserID}, a.ReportUserName = dbo.F_GetSaleUserName(#{NewUserID}),a.ChannelUserID = NULL, ChannelTaskID = NULL, a.Editor = #{UserID} , a.EditeTime = GETDATE() , a.TheLatestFollowUpDate = GETDATE() 
+		SET a.ReportUserID=#{NewUserID}, a.ReportUserName = dbo.F_GetSaleUserName(#{NewUserID}), a.Editor = #{UserID} , a.EditeTime = GETDATE() , a.TheLatestFollowUpDate = GETDATE()
 		FROM dbo.B_Clue a
 		LEFT JOIN dbo.B_Opportunity b ON a.ID=b.ClueID AND b.IsDel=0
 		WHERE a.ReportUserID=#{OldUserID} AND a.IntentProjectID=#{ProjectID} AND a.IsDel=0 AND (b.ID IS NULL or b.Status<4);

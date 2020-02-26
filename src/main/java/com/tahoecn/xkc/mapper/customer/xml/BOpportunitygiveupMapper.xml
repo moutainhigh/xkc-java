@@ -274,7 +274,7 @@
 										o.CustomerLevel CustomerLevelValue ,
 										o.FollowupCount FollowupCountValue ,
 										ISNULL(o.TheLatestFollowUpDate, '') TheLatestFollowUpDateTime ,
-										o.SaleUserID AdviserID ,
+										m.ID AdviserID ,
 										dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
 										o.Status OpportunityStatusValue ,
 										'' RecoveryCreateTime ,
@@ -287,6 +287,8 @@
 										'' YJTime ,
 		            (CASE WHEN ISNULL(o.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
 							  FROM      dbo.B_Opportunity AS o
+							  			LEFT JOIN dbo.B_SalesGroupMember m
+							  			ON o.SaleUserID = m.MemberID
 							  WHERE     o.ProjectID = #{ProjectID}
 										AND o.IsDel = 0
 										AND o.Status <> 6
@@ -311,7 +313,7 @@
 							o.CustomerLevel CustomerLevelValue ,
 							o.FollowupCount FollowupCountValue ,
 							ISNULL(o.TheLatestFollowUpDate, '') TheLatestFollowUpDateTime ,
-							o.SaleUserID AdviserID ,
+							m.ID AdviserID ,
 							dbo.F_GetSaleGroupID(o.SaleUserID, o.ProjectID) AdviserOrgID ,
 							o.Status OpportunityStatusValue ,
 							'' RecoveryCreateTime ,
@@ -324,6 +326,8 @@
 							'' YJTime ,
 		            (CASE WHEN ISNULL(o.SalePartnerID,'') != '' THEN 1 ELSE 0 END) IsCooperat
 							  FROM      dbo.B_Opportunity AS o
+							  LEFT JOIN dbo.B_SalesGroupMember m
+							  			ON o.SaleUserID = m.MemberID
 							  WHERE     o.ProjectID = #{ProjectID}
 										AND o.IsDel = 0
 										AND o.Status <> 6

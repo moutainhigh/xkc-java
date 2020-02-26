@@ -24,9 +24,11 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -40,6 +42,9 @@ import java.util.*;
 @Api(tags = "APP-登录接口", value = "APP-登录接口")
 @RequestMapping("/app/login")
 public class LoginAppController extends TahoeBaseController {
+
+    /** redis 统计用户输错密码次数用 */
+    private static final String LOGIN_COUNT_KEY = "LOGIN_COUNT_KEY";
 
     @Autowired
     private ISAppdeviceService iSAppdeviceService;
@@ -60,6 +65,9 @@ public class LoginAppController extends TahoeBaseController {
 
     @Autowired
     private IBVerificationcodeService verificationcodeService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("MobileSiteUrl")
     private String MobileSiteUrl;
@@ -91,12 +99,25 @@ public class LoginAppController extends TahoeBaseController {
         String Code = (String) paramMap.get("Code");
 
         if (StringUtils.isNotEmpty(MobileNum)) {
-            if (StringUtils.isEmpty(Code)){
+            if (StringUtils.isEmpty(Code)) {
                 return Result.errormsg(1, "请输入验证码");
             }
+
+            if(!checkErrorTime(MobileNum)){
+                return Result.errormsg(1, "验证码输错次数超限，请等待五分钟后再试");
+            }
+
             BVerificationcode vc = verificationcodeService.checkAuthCode(MobileNum);
             if (vc == null || !StringUtils.equals(Code, vc.getVerificationCode())) {
+                inputErrorCodeOrPassword(MobileNum);
                 return Result.errormsg(1, "验证码验证失败");
+            }else{
+                // 说明验证码输入正确重置错误计数次数
+                resetLoginCount(MobileNum);
+            }
+        }else {
+            if (!checkErrorTime(userName)) {
+                return Result.errormsg(1, "密码输错次数超限，请等待五分钟后再试");
             }
         }
 
@@ -113,7 +134,7 @@ public class LoginAppController extends TahoeBaseController {
             map = accountService.mLoginSelectByChannelUser(userName,MobileNum);
         }
         if (map == null) {
-            return Result.errormsg(10, "用户不存在");
+            return Result.errormsg(10, "用户名或密码不正确");
         }
 
         Integer IsNoAllotRole = map.get("IsNoAllotRole") == null ? -1111111 : Integer.parseInt(map.get("IsNoAllotRole").toString());//是否开启分接/销支
@@ -149,6 +170,7 @@ public class LoginAppController extends TahoeBaseController {
                 String smap = accountService.checkUCUser(userName, password);
                 JSONObject ucResult = JSONObject.parseObject(smap);
                 if (0 != ucResult.getInteger("code")) {
+                    inputErrorCodeOrPassword(userName);
                     return Result.errormsg(11, "登录异常" + ucResult.getString("msg"));
                 }
             }
@@ -156,9 +178,15 @@ public class LoginAppController extends TahoeBaseController {
             if (StringUtils.isEmpty(Code)) {
                 password = SecureUtil.md5(password);
                 if (!tempPwd.equalsIgnoreCase(password)) {
-                    return Result.errormsg(10, "用户名密码不正确");
+                    inputErrorCodeOrPassword(userName);
+                    return Result.errormsg(10, "用户名或密码不正确");
                 }
             }
+        }
+
+        // 说明密码输入正确 重置错误计数次数
+        if (StringUtils.isNotBlank(userName)) {
+            resetLoginCount(userName);
         }
 
         String JPushAlias = UserID.replace('-', '_');
@@ -626,4 +654,54 @@ public class LoginAppController extends TahoeBaseController {
     	}
     }
 
+
+    /**
+     * 检查登录时输错密码或验证码的次数
+     * @param userName
+     *          用户名或手机号
+     * @return
+     */
+    private boolean checkErrorTime(String userName) {
+        //根据用户名设置key
+        String keys = LOGIN_COUNT_KEY + "_" + userName;
+        Integer a = (Integer) redisTemplate.opsForValue().get(keys);
+
+        if (a != null && a.intValue() >= 5) {
+            // 说明用户已输错五次及以上密码，须等待最后一次输入密码错误的时间加上五分钟后再试
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 输错密码或验证码
+     * @param userName
+     *          用户名或手机号
+     */
+    private void inputErrorCodeOrPassword(String userName) {
+        String keys = LOGIN_COUNT_KEY + "_" + userName;
+        Integer a = (Integer) redisTemplate.opsForValue().get(keys);
+
+        // 代表第一次输错密码
+        if (a == null) {
+            a = 1;
+            redisTemplate.opsForValue().set(keys, a);
+        }else {
+            // 不止第一次输错密码
+            a++;
+            // 设置keys值以及过期时间
+            redisTemplate.opsForValue().set(keys, a, 300, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * 重置登录计数次数
+     * @param userName
+     *          用户名或手机号
+     */
+    private void resetLoginCount(String userName) {
+        String keys = LOGIN_COUNT_KEY + "_" + userName;
+        redisTemplate.delete(keys);
+    }
 }

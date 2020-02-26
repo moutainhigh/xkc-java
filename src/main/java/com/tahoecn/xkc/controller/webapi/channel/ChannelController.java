@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.constants.GlobalConstants;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -201,8 +202,27 @@ public class ChannelController extends TahoeBaseController {
     @ApiOperation(value = "新增渠道机构", notes = "新增渠道机构")
     @RequestMapping(value = "/ChannelDetail_InsertN", method = {RequestMethod.POST})
     @Transactional(rollbackFor = Exception.class)
-    public Result ChannelDetail_InsertN(ChannelInsertDto channelInsertDto) {
+    public Result ChannelDetail_InsertN(ChannelInsertDto insertDto) {
         try{
+            String bizlicense = insertDto.getBizlicense();
+
+            if (StringUtils.isNotBlank(bizlicense)) {
+                // 截取后缀
+                String suffix = bizlicense.substring(bizlicense.lastIndexOf(".") + 1);
+                boolean isImg = suffix.equalsIgnoreCase("jpg")
+                        || suffix.equalsIgnoreCase("jpeg")
+                        || suffix.equalsIgnoreCase("bmp")
+                        || suffix.equalsIgnoreCase("png");
+                if (!isImg) {
+                    return Result.errormsg(90,"附件请选择格式为*.jpg、*.bmp、*.png、*.jpeg 的图片");
+                }
+            }
+
+            // 防sql注入过滤
+            ChannelInsertDto channelInsertDto = SqlInjectionUtil.filterObject(insertDto);
+            // 图片url不过滤
+            channelInsertDto.setBizlicense(bizlicense);
+
             if (StringUtils.isEmpty(channelInsertDto.getOrgID())){
                 //首先查询这个项目下机构名称是否重复
                 int countOrg = channelorgService.ChannelOrgNameIsExist_SelectN(channelInsertDto.getOrgName(), null);
@@ -577,6 +597,17 @@ public class ChannelController extends TahoeBaseController {
     public Result AgenList_SelectN(Integer PageType, String ProjectID, String ChannelTypeID, String Name, String PassStatu
             , Date CreateStartTime, Date CreateEndTime, String ApprovalUserID,@RequestParam(defaultValue = "1") Integer Pageindex, @RequestParam(defaultValue = "10") Integer Pagesize,String IsExcel
             ,String Mobile,String CertificatesNo,String ChannelOrgName, String Status,Date effectiveStartTime,Date effectiveEndTime){
+        // 防sql注入过滤
+        ProjectID = SqlInjectionUtil.filter(ProjectID);
+        ChannelTypeID = SqlInjectionUtil.filter(ChannelTypeID);
+        Name = SqlInjectionUtil.filter(Name);
+        PassStatu = SqlInjectionUtil.filter(PassStatu);
+        ApprovalUserID = SqlInjectionUtil.filter(ApprovalUserID);
+        Mobile = SqlInjectionUtil.filter(Mobile);
+        CertificatesNo = SqlInjectionUtil.filter(CertificatesNo);
+        ChannelOrgName = SqlInjectionUtil.filter(ChannelOrgName);
+        Status = SqlInjectionUtil.filter(Status);
+
         if (StringUtils.isNotEmpty(IsExcel)) {
             Pagesize = -1;
         }

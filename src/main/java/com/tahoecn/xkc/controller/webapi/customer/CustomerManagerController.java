@@ -10,6 +10,7 @@ import com.landray.sso.client.oracle.StringUtil;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ExcelUtil;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.common.utils.ThreadLocalUtils;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
@@ -108,6 +109,31 @@ public class CustomerManagerController extends TahoeBaseController {
                                                     String TheLatestFollowUpDate_Start,
                                                     String TheLatestFollowUpDate_End,
                                                     String type,String uType) {
+
+        // 防sql注入过滤
+        ProjectID = SqlInjectionUtil.filter(ProjectID);
+        IsExcel = SqlInjectionUtil.filter(IsExcel);
+        UserID = SqlInjectionUtil.filter(UserID);
+        CustomerRank = SqlInjectionUtil.filter(CustomerRank);
+        Status = SqlInjectionUtil.filter(Status);
+        SourceType = SqlInjectionUtil.filter(SourceType);
+        SaleTeamID = SqlInjectionUtil.filter(SaleTeamID);
+        CustomerName = SqlInjectionUtil.filter(CustomerName);
+        CustomerMobile = SqlInjectionUtil.filter(CustomerMobile);
+        ReportUserName = SqlInjectionUtil.filter(ReportUserName);
+        ReportUserMobile = SqlInjectionUtil.filter(ReportUserMobile);
+        ChannelName = SqlInjectionUtil.filter(ChannelName);
+        SaleUserName = SqlInjectionUtil.filter(SaleUserName);
+        CreateTime_Start = SqlInjectionUtil.filter(CreateTime_Start);
+        CreateTime_End = SqlInjectionUtil.filter(CreateTime_End);
+        TheFirstVisitDate_Start = SqlInjectionUtil.filter(TheFirstVisitDate_Start);
+        TheFirstVisitDate_End = SqlInjectionUtil.filter(TheFirstVisitDate_End);
+        ZJDF_Start = SqlInjectionUtil.filter(ZJDF_Start);
+        ZJDF_End = SqlInjectionUtil.filter(ZJDF_End);
+        TheLatestFollowUpDate_Start = SqlInjectionUtil.filter(TheLatestFollowUpDate_Start);
+        TheLatestFollowUpDate_End = SqlInjectionUtil.filter(TheLatestFollowUpDate_End);
+        type = SqlInjectionUtil.filter(type);
+        uType = SqlInjectionUtil.filter(uType);
 
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
