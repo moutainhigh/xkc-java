@@ -772,6 +772,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             Map<String, Object> map1 = baseMapper.checkUser(username,mobile);
             //channelUser表里有 直接返回信息
             if (CollectionUtil.isNotEmpty(map1)){
+                // 假设数据库已存在数据，并且是员工推荐入口进来，则渠道类型应为员工推荐
+                if (sign == 1) {
+                    map1.put("ChannelTypeID", "725FA5F6-EC92-4DC6-8D47-A8E74B7829AD");
+                }
+
                 return Result.ok(map1);
             }else {//channelUser表里没有 查询saccount表
 
