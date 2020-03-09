@@ -313,6 +313,17 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             result.setErrmsg("手机号重复");
             return result;
         }
+
+        QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SAccount::getIsDel, 0);
+        wrapper.lambda().and(rolewrapper -> rolewrapper.eq(SAccount::getUserName, mobile).or().eq(SAccount::getMobile, mobile));
+        SAccount account = accountService.getOne(wrapper);
+        if (account != null) {
+            result.setErrcode(1);
+            result.setErrmsg("手机号重复");
+            return result;
+        }
+
         SDictionary channelType = dictionaryService.getById(channelTypeID);
         BChanneluser channeluser = new BChanneluser();
         channeluser.setId(UUID.randomUUID().toString().toUpperCase());
