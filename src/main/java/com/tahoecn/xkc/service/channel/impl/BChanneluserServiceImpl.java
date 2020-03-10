@@ -268,12 +268,17 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             return result;
         }
 
-        @Override
+    @Override
     public boolean checkMobile(String mobile) {
         QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
         wrapper.eq("Mobile",mobile).eq("IsDel",0);
-        BChanneluser channeluser = baseMapper.selectOne(wrapper);
-        return channeluser==null;
+        List<BChanneluser> list = baseMapper.selectList(wrapper);
+
+        if (list != null && list.size() > 0) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
