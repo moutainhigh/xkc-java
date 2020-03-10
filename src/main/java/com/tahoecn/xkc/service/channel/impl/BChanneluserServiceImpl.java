@@ -315,7 +315,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         boolean b = channeluserService.checkMobile(mobile);
         if (!b) {
             result.setErrcode(1);
-            result.setErrmsg("手机号重复");
+            result.setErrmsg("注册失败，请联系管理员开通");
             return result;
         }
 
@@ -325,7 +325,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         SAccount account = accountService.getOne(wrapper);
         if (account != null) {
             result.setErrcode(1);
-            result.setErrmsg("手机号重复");
+            result.setErrmsg("注册失败，请联系管理员开通");
             return result;
         }
 
