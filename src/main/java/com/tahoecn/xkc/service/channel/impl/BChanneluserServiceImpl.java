@@ -268,12 +268,17 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             return result;
         }
 
-        @Override
+    @Override
     public boolean checkMobile(String mobile) {
         QueryWrapper<BChanneluser> wrapper=new QueryWrapper<>();
         wrapper.eq("Mobile",mobile).eq("IsDel",0);
-        BChanneluser channeluser = baseMapper.selectOne(wrapper);
-        return channeluser==null;
+        List<BChanneluser> list = baseMapper.selectList(wrapper);
+
+        if (list != null && list.size() > 0) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -310,9 +315,20 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         boolean b = channeluserService.checkMobile(mobile);
         if (!b) {
             result.setErrcode(1);
-            result.setErrmsg("手机号重复");
+            result.setErrmsg("注册失败，请联系管理员开通");
             return result;
         }
+
+        QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SAccount::getIsDel, 0);
+        wrapper.lambda().and(rolewrapper -> rolewrapper.eq(SAccount::getUserName, mobile).or().eq(SAccount::getMobile, mobile));
+        SAccount account = accountService.getOne(wrapper);
+        if (account != null) {
+            result.setErrcode(1);
+            result.setErrmsg("注册失败，请联系管理员开通");
+            return result;
+        }
+
         SDictionary channelType = dictionaryService.getById(channelTypeID);
         BChanneluser channeluser = new BChanneluser();
         channeluser.setId(UUID.randomUUID().toString().toUpperCase());
@@ -772,6 +788,11 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             Map<String, Object> map1 = baseMapper.checkUser(username,mobile);
             //channelUser表里有 直接返回信息
             if (CollectionUtil.isNotEmpty(map1)){
+                // 假设数据库已存在数据，并且是员工推荐入口进来，则渠道类型应为员工推荐
+                if (sign == 1) {
+                    map1.put("ChannelTypeID", "725FA5F6-EC92-4DC6-8D47-A8E74B7829AD");
+                }
+
                 return Result.ok(map1);
             }else {//channelUser表里没有 查询saccount表
 
