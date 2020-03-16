@@ -1370,4 +1370,9 @@ FROM (
 		select top 1  a.ID from B_Customer a inner join B_CustomerAttach b on a.id = b.CustomerID where a.Status=1
  		and a.IsOwner=1 and b.ProjectID=#{projectId} and  (a.Mobile=#{mobile} or a.SpareMobile=#{mobile})
 	</select>
+
+    <select id="getCustomerForSingle" resultType="java.util.HashMap">
+        select name,mobile,idNumber,salerName,firstReadTime,reportTime,RTrim(channelCompany) channelCompany,finishTime,finishNo
+        from V_CustomerForSingle order by ReportTime
+    </select>
 </mapper>
