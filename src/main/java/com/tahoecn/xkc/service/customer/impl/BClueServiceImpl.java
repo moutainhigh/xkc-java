@@ -613,6 +613,150 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         return save;
     }
 
+    /**
+     * // 线索报备验证后，创建线索信息
+     * 添加认知媒体
+     * @param channelOrgId
+     * @param ruleValidate
+     * @param UserRule
+     * @param status
+     * @param paramMap
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) {
+        QueryWrapper<BCustomerpotential> wrapper=new QueryWrapper<>();
+        wrapper.eq("Mobile",paramMap.get("Mobile"));
+        List<BCustomerpotential> list = customerpotentialService.list(wrapper);
+        BCustomerpotential cp=new BCustomerpotential();
+        if (list.size()==0){
+            cp.setId(UUID.randomUUID().toString().toUpperCase());
+            cp.setName((String) paramMap.get("Name"));
+            cp.setLastName((String) paramMap.get("Name"));
+            cp.setGender((String) paramMap.get("Gender"));
+            cp.setMobile((String) paramMap.get("Mobile"));
+            cp.setCreator((String)paramMap.get("UserID"));
+            cp.setCreateTime(new Date());
+            cp.setIsDel(0);
+            cp.setStatus(1);
+            customerpotentialService.save(cp);
+        }else {
+            cp.setId(list.get(0).getId());
+            cp.setName((String) paramMap.get("Name"));
+            cp.setLastName((String) paramMap.get("Name"));
+            cp.setGender((String) paramMap.get("Gender"));
+            cp.setMobile((String) paramMap.get("Mobile"));
+            cp.setCreator((String)paramMap.get("UserID"));
+            cp.setCreateTime(new Date());
+            cp.setIsDel(0);
+            cp.setStatus(1);
+            customerpotentialService.updateById(cp);
+        }
+        String customerPotentialID = cp.getId();
+        Date InvalidTime= (boolean) ruleValidate.get("Tag") ? null : new Date();
+        String sourceType = customerpotentialService.getOpportunitySourceByAdviserGroup((String) paramMap.get("AdviserGroupID"));
+        String ChannelIdentify=channelOrgId;
+        String ComeOverdueTime=UserRule.getComeOverdueTime();
+        String TradeOverdueTime=UserRule.getTradeOverdueTime();
+
+        int IsSelect=UserRule.getProtectRule().getIsSelect();
+        String ConfirmUserId="";
+        if (UserRule.getImmissionRule().getValidationMode()==2){
+            ConfirmUserId="99";
+        }
+        //获取报备人信息以及适配的规则
+        Map<String,Object> map=channeluserService.GetReportUserInfo_Select((String)paramMap.get("UserID"),(String)paramMap.get("IntentProjectID"),ChannelIdentify);
+        BClue clue=new BClue();
+        clue.setId(UUID.randomUUID().toString().toUpperCase());
+        clue.setCustomerPotentialID(customerPotentialID);
+        clue.setName((String) paramMap.get("Name"));
+        clue.setLastName((String) paramMap.get("Name"));
+        clue.setGender((String) paramMap.get("Gender"));
+        clue.setMobile((String) paramMap.get("Mobile"));
+        clue.setIntentProjectID((String) paramMap.get("IntentProjectID"));
+        BProject project = projectService.getById((String) paramMap.get("IntentProjectID"));
+        clue.setIntentProjectName(project.getName());
+        clue.setRemark((String) paramMap.get("Remark"));
+        clue.setReportUserID((String) paramMap.get("UserID"));
+        clue.setReportUserName((String) map.get("ReportUserName"));
+        clue.setReportUserMobile((String) map.get("ReportUserMobile"));
+        //如果参数有 直接设置为参数值  如果参数为空 取ReportUserOrg
+//        if (paramMap.get("newReportUserOrg")==null){
+//            clue.setReportUserOrg((String) map.get("ReportUserOrg"));
+//        }else {
+//            clue.setReportUserOrg((String) paramMap.get("newReportUserOrg"));
+//        }
+        //如果有上级机构,填入上级机构的id 如果没有 直接填登录人orgid
+        if (map.get("ReportUserOrg") != null) {
+            String ReportUserOrg = (String) map.get("ReportUserOrg");
+            BChannelorg byId = channelorgService.getById(ReportUserOrg);
+            if (byId != null && StringUtils.isNotBlank(byId.getNewPID())) {
+                clue.setReportUserOrg(byId.getNewPID());
+            } else {
+                clue.setReportUserOrg(ReportUserOrg);
+            }
+        }
+        clue.setRuleID((String) map.get("RuleID"));
+        clue.setInvalidType((int) ruleValidate.get("InvalidType"));
+        clue.setInvalidTime(InvalidTime);
+        clue.setInvalidReason((String) ruleValidate.get("Message"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+        try {
+            if (StringUtils.isNotBlank(ComeOverdueTime)){
+                clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
+            }
+            if (StringUtils.isNotBlank(TradeOverdueTime)){
+                clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+        clue.setAdviserGroupID((String) paramMap.get("AdviserGroupID"));
+        clue.setSourceType(sourceType);
+        clue.setIsSelect(IsSelect);
+        clue.setConfirmTime(new Date());
+        clue.setCreator((String)paramMap.get("UserID"));
+        clue.setCreateTime(new Date());
+        clue.setIsDel(0);
+        clue.setStatus(status);
+        clue.setConfirmUserId(ConfirmUserId);
+        clue.setConfirmUserId(ConfirmUserId);
+        clue.setCognitiveChannel((String) paramMap.get("cognitiveChannel"));
+        clue.setCognitiveChannelSub((String) paramMap.get("cognitiveChannelSub"));
+        boolean save = clueService.save(clue);
+        if (save){
+            //允许报备老客户模式下，报备的线索有效，刷新机会中线索信息
+            if ((boolean)ruleValidate.get("IsExsitOpp")){
+                String oppID = (String) ruleValidate.get("OppID");
+                //刷新已存
+                save=this.UpdateOppByNewClue_Update(clue.getId(),oppID);
+            }
+
+            JSONObject obj1 = new JSONObject();
+            obj1.put("FollwUpTypeID", (boolean)ruleValidate.get("Tag")? ActionType.渠道报备.getValue():ActionType.报备无效.getValue());
+            obj1.put("SalesType", 4);
+//            obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
+            obj1.put("NewSaleUserName", "");
+            obj1.put("OldSaleUserName", "");
+            obj1.put("FollwUpUserID", map.get("UserID"));
+            obj1.put("FollwUpWay", "");
+            obj1.put("FollowUpContent", "");
+            obj1.put("IntentionLevel", "");
+            obj1.put("OrgID", paramMap.get("ReportUserOrg"));
+            obj1.put("FollwUpUserRole", map.get("JobID"));//todo 如果为空 742B2791-FED2-4ED3-9F8B-F337CE2D696A
+            obj1.put("OpportunityID", "");
+            obj1.put("ClueID", clue.getId());
+            obj1.put("NextFollowUpDate", "");
+            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(),CustomerActionVo.class);
+            iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+        }
+
+        return save;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public boolean UpdateOppByNewClue_Update(String ClueID, String oppID) {
         try {

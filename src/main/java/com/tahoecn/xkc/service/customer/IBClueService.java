@@ -33,6 +33,8 @@ public interface IBClueService extends IService<BClue> {
     String GetMessageForReturn(int invalidType, Map<String, Object> map);
 
     boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap);
+
+	boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag);
 	/**
 	 * 案场助手统计
 	 */
