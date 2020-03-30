@@ -315,7 +315,7 @@ public class H5AddController extends TahoeBaseController {
     }
 
 
-    @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
+    @ApiOperation(value = "kf渠道报备客户--推荐提交", notes = "kf渠道报备客户--提交")
     @RequestMapping(value = "/kfMBrokerReport_Insert", method = {RequestMethod.POST})
     public Result kfMBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
         Result re=new Result();
