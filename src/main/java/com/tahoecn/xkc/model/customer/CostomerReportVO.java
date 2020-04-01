@@ -1,15 +1,15 @@
 package com.tahoecn.xkc.model.customer;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class CostomerReportVO implements Serializable {
+public class CostomerReportVO {
 	
-	private static final long serialVersionUID = 1L;
-
 	private Long num;
 
 	@TableField("OpportunityID")
@@ -55,13 +55,21 @@ public class CostomerReportVO implements Serializable {
 	@TableField("MYContractCount")
 	private Integer mYContractCount;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("orderCreateTime")
 	private Date orderCreateTime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date orderCreateTimeEnd;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("MYContractCreateTime")
 	private Date mYContractCreateTime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date mYContractCreateTimeEnd;
 	
@@ -89,26 +97,42 @@ public class CostomerReportVO implements Serializable {
 	@TableField("SaleUserName")
 	private String saleUserName;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("TheFirstVisitDate")
 	private Date theFirstVisitDate;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date theFirstVisitDateEnd;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("ZJDF")
 	private Date zjdf;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date zjdfEnd;
 	
 	@TableField("FollwUpWayTxt")
 	private String follwUpWayTxt;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("TheLatestFollowUpDate")
 	private Date theLatestFollowUpDate;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date theLatestFollowUpDateEnd;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("CreateTime")
 	private Date createTime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date createTimeEnd;
 	
@@ -130,8 +154,12 @@ public class CostomerReportVO implements Serializable {
 	@TableField("ChannelName")
 	private String channelName;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField("ReportTime")
 	private Date reportTime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@TableField(exist = false)
 	private Date reportTimeEnd;
 	

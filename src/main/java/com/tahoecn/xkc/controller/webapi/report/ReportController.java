@@ -59,9 +59,6 @@ public class ReportController extends TahoeBaseController {
     private ReportService reportService;
     
     @Autowired
-    private IKfReportService kfReportService;
-
-    @Autowired
     private ICostomerReportService costomerReportService;
 
     @Autowired
@@ -381,15 +378,6 @@ public class ReportController extends TahoeBaseController {
     }
 
 
-    //TODO
-    @ApiOperation(value = "kf客户信息明细", notes = "kf客户信息明细")
-    @RequestMapping(value = "/kfCostomerReportDetail", method = {RequestMethod.POST})
-    public Result kfCostomerReportDetail(@RequestBody JSONObject params) {
-    	CostomerReportVO report = (CostomerReportVO) params.get("_param");
-        Page<KfCostomerReportDetailVO> page=new Page(report.getPageIndex(),report.getPageSize());
-        Page<KfCostomerReportDetailVO> list = kfReportService.kfCostomerReportDetail(page,report);
-        return Result.ok(list);
-    }
 
 
 

@@ -47,7 +47,7 @@
         <if test="null != report.customerStatus and report.customerStatus != ''" >
             AND a.CustomerStatus = #{ report.customerStatus }
         </if>
-        <if test="null != wholeStatus and wholeStatus != ''" >
+        <if test="null != report.wholeStatus and report.wholeStatus != ''" >
             AND a.CustomerStatus != '无效'
         </if>
         <if test="null != report.customerRankName and report.customerRankName != ''" >
