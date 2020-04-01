@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,6 +27,7 @@ import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
+import com.tahoecn.xkc.model.sys.BMedialarge;
 import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
 import com.tahoecn.xkc.model.vo.Customer;
@@ -49,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import com.tahoecn.xkc.service.sys.IBMedialargeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,6 +121,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
     @Autowired
     private ICustomerHelp customerTemplate;
+
+    @Autowired
+    private IBMedialargeService bMediaLargeService;
     
 	@Value("${mobilesale.ruleid}")
 	private String ruleId;
@@ -724,7 +731,11 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setStatus(status);
         clue.setConfirmUserId(ConfirmUserId);
         clue.setConfirmUserId(ConfirmUserId);
-        clue.setCognitiveChannel((String) paramMap.get("cognitiveChannel"));
+        //TODO
+        QueryWrapper<BMedialarge> mtqw =  new QueryWrapper<BMedialarge>();
+        mtqw.eq("Name", "客服微信公众号");
+        BMedialarge cognitiveChannel = bMediaLargeService.getOne(mtqw);
+        clue.setCognitiveChannel(cognitiveChannel.getId());
         clue.setCognitiveChannelSub((String) paramMap.get("cognitiveChannelSub"));
         boolean save = clueService.save(clue);
         if (save){
