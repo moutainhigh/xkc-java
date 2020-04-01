@@ -1,7 +1,23 @@
 package com.tahoecn.xkc.controller.webapi.report;
 
 
-import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,30 +28,19 @@ import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.CostomerReport;
+import com.tahoecn.xkc.model.customer.CostomerReportVO;
 import com.tahoecn.xkc.model.customer.CustomerBook;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
-import com.tahoecn.xkc.model.reprot.kfCostomerReportDetailVO;
+import com.tahoecn.xkc.model.reprot.KfCostomerReportDetailVO;
 import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
 import com.tahoecn.xkc.service.report.ICbFyService;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
 import com.tahoecn.xkc.service.report.ICustomerBookService;
+import com.tahoecn.xkc.service.report.IKfReportService;
 import com.tahoecn.xkc.service.report.ReportService;
+
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import io.swagger.annotations.ApiOperation;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.beans.BeanMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -52,6 +57,9 @@ public class ReportController extends TahoeBaseController {
 
     @Autowired
     private ReportService reportService;
+    
+    @Autowired
+    private IKfReportService kfReportService;
 
     @Autowired
     private ICostomerReportService costomerReportService;
@@ -376,40 +384,10 @@ public class ReportController extends TahoeBaseController {
     //TODO
     @ApiOperation(value = "kf客户信息明细", notes = "kf客户信息明细")
     @RequestMapping(value = "/kfCostomerReportDetail", method = {RequestMethod.POST})
-    public Result kfCostomerReportDetail(@RequestBody int PageIndex,int PageSize,CostomerReport report,String wholeStatus) {
-
-        Page<kfCostomerReportDetailVO> page=new Page(PageIndex,PageSize);
-        Map<String, Object> params = new HashMap<>();
-        params.put("AreaName", report.getAreaName());   //区域名
-        params.put("CityName", report.getCityName());   //城市名
-        params.put("IntentProjectName", report.getIntentProjectName());    //项目名
-        params.put("CustomerName", report.getCustomerName());   //客户名
-        params.put("CustomerMobileWhole", report.getCustomerMobile()); //客户电话
-        params.put("SaleUserName", report.getSaleUserName());   //置业顾问
-        params.put("OpportunitySource", report.getOpportunitySource());
-        params.put("CustomerStatus", report.getCustomerStatus()); //客户状态
-        params.put("wholeStatus", wholeStatus);
-        params.put("CustomerStatus", "无效");//不等于
-        params.put("CustomerRankName", report.getCustomerRankName());   //客户级别
-        params.put("FollwUpWayTxt", report.getFollwUpWayTxt());    //跟进类型
-        params.put("DaofangCount", report.getDaofangCount());    //到访次数
-        params.put("CreateTime", report.getCreateTime());
-        params.put("CreateTimeEnd", new Date(report.getCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000 - 1));  //创建时间
-        params.put("ReportTime", report.getReportTime());
-        params.put("ReportTimeEnd", new Date(report.getReportTimeEnd().getTime() + 60 * 60 * 24 * 1000 - 1));  //宝贝时间
-        params.put("TheFirstVisitDate", report.getTheFirstVisitDate());
-        params.put("TheFirstVisitDateEnd", new Date(report.getTheFirstVisitDateEnd().getTime() + 60 * 60 * 24 * 1000 - 1));  //首访时间
-        params.put("Zjdf", report.getZjdf());
-        params.put("ZjdfEnd", new Date(report.getZjdf().getTime() + 60 * 60 * 24 * 1000 - 1));  //最近到访
-        params.put("TheLatestFollowUpDate", report.getTheLatestFollowUpDate());
-        params.put("TheLatestFollowUpDateEnd", new Date(report.getTheLatestFollowUpDateEnd().getTime() + 60 * 60 * 24 * 1000 - 1));  //最近跟进
-        params.put("BookingCreateTime", report.getBookingCreateTime());
-        params.put("BookingCreateTimeEnd", new Date(report.getBookingCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000 - 1));  //认筹时间
-        params.put("OrderCreateTime", report.getOrderCreateTime());
-        params.put("OrderCreateTimeEnd", new Date(report.getOrderCreateTimeEnd().getTime() + 60 * 60 * 24 * 1000 - 1));  //认购时间
-        params.put("mYContractCreateTime", report.getmYContractCreateTime());
-        params.put("mYContractCreateTimeEnd",new Date(report.getmYContractCreateTimeEnd().getTime() + 60*60*24*1000 - 1));  //签约时间
-        Page<kfCostomerReportDetailVO> list = costomerReportService.kfCostomerReportDetail(page,params);
+    public Result kfCostomerReportDetail(@RequestBody JSONObject params) {
+    	CostomerReportVO report = (CostomerReportVO) params.get("_param");
+        Page<KfCostomerReportDetailVO> page=new Page(report.getPageIndex(),report.getPageSize());
+        Page<KfCostomerReportDetailVO> list = kfReportService.kfCostomerReportDetail(page,report);
         return Result.ok(list);
     }
 

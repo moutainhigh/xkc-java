@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.report.KfReportMapper">
+
+    <select id="kfCostomerReportDetail" parameterType="com.tahoecn.xkc.model.customer.CostomerReportVO" resultType="com.tahoecn.xkc.model.reprot.KfCostomerReportDetailVO">
+        SELECT
+            j.OrgName tjOrgName,
+            i.OrgName tjCityName,
+            h.Name tjProjectName,
+            f.RoomCode tjRoomCode,
+            a.*
+        FROM
+            costomer_report a
+            INNER JOIN B_Clue b ON a.CustomerID = b.CustomerPotentialID
+            AND a.ReportUserID = b.ReportUserID
+            INNER JOIN B_MediaLarge mt ON b.CognitiveChannel = mt.id
+            INNER JOIN B_Opportunity c ON b.id = c.ClueID
+            INNER JOIN B_CustomerAttach d ON c.id = d.OpportunityID
+            INNER JOIN H_C_MYOpportunity e ON d.id = e.OppGUID
+            INNER JOIN B_Room f ON e.RoomGUID = f.id
+            INNER JOIN B_Project g ON g.id = f.ProjectID
+            INNER JOIN B_Project h ON g.pid = h.id
+            INNER JOIN S_Organization i ON h.BuGUID = i.id
+            INNER JOIN S_Organization j ON i.PID = j.ID
+        WHERE mt.Name = '客服微信公众号'
+        <if test="null != report.areaName and report.areaName != ''" >
+            AND a.AreaName = #{ report.areaName }
+        </if>
+        <if test="null != report.cityName and report.cityName != ''" >
+            AND a.CityName = #{ report.cityName }
+        </if>
+        <if test="null != report.intentProjectName and report.intentProjectName != ''" >
+            AND a.IntentProjectName = #{ report.intentProjectName }
+        </if>
+        <if test="null != report.customerName and report.customerName != ''" >
+            AND a.CustomerName LIKE CONCAT('%', #{ report.customerName }, '%')
+        </if>
+        <if test="null != report.customerMobile and report.customerMobile != ''" >
+            AND a.CustomerMobile LIKE CONCAT('%', #{ report.customerMobile }, '%')
+        </if>
+        <if test="null != report.saleUserName and report.saleUserName != ''" >
+            AND a.SaleUserName LIKE CONCAT('%', #{ report.saleUserName }, '%')
+        </if>
+        <if test="null != report.opportunitySource and report.opportunitySource != ''" >
+            AND a.OpportunitySource = #{ report.opportunitySource }
+        </if>
+        <if test="null != report.customerStatus and report.customerStatus != ''" >
+            AND a.CustomerStatus = #{ report.customerStatus }
+        </if>
+        <if test="null != wholeStatus and wholeStatus != ''" >
+            AND a.CustomerStatus != '无效'
+        </if>
+        <if test="null != report.customerRankName and report.customerRankName != ''" >
+            AND a.CustomerRankName = #{ report.customerRankName }
+        </if>
+        <if test="null != report.follwUpWayTxt and report.follwUpWayTxt != ''" >
+            AND a.FollwUpWayTxt = #{ report.follwUpWayTxt }
+        </if>
+        <if test="null != report.daofangCount and report.daofangCount != ''" >
+            AND a.DaofangCount = #{ report.daofangCount }
+        </if>
+        <if test="null != report.createTime" >
+            AND a.CreateTime BETWEEN #{ report.createTime } AND #{ report.createTimeEnd }
+        </if>
+        <if test="null != report.reportTime" >
+            AND a.ReportTime BETWEEN #{ report.reportTime } AND #{ report.reportTimeEnd }
+        </if>
+        <if test="null != report.theFirstVisitDate" >
+            AND a.TheFirstVisitDate BETWEEN #{ report.theFirstVisitDate } AND #{ report.theFirstVisitDateEnd }
+        </if>
+        <if test="null != report.zjdf" >
+            AND a.Zjdf BETWEEN #{ report.zjdf } AND #{ report.zjdfEnd }
+        </if>
+        <if test="null != report.theLatestFollowUpDate" >
+            AND a.TheLatestFollowUpDate BETWEEN #{ report.theLatestFollowUpDate } AND #{ report.theLatestFollowUpDateEnd }
+        </if>
+        <if test="null != report.bookingCreateTime" >
+            AND a.BookingCreateTime BETWEEN #{ report.bookingCreateTime } AND #{ report.bookingCreateTimeEnd }
+        </if>
+        <if test="null != report.orderCreateTime" >
+            AND a.OrderCreateTime BETWEEN #{ report.orderCreateTime } AND #{ report.orderCreateTimeEnd }
+        </if>
+        <if test="null != report.mYContractCreateTime" >
+            AND a.mYContractCreateTime BETWEEN #{ report.mYContractCreateTime } AND #{ report.mYContractCreateTimeEnd }
+        </if>
+
+    </select>
+
+
+</mapper>

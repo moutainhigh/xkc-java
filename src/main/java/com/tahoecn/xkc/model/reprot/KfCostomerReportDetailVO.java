@@ -8,7 +8,7 @@ import com.tahoecn.xkc.model.customer.CostomerReport;
  * @Author: houzh
  * @Description:
  */
-public class kfCostomerReportDetailVO extends CostomerReport {
+public class KfCostomerReportDetailVO extends CostomerReport {
 
  //推荐业主区域
   private String tjOrgName;
