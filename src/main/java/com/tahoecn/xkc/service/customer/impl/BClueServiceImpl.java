@@ -733,6 +733,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setConfirmUserId(ConfirmUserId);
         QueryWrapper<BMedialarge> mtqw =  new QueryWrapper<BMedialarge>();
         mtqw.eq("Name", "客服微信公众号");
+        mtqw.select(BMedialarge.class, info -> !info.getColumn().equals("Desc"));
         BMedialarge cognitiveChannel = bMediaLargeService.getOne(mtqw);
         if (null == cognitiveChannel){
         	throw new RuntimeException("未获取渠道来源,推荐不成功"); 
