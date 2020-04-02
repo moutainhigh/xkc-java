@@ -1339,7 +1339,21 @@
             LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
             LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
             LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
-            WHERE clr.IsDel = 0 ${sqlWhere}
+            WHERE
+            NOT EXISTS (
+                SELECT
+                    ID
+                FROM
+                    dbo.B_CustomerWhiteList cw
+                WHERE
+                    cw.IsDel = 0
+                AND (
+                    cw.CustomerID = clr.CustomerID
+                    OR cw.CustomerID = cl.CustomerPotentialID
+                    OR cw.CustomerID = o.CustomerID
+                )
+            )
+            AND clr.IsDel = 0 ${sqlWhere}
             ) m
         ]]>
     </select>
@@ -1369,7 +1383,21 @@
             LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
             LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
             LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
-            WHERE 1 = 1 ${arr}
+            WHERE
+            NOT EXISTS (
+                SELECT
+                    ID
+                FROM
+                    dbo.B_CustomerWhiteList cw
+                WHERE
+                    cw.IsDel = 0
+                AND (
+                    cw.CustomerID = clr.CustomerID
+                    OR cw.CustomerID = cl.CustomerPotentialID
+                    OR cw.CustomerID = o.CustomerID
+                )
+            )
+            AND 1 = 1 ${arr}
             ) m
         ]]>
     </select>
@@ -1399,7 +1427,21 @@ FROM (
                   LEFT JOIN dbo.B_Opportunity o ON o.ID = clr.OpportunityID AND o.IsDel = 0
                   LEFT JOIN dbo.B_Clue cl ON cl.ID = o.ClueID AND cl.IsDel = 0
                   LEFT JOIN dbo.B_ChannelOrg co ON co.ID = cl.ReportUserOrg AND co.IsDel = 0
-         WHERE clr.IsDel = 0 ${sqlWhere}
+         WHERE
+         NOT EXISTS (
+			SELECT
+				ID
+			FROM
+				dbo.B_CustomerWhiteList cw
+			WHERE
+				cw.IsDel = 0
+			AND (
+				cw.CustomerID = clr.CustomerID
+				OR cw.CustomerID = cl.CustomerPotentialID
+				OR cw.CustomerID = o.CustomerID
+			)
+		)
+         AND clr.IsDel = 0 ${sqlWhere}
      ) m
         ]]>
     </select>
