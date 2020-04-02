@@ -900,6 +900,18 @@
             LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
             WHERE ca.IsDel = 0
             AND ca.IsiPad = 1
+            AND NOT EXISTS (
+                SELECT
+                    ID
+                FROM
+                    dbo.B_CustomerWhiteList cw
+                WHERE
+                    cw.IsDel = 0
+                AND (
+                    cw.CustomerID = c.CustomerPotentialID
+                    OR cw.CustomerID = o.CustomerID
+                )
+            )
             AND ISNULL(c.AdviserGroupID, '-') = '32C92DA0-DA13-4C21-A55E-A1D16955882C' ${sql}
             ) m
         ]]>
@@ -952,7 +964,20 @@
             LEFT JOIN dbo.B_Opportunity o ON o.ID = ca.OpportunityID
             INNER JOIN dbo.B_Clue c ON c.ID = ca.ClueID
             LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
-            WHERE 1 = 1 ${arr}
+            WHERE
+            NOT EXISTS (
+                SELECT
+                    ID
+                FROM
+                    dbo.B_CustomerWhiteList cw
+                WHERE
+                    cw.IsDel = 0
+                AND (
+                    cw.CustomerID = c.CustomerPotentialID
+                    OR cw.CustomerID = o.CustomerID
+                )
+            )
+            AND 1 = 1 ${arr}
             ) m
         ]]>
     </select>
@@ -1006,6 +1031,18 @@
             LEFT JOIN dbo.B_ChannelOrg co ON co.ID = c.ReportUserOrg
             WHERE ca.IsDel = 0
             AND ca.IsiPad = 1
+            AND NOT EXISTS (
+                SELECT
+                    ID
+                FROM
+                    dbo.B_CustomerWhiteList cw
+                WHERE
+                    cw.IsDel = 0
+                AND (
+                    cw.CustomerID = c.CustomerPotentialID
+                    OR cw.CustomerID = o.CustomerID
+                )
+            )
             AND ISNULL(c.AdviserGroupID, '-') = '32C92DA0-DA13-4C21-A55E-A1D16955882C' ${sqlWhere}
             ) m
         ]]>
