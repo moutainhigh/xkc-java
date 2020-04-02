@@ -52,7 +52,11 @@ public class KfReportController {
         startDate = startDate + " 00:00:00";
         endDate = endDate + " 23:59:59";
         StringBuilder sqlWhere = new StringBuilder();
-
+        if (StringUtils.isNotEmpty(IsExcel)) {
+            List<Map<String,Object>> result = reportService.ChannelCustomerReportDL_Select(orglevel,AccountID,startDate,endDate);
+            return Result.ok(result);
+        }
+        
         if ("4".equals(orglevel)){  //地产
             sqlWhere.append("SELECT '地产板块' Area,'' City,'' project,SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,'BFD658A5-F645-468C-A11C-FB1689C1A166' haschildren,'5' level FROM kcview WHERE PID='BFD658A5-F645-468C-A11C-FB1689C1A166' GROUP BY PID");
         }else if ("5".equals(orglevel)) {    //区域

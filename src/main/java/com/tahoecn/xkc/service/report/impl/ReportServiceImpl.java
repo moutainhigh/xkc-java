@@ -1,23 +1,21 @@
 package com.tahoecn.xkc.service.report.impl;
 
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tahoecn.xkc.common.annotation.DataSource;
-import com.tahoecn.xkc.common.enums.DataSourceEnum;
-import com.tahoecn.xkc.mapper.channel.BChannelorgMapper;
-import com.tahoecn.xkc.mapper.report.ReportMapper;
-import com.tahoecn.xkc.model.channel.BChannelorg;
-import com.tahoecn.xkc.service.report.ReportService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.annotation.DataSource;
+import com.tahoecn.xkc.common.enums.DataSourceEnum;
+import com.tahoecn.xkc.mapper.report.ReportMapper;
+import com.tahoecn.xkc.model.channel.BChannelorg;
+import com.tahoecn.xkc.service.report.ReportService;
+
+import cn.hutool.core.date.DateUtil;
 
 /**
  * <p>
@@ -58,6 +56,11 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> im
     @Override
     public List<Map<String, Object>> ChannelCustomerReportDL_Select(String orglevel, String accountID, String startDate, String endDate) {
         return baseMapper.ChannelCustomerReportDL_Select(orglevel, accountID, startDate, endDate);
+    }
+    
+    @Override
+    public List<Map<String, Object>> kfChannelCustomerReportDL_Select(String orglevel, String accountID, String startDate, String endDate) {
+    	return baseMapper.kfChannelCustomerReportDL_Select(orglevel, accountID, startDate, endDate);
     }
 
     @Override

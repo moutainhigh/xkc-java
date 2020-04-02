@@ -45,6 +45,10 @@ public interface ReportMapper extends BaseMapper<BChannelorg> {
     @DataSource(DataSourceEnum.DB3)
     List<Map<String,Object>> ChannelCustomerReportDL_Select(@Param("orglevel")String orglevel, @Param("accountID")String accountID,
                                                             @Param("startDate")String startDate, @Param("endDate")String endDate);
+   
+    @DataSource(DataSourceEnum.DB3)
+    List<Map<String,Object>> kfChannelCustomerReportDL_Select(@Param("orglevel")String orglevel, @Param("accountID")String accountID,
+    		@Param("startDate")String startDate, @Param("endDate")String endDate);
 
     @DataSource(DataSourceEnum.DB3)
     IPage<Map<String, Object>> mChannelCheckReportList_Select(IPage page, @Param("StartTime")Date startTime, @Param("EndTime")Date endTime, 
