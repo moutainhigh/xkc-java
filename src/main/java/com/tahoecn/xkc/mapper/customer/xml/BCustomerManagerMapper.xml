@@ -92,6 +92,15 @@
 	  GROUP BY OpportunityID
 								) G ON G.OpportunityID=b.ID
                       WHERE     b.ProjectID=#{paramMap.ProjectID}
+                                AND NOT EXISTS (
+                                    SELECT
+                                        ID
+                                    FROM
+                                        dbo.B_CustomerWhiteList cw
+                                    WHERE
+                                        cw.IsDel = 0
+                                    AND cw.CustomerID = b.CustomerID
+                                )
 								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
         SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
@@ -162,7 +171,17 @@
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
-                      WHERE     EXISTS(
+                      WHERE
+                      NOT EXISTS (
+                            SELECT
+                                ID
+                            FROM
+                                dbo.B_CustomerWhiteList cw
+                            WHERE
+                                cw.IsDel = 0
+                            AND cw.CustomerID = b.CustomerPotentialID
+                        )
+                      AND EXISTS(
 									SELECT OpportunityID FROM (select OpportunityID from (
         SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
@@ -610,6 +629,15 @@ FROM    dbo.B_Opportunity A
 	  GROUP BY OpportunityID
 								) G ON G.OpportunityID=b.ID
                       WHERE     b.ProjectID=#{paramMap.ProjectID}
+                      		AND NOT EXISTS (
+                                SELECT
+                                    ID
+                                FROM
+                                    dbo.B_CustomerWhiteList cw
+                                WHERE
+                                    cw.IsDel = 0
+                                AND cw.CustomerID = b.CustomerID
+                            )
 								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
         SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
@@ -681,7 +709,17 @@ FROM    dbo.B_Opportunity A
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
-                      WHERE     EXISTS(
+                      WHERE
+                      NOT EXISTS (
+                            SELECT
+                                ID
+                            FROM
+                                dbo.B_CustomerWhiteList cw
+                            WHERE
+                                cw.IsDel = 0
+                            AND cw.CustomerID = b.CustomerPotentialID
+                        )
+                      AND EXISTS(
 									SELECT OpportunityID FROM (select OpportunityID from (
         SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
