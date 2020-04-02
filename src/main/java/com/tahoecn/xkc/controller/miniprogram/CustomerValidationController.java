@@ -3,6 +3,7 @@ package com.tahoecn.xkc.controller.miniprogram;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
+import com.tahoecn.xkc.common.enums.TipsEnum;
 import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.model.miniprogram.vo.UserRegisterVO;
@@ -45,9 +46,8 @@ public class CustomerValidationController extends TahoeBaseController {
             return customerValidationService.getCustomerMessage(request, userRegisterVO);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 }

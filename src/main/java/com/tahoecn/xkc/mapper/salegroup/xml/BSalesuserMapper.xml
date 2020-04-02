@@ -129,7 +129,7 @@
         TOP 1 *
       FROM
         dbo.B_SalesUser A
-        INNER JOIN dbo.B_SalesGroupMember B ON A.ID = B.MemberID AND B.IsDel = 0 AND B.RoleID = #userRegister.channelTypeID}
+        INNER JOIN dbo.B_SalesGroupMember B ON A.ID = B.MemberID AND B.IsDel = 0 AND B.RoleID = #{userRegister.channelTypeID}
         WHERE (A.UserName = #{userRegister.mobile} OR A.TelPhone = #{userRegister.mobile}) AND A.IsDel = 0
     </select>
 </mapper>

@@ -3,6 +3,7 @@ package com.tahoecn.xkc.mapper.miniprogram;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.tahoecn.xkc.model.channel.BChanneluser;
+import com.tahoecn.xkc.model.miniprogram.vo.FollowRecordVO;
 import com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -73,5 +74,5 @@ public interface CustomerMapper extends BaseMapper<BChanneluser> {
      * @param customerId
      * @return
      */
-    Map getCustomerFollowRecord(@Param("customerId") String customerId);
+    List<FollowRecordVO> getCustomerFollowRecord(@Param("customerId") String customerId);
 }

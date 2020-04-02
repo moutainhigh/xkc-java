@@ -68,26 +68,42 @@ public class CustomerValidationServiceImpl extends ServiceImpl<BChanneluserMappe
         if (str1.indexOf(userRegisterVO.getChannelTypeID()) >= 0) {
             userRegisterVO.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
             BChanneluser bChanneluser = bChanneluserMapper.getBChannelUser(userRegisterVO);
-            bChanneluser.setGender(String.valueOf(SexEnum.getEnumByMessage(bChanneluser.getGender()).getCode()));
-            bChanneluser.setChannelTypeID(String.valueOf(ChannelTypeIdEnum.getEnumByMessage(bChanneluser.getChannelTypeID()).getCode()));
-            bChanneluser.setCertificatesType(String.valueOf(CertificatesIdEnum.getEnumByMessage(bChanneluser.getCertificatesType()).getCode()));
+            if (null != bChanneluser){
+                if (StringUtils.isNotEmpty(bChanneluser.getGender())) {
+                    if (bChanneluser.getGender().length() > 1) {
+                        bChanneluser.setGender(String.valueOf(SexEnum.getEnumByMessage(bChanneluser.getGender()).getCode()));
+                    }
+                }
+                if (StringUtils.isNotEmpty(bChanneluser.getChannelTypeID())) {
+                    bChanneluser.setChannelTypeID(String.valueOf(ChannelTypeIdEnum.getEnumByMessage(bChanneluser.getChannelTypeID()).getCode()));
+                }
+                if (StringUtils.isNotEmpty(bChanneluser.getCertificatesType())) {
+                    bChanneluser.setCertificatesType(String.valueOf(CertificatesIdEnum.getEnumByMessage(bChanneluser.getCertificatesType()).getCode()));
+                }
+            }
             sysAccessRecord.setInterfaceState("0");
             sysAccessRecord.setReason("成功");
             sysAccessRecordMapper.insert(sysAccessRecord);
             jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), bChanneluser, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
         } else if (str2.indexOf(userRegisterVO.getChannelTypeID()) >= 0) {
             userRegisterVO.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
-            BSalesuser bSalesuser = bSalesuserMapper.getBSalesuser(userRegisterVO);
             BChanneluser bChanneluser = new BChanneluser();
-            bChanneluser.setId(bSalesuser.getId());
-            bChanneluser.setName(bSalesuser.getName());
-            bChanneluser.setMobile(bSalesuser.getTelPhone());
-            bChanneluser.setUserName(bSalesuser.getUserName());
-            bChanneluser.setChannelTypeID(String.valueOf(ChannelTypeIdEnum.getEnumByMessage(userRegisterVO.getChannelTypeID()).getCode()));
+            BSalesuser bSalesuser = bSalesuserMapper.getBSalesuser(userRegisterVO);
+            if (null != bSalesuser){
+                bChanneluser.setId(bSalesuser.getId());
+                bChanneluser.setName(bSalesuser.getName());
+                bChanneluser.setMobile(bSalesuser.getTelPhone());
+                bChanneluser.setUserName(bSalesuser.getUserName());
+                if (StringUtils.isNotEmpty(userRegisterVO.getChannelTypeID())) {
+                    bChanneluser.setChannelTypeID(String.valueOf(ChannelTypeIdEnum.getEnumByMessage(userRegisterVO.getChannelTypeID()).getCode()));
+                }
+                jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), bChanneluser, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
+            }else{
+                jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), null, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
+            }
             sysAccessRecord.setInterfaceState("0");
             sysAccessRecord.setReason("成功");
             sysAccessRecordMapper.insert(sysAccessRecord);
-            jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), bChanneluser, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
         } else {
             sysAccessRecord.setInterfaceState("1");
             sysAccessRecord.setReason("channelTypeID不正确");

@@ -55,6 +55,10 @@ public class ResultUtil {
         return new JSONResult<>(TipsEnum.Failed.getCode(), TipsEnum.Failed.getMsg());
     }
 
+    public static <T> JSONResult getServerErrorJsonResult() {
+        return new JSONResult<>(TipsEnum.ServerError.getCode(),TipsEnum.ServerError.getMsg());
+    }
+
     /**
      * 操作成功
      */

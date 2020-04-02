@@ -104,7 +104,7 @@
     </select>
 
     <select id="getCustomer1" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
-            resultType="java.util.Map">
+            resultType="java.util.HashMap">
        SELECT
             *
        FROM
@@ -115,7 +115,7 @@
     </select>
 
     <select id="getCustomer2" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
-            resultType="java.util.Map">
+            resultType="java.util.HashMap">
         SELECT
             *
         FROM

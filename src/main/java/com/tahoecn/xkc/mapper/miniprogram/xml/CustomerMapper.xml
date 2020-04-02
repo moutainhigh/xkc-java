@@ -27,32 +27,33 @@
       SELECT CustomerID FROM dbo.B_Opportunity WHERE ID = #{opportunityId}
     </select>
 
-    <select id="getCustomerFollowRecord" parameterType="string" resultType="java.util.Map">
+    <select id="getCustomerFollowRecord" parameterType="string"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.FollowRecordVO">
         SELECT
             T.*
         FROM
             (
                 SELECT
-                    FollwUpUserID,
-                    FollwUpUserName,
-                    FollwUpUserMobile,
-                    FollowUpContent,
-                    dbo.F_GetDictionaryName ( FollwUpType ) FollwUpType,
-                    dbo.F_GetDictionaryName ( FollwUpWay ) FollwUpWay,
-                    CreateTime
+                    FollwUpUserID AS follwUpUserID,
+                    FollwUpUserName AS follwUpUserName,
+                    FollwUpUserMobile AS follwUpUserMobile,
+                    FollowUpContent AS followUpContent,
+                    dbo.F_GetDictionaryName ( FollwUpType ) follwUpType,
+                    dbo.F_GetDictionaryName ( FollwUpWay ) follwUpWay,
+                    CreateTime AS createTime
                 FROM
                     dbo.B_CustomerPotentialFollowUp
                 WHERE
                     CustomerPotentialID = #{customerId}
                 UNION ALL
                 SELECT
-                    FollwUpUserID,
-                    FollwUpUserName,
-                    FollwUpUserMobile,
-                    FollowUpContent,
-                    dbo.F_GetDictionaryName ( FollwUpType ) FollwUpType,
-                    dbo.F_GetDictionaryName ( FollwUpWay ) FollwUpWay,
-                    CreateTime
+                    FollwUpUserID AS follwUpUserID,
+                    FollwUpUserName AS follwUpUserName,
+                    FollwUpUserMobile AS follwUpUserMobile,
+                    FollowUpContent AS followUpContent,
+                    dbo.F_GetDictionaryName ( FollwUpType ) follwUpType,
+                    dbo.F_GetDictionaryName ( FollwUpWay ) follwUpWay,
+                    CreateTime AS createTime
                 FROM
                     dbo.B_CustomerFollowUp
                 WHERE

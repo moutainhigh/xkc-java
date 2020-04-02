@@ -6,6 +6,7 @@ import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
 import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
+import com.tahoecn.xkc.model.miniprogram.vo.CustomerVO;
 import com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO;
 import com.tahoecn.xkc.service.miniprogram.ICustomerService;
 import io.swagger.annotations.Api;
@@ -50,9 +51,9 @@ public class CustomerMessageController extends TahoeBaseController {
 
     @ApiOperation(value = "获取客户详情", notes = "获取客户详情")
     @RequestMapping(value = "/getCustomerDetail", method = {RequestMethod.POST})
-    public JSONResult getCustomerDetail(HttpServletRequest request, @RequestParam(value = "opportunityId") String opportunityId) {
+    public JSONResult getCustomerDetail(HttpServletRequest request, @RequestBody CustomerVO customerVO) {
         try {
-            return customerService.getCustomerDetail(request, opportunityId);
+            return customerService.getCustomerDetail(request, customerVO.getOpportunityId());
         } catch (Exception e) {
             //记录错误日志
             logger.error(e);
@@ -63,9 +64,9 @@ public class CustomerMessageController extends TahoeBaseController {
 
     @ApiOperation(value = "获取客户跟进记录", notes = "获取客户跟进记录")
     @RequestMapping(value = "/getCustomerFollowRecord", method = {RequestMethod.POST})
-    public JSONResult getCustomerFollowRecord(HttpServletRequest request, @RequestParam(value = "opportunityId") String opportunityId) {
+    public JSONResult getCustomerFollowRecord(HttpServletRequest request, @RequestBody CustomerVO customerVO) {
         try {
-            return customerService.getCustomerFollowRecord(request, opportunityId);
+            return customerService.getCustomerFollowRecord(request, customerVO.getOpportunityId());
         } catch (Exception e) {
             //记录错误日志
             logger.error(e);

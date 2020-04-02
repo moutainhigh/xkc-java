@@ -9,11 +9,13 @@ import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.miniprogram.CustomerMapper;
 import com.tahoecn.xkc.mapper.sys.SysAccessRecordMapper;
 import com.tahoecn.xkc.model.channel.BChanneluser;
+import com.tahoecn.xkc.model.miniprogram.vo.FollowRecordVO;
 import com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO;
 import com.tahoecn.xkc.model.sys.SysAccessRecord;
 import com.tahoecn.xkc.service.miniprogram.ICustomerService;
 import com.tahoecn.xkc.service.sys.ISysAccessRecordService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +32,7 @@ import java.util.Map;
  * @author zhaoyan
  * @since 2020-04-01
  */
+@Service
 public class CustomerServiceImpl extends ServiceImpl<BChanneluserMapper, BChanneluser> implements ICustomerService {
 
     @Resource
@@ -102,11 +105,11 @@ public class CustomerServiceImpl extends ServiceImpl<BChanneluserMapper, BChanne
             sysAccessRecordMapper.insert(sysAccessRecord);
             jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), null, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
         } else {
-            Map map = customerMapper.getCustomerFollowRecord(customerId);
+            List<FollowRecordVO> list = customerMapper.getCustomerFollowRecord(customerId);
             sysAccessRecord.setInterfaceState("0");
             sysAccessRecord.setReason("成功");
             sysAccessRecordMapper.insert(sysAccessRecord);
-            jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), map, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
+            jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), list, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
         }
         return jsonResult;
     }

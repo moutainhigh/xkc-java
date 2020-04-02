@@ -13,6 +13,7 @@ import com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO;
 import com.tahoecn.xkc.model.sys.SysAccessRecord;
 import com.tahoecn.xkc.service.miniprogram.IRelationshipService;
 import com.tahoecn.xkc.service.sys.ISysAccessRecordService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @author zhaoyan
  * @since 2020-04-01
  */
+@Service
 public class RelationshipServiceImpl extends ServiceImpl<BChanneluserMapper, BChanneluser> implements IRelationshipService {
 
     @Resource

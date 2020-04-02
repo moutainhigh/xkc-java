@@ -4,6 +4,7 @@ package com.tahoecn.xkc.controller.miniprogram;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.log.Log;
 import com.tahoecn.log.LogFactory;
+import com.tahoecn.xkc.common.enums.TipsEnum;
 import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO;
@@ -46,9 +47,8 @@ public class RelationshipController extends TahoeBaseController {
             return relationshipService.getOrgRole(request, relationshipVO);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 
@@ -59,9 +59,8 @@ public class RelationshipController extends TahoeBaseController {
             return relationshipService.getProjectPerson(request, relationshipVO);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 
@@ -72,9 +71,8 @@ public class RelationshipController extends TahoeBaseController {
             return relationshipService.getOrgPerson(request);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 
@@ -85,22 +83,8 @@ public class RelationshipController extends TahoeBaseController {
             return relationshipService.getProject(request);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
-        }
-    }
-
-    @ApiOperation(value = "获取角色", notes = "获取角色")
-    @RequestMapping(value = "/getRole", method = {RequestMethod.POST})
-    public JSONResult getRole(HttpServletRequest request, @RequestBody RelationshipVO relationshipVO) {
-        try {
-            return relationshipService.getRole(request, relationshipVO);
-        } catch (Exception e) {
-            //记录错误日志
-            logger.error(e);
-            e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 
@@ -111,9 +95,20 @@ public class RelationshipController extends TahoeBaseController {
             return relationshipService.getPerson(request, relationshipVO);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "获取角色", notes = "获取角色")
+    @RequestMapping(value = "/getRole", method = {RequestMethod.POST})
+    public JSONResult getRole(HttpServletRequest request, @RequestBody RelationshipVO relationshipVO) {
+        try {
+            return relationshipService.getRole(request, relationshipVO);
+        } catch (Exception e) {
+            //记录错误日志
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 
@@ -124,9 +119,8 @@ public class RelationshipController extends TahoeBaseController {
             return relationshipService.getCustomer(request, relationshipVO);
         } catch (Exception e) {
             //记录错误日志
-            logger.error(e);
             e.printStackTrace();
-            return ResultUtil.getFailJsonResult();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
 }

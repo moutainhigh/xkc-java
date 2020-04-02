@@ -19,12 +19,14 @@ public enum TipsEnum {
     /**
      * 成功
      */
-    Success(0, "成功！"),
+    Success(0, "成功"),
 
     /**
      * 失败
      */
-    Failed(1, "失败！");
+    Failed(1, "失败"),
+
+    ServerError(1, "运行异常，请联系管理员");
 
     /**
      * 状态名称
