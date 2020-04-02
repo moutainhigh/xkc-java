@@ -1804,6 +1804,7 @@
                          LEFT JOIN #qianyueA qianyuea ON org.ProjectID = qianyuea.ProjectID
                          LEFT JOIN #qianyueB qianyueb ON org.ProjectID = qianyueb.ProjectID
             )
+
                 ${sql}
 
             DROP TABLE #org
