@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.model.customer.CostomerReport;
 import com.tahoecn.xkc.model.customer.CostomerReportVO;
 import com.tahoecn.xkc.model.reprot.KfCostomerReportDetailVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @program: xkc
@@ -14,6 +15,6 @@ import com.tahoecn.xkc.model.reprot.KfCostomerReportDetailVO;
  */
 public interface KfReportMapper  extends BaseMapper<CostomerReport> {
 
- Page<KfCostomerReportDetailVO> kfCostomerReportDetail(Page<KfCostomerReportDetailVO> page, CostomerReportVO report);
+ Page<KfCostomerReportDetailVO> kfCostomerReportDetail(Page<KfCostomerReportDetailVO> page,@Param("report") CostomerReportVO report);
 
 }
