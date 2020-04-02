@@ -1325,13 +1325,14 @@
               AND g.UserName = (SELECT UserName FROM dbo.S_Account WHERE ID = #{accountID})
             GROUP BY d.PID, a.ID, a.Name, d.ID, d.OrgName, c.ID, c.OrgName
 
-            SELECT IntentProjectID ProjectID, COUNT(1) KHCount
+            SELECT a.IntentProjectID ProjectID, COUNT(1) KHCount
             INTO #baobei
-            FROM dbo.B_Clue (NOLOCK)
-            WHERE IsDel = 0
-              AND CreateTime >= #{startDate}
-              AND CreateTime <= #{endDate}
-              AND SourceType IN (
+            FROM dbo.B_Clue a (NOLOCK)
+						JOIN B_MediaLarge b ON a.CognitiveChannel = b.id
+            WHERE a.IsDel = 0 AND b.Name = '客服微信公众号'
+              AND a.CreateTime >= #{startDate}
+              AND a.CreateTime <= #{endDate}
+              AND a.SourceType IN (
                                  '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
                                  '86D702BC-F30F-4091-B520-CA0909CADCDD',
                                  '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
@@ -1343,7 +1344,7 @@
                                  'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
                                  '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
                 )
-            GROUP BY IntentProjectID
+            GROUP BY a.IntentProjectID
 
             SELECT ProjectID, COUNT(1) KHCount
             INTO #daofang
