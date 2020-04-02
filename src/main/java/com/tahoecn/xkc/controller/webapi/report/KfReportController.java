@@ -53,7 +53,7 @@ public class KfReportController {
         endDate = endDate + " 23:59:59";
         StringBuilder sqlWhere = new StringBuilder();
         if (StringUtils.isNotEmpty(IsExcel)) {
-            List<Map<String,Object>> result = reportService.ChannelCustomerReportDL_Select(orglevel,AccountID,startDate,endDate);
+            List<Map<String,Object>> result = reportService.kfChannelCustomerReportDL_Select(orglevel,AccountID,startDate,endDate);
             return Result.ok(result);
         }
         
