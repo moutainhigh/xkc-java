@@ -11,17 +11,17 @@
             a.*
         FROM
             costomer_report a
-            INNER JOIN B_Clue b ON a.CustomerID = b.CustomerPotentialID
+            LEFT JOIN B_Clue b ON a.CustomerID = b.CustomerPotentialID
             AND a.ReportUserID = b.ReportUserID
-            INNER JOIN B_MediaLarge mt ON b.CognitiveChannel = mt.id
-            INNER JOIN B_Opportunity c ON b.id = c.ClueID
-            INNER JOIN B_CustomerAttach d ON c.id = d.OpportunityID
-            INNER JOIN H_C_MYOpportunity e ON d.id = e.OppGUID
-            INNER JOIN B_Room f ON e.RoomGUID = f.id
-            INNER JOIN B_Project g ON g.id = f.ProjectID
-            INNER JOIN B_Project h ON g.pid = h.id
-            INNER JOIN S_Organization i ON h.BuGUID = i.id
-            INNER JOIN S_Organization j ON i.PID = j.ID
+            LEFT JOIN B_MediaLarge mt ON b.CognitiveChannel = mt.id
+            LEFT JOIN B_Opportunity c ON b.id = c.ClueID
+            LEFT JOIN B_CustomerAttach d ON c.id = d.OpportunityID
+            LEFT JOIN H_C_MYOpportunity e ON d.id = e.OppGUID
+            LEFT JOIN B_Room f ON e.RoomGUID = f.id
+            LEFT JOIN B_Project g ON g.id = f.ProjectID
+            LEFT JOIN B_Project h ON g.pid = h.id
+            LEFT JOIN S_Organization i ON h.BuGUID = i.id
+            LEFT JOIN S_Organization j ON i.PID = j.ID
         WHERE mt.Name = '客服微信公众号'
         <if test="null != report.areaName and report.areaName != ''" >
             AND a.AreaName = #{ report.areaName }
