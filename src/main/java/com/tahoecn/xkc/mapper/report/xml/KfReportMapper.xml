@@ -10,8 +10,8 @@
             f.RoomCode tjRoomCode,
             a.*
         FROM
-            costomer_report a
-            LEFT JOIN B_Clue b ON a.CustomerID = b.CustomerPotentialID
+            B_Clue b
+            LEFT JOIN costomer_report a ON a.CustomerID = b.CustomerPotentialID
             AND a.ReportUserID = b.ReportUserID
             LEFT JOIN B_MediaLarge mt ON b.CognitiveChannel = mt.id
             LEFT JOIN B_Opportunity c ON b.id = c.ClueID
