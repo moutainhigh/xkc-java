@@ -632,7 +632,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) {
+    public boolean kfCreateClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) throws Exception{
         QueryWrapper<BCustomerpotential> wrapper=new QueryWrapper<>();
         wrapper.eq("Mobile",paramMap.get("Mobile"));
         List<BCustomerpotential> list = customerpotentialService.list(wrapper);
@@ -731,10 +731,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setStatus(status);
         clue.setConfirmUserId(ConfirmUserId);
         clue.setConfirmUserId(ConfirmUserId);
-        //TODO
         QueryWrapper<BMedialarge> mtqw =  new QueryWrapper<BMedialarge>();
         mtqw.eq("Name", "客服微信公众号");
         BMedialarge cognitiveChannel = bMediaLargeService.getOne(mtqw);
+        if (null == cognitiveChannel){
+        	throw new RuntimeException("未获取渠道来源,推荐不成功"); 
+        }
         clue.setCognitiveChannel(cognitiveChannel.getId());
         clue.setCognitiveChannelSub((String) paramMap.get("cognitiveChannelSub"));
         boolean save = clueService.save(clue);

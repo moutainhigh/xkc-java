@@ -403,7 +403,15 @@ public class H5AddController extends TahoeBaseController {
                 status = 3;
             }
             //线索报备验证后，创建线索信息
-            boolean b=clueService.createClue(channelOrgId,CustomerValidate,channelRegisterModel.getUserRule(),status,paramMap,1);
+            boolean b = false;
+			try {
+				b = clueService.kfCreateClue(channelOrgId,CustomerValidate,channelRegisterModel.getUserRule(),status,paramMap,1);
+			} catch (Exception e) {
+				e.printStackTrace();
+				re.setErrcode(1);
+                re.setErrmsg(e.getMessage());
+                return re;
+			}
             if (reMsg!=null){
                 re.setErrmsg(reMsg);
             }

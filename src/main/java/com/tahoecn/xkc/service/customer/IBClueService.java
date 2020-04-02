@@ -34,7 +34,7 @@ public interface IBClueService extends IService<BClue> {
 
     boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap);
 
-	boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag);
+	boolean kfCreateClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) throws Exception;
 	/**
 	 * 案场助手统计
 	 */
