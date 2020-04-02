@@ -138,6 +138,18 @@
             AND b.IntentProjectID = #{projectID}
             AND b.SourceType IS NOT NULL
             AND b.SourceType <> '0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+            AND NOT EXISTS (
+				SELECT
+					ID
+				FROM
+					dbo.B_CustomerWhiteList cw
+				WHERE
+					cw.IsDel = 0
+				AND (
+					cw.CustomerID = b.CustomerPotentialID
+					OR cw.CustomerID = o.CustomerID
+				)
+			)
             ) t   where 1=1 ${sqlWhere}
             ) m
         ]]>
@@ -287,6 +299,18 @@
             AND b.IntentProjectID = #{projectID}
             AND b.SourceType IS NOT NULL
             AND b.SourceType <> '0390CD8C-D6D4-4C92-995B-08C7E18E6EC2'
+            AND NOT EXISTS (
+				SELECT
+					ID
+				FROM
+					dbo.B_CustomerWhiteList cw
+				WHERE
+					cw.IsDel = 0
+				AND (
+					cw.CustomerID = b.CustomerPotentialID
+					OR cw.CustomerID = o.CustomerID
+				)
+			)
             ) t   where 1=1 ${sqlWhere}
             ) m
   ]]>
@@ -357,9 +381,18 @@
 								LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg  AND CO.IsDel =0
                       WHERE     b.IsDel = 0
                                 AND b.IntentProjectID = #{projectID} 
-
-
-
+                                AND NOT EXISTS (
+                                    SELECT
+                                        ID
+                                    FROM
+                                        dbo.B_CustomerWhiteList cw
+                                    WHERE
+                                        cw.IsDel = 0
+                                    AND (
+                                        cw.CustomerID = b.CustomerPotentialID
+                                        OR cw.CustomerID = o.CustomerID
+                                    )
+                                )
 								) t  WHERE 1=1 ${sqlWhere}
                                 ) m
 
@@ -424,9 +457,18 @@
 								LEFT JOIN dbo.B_CustomerAttach A ON A.OpportunityID = o.ID  AND A.IsDel =0 AND A.ProjectID=#{projectID}
                       WHERE     b.IsDel = 0
                                 AND b.IntentProjectID = #{projectID}
-
-
-
+                                AND NOT EXISTS (
+                                    SELECT
+                                        ID
+                                    FROM
+                                        dbo.B_CustomerWhiteList cw
+                                    WHERE
+                                        cw.IsDel = 0
+                                    AND (
+                                        cw.CustomerID = b.CustomerPotentialID
+                                        OR cw.CustomerID = o.CustomerID
+                                    )
+                                )
 								) t  WHERE 1=1 ${sqlWhere}
                                 ) m
 
