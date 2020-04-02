@@ -1,23 +1,20 @@
 package com.tahoecn.xkc.controller;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.tahoecn.core.json.JSONResult;
+import com.tahoecn.security.SecureUtil;
+import com.tahoecn.xkc.common.constants.GlobalConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tahoecn.core.json.JSONResult;
-import com.tahoecn.xkc.common.constants.GlobalConstants;
-import com.tahoecn.security.SecureUtil;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Calendar;
 
 @Component
 public class TahoeBaseController {
@@ -209,5 +206,4 @@ public class TahoeBaseController {
         response.setData(data);
         return response;
     }
-
 }

@@ -1,12 +1,12 @@
 package com.tahoecn.xkc.mapper.salegroup;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tahoecn.xkc.model.miniprogram.vo.UserRegisterVO;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -28,4 +28,12 @@ public interface BSalesuserMapper extends BaseMapper<BSalesuser> {
 	String mShareAppDetail_Select1(Map<String, Object> map);
 
     Map<String, Object> mLFLogin_Select(Map<String, Object> paramMap);
+
+    /**
+     * 思为小程序客储用户中心验证
+     *
+     * @param userRegisterVO
+     * @return
+     */
+    BSalesuser getBSalesuser(@Param("userRegister") UserRegisterVO userRegisterVO);
 }

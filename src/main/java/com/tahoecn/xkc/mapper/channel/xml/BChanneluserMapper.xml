@@ -718,4 +718,27 @@ FROM B_ChannelUser WHERE ID=#{UserID};
         WHERE
         ID = #{id}
     </select>
+
+    <select id="isExist" parameterType="string" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            dbo.B_ChannelUser
+        WHERE
+            ( UserName = #{mobile} OR Mobile = #{mobile} )
+            AND IsDel = 0
+    </select>
+
+    <select id="getBChannelUser" parameterType="com.tahoecn.xkc.model.miniprogram.vo.UserRegisterVO"
+            resultType="com.tahoecn.xkc.model.channel.BChanneluser">
+       SELECT
+         *
+       FROM
+         dbo.B_ChannelUser
+       WHERE ChannelTypeID = #{userRegister.channelTypeID}
+       AND (UserName = #{userRegister.mobile} OR Mobile = #{userRegister.mobile})
+       <if test="userRegister.channelOrgCode !=null and userRegister.channelOrgCode != '' ">
+           AND ChannelOrgCode = #{userRegister.channelOrgCode}
+       </if>
+    </select>
 </mapper>

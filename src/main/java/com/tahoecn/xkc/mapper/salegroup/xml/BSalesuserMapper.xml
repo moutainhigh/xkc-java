@@ -122,4 +122,14 @@
         T.IsNoAllotRole ,
         T.Name
     </select>
+
+    <select id="getBSalesuser" parameterType="com.tahoecn.xkc.model.miniprogram.vo.UserRegisterVO"
+            resultType="com.tahoecn.xkc.model.salegroup.BSalesuser">
+      SELECT
+        TOP 1 *
+      FROM
+        dbo.B_SalesUser A
+        INNER JOIN dbo.B_SalesGroupMember B ON A.ID = B.MemberID AND B.IsDel = 0 AND B.RoleID = #userRegister.channelTypeID}
+        WHERE (A.UserName = #{userRegister.mobile} OR A.TelPhone = #{userRegister.mobile}) AND A.IsDel = 0
+    </select>
 </mapper>
