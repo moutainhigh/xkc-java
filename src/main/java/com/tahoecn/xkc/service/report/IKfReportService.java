@@ -1,6 +1,9 @@
 package com.tahoecn.xkc.service.report;
 
 
+import java.util.List;
+import java.util.Map;
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.customer.CostomerReport;
@@ -18,5 +21,7 @@ import com.tahoecn.xkc.model.reprot.KfCostomerReportDetailVO;
 public interface IKfReportService extends IService<CostomerReport> {
 
    public Page<KfCostomerReportDetailVO> kfCostomerReportDetail(Page<KfCostomerReportDetailVO> page, CostomerReportVO report);
+
+   public List<Map<String, Object>> getOrgList(String userName, Integer level, String orgID);
 
 }

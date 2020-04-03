@@ -85,5 +85,14 @@ public class KfReportController {
 
         return Result.ok(result);
     }
+	
+	@ApiOperation(value = "获取组织机构表", notes = "获取组织机构表")
+    @RequestMapping(value = "/getOrgList", method = {RequestMethod.GET})
+	public Result getOrgList(String userName, Integer level,String orgID) {
+		 List<Map<String,Object>> result = kfReportService.getOrgList(userName,level,orgID);
+		 return Result.ok(result);
+	}
+	
+	
 
 }

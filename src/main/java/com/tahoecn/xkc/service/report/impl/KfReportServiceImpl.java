@@ -1,5 +1,9 @@
 package com.tahoecn.xkc.service.report.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,4 +34,21 @@ public class KfReportServiceImpl extends ServiceImpl<CostomerReportMapper, Costo
     public Page<KfCostomerReportDetailVO> kfCostomerReportDetail(Page<KfCostomerReportDetailVO> page, CostomerReportVO report) {
         return kfReportMapper.kfCostomerReportDetail(page, report);
     }
+
+	@Override
+	public List<Map<String, Object>> getOrgList(String userName, Integer level, String orgID) {
+		List<Map<String, Object>> res = new ArrayList<Map<String,Object>>();
+		switch (level) {
+		case 1:
+			res = kfReportMapper.getPOrgList(userName);
+			break;
+		case 2:
+			res = kfReportMapper.getCOrgList(userName, orgID);
+			break;
+		case 3:
+			res = kfReportMapper.getOrgList(userName, orgID);
+			break;
+		}
+		return res;
+	}
 }

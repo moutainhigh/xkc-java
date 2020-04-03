@@ -85,6 +85,66 @@
         </if>
 
     </select>
+    
+    <select id="getPOrgList" parameterType="java.lang.String" resultType="java.util.Map">
+    	SELECT d.PID
+                 , d.ID      POrgID
+                 , D.OrgName POrgName
+                 
+            FROM B_Project (NOLOCK) a
+                     JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                     JOIN S_Organization(NOLOCK) d ON c.PID = d.ID
+                     JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID = e.ProjectID
+                     JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID = f.JobID
+                     JOIN dbo.S_Account (NOLOCK) g ON f.accountID = g.ID
+            WHERE a.Level = 1
+              AND a.status = 1
+              AND a.isdel = 0
+              AND g.UserName = #{ userName }
+            GROUP BY d.PID, d.ID, d.OrgName
+    </select>
+    
+    <select id="getCOrgList" parameterType="java.lang.String" resultType="java.util.Map">
+    	SELECT d.PID
+                 , d.ID      POrgID
+                 , D.OrgName POrgName
+                 , c.ID      COrgID
+                 , C.OrgName COrgName
+            FROM B_Project (NOLOCK) a
+                     JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                     JOIN S_Organization(NOLOCK) d ON c.PID = d.ID
+                     JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID = e.ProjectID
+                     JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID = f.JobID
+                     JOIN dbo.S_Account (NOLOCK) g ON f.accountID = g.ID
+            WHERE a.Level = 1
+              AND a.status = 1
+              AND a.isdel = 0
+              AND g.UserName = #{ userName }
+							AND d.ID = #{ orgID }
+            GROUP BY d.PID, d.ID, d.OrgName, c.ID, c.OrgName
+    </select>
+    
+    <select id="getOrgList" parameterType="java.lang.String" resultType="java.util.Map">
+    	SELECT d.PID
+                 , d.ID      POrgID
+                 , D.OrgName POrgName
+                 , c.ID      COrgID
+                 , C.OrgName COrgName
+                 , a.ID      ProjectID
+                 , a.Name    ProjectName
+            FROM B_Project (NOLOCK) a
+                     JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                     JOIN S_Organization(NOLOCK) d ON c.PID = d.ID
+                     JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID = e.ProjectID
+                     JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID = f.JobID
+                     JOIN dbo.S_Account (NOLOCK) g ON f.accountID = g.ID
+            WHERE a.Level = 1
+              AND a.status = 1
+              AND a.isdel = 0
+              AND g.UserName = #{ userName }
+							AND c.ID = #{ orgID }
+            GROUP BY d.PID, a.ID, a.Name, d.ID, d.OrgName, c.ID, c.OrgName
+    </select>
 
 
 </mapper>
