@@ -1322,7 +1322,7 @@
             WHERE a.Level = 1
               AND a.status = 1
               AND a.isdel = 0
-              AND g.UserName = (SELECT UserName FROM dbo.S_Account WHERE ID = #{accountID})
+              AND g.UserName = #{accountID}
             GROUP BY d.PID, a.ID, a.Name, d.ID, d.OrgName, c.ID, c.OrgName
 
             SELECT a.IntentProjectID ProjectID, COUNT(1) KHCount
@@ -2324,7 +2324,7 @@
                            JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID=e.ProjectID
                          JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID=f.JobID
                          JOIN dbo.S_Account (NOLOCK) g ON f.AccountID=g.ID
-                    WHERE a.Level=1 AND a.status=1 AND a.isdel=0 AND g.UserName=(SELECT UserName FROM dbo.S_Account WHERE ID=#{accountID})
+                    WHERE a.Level=1 AND a.status=1 AND a.isdel=0 AND g.UserName= #{accountID} 
                     GROUP BY d.PID,a.ID,a.Name,d.ID,d.OrgName,c.ID,c.OrgName
                 ) b ON h.flag=b.flag
 
