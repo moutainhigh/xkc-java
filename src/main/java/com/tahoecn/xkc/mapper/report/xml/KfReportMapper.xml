@@ -121,6 +121,7 @@
               AND a.isdel = 0
               AND g.UserName = #{ userName }
             GROUP BY d.PID, d.ID, d.OrgName
+            ORDER BY D.OrgName
     </select>
     
     <select id="getCOrgList" parameterType="java.lang.String" resultType="java.util.Map">
@@ -141,6 +142,7 @@
               AND g.UserName = #{ userName }
 							AND d.ID = #{ orgID }
             GROUP BY d.PID, d.ID, d.OrgName, c.ID, c.OrgName
+            ORDER BY C.OrgName
     </select>
     
     <select id="getOrgList" parameterType="java.lang.String" resultType="java.util.Map">
@@ -163,6 +165,7 @@
               AND g.UserName = #{ userName }
 							AND c.ID = #{ orgID }
             GROUP BY d.PID, a.ID, a.Name, d.ID, d.OrgName, c.ID, c.OrgName
+            ORDER BY a.Name
     </select>
 
 
