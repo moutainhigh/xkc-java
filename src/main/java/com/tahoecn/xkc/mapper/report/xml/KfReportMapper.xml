@@ -47,8 +47,14 @@
         <if test="null != report.customerName and report.customerName != ''" >
             AND a.CustomerName LIKE CONCAT('%', #{ report.customerName }, '%')
         </if>
+        <if test="null != report.reportUserName and report.reportUserName != ''" >
+            AND a.ReportUserName LIKE CONCAT('%', #{ report.reportUserName }, '%')
+        </if>
         <if test="null != report.customerMobile and report.customerMobile != ''" >
             AND a.CustomerMobile LIKE CONCAT('%', #{ report.customerMobile }, '%')
+        </if>
+        <if test="null != report.reportUserMobile and report.reportUserMobile != ''" >
+            AND a.ReportUserMobile LIKE CONCAT('%', #{ report.reportUserMobile }, '%')
         </if>
         <if test="null != report.saleUserName and report.saleUserName != ''" >
             AND a.SaleUserName LIKE CONCAT('%', #{ report.saleUserName }, '%')
