@@ -23,6 +23,18 @@
             LEFT JOIN S_Organization i ON h.BuGUID = i.id
             LEFT JOIN S_Organization j ON i.PID = j.ID
         WHERE mt.Name = '客服微信公众号'
+        <if test="null != report.tjOrgName and report.tjOrgName != ''" >
+            AND j.OrgName = #{ report.tjOrgName }
+        </if>
+        <if test="null != report.tjCityName and report.tjCityName != ''" >
+            AND i.OrgName = #{ report.tjCityName }
+        </if>
+        <if test="null != report.tjProjectName and report.tjProjectName != ''" >
+            AND h.Name = #{ report.tjProjectName }
+        </if>
+        <if test="null != report.tjRoomCode and report.tjRoomCode != ''" >
+            AND f.RoomCode LIKE CONCAT('%', #{ report.tjRoomCode }, '%')
+        </if>
         <if test="null != report.areaName and report.areaName != ''" >
             AND a.AreaName = #{ report.areaName }
         </if>
@@ -43,6 +55,7 @@
         </if>
         <if test="null != report.opportunitySource and report.opportunitySource != ''" >
             AND a.OpportunitySource = #{ report.opportunitySource }
+            OR a.ChannelName = #{ report.opportunitySource }
         </if>
         <if test="null != report.customerStatus and report.customerStatus != ''" >
             AND a.CustomerStatus = #{ report.customerStatus }
