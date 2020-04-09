@@ -36,7 +36,9 @@
         AND 4 THEN
         '无效'
         END 'statu',
-        SourceType
+        SourceType,
+        CustomerPotentialID,
+	    '' AS CustomerID
         FROM
         B_Clue ( NOLOCK )
         WHERE
@@ -68,7 +70,9 @@
         WHEN bop.Status= 7 THEN
         '退房'
         END 'statu',
-        cl.SourceType
+        cl.SourceType,
+        ISNULL(cl.CustomerPotentialID, '') AS CustomerPotentialID,
+	    bop.CustomerID
         FROM
         B_Opportunity ( NOLOCK ) bop
         LEFT JOIN B_SalesUser ( NOLOCK ) bsu ON bop.SaleUserID= bsu.ID
