@@ -19,4 +19,5 @@ public class CustomerVO {
     public void setOpportunityId(String opportunityId) {
         this.opportunityId = opportunityId;
     }
+
 }

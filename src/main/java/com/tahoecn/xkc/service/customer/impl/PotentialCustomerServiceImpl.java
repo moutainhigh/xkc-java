@@ -1,42 +1,28 @@
 package com.tahoecn.xkc.service.customer.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.Resource;
-
-import com.alibaba.fastjson.JSON;
-import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
+import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
-import com.tahoecn.xkc.model.vo.CGWDetailModel;
-import com.tahoecn.xkc.model.vo.CSearchModelVo;
-import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
-import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.CustomerModelVo;
-import com.tahoecn.xkc.model.vo.FilterItem;
-import com.tahoecn.xkc.model.vo.GWCustomerPageModel;
-import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.model.vo.*;
 import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
 import com.tahoecn.xkc.service.customer.IPotentialCustomerService;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -345,7 +331,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                 Long RowCount = vCustomergwlistSelectMapper.mSystemFormSessionStatus_Select_count(formSessionID);
                 if (RowCount > 0){
                     entity.setErrcode(1);
-        	        entity.setErrmsg("不能重复请求！");
+                    entity.setErrmsg("不能重复请求！");
                     return entity;
                 }
             }
@@ -355,7 +341,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                 if (Parameter.size() > 0){
                     String Mobile = Parameter.getString("Mobile");
                     String ChannelTaskID = Parameter.getString("ChannelTaskID");
-                    if (!StringUtils.isEmpty(ChannelTaskID)){//渠道任务ID
+                    if (!StringUtils.isEmpty(ChannelTaskID)){
+                        // 渠道任务ID
                     	Map<String,Object> channelTaskParam = new HashMap<String, Object>();
                         channelTaskParam.put("ChannelTaskID",ChannelTaskID);
                         Result channelTaskEntiry = mChannelTaskDetail_Select(channelTaskParam);
