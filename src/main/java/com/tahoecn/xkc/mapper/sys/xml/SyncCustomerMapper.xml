@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.sys.SyncCustomerMapper">
+
+    <update id="updateByCustomerID" parameterType="java.util.Map">
+    	UPDATE dbo.B_CustomerWhiteList
+		SET IsDel = 0,
+		 CustomerMobile = #{customerMobile},
+		 EditeTime = GETDATE(),
+		 Editor = #{editor}
+		WHERE
+			CustomerID = #{customerID}
+	</update>
+
+	<insert id="save" parameterType="java.util.Map">
+		INSERT INTO [dbo].[B_CustomerWhiteList] (
+			[ID],
+			[CustomerID],
+			[CustomerMobile],
+			[Creator],
+			[CreateTime],
+			[Editor],
+			[EditeTime],
+			[IsDel]
+		)
+		VALUES
+			(
+				#{id},
+				#{customerID},
+				#{customerMobile},
+				#{creator},
+				GETDATE(),
+				NULL,
+				NULL,
+				'0'
+			)
+	</insert>
+
+	<update id="deleteByCustomerID" parameterType="java.util.Map">
+		UPDATE dbo.B_CustomerWhiteList
+		SET IsDel = 1,
+		 EditeTime = GETDATE(),
+		 Editor = #{ editor }
+		WHERE
+			CustomerID = #{ customerID }
+	</update>
+</mapper>
