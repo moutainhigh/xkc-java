@@ -62,7 +62,8 @@
 		             THEN CONVERT(VARCHAR(100), A.CreateTime, 120)
 		             ELSE CONVERT(VARCHAR(100), A.EditTime, 120)
 		        END UpdateTime ,
-		        A.SaleStatus RoomStatusName
+		        A.SaleStatus RoomStatusName,
+		        E.CustomerID
 		FROM    B_Room A
 		        LEFT JOIN dbo.C_MYOrder B ON A.ID = B.RoomGUID
 		                                     AND B.OrderType = '认购'

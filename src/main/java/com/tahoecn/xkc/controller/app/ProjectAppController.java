@@ -2,11 +2,13 @@ package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.vo.FrVo;
 import com.tahoecn.xkc.model.vo.UnitVo;
+import com.tahoecn.xkc.service.customer.IBCustomerWhiteListService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBRoomService;
 import com.tahoecn.xkc.service.project.IVProjectbuildingService;
@@ -51,6 +53,8 @@ public class ProjectAppController extends TahoeBaseController {
 	private IBRoomService iBRoomService;
 	@Autowired
     private IBProjectService projectService;
+	@Autowired
+	private IBCustomerWhiteListService customerWhiteListService;
 	
 	@ResponseBody
     @ApiOperation(value = "房源列表GW", notes = "房源列表GW")
@@ -473,9 +477,15 @@ public class ProjectAppController extends TahoeBaseController {
             wrapper.eq("IsDel","0");
             BProject isHide = projectService.getOne(wrapper);
             if(re != null && re.size() > 0){
-            	//xkc修改---根据PC端配置
+
+                Map<String, Object> map = re.get(0);
+                String customerID = (String) map.get("CustomerID");
+                // 判断是否白名单用户
+                boolean isWhiteCustomer = !StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID);
+
+                //xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格0:隐藏，1:显示)
-                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0){
+                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0 || isWhiteCustomer){
                 	re.get(0).put("BldPrice","****");
             		re.get(0).put("TnPrice","****");
             		re.get(0).put("Total","****");
@@ -490,7 +500,32 @@ public class ProjectAppController extends TahoeBaseController {
                 		re.get(0).put("Total", "--");
                 	}
                 }
-            	return Result.ok(re.get(0));
+
+                if (isWhiteCustomer) {
+                    if (!StringUtils.isEmpty(map.get("CustomerName"))) {
+                        map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar((String)map.get("CustomerName")));
+                    }
+
+                    if(!StringUtils.isEmpty(map.get("CustomerPhone"))){
+                        map.put("CustomerPhone", StringShieldUtil.getAllStarStr((String)map.get("CustomerPhone")));
+                    }
+
+                    Object bldDealPrice = map.get("BldDealPrice");
+                    if (bldDealPrice != null) {
+                        map.put("BldDealPrice", "****");
+                    }
+
+                    Object tnDealPrice = map.get("TnDealPrice");
+                    if (tnDealPrice != null) {
+                        map.put("TnDealPrice", "****");
+                    }
+
+                    Object dealTotal = map.get("DealTotal");
+                    if (dealTotal != null) {
+                        map.put("DealTotal", "****");
+                    }
+                }
+                return Result.ok(re.get(0));
             }else{
             	return Result.ok("");
             }
