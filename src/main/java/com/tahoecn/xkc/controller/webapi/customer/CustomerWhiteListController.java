@@ -33,7 +33,7 @@ public class CustomerWhiteListController extends TahoeBaseController {
 
     @ApiOperation(value = "新增VIP白名单人员", notes = "新增VIP白名单人员")
     @RequestMapping(value = "/addOrUpdate", method = {RequestMethod.POST})
-    public Result addOrUpdate(@RequestBody CustomerWhiteListReq whiteList) {
+    public Result addOrUpdate(CustomerWhiteListReq whiteList) {
         String customerID = whiteList.getCustomerID();
         String customerMobile = whiteList.getCustomerMobile();
 
@@ -68,7 +68,7 @@ public class CustomerWhiteListController extends TahoeBaseController {
 
     @ApiOperation(value = "删除VIP白名单人员", notes = "删除VIP白名单人员")
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
-    public Result delete(@RequestBody DelCustomerWhiteListReq req) {
+    public Result delete(DelCustomerWhiteListReq req) {
         this.syncCustomerService.deleteByCustomerID(
                 req.getCustomerID(),
                 ThreadLocalUtils.getUserName());
