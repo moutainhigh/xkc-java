@@ -106,12 +106,9 @@
     <select id="getCustomer1" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
             resultType="java.util.HashMap">
        SELECT
-	       t.ID,
-	       t.CustomerPotentialID,
-	       t.Name,
-	       ( CASE t.Gender WHEN '50827B18-5BCC-454C-B658-09AF4328D2A0' THEN '1' WHEN 'EC3936F8-82DC-49AF-A8EB-153730359DE7' THEN '0' WHEN '男' THEN '1' WHEN '女' THEN '0' ELSE t.Gender END ) AS Gender
+            *
        FROM
-	       dbo.B_Clue t
+            dbo.B_Clue
        WHERE
             ReportUserID = #{relationship.userId}
             AND IntentProjectID = #{relationship.projectId}
@@ -120,15 +117,9 @@
     <select id="getCustomer2" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
             resultType="java.util.HashMap">
         SELECT
-            t.ID,
-            t.ProjectID,
-            t.SaleUserID,
-            t.ClueID,
-            t.CustomerID,
-            t.CustomerName,
-            t.CustomerMobile
+            *
         FROM
-            dbo.B_Opportunity t
+            dbo.B_Opportunity
         WHERE
             SaleUserID = #{relationship.userId}
             AND ProjectID = #{relationship.projectId}
