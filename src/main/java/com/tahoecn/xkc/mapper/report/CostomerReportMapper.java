@@ -19,4 +19,5 @@ import com.tahoecn.xkc.model.customer.CostomerReport;
 @DS("s199")
 public interface CostomerReportMapper extends BaseMapper<CostomerReport> {
 
+
 }
