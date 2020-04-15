@@ -1,18 +1,13 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
-import com.tahoecn.xkc.mapper.customer.BClueMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerpotentialfollowupMapper;
-import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
+import com.tahoecn.xkc.mapper.customer.*;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
@@ -24,16 +19,13 @@ import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
+import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MBrokerReportVO;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.sys.BMedialarge;
 import com.tahoecn.xkc.model.sys.SAccount;
-import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
-import com.tahoecn.xkc.model.vo.Customer;
-import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.CustomerStatus;
-import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.model.vo.*;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
@@ -42,16 +34,6 @@ import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.tahoecn.xkc.service.sys.IBMedialargeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +41,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -617,6 +604,137 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
         }
 
+        return save;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, MBrokerReportVO mBrokerReportVO) {
+        QueryWrapper<BCustomerpotential> wrapper = new QueryWrapper<>();
+        wrapper.eq("Mobile", mBrokerReportVO.getMobile());
+        List<BCustomerpotential> list = customerpotentialService.list(wrapper);
+        BCustomerpotential cp = new BCustomerpotential();
+        if (list.size() == 0) {
+            cp.setId(UUID.randomUUID().toString().toUpperCase());
+            cp.setName(mBrokerReportVO.getName());
+            cp.setLastName(mBrokerReportVO.getName());
+            cp.setGender(mBrokerReportVO.getGender());
+            cp.setMobile(mBrokerReportVO.getMobile());
+            cp.setCreator(mBrokerReportVO.getUserId());
+            cp.setCreateTime(new Date());
+            cp.setIsDel(0);
+            cp.setStatus(1);
+            customerpotentialService.save(cp);
+        } else {
+            cp.setId(list.get(0).getId());
+            cp.setName(mBrokerReportVO.getName());
+            cp.setLastName(mBrokerReportVO.getName());
+            cp.setGender(mBrokerReportVO.getGender());
+            cp.setMobile(mBrokerReportVO.getMobile());
+            cp.setCreator(mBrokerReportVO.getUserId());
+            cp.setCreateTime(new Date());
+            cp.setIsDel(0);
+            cp.setStatus(1);
+            customerpotentialService.updateById(cp);
+        }
+        String customerPotentialID = cp.getId();
+        Date InvalidTime = (boolean) ruleValidate.get("Tag") ? null : new Date();
+        String sourceType = customerpotentialService.getOpportunitySourceByAdviserGroup(mBrokerReportVO.getAdviserGroupId());
+        String ChannelIdentify = channelOrgId;
+        String ComeOverdueTime = UserRule.getComeOverdueTime();
+        String TradeOverdueTime = UserRule.getTradeOverdueTime();
+
+        int IsSelect = UserRule.getProtectRule().getIsSelect();
+        String ConfirmUserId = "";
+        if (UserRule.getImmissionRule().getValidationMode() == 2) {
+            ConfirmUserId = "99";
+        }
+        //获取报备人信息以及适配的规则
+        Map<String, Object> map = channeluserService.GetReportUserInfo_Select(mBrokerReportVO.getUserId(), mBrokerReportVO.getIntentProjectID(), ChannelIdentify);
+        BClue clue = new BClue();
+        clue.setId(UUID.randomUUID().toString().toUpperCase());
+        clue.setCustomerPotentialID(customerPotentialID);
+        clue.setName(mBrokerReportVO.getName());
+        clue.setLastName(mBrokerReportVO.getName());
+        clue.setGender((mBrokerReportVO.getGender()));
+        clue.setMobile(mBrokerReportVO.getMobile());
+        clue.setIntentProjectID(mBrokerReportVO.getIntentProjectID());
+        BProject project = projectService.getById(mBrokerReportVO.getIntentProjectID());
+        clue.setIntentProjectName(project.getName());
+        clue.setRemark(mBrokerReportVO.getRemark());
+        clue.setReportUserID(mBrokerReportVO.getUserId());
+        clue.setReportUserName((String) map.get("ReportUserName"));
+        clue.setReportUserMobile((String) map.get("ReportUserMobile"));
+        //如果参数有 直接设置为参数值  如果参数为空 取ReportUserOrg
+//        if (paramMap.get("newReportUserOrg")==null){
+//            clue.setReportUserOrg((String) map.get("ReportUserOrg"));
+//        }else {
+//            clue.setReportUserOrg((String) paramMap.get("newReportUserOrg"));
+//        }
+        //如果有上级机构,填入上级机构的id 如果没有 直接填登录人orgid
+        if (map.get("ReportUserOrg") != null) {
+            String ReportUserOrg = (String) map.get("ReportUserOrg");
+            BChannelorg byId = channelorgService.getById(ReportUserOrg);
+            if (byId != null && StringUtils.isNotBlank(byId.getNewPID())) {
+                clue.setReportUserOrg(byId.getNewPID());
+            } else {
+                clue.setReportUserOrg(ReportUserOrg);
+            }
+        }
+        clue.setRuleID((String) map.get("RuleID"));
+        clue.setInvalidType((int) ruleValidate.get("InvalidType"));
+        clue.setInvalidTime(InvalidTime);
+        clue.setInvalidReason((String) ruleValidate.get("Message"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+        try {
+            if (StringUtils.isNotBlank(ComeOverdueTime)) {
+                clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
+            }
+            if (StringUtils.isNotBlank(TradeOverdueTime)) {
+                clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+        clue.setAdviserGroupID(mBrokerReportVO.getAdviserGroupId());
+        clue.setSourceType(sourceType);
+        clue.setIsSelect(IsSelect);
+        clue.setConfirmTime(new Date());
+        clue.setCreator(mBrokerReportVO.getUserId());
+        clue.setCreateTime(new Date());
+        clue.setIsDel(0);
+        clue.setStatus(status);
+        clue.setConfirmUserId(ConfirmUserId);
+        boolean save = clueService.save(clue);
+        if (save) {
+            //允许报备老客户模式下，报备的线索有效，刷新机会中线索信息
+            if ((boolean) ruleValidate.get("IsExsitOpp")) {
+                String oppID = (String) ruleValidate.get("OppID");
+                //刷新已存
+                save = this.UpdateOppByNewClue_Update(clue.getId(), oppID);
+            }
+
+            JSONObject obj1 = new JSONObject();
+            obj1.put("FollwUpTypeID", (boolean) ruleValidate.get("Tag") ? ActionType.渠道报备.getValue() : ActionType.报备无效.getValue());
+            obj1.put("SalesType", 4);
+//            obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
+            obj1.put("NewSaleUserName", "");
+            obj1.put("OldSaleUserName", "");
+            obj1.put("FollwUpUserID", map.get("UserID"));
+            obj1.put("FollwUpWay", "");
+            obj1.put("FollowUpContent", "");
+            obj1.put("IntentionLevel", "");
+            // obj1.put("OrgID", paramMap.get("ReportUserOrg"));
+            obj1.put("OrgID", "");
+            obj1.put("FollwUpUserRole", map.get("JobID"));//todo 如果为空 742B2791-FED2-4ED3-9F8B-F337CE2D696A
+            obj1.put("OpportunityID", "");
+            obj1.put("ClueID", clue.getId());
+            obj1.put("NextFollowUpDate", "");
+            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+            iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+        }
         return save;
     }
 
