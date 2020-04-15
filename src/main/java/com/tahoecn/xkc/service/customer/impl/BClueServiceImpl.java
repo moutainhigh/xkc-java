@@ -1,18 +1,13 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
-import com.tahoecn.xkc.mapper.customer.BClueMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerpotentialfollowupMapper;
-import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
+import com.tahoecn.xkc.mapper.customer.*;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
@@ -29,11 +24,7 @@ import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.sys.BMedialarge;
 import com.tahoecn.xkc.model.sys.SAccount;
-import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
-import com.tahoecn.xkc.model.vo.Customer;
-import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.CustomerStatus;
-import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.model.vo.*;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
@@ -42,16 +33,6 @@ import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.tahoecn.xkc.service.sys.IBMedialargeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +40,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
