@@ -1302,6 +1302,523 @@
             DROP TABLE #qianyueB
         ]]>
     </select>
+    
+     <select id="KfChannelCustomerReport_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT d.PID
+                 , d.ID      POrgID
+                 , D.OrgName POrgName
+                 , c.ID      COrgID
+                 , C.OrgName COrgName
+                 , a.ID      ProjectID
+                 , a.Name    ProjectName
+            INTO #org
+            FROM B_Project (NOLOCK) a
+                     JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                     JOIN S_Organization(NOLOCK) d ON c.PID = d.ID
+                     JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID = e.ProjectID
+                     JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID = f.JobID
+                     JOIN dbo.S_Account (NOLOCK) g ON f.accountID = g.ID
+            WHERE a.Level = 1
+              AND a.status = 1
+              AND a.isdel = 0
+              AND g.UserName = #{accountID}
+            GROUP BY d.PID, a.ID, a.Name, d.ID, d.OrgName, c.ID, c.OrgName
+
+            SELECT a.IntentProjectID ProjectID, COUNT(1) KHCount
+            INTO #baobei
+            FROM dbo.B_Clue a (NOLOCK)
+						JOIN B_MediaLarge b ON a.CognitiveChannel = b.id
+            WHERE a.IsDel = 0 AND b.Name = '客服微信公众号'
+              AND a.CreateTime >= #{startDate}
+              AND a.CreateTime <= #{endDate}
+              AND a.SourceType IN (
+                                 '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                 '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                 '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                 '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                 'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                 '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                 'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                 '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                 'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                 '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            GROUP BY a.IntentProjectID
+
+            SELECT ProjectID, COUNT(1) KHCount
+            INTO #daofang
+            FROM dbo.B_Opportunity (NOLOCK)
+            WHERE IsDel = 0
+              AND CreateTime >= #{startDate}
+              AND CreateTime <= #{endDate}
+              AND OpportunitySource IN (
+                                        '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                        '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                        '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                        '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                        'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                        '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                        'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                        '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                        'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                        '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            GROUP BY ProjectID
+
+            SELECT P.PID                   ProjectID,
+                   COUNT(1)                BookingCount,
+                   SUM(ISNULL(A.Total, 0)) BookingAmount
+            INTO #renchouA
+            FROM C_MYBooking (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                              '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                              '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                              '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                              '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                              'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                              '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                              'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                              '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                              'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                              '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE A.Status IN ('排号')
+              AND A.BgnDate >= #{startDate}
+              AND A.BgnDate <= #{endDate}
+            GROUP BY P.PID
+
+            SELECT P.PID                   ProjectID,
+                   COUNT(1)                BookingCount,
+                   SUM(ISNULL(A.Total, 0)) BookingAmount
+            INTO #renchouB
+            FROM C_MYBooking (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                              '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                              '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                              '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                              '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                              'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                              '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                              'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                              '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                              'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                              '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE A.CloseYy IN ('退号', '作废', '转其它项目')
+              AND A.CloseDate >= #{startDate}
+              AND A.CloseDate <= #{endDate}
+            GROUP BY P.PID
+
+            SELECT P.PID    ProjectID,
+                   COUNT(1) OrderCount,
+                   SUM(CASE
+                           WHEN B.ContractGUID IS NOT NULL
+                               THEN B.HtTotal
+                               + ((~CAST(B.IsZxkbrht AS BIT))
+                                   * B.ZxTotal)
+                               + B.FactOtherTotal
+                           ELSE A.CjTotal
+                               + ((~CAST(A.IsZxkbrht AS BIT))
+                                   * A.ZxTotal)
+                               + A.FactOtherTotal
+                       END) OrderAmount
+            INTO #rengouA
+            FROM C_MYOrder (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     LEFT JOIN C_MYContract (NOLOCK) B
+                               ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ('换房', '退房'))
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                     '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                     '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                     '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                     'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                     '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                     'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                     '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                     'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                     '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE A.OrderType = '认购'
+              AND ((A.ChgDate >= #{startDate}
+                AND A.ChgDate <= #{endDate}
+                       )
+                OR (A.ChgDate IS NULL
+                    AND A.QsDate >= #{startDate}
+                    AND A.QsDate <= #{endDate}
+                       )
+                )
+            GROUP BY P.PID
+
+            SELECT P.PID    ProjectID,
+                   COUNT(1) OrderCount,
+                   SUM(CASE
+                           WHEN B.ContractGUID IS NOT NULL
+                               THEN B.HtTotal
+                               + ((~CAST(B.IsZxkbrht AS BIT))
+                                   * B.ZxTotal)
+                               + B.FactOtherTotal
+                           ELSE A.CjTotal
+                               + ((~CAST(A.IsZxkbrht AS BIT))
+                                   * A.ZxTotal)
+                               + A.FactOtherTotal
+                       END) OrderAmount,
+                   SUM(CASE A.CloseReason
+                           WHEN '退房' THEN 1
+                           ELSE 0
+                       END) OrderBackCount,
+                   SUM(CASE A.CloseReason
+                           WHEN '退房'
+                               THEN (CASE
+                                         WHEN B.ContractGUID IS NOT NULL
+                                             THEN B.HtTotal
+                                             + ((~CAST(B.IsZxkbrht AS BIT))
+                                                 * B.ZxTotal)
+                                             + B.FactOtherTotal
+                                         ELSE A.CjTotal
+                                             + ((~CAST(A.IsZxkbrht AS BIT))
+                                                 * A.ZxTotal)
+                                             + A.FactOtherTotal
+                               END)
+                           ELSE 0
+                       END) OrderBackAmount,
+                   SUM(CASE A.CloseReason
+                           WHEN '换房' THEN 1
+                           ELSE 0
+                       END) OrderChangeCount,
+                   SUM(CASE A.CloseReason
+                           WHEN '换房'
+                               THEN (CASE
+                                         WHEN B.ContractGUID IS NOT NULL
+                                             THEN B.HtTotal
+                                             + ((~CAST(B.IsZxkbrht AS BIT))
+                                                 * B.ZxTotal)
+                                             + B.FactOtherTotal
+                                         ELSE A.CjTotal
+                                             + ((~CAST(A.IsZxkbrht AS BIT))
+                                                 * A.ZxTotal)
+                                             + A.FactOtherTotal
+                               END)
+                           ELSE 0
+                       END) OrderChangeAmount
+            INTO #rengouB
+            FROM C_MYOrder (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     LEFT JOIN C_MYContract (NOLOCK) B
+                               ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ('换房', '退房'))
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                     '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                     '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                     '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                     'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                     '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                     'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                     '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                     'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                     '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE A.OrderType = '认购'
+              AND A.Status = '关闭'
+              AND A.CloseReason IN ('退房', '换房', '其它变更',
+                                    '作废', '特批折扣')
+              AND A.CloseDate >= #{startDate}
+              AND A.CloseDate <= #{endDate}
+            GROUP BY P.PID
+
+            SELECT P.PID    ProjectID,
+                   SUM(CASE B.CloseReason
+                           WHEN '换房' THEN 0
+                           ELSE 1
+                       END) OrderCount,
+                   SUM(CASE
+                           WHEN B.ContractGUID IS NOT NULL
+                               THEN (CASE
+                                         WHEN C.ContractGUID IS NOT NULL
+                                             THEN B.HtTotal
+                                                      + ((~CAST(B.IsZxkbrht AS BIT))
+                                                 * B.ZxTotal)
+                                                      + B.FactOtherTotal
+                                             - (C.HtTotal
+                                                 + ((~CAST(C.IsZxkbrht AS BIT))
+                                                     * C.ZxTotal)
+                                                 + C.FactOtherTotal)
+                                         ELSE B.HtTotal
+                                             + ((~CAST(B.IsZxkbrht AS BIT))
+                                                 * B.ZxTotal)
+                                             + B.FactOtherTotal
+                               END)
+                           ELSE A.CjTotal
+                               + ((~CAST(A.IsZxkbrht AS BIT))
+                                   * A.ZxTotal)
+                               + A.FactOtherTotal
+                       END) OrderAmount,
+                   SUM(CASE B.CloseReason
+                           WHEN '退房' THEN 1
+                           ELSE 0
+                       END) OrderBackCount,
+                   SUM(CASE B.CloseReason
+                           WHEN '退房'
+                               THEN (CASE
+                                         WHEN B.ContractGUID IS NOT NULL
+                                             THEN B.HtTotal
+                                             + ((~CAST(B.IsZxkbrht AS BIT))
+                                                 * B.ZxTotal)
+                                             + B.FactOtherTotal
+                                         ELSE A.CjTotal
+                                             + ((~CAST(A.IsZxkbrht AS BIT))
+                                                 * A.ZxTotal)
+                                             + A.FactOtherTotal
+                               END)
+                           ELSE 0
+                       END) OrderBackAmount,
+                   SUM(CASE B.CloseReason
+                           WHEN '换房' THEN 1
+                           ELSE 0
+                       END) OrderChangeCount,
+                   SUM(CASE B.CloseReason
+                           WHEN '换房'
+                               THEN (CASE
+                                         WHEN B.ContractGUID IS NOT NULL
+                                             THEN (CASE
+                                                       WHEN C.ContractGUID IS NOT NULL
+                                                           THEN B.HtTotal
+                                                                    + ((~CAST(B.IsZxkbrht AS BIT))
+                                                               * B.ZxTotal)
+                                                                    + B.FactOtherTotal
+                                                           - (C.HtTotal
+                                                               + ((~CAST(C.IsZxkbrht AS BIT))
+                                                                   * C.ZxTotal)
+                                                               + C.FactOtherTotal)
+                                                       ELSE B.HtTotal
+                                                           + ((~CAST(B.IsZxkbrht AS BIT))
+                                                               * B.ZxTotal)
+                                                           + B.FactOtherTotal
+                                             END)
+                                         ELSE A.CjTotal
+                                             + ((~CAST(A.IsZxkbrht AS BIT))
+                                                 * A.ZxTotal)
+                                             + A.FactOtherTotal
+                               END)
+                           ELSE 0
+                       END) OrderChangeAmount
+            INTO #rengouC
+            FROM C_MYOrder (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     JOIN C_MYContract (NOLOCK) B
+                          ON A.TradeGUID = B.TradeGUID AND B.CloseDate >= #{startDate} AND B.CloseDate <= #{endDate} AND
+                             B.CloseReason IN ('退房', '换房')
+                     LEFT JOIN C_MYContract (NOLOCK) C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                     '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                     '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                     '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                     'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                     '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                     'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                     '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                     'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                     '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE A.OrderType = '认购'
+              AND A.CloseReason = '转签约'
+            GROUP BY P.PID
+
+            SELECT P.PID                                    ProjectID,
+                   COUNT(1)                                 ContractCount,
+                   SUM(A.RmbHtTotal
+                       + ((~CAST(A.IsZxkbrht AS BIT))
+                           * A.ZxTotal) + A.FactOtherTotal) ContractAmount,
+                   SUM(ISNULL(A.BldArea, 0))                ContractBldArea,
+                   SUM(CASE
+                           WHEN C.PCode IN ('03', '05') THEN 0
+                           ELSE (A.RmbHtTotal
+                               + ((~CAST(A.IsZxkbrht AS BIT))
+                                   * A.ZxTotal)
+                               + A.FactOtherTotal)
+                       END)                                 ContractHouseAmount,
+                   SUM(CASE
+                           WHEN C.PCode IN ('03', '05') THEN 0
+                           ELSE ISNULL(A.BldArea, 0)
+                       END)                                 ContractHouseBldArea
+            INTO #qianyueA
+            FROM C_MYContract (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+                     JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                     '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                     '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                     '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                     'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                     '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                     'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                     '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                     'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                     '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE NOT EXISTS(SELECT SaleGUID
+                             FROM C_MYSaleModiApply (NOLOCK) c
+                             WHERE c.IsCstBg = 1
+                               AND c.IsPayformBg = 0
+                               AND c.IsYhBg = 0
+                               AND c.IsCjtotalBg = 0
+                               AND c.IsExcutive = 1
+                               AND a.LastSaleGUID = c.SaleGUID
+                               AND SaleType <> '定单')
+              AND (A.ConStatus = '正签'
+                OR ISNULL(A.ConStatus, '') = ''
+                )
+              AND (CASE
+                       WHEN A.chgdate >= A.ZqDate
+                           THEN A.chgdate
+                       ELSE A.zqdate
+                END) >= #{startDate}
+              AND (CASE
+                       WHEN A.chgdate >= A.ZqDate
+                           THEN A.chgdate
+                       ELSE A.zqdate
+                END) <= #{endDate}
+            GROUP BY P.PID
+
+            SELECT P.PID                                    ProjectID,
+                   COUNT(1)                                 ContractCount,
+                   SUM(A.RmbHtTotal
+                       + ((~CAST(A.IsZxkbrht AS BIT))
+                           * A.ZxTotal) + A.FactOtherTotal) ContractAmount,
+                   SUM(ISNULL(A.BldArea, 0))                ContractBldArea,
+                   SUM(CASE A.CloseReason
+                           WHEN '退房' THEN 1
+                           ELSE 0
+                       END)                                 ContractBackCount,
+                   SUM(CASE A.CloseReason
+                           WHEN '退房' THEN ISNULL(A.Total, 0)
+                           ELSE 0
+                       END)                                 ContractBackAmount,
+                   SUM(CASE
+                           WHEN C.PCode IN ('03', '05') THEN 0
+                           ELSE (A.RmbHtTotal
+                               + ((~CAST(A.IsZxkbrht AS BIT))
+                                   * A.ZxTotal)
+                               + A.FactOtherTotal)
+                       END)                                 ContractHouseAmount,
+                   SUM(CASE
+                           WHEN C.PCode IN ('03', '05') THEN 0
+                           ELSE ISNULL(A.BldArea, 0)
+                       END)                                 ContractHouseBldArea
+            INTO #qianyueB
+            FROM dbo.C_MYContract (NOLOCK) A
+                     JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+                     JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+                     JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+                     JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID = MT.TradeGUID
+                     JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID = CA.ID
+                     JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID = O.ID AND O.OpportunitySource IN (
+                                                                                                     '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+                                                                                                     '86D702BC-F30F-4091-B520-CA0909CADCDD',
+                                                                                                     '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+                                                                                                     '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+                                                                                                     'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+                                                                                                     '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+                                                                                                     'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+                                                                                                     '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+                                                                                                     'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+                                                                                                     '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+                )
+            WHERE NOT EXISTS(SELECT SaleGUID
+                             FROM C_MYSaleModiApply (NOLOCK) c
+                             WHERE c.IsCstBg = 1
+                               AND c.IsPayformBg = 0
+                               AND c.IsYhBg = 0
+                               AND c.IsCjtotalBg = 0
+                               AND c.IsExcutive = 1
+                               AND a.ContractGUID = c.SaleGUID)
+              AND (A.ConStatus = '正签'
+                OR ISNULL(A.ConStatus, '') = ''
+                )
+              AND A.CloseReason IN ('退房', '换房', '其它变更',
+                                    '重置认购', '作废', '特批折扣')
+              AND A.Status = '关闭'
+              AND A.CloseDate >= #{startDate}
+              AND A.CloseDate <= #{endDate}
+            GROUP BY P.PID;
+
+            WITH kcview AS (
+                SELECT org.PID,
+                       org.POrgID,
+                       org.POrgName                                                      area,
+                       org.COrgID,
+                       org.COrgName                                                      city,
+                       org.ProjectID,
+                       org.ProjectName                                                   project,
+                       ISNULL(baobei.KHCount, 0)                                         baobeiCount,
+                       ISNULL(daofang.KHCount, 0)                                        daofangCount,
+
+                       ISNULL(renchouA.BookingCount, 0)                                  BookingCount,
+
+                       0 - ISNULL(renchouB.BookingCount, 0)                              BookingCancelCount,
+
+
+                       ISNULL(rengoua.OrderCount, 0)                                     OrderCount,
+                       ISNULL(rengoua.OrderAmount, 0)                                    OrderAmount,
+                       0 - ISNULL(rengoub.OrderCount, 0) - ISNULL(rengouc.OrderCount, 0) OrderCancelCount,
+
+
+                       ISNULL(qianyuea.ContractCount, 0)                                 ContractCount,
+                       Convert(decimal(18, 2), ISNULL(qianyuea.ContractAmount, 0))       ContractAmount,
+                       (CASE #{orglevel}
+                            WHEN '5' THEN org.POrgID
+                            WHEN '6' THEN org.COrgID
+                            WHEN '7' THEN org.ProjectID
+                            WHEN '8' THEN org.ProjectID
+                            ELSE '' END)                                                 haschildren
+                FROM #org org
+                         LEFT JOIN #baobei baobei ON org.ProjectID = baobei.ProjectID
+                         LEFT JOIN #daofang daofang ON org.ProjectID = daofang.ProjectID
+
+                         LEFT JOIN #renchouA renchouA ON org.ProjectID = renchouA.ProjectID
+
+                         LEFT JOIN #renchouB renchouB ON org.ProjectID = renchouB.ProjectID
+
+
+                         LEFT JOIN #rengouA rengoua ON org.ProjectID = rengoua.ProjectID
+                         LEFT JOIN #rengouB rengoub ON org.ProjectID = rengoub.ProjectID
+                         LEFT JOIN #rengouC rengouc ON org.ProjectID = rengouc.ProjectID
+
+
+                         LEFT JOIN #qianyueA qianyuea ON org.ProjectID = qianyuea.ProjectID
+                         LEFT JOIN #qianyueB qianyueb ON org.ProjectID = qianyueb.ProjectID
+            )
+
+                ${sql}
+
+            DROP TABLE #org
+            DROP TABLE #baobei
+            DROP TABLE #daofang
+            DROP TABLE #renchouA
+            DROP TABLE #renchouB
+            DROP TABLE #rengouA
+            DROP TABLE #rengouB
+            DROP TABLE #rengouC
+            DROP TABLE #qianyueA
+            DROP TABLE #qianyueB
+        ]]>
+    </select>
     <select id="ChannelCustomerReportDL_Select" resultType="java.util.Map">
         <![CDATA[
             SELECT h.OpportunitySource,h.DictName , b.* into #org
@@ -1338,6 +1855,499 @@
             '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
             )
             GROUP BY IntentProjectID,SourceType
+
+            SELECT ProjectID,COUNT(1) KHCount,OpportunitySource
+            INTO #daofang
+            FROM dbo.B_Opportunity (NOLOCK)
+            WHERE IsDel=0 AND CreateTime>=#{startDate} AND CreateTime<=#{endDate}
+            AND OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            GROUP BY ProjectID,OpportunitySource
+
+            SELECT P.PID ProjectID ,
+            COUNT(1) BookingCount ,
+            O.OpportunitySource,
+            SUM(ISNULL(A.Total, 0)) BookingAmount
+            INTO #renchouA
+            FROM C_MYBooking (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE  A.Status IN ( '排号' )
+            AND A.BgnDate >= #{startDate}
+            AND A.BgnDate <= #{endDate}
+            GROUP BY P.PID,O.OpportunitySource
+
+            SELECT P.PID ProjectID ,
+            COUNT(1) BookingCount ,
+            O.OpportunitySource,
+            SUM(ISNULL(A.Total, 0)) BookingAmount
+            INTO #renchouB
+            FROM   C_MYBooking (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON CA.ID = A.OppGUID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE  A.CloseYy IN ( '退号', '作废', '转其它项目' )
+            AND A.CloseDate >= #{startDate}
+            AND A.CloseDate <= #{endDate}
+            GROUP BY P.PID,O.OpportunitySource
+
+            SELECT  P.PID ProjectID ,
+            COUNT(1) OrderCount ,
+            O.OpportunitySource,
+            SUM(CASE WHEN B.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END) OrderAmount
+            INTO #rengouA
+            FROM    C_MYOrder (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活'OR B.CloseReason IN ('换房', '退房' ))
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE   A.OrderType = '认购'
+            AND ( ( A.ChgDate >= #{startDate}
+            AND A.ChgDate <= #{endDate}
+            )
+            OR ( A.ChgDate IS NULL
+            AND A.QsDate >= #{startDate}
+            AND A.QsDate <= #{endDate}
+            )
+            )
+            GROUP BY P.PID,O.OpportunitySource
+
+            SELECT  P.PID ProjectID ,
+            COUNT(1) OrderCount ,
+            O.OpportunitySource,
+            SUM(CASE WHEN B.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END) OrderAmount ,
+            SUM(CASE A.CloseReason
+            WHEN '退房' THEN 1
+            ELSE 0
+            END) OrderBackCount ,
+            SUM(CASE A.CloseReason
+            WHEN '退房'
+            THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END )
+            ELSE 0
+            END) OrderBackAmount ,
+            SUM(CASE A.CloseReason
+            WHEN '换房' THEN 1
+            ELSE 0
+            END) OrderChangeCount ,
+            SUM(CASE A.CloseReason
+            WHEN '换房'
+            THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END )
+            ELSE 0
+            END) OrderChangeAmount
+            INTO #rengouB
+            FROM    C_MYOrder (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            LEFT JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND (B.Status = '激活' OR B.CloseReason IN ('换房', '退房' ))
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE   A.OrderType = '认购'
+            AND A.Status = '关闭'
+            AND A.CloseReason IN ( '退房', '换房', '其它变更',
+            '作废', '特批折扣' )
+            AND A.CloseDate >= #{startDate}
+            AND A.CloseDate <= #{endDate}
+            GROUP BY P.PID,O.OpportunitySource
+
+             SELECT  P.PID ProjectID ,
+              O.OpportunitySource,
+            SUM(CASE B.CloseReason
+            WHEN '换房' THEN 0
+            ELSE 1
+            END) OrderCount ,
+            SUM(CASE WHEN B.ContractGUID IS NOT NULL
+            THEN ( CASE WHEN C.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            - ( C.HtTotal
+            + ( ( ~CAST(C.IsZxkbrht AS BIT) )
+            * C.ZxTotal )
+            + C.FactOtherTotal )
+            ELSE B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            END )
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END) OrderAmount ,
+            SUM(CASE B.CloseReason
+            WHEN '退房' THEN 1
+            ELSE 0
+            END) OrderBackCount ,
+            SUM(CASE B.CloseReason
+            WHEN '退房'
+            THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END )
+            ELSE 0
+            END) OrderBackAmount ,
+            SUM(CASE B.CloseReason
+            WHEN '换房' THEN 1
+            ELSE 0
+            END) OrderChangeCount ,
+            SUM(CASE B.CloseReason
+            WHEN '换房'
+            THEN ( CASE WHEN B.ContractGUID IS NOT NULL
+            THEN ( CASE WHEN C.ContractGUID IS NOT NULL
+            THEN B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            - ( C.HtTotal
+            + ( ( ~CAST(C.IsZxkbrht AS BIT) )
+            * C.ZxTotal )
+            + C.FactOtherTotal )
+            ELSE B.HtTotal
+            + ( ( ~CAST(B.IsZxkbrht AS BIT) )
+            * B.ZxTotal )
+            + B.FactOtherTotal
+            END )
+            ELSE A.CjTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal
+            END )
+            ELSE 0
+            END) OrderChangeAmount
+            INTO #rengouC
+            FROM C_MYOrder (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            JOIN C_MYContract (NOLOCK) B ON A.TradeGUID = B.TradeGUID AND B.CloseDate >= #{startDate} AND B.CloseDate <= #{endDate} AND B.CloseReason IN('退房', '换房')
+            LEFT JOIN C_MYContract (NOLOCK) C ON C.LastSaleGUID = B.ContractGUID AND B.CloseReason = '换房'
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE   A.OrderType = '认购'
+            AND A.CloseReason = '转签约'
+            GROUP BY P.PID,O.OpportunitySource
+
+            SELECT P.PID ProjectID ,
+            COUNT(1) ContractCount ,
+            O.OpportunitySource,
+            SUM(A.RmbHtTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal ) + A.FactOtherTotal) ContractAmount ,
+            SUM(ISNULL(A.BldArea, 0)) ContractBldArea ,
+            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+            ELSE ( A.RmbHtTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal )
+            END) ContractHouseAmount ,
+            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+            ELSE ISNULL(A.BldArea, 0)
+            END) ContractHouseBldArea
+            INTO #qianyueA
+            FROM   C_MYContract (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+            JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE  NOT EXISTS ( SELECT SaleGUID
+            FROM   C_MYSaleModiApply (NOLOCK) c
+            WHERE  c.IsCstBg = 1
+            AND c.IsPayformBg = 0
+            AND c.IsYhBg = 0
+            AND c.IsCjtotalBg = 0
+            AND c.IsExcutive = 1
+            AND a.LastSaleGUID = c.SaleGUID
+            AND SaleType <> '定单' )
+            AND ( A.ConStatus = '正签'
+            OR ISNULL(A.ConStatus, '') = ''
+            )
+            AND ( CASE WHEN A.chgdate >= A.ZqDate
+            THEN A.chgdate
+            ELSE A.zqdate
+            END ) >= #{startDate}
+            AND ( CASE WHEN A.chgdate >= A.ZqDate
+            THEN A.chgdate
+            ELSE A.zqdate
+            END ) <= #{endDate}
+            GROUP BY P.PID,O.OpportunitySource
+
+            SELECT P.PID ProjectID ,
+            COUNT(1) ContractCount ,
+            O.OpportunitySource,
+            SUM(A.RmbHtTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal ) + A.FactOtherTotal) ContractAmount ,
+            SUM(ISNULL(A.BldArea, 0)) ContractBldArea ,
+            SUM(CASE A.CloseReason
+            WHEN '退房' THEN 1
+            ELSE 0
+            END) ContractBackCount ,
+            SUM(CASE A.CloseReason
+            WHEN '退房' THEN ISNULL(A.Total, 0)
+            ELSE 0
+            END) ContractBackAmount ,
+            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+            ELSE ( A.RmbHtTotal
+            + ( ( ~CAST(A.IsZxkbrht AS BIT) )
+            * A.ZxTotal )
+            + A.FactOtherTotal )
+            END) ContractHouseAmount ,
+            SUM(CASE WHEN C.PCode IN ( '03', '05' ) THEN 0
+            ELSE ISNULL(A.BldArea, 0)
+            END) ContractHouseBldArea
+            INTO #qianyueB
+            FROM   dbo.C_MYContract (NOLOCK) A
+            JOIN dbo.B_Project (NOLOCK) P ON P.ID = A.ProjGUID
+            JOIN B_Room (NOLOCK) B ON A.RoomGUID = B.ID
+            JOIN B_BuildProductType (NOLOCK) C ON B.BProductTypeCode = C.Code
+            JOIN dbo.C_MYTrade (NOLOCK) MT ON A.TradeGUID=MT.TradeGUID
+            JOIN dbo.B_CustomerAttach (NOLOCK) CA ON MT.OppGUID=CA.ID
+            JOIN dbo.B_Opportunity (NOLOCK) O ON CA.OpportunityID=O.ID AND O.OpportunitySource IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            WHERE  NOT EXISTS ( SELECT SaleGUID
+            FROM   C_MYSaleModiApply (NOLOCK) c
+            WHERE  c.IsCstBg = 1
+            AND c.IsPayformBg = 0
+            AND c.IsYhBg = 0
+            AND c.IsCjtotalBg = 0
+            AND c.IsExcutive = 1
+            AND a.ContractGUID = c.SaleGUID )
+            AND ( A.ConStatus = '正签'
+            OR ISNULL(A.ConStatus, '') = ''
+            )
+            AND A.CloseReason IN ( '退房', '换房', '其它变更',
+            '重置认购', '作废', '特批折扣' )
+            AND A.Status = '关闭'
+            AND A.CloseDate >= #{startDate}
+            AND A.CloseDate <= #{endDate}
+            GROUP BY P.PID,O.OpportunitySource;
+
+            WITH kcview AS (
+            SELECT org.PID,org.POrgID,org.POrgName area,org.COrgID,org.COrgName city,org.ProjectID,org.ProjectName project,org.OpportunitySource,org.DictName,
+            ISNULL(baobei.KHCount, 0) baobeiCount,
+            ISNULL(daofang.KHCount, 0) daofangCount,
+
+            ISNULL(renchouA.BookingCount, 0) BookingCount ,
+
+            0 - ISNULL(renchouB.BookingCount, 0) BookingCancelCount ,
+
+
+
+            ISNULL(rengoua.OrderCount, 0) OrderCount ,
+            ISNULL(rengoua.OrderAmount, 0) OrderAmount ,
+            0 - ISNULL(rengoub.OrderCount, 0) - ISNULL(rengouc.OrderCount, 0) OrderCancelCount,
+
+
+            ISNULL(qianyuea.ContractCount, 0) ContractCount ,
+            Convert(decimal(18,2),ISNULL(qianyuea.ContractAmount, 0)) ContractAmount ,
+            (CASE #{orglevel} WHEN '5' THEN org.POrgID WHEN '6' THEN org.COrgID WHEN '7' THEN org.ProjectID WHEN '8' THEN org.ProjectID  ELSE '' END) haschildren
+            FROM #org org
+            LEFT JOIN #baobei baobei ON org.ProjectID=baobei.ProjectID AND baobei.OpportunitySource = org.OpportunitySource
+            LEFT JOIN #daofang daofang ON org.ProjectID=daofang.ProjectID AND daofang.OpportunitySource = org.OpportunitySource
+
+            LEFT JOIN #renchouA renchouA ON org.ProjectID=renchouA.ProjectID AND renchouA.OpportunitySource = org.OpportunitySource
+
+            LEFT JOIN #renchouB renchouB ON org.ProjectID=renchouB.ProjectID AND renchouB.OpportunitySource = org.OpportunitySource
+
+
+            LEFT JOIN #rengouA rengoua ON org.ProjectID = rengoua.ProjectID AND rengoua.OpportunitySource = org.OpportunitySource
+            LEFT JOIN #rengouB rengoub ON org.ProjectID = rengoub.ProjectID AND rengoub.OpportunitySource = org.OpportunitySource
+            LEFT JOIN #rengouC rengouc ON org.ProjectID = rengouc.ProjectID AND rengouc.OpportunitySource = org.OpportunitySource
+
+
+            LEFT  JOIN #qianyueA qianyuea ON org.ProjectID = qianyuea.ProjectID AND qianyuea.OpportunitySource = org.OpportunitySource
+            LEFT  JOIN #qianyueB qianyueb ON org.ProjectID = qianyueb.ProjectID AND qianyueb.OpportunitySource = org.OpportunitySource
+            )
+
+            SELECT kcview.area,kcview.city,kcview.project,kcview.DictName,'', '',SUM(baobeiCount) baobeiCount,SUM(daofangCount) daofangCount,SUM(BookingCount) BookingCount,SUM(BookingCancelCount) BookingCancelCount,SUM(OrderCount) OrderCount,Convert(decimal(18,2),SUM(OrderAmount)) OrderAmount,SUM(OrderCancelCount) OrderCancelCount,SUM(ContractCount) ContractCount,Convert(decimal(18,2),SUM(ContractAmount)) ContractAmount,haschildren,'8' level
+            FROM kcview
+            GROUP BY kcview.area,kcview.city, kcview.project,kcview.OpportunitySource,kcview.DictName,kcview.haschildren
+            ORDER BY kcview.area,kcview.city, kcview.project,kcview.DictName
+
+            DROP TABLE #org
+            DROP TABLE #baobei
+            DROP TABLE #daofang
+            DROP TABLE #renchouA
+            DROP TABLE #renchouB
+            DROP TABLE #rengouA
+            DROP TABLE #rengouB
+            DROP TABLE #rengouC
+            DROP TABLE #qianyueA
+            DROP TABLE #qianyueB
+        ]]>
+    </select>
+    <select id="kfChannelCustomerReportDL_Select" resultType="java.util.Map">
+        <![CDATA[
+            SELECT h.OpportunitySource,h.DictName , b.* into #org
+                FROM   ( SELECT    ID OpportunitySource , DictName,1 flag
+                          FROM      dbo.S_Dictionary (NOLOCK)
+                          WHERE     PID = 'F1725D6B-D1F7-4BC3-8C35-20FAB53A1602' AND Ext2 = 1
+                       ) h
+                LEFT JOIN (
+                    SELECT  d.PID, d.ID POrgID, D.OrgName POrgName ,c.ID COrgID,C.OrgName COrgName
+                        ,a.ID ProjectID , a.Name ProjectName,1 flag
+                    FROM B_Project (NOLOCK) a
+                         JOIN S_Organization (NOLOCK) c ON a.BUGUID = c.ID
+                         JOIN S_Organization (NOLOCK) d ON c.PID = d.ID
+                           JOIN dbo.B_ProjectJobRel (NOLOCK) e ON a.ID=e.ProjectID
+                         JOIN dbo.S_JobsUserRel (NOLOCK) f ON e.JobID=f.JobID
+                         JOIN dbo.S_Account (NOLOCK) g ON f.AccountID=g.ID
+                    WHERE a.Level=1 AND a.status=1 AND a.isdel=0 AND g.UserName= #{accountID} 
+                    GROUP BY d.PID,a.ID,a.Name,d.ID,d.OrgName,c.ID,c.OrgName
+                ) b ON h.flag=b.flag
+
+            SELECT a.IntentProjectID ProjectID,COUNT(1) KHCount ,a.SourceType OpportunitySource
+            INTO #baobei
+            FROM dbo.B_Clue a (NOLOCK)
+						JOIN B_MediaLarge b ON a.CognitiveChannel = b.id
+						WHERE a.IsDel = 0 AND b.Name = '客服微信公众号'
+              AND a.CreateTime >= #{startDate}
+              AND a.CreateTime <= #{endDate}
+              AND a.SourceType  IN (
+            '80D2A7B1-115A-4F3A-BB7D-F227F641C5F1',
+            '86D702BC-F30F-4091-B520-CA0909CADCDD',
+            '709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF',
+            '266E0F4F-2EE1-4305-9115-49DDE2186D57',
+            'B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2',
+            '3D98E549-CD23-4301-B5AD-5F1AAAFA9EE7',
+            'E4DFA1D5-95F9-4D89-B754-E7CC81D58196',
+            '7F4E0089-E21D-0F97-DC48-0DBF0740367D',
+            'BA06AE1D-E29A-4BC7-A811-A26E103B5E7E',
+            '798A45A6-9169-4E5C-BEE3-1CDB158F5D69'
+            )
+            GROUP BY a.IntentProjectID,a.SourceType
 
             SELECT ProjectID,COUNT(1) KHCount,OpportunitySource
             INTO #daofang

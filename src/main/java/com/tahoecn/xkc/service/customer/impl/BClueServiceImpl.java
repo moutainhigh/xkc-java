@@ -1,13 +1,18 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
-import com.tahoecn.xkc.mapper.customer.*;
+import com.tahoecn.xkc.mapper.customer.BClueMapper;
+import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
+import com.tahoecn.xkc.mapper.customer.BCustomerpotentialfollowupMapper;
+import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
@@ -19,12 +24,16 @@ import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
-import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MBrokerReportVO;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
+import com.tahoecn.xkc.model.sys.BMedialarge;
 import com.tahoecn.xkc.model.sys.SAccount;
-import com.tahoecn.xkc.model.vo.*;
+import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
+import com.tahoecn.xkc.model.vo.Customer;
+import com.tahoecn.xkc.model.vo.CustomerActionVo;
+import com.tahoecn.xkc.model.vo.CustomerStatus;
+import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.IBClueService;
@@ -33,17 +42,23 @@ import com.tahoecn.xkc.service.customer.ICustomerHelp;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.tahoecn.xkc.service.sys.IBMedialargeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * <p>
@@ -56,26 +71,26 @@ import java.util.*;
 @Service
 public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements IBClueService {
 
-    @Autowired
-    private BClueMapper clueMapper;
+	@Autowired
+	private BClueMapper clueMapper;
 
-    @Autowired
-    private BChanneluserMapper channeluserMapper;
+	@Autowired
+	private BChanneluserMapper channeluserMapper;
+	
+	@Autowired
+	private SAccountMapper accountMapper;
 
-    @Autowired
-    private SAccountMapper accountMapper;
+	@Autowired
+	private BCustomerMapper customerMapper;
 
-    @Autowired
-    private BCustomerMapper customerMapper;
+	@Autowired
+	private BCustomerpotentialMapper customerpotentialMapper;
 
-    @Autowired
-    private BCustomerpotentialMapper customerpotentialMapper;
+	@Autowired
+	private BClueruleMapper clueruleMapper;
 
-    @Autowired
-    private BClueruleMapper clueruleMapper;
-
-    @Autowired
-    private BCustomerpotentialfollowupMapper customerpotentialfollowupMapper;
+	@Autowired
+	private BCustomerpotentialfollowupMapper customerpotentialfollowupMapper;
 
     @Autowired
     private IBClueService clueService;
@@ -92,37 +107,40 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     @Autowired
     private IBProjectService projectService;
 
-    @Autowired
-    private VABrokerMycustomersMapper vABrokerMycustomersMapper;
+	@Autowired
+	private VABrokerMycustomersMapper vABrokerMycustomersMapper;
 
-    @Autowired
-    private BProjectMapper projectMapper;
+	@Autowired
+	private BProjectMapper projectMapper;
 
-    @Autowired
+	@Autowired
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
 
-    @Autowired
+	@Autowired
     private IBChannelorgService channelorgService;
 
     @Autowired
     private ICustomerHelp customerTemplate;
 
-    @Value("${mobilesale.ruleid}")
-    private String ruleId;
+    @Autowired
+    private IBMedialargeService bMediaLargeService;
+    
+	@Value("${mobilesale.ruleid}")
+	private String ruleId;
 
-    @Value("${mobilesale.sourcetype}")
-    private String sourceType;
+	@Value("${mobilesale.sourcetype}")
+	private String sourceType;
 
-    @Value("${mobilesale.advisergroupid}")
-    private String adviserGroupId;
+	@Value("${mobilesale.advisergroupid}")
+	private String adviserGroupId;
 
-    static private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public Map<String, Object> mBrokerCustomerDetail_Select(String clueID) {
 
         Map<String, Object> map = baseMapper.BrokerClueDetail_Select(clueID);
-        if (map != null && map.size() > 0) {
+        if (map!=null&&map.size()>0) {
             map.isEmpty();
             //获取轨迹记录
             List<Map<String, Object>> list = baseMapper.TrackList_Select(clueID);
@@ -237,40 +255,40 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             }
             //允许报备满足条件的老客户（新客户+不在渠道保护期和案场保护期的老客户）
             else {
-                //老业主限制，0.不允许报备老业主 1.仅允许报备其它项目老业主
-                if ((int) map.get("OldOwnerLimit") == 0) {
-                    //验证是否集团老业主
-                    QueryWrapper<BCustomer> queryWrapper = new QueryWrapper<>();
-                    queryWrapper.eq("Status", 1).eq("IsOwner", 1).eq("Mobile", mobile);
-                    Integer integer = customerMapper.selectCount(queryWrapper);
-                    if (integer > 0) {
-                        returnMap.put("Tag", false);
-                        returnMap.put("InvalidType", 1);
-                        return returnMap;
-                    }
-                } else {
-                    //验证是否是本项目老业主
-                    List<Map<String, Object>> list = baseMapper.IsProjectOwner_Select(projectId, mobile);
-                    if (list.size() > 0) {
-                        returnMap.put("Tag", false);
-                        returnMap.put("InvalidType", 11);
-                        return returnMap;
-                    }
-                }
-                // 其他条件满足的情况下，验证报备的线索是否有效
-                ChannelRegisterModel channelRegisterModel = new ChannelRegisterModel();
-                channelRegisterModel.setChannelUserId(userID);
-                channelRegisterModel.setUserRule((RegisterRuleBaseModel) map.get("RuleType"));
-                returnMap = this.validateClue(mobile, projectId, userID, map);
-                if (!((Boolean) returnMap.get("Tag"))) {
+            //老业主限制，0.不允许报备老业主 1.仅允许报备其它项目老业主
+            if ((int) map.get("OldOwnerLimit") == 0){
+                //验证是否集团老业主
+            QueryWrapper<BCustomer> queryWrapper=new QueryWrapper<>();
+            queryWrapper.eq("Status",1).eq("IsOwner",1).eq("Mobile",mobile);
+            Integer integer = customerMapper.selectCount(queryWrapper);
+            if (integer>0){
+                returnMap.put("Tag", false);
+                returnMap.put("InvalidType", 1);
+                return returnMap;
+            }
+            }
+            else {
+                //验证是否是本项目老业主
+                List<Map<String,Object>> list=baseMapper.IsProjectOwner_Select(projectId,mobile);
+                if (list.size()>0){
+                    returnMap.put("Tag", false);
+                    returnMap.put("InvalidType", 11);
                     return returnMap;
                 }
-                return this.validateOpp(mobile, projectId);
+            }
+                // 其他条件满足的情况下，验证报备的线索是否有效
+                ChannelRegisterModel channelRegisterModel=new ChannelRegisterModel();
+            channelRegisterModel.setChannelUserId(userID);
+            channelRegisterModel.setUserRule((RegisterRuleBaseModel) map.get("RuleType"));
+                returnMap=this.validateClue(mobile,projectId,userID,map);
+                if (!((Boolean) returnMap.get("Tag"))){
+                    return returnMap;
+                }
+                return this.validateOpp(mobile,projectId);
             }
         }
         return returnMap;
     }
-
     /**
      * 验证是否满足不存在机会或机会没有置业顾问
      */
@@ -279,65 +297,65 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         Map<String, Object> obj = new HashMap<String, Object>();
         obj.put("ProjectID", projectId);
         obj.put("CustomerMobile", phone);
-        Map<String, Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+        Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
         //不存在销售机会
-        if (opp == null || opp.size() == 0) {
+        if(opp==null||opp.size()==0){
             msg.put("Tag", true);
             msg.put("InvalidType", 0);
-        } else {//存在销售机会
-            if (StringUtils.isEmpty(opp.get("SaleUserID").toString())) {
+        }else{//存在销售机会
+            if(StringUtils.isEmpty(opp.get("SaleUserID").toString()))
+            {
                 msg.put("Tag", true);
                 msg.put("InvalidType", 0);
                 msg.put("IsExsitOpp", true);
                 msg.put("OppID", opp.get("ID").toString());
-            } else {
+            }else{
                 msg.put("Tag", false);
                 msg.put("InvalidType", 6);
             }
         }
         return msg;
     }
-
     /**
      * 其他条件满足的情况下，验证报备的线索是否有效
      */
-    private Map<String, Object> validateClue(String phone, String projectId, String userID, Map<String, Object> map) {
+    private Map<String, Object> validateClue(String phone, String projectId,String userID,Map<String,Object> map) {
         Map<String, Object> msg = new HashMap<String, Object>();
         //查询项目下存在该手机号的有效线索
-        List<Map<String, Object>> clues = clueMapper.RuleClueList_Select(phone, projectId, userID);
+        List<Map<String,Object>> clues = clueMapper.RuleClueList_Select(phone, projectId,userID);
         //该项目已经存在已确认线索
-        for (Map<String, Object> c : clues) {
-            if ((int) c.get("Status") == 2) {
+        for(Map<String,Object> c : clues){
+            if((int)c.get("Status") == 2){
                 //报备保护
-                if ((int) map.get("RuleType") == 0) {
+                if ((int)map.get("RuleType") == 0){
                     msg.put("InvalidType", 4);
-                } else {
+                }else{
                     msg.put("InvalidType", 5);
                 }
                 msg.put("Tag", false);
                 return msg;
             }
         }
-        if (clues.size() == 0) {//该手机号为新客户（在允许报备老客户时，此段无意义，仅存在于报备新客户）
+        if (clues.size() == 0){//该手机号为新客户（在允许报备老客户时，此段无意义，仅存在于报备新客户）
             msg.put("Tag", true);
             msg.put("InvalidType", 0);
             return msg;
         }
-        if (clues.size() == 1) {//该手机号线索已存在，此条件下需要进一步证明规则类型
+        if (clues.size() == 1){//该手机号线索已存在，此条件下需要进一步证明规则类型
             int ruleType = (int) clues.get(0).get("RuleType");
-            if ((int) map.get("RuleType") == ruleType && ruleType == 1) {//线索为竞争带看，并且当前渠道用户规则也为竞争带看
+            if ((int)map.get("RuleType") == ruleType && ruleType == 1){//线索为竞争带看，并且当前渠道用户规则也为竞争带看
                 msg.put("Tag", true);
                 msg.put("InvalidType", 0);
-            } else {//线索为报备保护
+            }else{//线索为报备保护
                 msg.put("Tag", false);
                 msg.put("InvalidType", 4);
             }
-        } else {//该手机号存在多条线索，说明报备模式为竞争带看
+        }else{//该手机号存在多条线索，说明报备模式为竞争带看
             int ruleType = (int) clues.get(0).get("RuleType");
-            if ((int) map.get("RuleType") == ruleType) {//当前渠道的报备规则也为竞争带看
+            if ((int)map.get("RuleType") == ruleType){//当前渠道的报备规则也为竞争带看
                 msg.put("Tag", true);
                 msg.put("InvalidType", 0);
-            } else {//当前渠道的报备规则为报备保护，报备规则模式不同则互斥
+            }else{//当前渠道的报备规则为报备保护，报备规则模式不同则互斥
                 msg.put("Tag", false);
                 msg.put("InvalidType", 4);
             }
@@ -359,20 +377,21 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
     @Override
     public String getMessage(int invalidType, Map<String, Object> map) {
-        String msg = new String();
-        if (map == null) {
-            map.put("RuleType", "0");
-            map.put("RuleType", "0");
+        String msg=new String();
+        if(map == null){
+        	map.put("RuleType", "0");
+        	map.put("RuleType", "0");
         }
-        if (map.get("RuleType") == null || "".equals(map.get("RuleType"))) {
-            map.put("RuleType", "0");
+        if(map.get("RuleType") == null || "".equals(map.get("RuleType"))){
+        	map.put("RuleType", "0");
         }
-        if (map.get("ValidationMode") == null || "".equals(map.get("ValidationMode"))) {
-            map.put("RuleType", "0");
+        if(map.get("ValidationMode") == null || "".equals(map.get("ValidationMode"))){
+        	map.put("RuleType", "0");
         }
-        switch (invalidType) {
+        switch (invalidType)
+        {
             case 0:
-                msg = "1".equals(map.get("RuleType")) && "1".equals(map.get("ValidationMode")) ? "报备成功，现场确认" : "报备成功，实时验证";
+                msg = "1".equals(map.get("RuleType") ) && "1".equals(map.get("ValidationMode") ) ? "报备成功，现场确认" : "报备成功，实时验证";
                 break;
             case 1:
                 msg = "老业主";
@@ -410,17 +429,18 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             case 12:
                 msg = "跟进逾期";
                 break;
-            default:
+                default:
         }
         return msg;
     }
 
     @Override
     public String GetMessageForReturn(int invalidType, Map<String, Object> map) {
-        String msg = new String();
-        switch (invalidType) {
+        String msg=new String();
+        switch (invalidType)
+        {
             case 0:
-                msg = (int) map.get("ValidationMode") == 1 ? "报备成功，为避免其他渠道抢先带看，请尽快到案场进行带客确认！" : "报备成功，您可以在“我的客户”中查看客户的最新状态";
+                msg = (int)map.get("ValidationMode") == 1 ? "报备成功，为避免其他渠道抢先带看，请尽快到案场进行带客确认！" : "报备成功，您可以在“我的客户”中查看客户的最新状态";
                 break;
             case 1:
                 msg = "报备无效，该客户为集团老业主！";
@@ -462,7 +482,6 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
     /**
      * // 线索报备验证后，创建线索信息
-     *
      * @param channelOrgId
      * @param ruleValidate
      * @param UserRule
@@ -473,48 +492,48 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap) {
-        QueryWrapper<BCustomerpotential> wrapper = new QueryWrapper<>();
-        wrapper.eq("Mobile", paramMap.get("Mobile"));
+        QueryWrapper<BCustomerpotential> wrapper=new QueryWrapper<>();
+        wrapper.eq("Mobile",paramMap.get("Mobile"));
         List<BCustomerpotential> list = customerpotentialService.list(wrapper);
-        BCustomerpotential cp = new BCustomerpotential();
-        if (list.size() == 0) {
+        BCustomerpotential cp=new BCustomerpotential();
+        if (list.size()==0){
             cp.setId(UUID.randomUUID().toString().toUpperCase());
             cp.setName((String) paramMap.get("Name"));
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
             cp.setMobile((String) paramMap.get("Mobile"));
-            cp.setCreator((String) paramMap.get("UserID"));
+            cp.setCreator((String)paramMap.get("UserID"));
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
             customerpotentialService.save(cp);
-        } else {
+        }else {
             cp.setId(list.get(0).getId());
             cp.setName((String) paramMap.get("Name"));
             cp.setLastName((String) paramMap.get("Name"));
             cp.setGender((String) paramMap.get("Gender"));
             cp.setMobile((String) paramMap.get("Mobile"));
-            cp.setCreator((String) paramMap.get("UserID"));
+            cp.setCreator((String)paramMap.get("UserID"));
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
             customerpotentialService.updateById(cp);
         }
         String customerPotentialID = cp.getId();
-        Date InvalidTime = (boolean) ruleValidate.get("Tag") ? null : new Date();
+        Date InvalidTime= (boolean) ruleValidate.get("Tag") ? null : new Date();
         String sourceType = customerpotentialService.getOpportunitySourceByAdviserGroup((String) paramMap.get("AdviserGroupID"));
-        String ChannelIdentify = channelOrgId;
-        String ComeOverdueTime = UserRule.getComeOverdueTime();
-        String TradeOverdueTime = UserRule.getTradeOverdueTime();
+        String ChannelIdentify=channelOrgId;
+        String ComeOverdueTime=UserRule.getComeOverdueTime();
+        String TradeOverdueTime=UserRule.getTradeOverdueTime();
 
-        int IsSelect = UserRule.getProtectRule().getIsSelect();
-        String ConfirmUserId = "";
-        if (UserRule.getImmissionRule().getValidationMode() == 2) {
-            ConfirmUserId = "99";
+        int IsSelect=UserRule.getProtectRule().getIsSelect();
+        String ConfirmUserId="";
+        if (UserRule.getImmissionRule().getValidationMode()==2){
+             ConfirmUserId="99";
         }
         //获取报备人信息以及适配的规则
-        Map<String, Object> map = channeluserService.GetReportUserInfo_Select((String) paramMap.get("UserID"), (String) paramMap.get("IntentProjectID"), ChannelIdentify);
-        BClue clue = new BClue();
+        Map<String,Object> map=channeluserService.GetReportUserInfo_Select((String)paramMap.get("UserID"),(String)paramMap.get("IntentProjectID"),ChannelIdentify);
+        BClue clue=new BClue();
         clue.setId(UUID.randomUUID().toString().toUpperCase());
         clue.setCustomerPotentialID(customerPotentialID);
         clue.setName((String) paramMap.get("Name"));
@@ -551,10 +570,10 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
         try {
-            if (StringUtils.isNotBlank(ComeOverdueTime)) {
+            if (StringUtils.isNotBlank(ComeOverdueTime)){
                 clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
             }
-            if (StringUtils.isNotBlank(TradeOverdueTime)) {
+            if (StringUtils.isNotBlank(TradeOverdueTime)){
                 clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
             }
         } catch (ParseException e) {
@@ -565,22 +584,22 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         clue.setSourceType(sourceType);
         clue.setIsSelect(IsSelect);
         clue.setConfirmTime(new Date());
-        clue.setCreator((String) paramMap.get("UserID"));
+        clue.setCreator((String)paramMap.get("UserID"));
         clue.setCreateTime(new Date());
         clue.setIsDel(0);
         clue.setStatus(status);
         clue.setConfirmUserId(ConfirmUserId);
         boolean save = clueService.save(clue);
-        if (save) {
+        if (save){
             //允许报备老客户模式下，报备的线索有效，刷新机会中线索信息
-            if ((boolean) ruleValidate.get("IsExsitOpp")) {
+            if ((boolean)ruleValidate.get("IsExsitOpp")){
                 String oppID = (String) ruleValidate.get("OppID");
                 //刷新已存
-                save = this.UpdateOppByNewClue_Update(clue.getId(), oppID);
+                save=this.UpdateOppByNewClue_Update(clue.getId(),oppID);
             }
 
             JSONObject obj1 = new JSONObject();
-            obj1.put("FollwUpTypeID", (boolean) ruleValidate.get("Tag") ? ActionType.渠道报备.getValue() : ActionType.报备无效.getValue());
+            obj1.put("FollwUpTypeID", (boolean)ruleValidate.get("Tag")? ActionType.渠道报备.getValue():ActionType.报备无效.getValue());
             obj1.put("SalesType", 4);
 //            obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
             obj1.put("NewSaleUserName", "");
@@ -594,69 +613,79 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             obj1.put("OpportunityID", "");
             obj1.put("ClueID", clue.getId());
             obj1.put("NextFollowUpDate", "");
-            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(),CustomerActionVo.class);
             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
         }
 
         return save;
     }
 
+    /**
+     * // 线索报备验证后，创建线索信息
+     * 添加认知媒体
+     * @param channelOrgId
+     * @param ruleValidate
+     * @param UserRule
+     * @param status
+     * @param paramMap
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, MBrokerReportVO mBrokerReportVO) {
-        QueryWrapper<BCustomerpotential> wrapper = new QueryWrapper<>();
-        wrapper.eq("Mobile", mBrokerReportVO.getMobile());
+    public boolean kfCreateClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) throws Exception{
+        QueryWrapper<BCustomerpotential> wrapper=new QueryWrapper<>();
+        wrapper.eq("Mobile",paramMap.get("Mobile"));
         List<BCustomerpotential> list = customerpotentialService.list(wrapper);
-        BCustomerpotential cp = new BCustomerpotential();
-        if (list.size() == 0) {
+        BCustomerpotential cp=new BCustomerpotential();
+        if (list.size()==0){
             cp.setId(UUID.randomUUID().toString().toUpperCase());
-            cp.setName(mBrokerReportVO.getName());
-            cp.setLastName(mBrokerReportVO.getName());
-            cp.setGender(mBrokerReportVO.getGender());
-            cp.setMobile(mBrokerReportVO.getMobile());
-            cp.setCreator(mBrokerReportVO.getUserId());
+            cp.setName((String) paramMap.get("Name"));
+            cp.setLastName((String) paramMap.get("Name"));
+            cp.setGender((String) paramMap.get("Gender"));
+            cp.setMobile((String) paramMap.get("Mobile"));
+            cp.setCreator((String)paramMap.get("UserID"));
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
             customerpotentialService.save(cp);
-        } else {
+        }else {
             cp.setId(list.get(0).getId());
-            cp.setName(mBrokerReportVO.getName());
-            cp.setLastName(mBrokerReportVO.getName());
-            cp.setGender(mBrokerReportVO.getGender());
-            cp.setMobile(mBrokerReportVO.getMobile());
-            cp.setCreator(mBrokerReportVO.getUserId());
+            cp.setName((String) paramMap.get("Name"));
+            cp.setLastName((String) paramMap.get("Name"));
+            cp.setGender((String) paramMap.get("Gender"));
+            cp.setMobile((String) paramMap.get("Mobile"));
+            cp.setCreator((String)paramMap.get("UserID"));
             cp.setCreateTime(new Date());
             cp.setIsDel(0);
             cp.setStatus(1);
             customerpotentialService.updateById(cp);
         }
         String customerPotentialID = cp.getId();
-        Date InvalidTime = (boolean) ruleValidate.get("Tag") ? null : new Date();
-        String sourceType = customerpotentialService.getOpportunitySourceByAdviserGroup(mBrokerReportVO.getAdviserGroupId());
-        String ChannelIdentify = channelOrgId;
-        String ComeOverdueTime = UserRule.getComeOverdueTime();
-        String TradeOverdueTime = UserRule.getTradeOverdueTime();
+        Date InvalidTime= (boolean) ruleValidate.get("Tag") ? null : new Date();
+        String sourceType = customerpotentialService.getOpportunitySourceByAdviserGroup((String) paramMap.get("AdviserGroupID"));
+        String ChannelIdentify=channelOrgId;
+        String ComeOverdueTime=UserRule.getComeOverdueTime();
+        String TradeOverdueTime=UserRule.getTradeOverdueTime();
 
-        int IsSelect = UserRule.getProtectRule().getIsSelect();
-        String ConfirmUserId = "";
-        if (UserRule.getImmissionRule().getValidationMode() == 2) {
-            ConfirmUserId = "99";
+        int IsSelect=UserRule.getProtectRule().getIsSelect();
+        String ConfirmUserId="";
+        if (UserRule.getImmissionRule().getValidationMode()==2){
+            ConfirmUserId="99";
         }
         //获取报备人信息以及适配的规则
-        Map<String, Object> map = channeluserService.GetReportUserInfo_Select(mBrokerReportVO.getUserId(), mBrokerReportVO.getIntentProjectID(), ChannelIdentify);
-        BClue clue = new BClue();
+        Map<String,Object> map=channeluserService.GetReportUserInfo_Select((String)paramMap.get("UserID"),(String)paramMap.get("IntentProjectID"),ChannelIdentify);
+        BClue clue=new BClue();
         clue.setId(UUID.randomUUID().toString().toUpperCase());
         clue.setCustomerPotentialID(customerPotentialID);
-        clue.setName(mBrokerReportVO.getName());
-        clue.setLastName(mBrokerReportVO.getName());
-        clue.setGender((mBrokerReportVO.getGender()));
-        clue.setMobile(mBrokerReportVO.getMobile());
-        clue.setIntentProjectID(mBrokerReportVO.getIntentProjectID());
-        BProject project = projectService.getById(mBrokerReportVO.getIntentProjectID());
+        clue.setName((String) paramMap.get("Name"));
+        clue.setLastName((String) paramMap.get("Name"));
+        clue.setGender((String) paramMap.get("Gender"));
+        clue.setMobile((String) paramMap.get("Mobile"));
+        clue.setIntentProjectID((String) paramMap.get("IntentProjectID"));
+        BProject project = projectService.getById((String) paramMap.get("IntentProjectID"));
         clue.setIntentProjectName(project.getName());
-        clue.setRemark(mBrokerReportVO.getRemark());
-        clue.setReportUserID(mBrokerReportVO.getUserId());
+        clue.setRemark((String) paramMap.get("Remark"));
+        clue.setReportUserID((String) paramMap.get("UserID"));
         clue.setReportUserName((String) map.get("ReportUserName"));
         clue.setReportUserMobile((String) map.get("ReportUserMobile"));
         //如果参数有 直接设置为参数值  如果参数为空 取ReportUserOrg
@@ -682,36 +711,46 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
         try {
-            if (StringUtils.isNotBlank(ComeOverdueTime)) {
+            if (StringUtils.isNotBlank(ComeOverdueTime)){
                 clue.setComeOverdueTime(sdf.parse(ComeOverdueTime));
             }
-            if (StringUtils.isNotBlank(TradeOverdueTime)) {
+            if (StringUtils.isNotBlank(TradeOverdueTime)){
                 clue.setTradeOverdueTime(sdf.parse(TradeOverdueTime));
             }
         } catch (ParseException e) {
             e.printStackTrace();
             return false;
         }
-        clue.setAdviserGroupID(mBrokerReportVO.getAdviserGroupId());
+        clue.setAdviserGroupID((String) paramMap.get("AdviserGroupID"));
         clue.setSourceType(sourceType);
         clue.setIsSelect(IsSelect);
         clue.setConfirmTime(new Date());
-        clue.setCreator(mBrokerReportVO.getUserId());
+        clue.setCreator((String)paramMap.get("UserID"));
         clue.setCreateTime(new Date());
         clue.setIsDel(0);
         clue.setStatus(status);
         clue.setConfirmUserId(ConfirmUserId);
+        clue.setConfirmUserId(ConfirmUserId);
+        QueryWrapper<BMedialarge> mtqw =  new QueryWrapper<BMedialarge>();
+        mtqw.eq("Name", "客服微信公众号");
+        mtqw.select(BMedialarge.class, info -> !info.getColumn().equals("Desc"));
+        BMedialarge cognitiveChannel = bMediaLargeService.getOne(mtqw);
+        if (null == cognitiveChannel){
+        	throw new RuntimeException("未获取渠道来源,推荐不成功"); 
+        }
+        clue.setCognitiveChannel(cognitiveChannel.getId());
+        clue.setCognitiveChannelSub((String) paramMap.get("cognitiveChannelSub"));
         boolean save = clueService.save(clue);
-        if (save) {
+        if (save){
             //允许报备老客户模式下，报备的线索有效，刷新机会中线索信息
-            if ((boolean) ruleValidate.get("IsExsitOpp")) {
+            if ((boolean)ruleValidate.get("IsExsitOpp")){
                 String oppID = (String) ruleValidate.get("OppID");
                 //刷新已存
-                save = this.UpdateOppByNewClue_Update(clue.getId(), oppID);
+                save=this.UpdateOppByNewClue_Update(clue.getId(),oppID);
             }
 
             JSONObject obj1 = new JSONObject();
-            obj1.put("FollwUpTypeID", (boolean) ruleValidate.get("Tag") ? ActionType.渠道报备.getValue() : ActionType.报备无效.getValue());
+            obj1.put("FollwUpTypeID", (boolean)ruleValidate.get("Tag")? ActionType.渠道报备.getValue():ActionType.报备无效.getValue());
             obj1.put("SalesType", 4);
 //            obj1.put("FollwUpTypeID", ActionType.渠道报备.getValue());
             obj1.put("NewSaleUserName", "");
@@ -720,13 +759,12 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             obj1.put("FollwUpWay", "");
             obj1.put("FollowUpContent", "");
             obj1.put("IntentionLevel", "");
-            // obj1.put("OrgID", paramMap.get("ReportUserOrg"));
-            obj1.put("OrgID", "");
+            obj1.put("OrgID", paramMap.get("ReportUserOrg"));
             obj1.put("FollwUpUserRole", map.get("JobID"));//todo 如果为空 742B2791-FED2-4ED3-9F8B-F337CE2D696A
             obj1.put("OpportunityID", "");
             obj1.put("ClueID", clue.getId());
             obj1.put("NextFollowUpDate", "");
-            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
+            CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(),CustomerActionVo.class);
             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
         }
 
@@ -737,16 +775,16 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     public boolean UpdateOppByNewClue_Update(String ClueID, String oppID) {
         try {
             //更新机会绑定的线索
-            BOpportunity opportunity = new BOpportunity();
+            BOpportunity opportunity=new BOpportunity();
             opportunity.setId(oppID);
             opportunity.setClueID(ClueID);
             opportunity.setEditeTime(new Date());
             opportunity.setEditor("99");
             opportunityService.updateById(opportunity);
             //记录销售轨迹（重新报备）
-            Map<String, Object> CustomerIDMap = this.getCustomerID(oppID);
-            String CustomerID = (String) CustomerIDMap.get("ID");
-            baseMapper.CustomerTrack_Insert(oppID, CustomerID, ClueID);
+            Map<String, Object> CustomerIDMap=this.getCustomerID(oppID);
+            String CustomerID= (String) CustomerIDMap.get("ID");
+            baseMapper.CustomerTrack_Insert(oppID,CustomerID,ClueID);
         } catch (Exception e) {
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -761,469 +799,466 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
     }
 
     /**
-     * 案场助手统计
-     */
-    @Override
-    public Map<String, Object> CaseFieDetail_Select(Map<String, Object> paramMap) {
-        return baseMapper.CaseFieDetail_Select(paramMap);
-    }
+	 * 案场助手统计
+	 */
+	@Override
+	public Map<String, Object> CaseFieDetail_Select(Map<String, Object> paramMap) {
+		return baseMapper.CaseFieDetail_Select(paramMap);
+	}
+	/**
+	 * 客户信息
+	 */
+	@Override
+	public List<Map<String, Object>> CaseFieCustomerDetail_Select(Map<String, Object> paramMap) {
+		return baseMapper.CaseFieCustomerDetail_Select(paramMap);
+	}
+	/**
+	 * 获取顾问接待组数
+	 */
+	@Override
+	public Map<String, Object> DayTotalCount_Select(String ProjectID, String SaleUserID) {
+		return baseMapper.DayTotalCount_Select(ProjectID,SaleUserID);
+	}
+	/**
+	 * 客户无效信息
+	 */
+	@Override
+	public List<Map<String, Object>> CaseFieInvalDetail_Select(Map<String, Object> paramMap) {
+		return baseMapper.CaseFieInvalDetail_Select(paramMap);
+	}
+	/**
+	 * 验证是否存超过到访保护期
+	 */
+	@Override
+	public Map<String, Object> IsOverdueCome_Select(Map<String, Object> obj) {
+		return baseMapper.IsOverdueCome_Select(obj);
+	}
 
-    /**
-     * 客户信息
-     */
-    @Override
-    public List<Map<String, Object>> CaseFieCustomerDetail_Select(Map<String, Object> paramMap) {
-        return baseMapper.CaseFieCustomerDetail_Select(paramMap);
-    }
+	/**
+	 * 扫码确认线索无效后，更新线索信息
+	 */
+	@Override
+	public void ClueConfirmInvalid_Update(Map parameter){
+		baseMapper.ClueConfirmInvalid_Update(parameter);
+	}
+	/**
+	 * 根据手机号、项目id获取有效线索
+	 */
+	@Override
+	public List<Map<String, Object>> getClueList(Map<String, Object> obj) {
+		return baseMapper.RuleClueList_Select(obj);
+	}
+	@Override
+	public Object ClueConfirm_Update(Map<String, Object> parameter){
+		return baseMapper.ClueConfirm_Update(parameter);
+	}
+	/**
+	 * 待确认查询
+	 */
+	@Override
+	public IPage<Map<String, Object>> CaseFieToBeConfirmedList_Select(IPage page, String Status, String ProjectID, String sqlWhere){
+		return baseMapper.CaseFieToBeConfirmedList_Select(page, Status, ProjectID, sqlWhere);
+	}
+	/**
+	 * 待分配
+	 */
+	@Override
+	public IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID,String UserID, String sqlWhere) {
+		return baseMapper.CaseFieDistributionList_Select(page,ProjectID,UserID,sqlWhere);
+	}
+	/**
+	 * 报备信息列表
+	 */
+	@Override
+	public IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, String ProjectID, String sqlWhere) {
+		return baseMapper.CaseFielInquiriesList_Select(page,ProjectID,sqlWhere);
+	}
 
-    /**
-     * 获取顾问接待组数
-     */
-    @Override
-    public Map<String, Object> DayTotalCount_Select(String ProjectID, String SaleUserID) {
-        return baseMapper.DayTotalCount_Select(ProjectID, SaleUserID);
-    }
+	/*
+	 * 客户详情
+	 */
+	@Override
+	public Customer detail(String clueId) {
+		BClue _clue = this.getById(clueId);
+		VABrokerMycustomers clue = vABrokerMycustomersMapper.selectClue(clueId);
+		if (clue == null) {
+			return null;
+		}
+		Customer customer = new Customer();
+		customer.setClueId(clueId);
+		customer.setCreateTime(dateFormat.format(clue.getReportTime()));
+		customer.setIntentProjectName(clue.getIntentProjectName());
+		customer.setMobile(clue.getMobile());
+		customer.setName(clue.getCustomerName());
+		if(clue.getStatusText().equals("来访")) {
+			customer.setStatusText("到访");
+		}
+		else {
+			customer.setStatusText(clue.getStatusText());
+		}
+		switch(customer.getStatusText()) {
+		case "报备成功":
+			customer.setTractSort("1");
+			break;
+		case "报备":
+			customer.setTractSort("1");
+			break;
+		case "到访":
+			customer.setTractSort("2");
+			break;
+		case "认购":
+			customer.setTractSort("3");
+			break;
+		case "签约":
+			customer.setTractSort("4");
+			break;
+		case "退房":
+			customer.setTractSort("5");
+			break;
+		case "无效":
+			customer.setTractSort("6");
+			break;
+		}
+		customer.setRemark(_clue.getRemark());
+		customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
+		System.out.println(clue.getCustomerRank());
+		
+		if(clue.getCustomerRank().length() > 0) {
+			customer.setCustomerRank(clue.getCustomerRank());
+		}
+		else {
+			customer.setCustomerRank("1级");
+		}
+		List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
+		List<CustomerStatus> customerStatuses = new ArrayList<>();
+		for (CStatus cs : statuses) {
+			CustomerStatus customerStatus = new CustomerStatus();
+			customerStatus.setStatus(cs.getStatus());
+			customerStatus.setStatusTime(dateFormat.format(cs.getStatusTime()));
+			customerStatuses.add(customerStatus);
+		}
+		customer.setCs(customerStatuses);
 
-    /**
-     * 客户无效信息
-     */
-    @Override
-    public List<Map<String, Object>> CaseFieInvalDetail_Select(Map<String, Object> paramMap) {
-        return baseMapper.CaseFieInvalDetail_Select(paramMap);
-    }
+		return customer;
+	}
 
-    /**
-     * 验证是否存超过到访保护期
-     */
-    @Override
-    public Map<String, Object> IsOverdueCome_Select(Map<String, Object> obj) {
-        return baseMapper.IsOverdueCome_Select(obj);
-    }
+	private String getQRString(String tokerUserId, String mobile, String clueId, String sourceType) {
+		return "{\"TokerUserID\":\"" + tokerUserId + "\",\"ClueMobile\":\"" + mobile + "\",\"ClueID\":\"" + clueId
+				+ "\",\"SourceType\":\"" + sourceType + "\"}";
+	}
 
-    /**
-     * 扫码确认线索无效后，更新线索信息
-     */
-    @Override
-    public void ClueConfirmInvalid_Update(Map parameter) {
-        baseMapper.ClueConfirmInvalid_Update(parameter);
-    }
+	/*
+	 * 我的客户列表
+	 */
+	@Override
+	public List<Customer> listMyCustomers(String reportUserId, String order, String nameOrMobile,
+			String status) {
+		if (reportUserId == null) {
+			return null;
+		}
+		List<VABrokerMycustomers> cusList = vABrokerMycustomersMapper.selectMyCustomer(reportUserId, order,
+				nameOrMobile, status);
+		List<Customer> customers = new ArrayList<Customer>();
+		if (cusList == null || cusList.isEmpty()) {
+			return null;
 
-    /**
-     * 根据手机号、项目id获取有效线索
-     */
-    @Override
-    public List<Map<String, Object>> getClueList(Map<String, Object> obj) {
-        return baseMapper.RuleClueList_Select(obj);
-    }
+		} else {
+			for (VABrokerMycustomers cus : cusList) {
+				Customer customer = new Customer();
+				customer.setClueId(cus.getClueID());
+				customer.setMobile(cus.getMobile());
+				customer.setName(cus.getCustomerName());
+				customer.setIntentProjectName(cus.getIntentProjectName());
+				
+				if(cus.getStatusText().equals("来访")) {
+					customer.setStatusText("到访");
+				}
+				else {
+					customer.setStatusText(cus.getStatusText());
+				}
+				customer.setCreateTime(dateFormat.format(cus.getReportTime()));
+				customer.setQrUrl("");
+				customer.setRemark("");
+				if(cus.getCustomerRank().length() > 0) {
+					customer.setCustomerRank(cus.getCustomerRank());
+				}
+				else {
+					customer.setCustomerRank("1级");
+				}
+				customers.add(customer);
+			}
+		}
+		return customers;
+	}
 
-    @Override
-    public Object ClueConfirm_Update(Map<String, Object> parameter) {
-        return baseMapper.ClueConfirm_Update(parameter);
-    }
+	/*
+	 * 报备
+	 */
+	@Override
+	public Result report(String reportUserId, String projectid, String customerName, String mobile,
+			String gender, String remark, String projectName) {
+		Result result=new Result();
+		result.setData("");
+		
+		System.out.println(projectid+projectName+adviserGroupId);
 
-    /**
-     * 待确认查询
-     */
-    @Override
-    public IPage<Map<String, Object>> CaseFieToBeConfirmedList_Select(IPage page, String Status, String ProjectID, String sqlWhere) {
-        return baseMapper.CaseFieToBeConfirmedList_Select(page, Status, ProjectID, sqlWhere);
-    }
+		Date now = new Date();
 
-    /**
-     * 待分配
-     */
-    @Override
-    public IPage<Map<String, Object>> CaseFieDistributionList_Select(IPage page, String ProjectID, String UserID, String sqlWhere) {
-        return baseMapper.CaseFieDistributionList_Select(page, ProjectID, UserID, sqlWhere);
-    }
+		BChanneluser channelUser = channeluserMapper.selectById(reportUserId);
+		SAccount account = accountMapper.selectById(reportUserId);
+		if (channelUser == null && account == null) {
+			return Result.errormsg(-1,"报备人不存在");
+		}
+		if (mobile == null || "".equals(mobile)) {
+			return Result.errormsg(-1,"手机号必须填写");
+		}
+		
+		if(channelUser !=null) {
+			if (mobile.equals(channelUser.getMobile())) {
+				return Result.errormsg(-1,"报备无效，不允许报备自己！");
+			}
+		}
+		
+		if(account != null) {
+			if (mobile.equals(account.getMobile())) {
+				return Result.errormsg(-1,"报备无效，不允许报备自己！");
+			}
+		}
 
-    /**
-     * 报备信息列表
-     */
-    @Override
-    public IPage<Map<String, Object>> CaseFielInquiriesList_Select(IPage page, String ProjectID, String sqlWhere) {
-        return baseMapper.CaseFielInquiriesList_Select(page, ProjectID, sqlWhere);
-    }
-
-    /*
-     * 客户详情
-     */
-    @Override
-    public Customer detail(String clueId) {
-        BClue _clue = this.getById(clueId);
-        VABrokerMycustomers clue = vABrokerMycustomersMapper.selectClue(clueId);
-        if (clue == null) {
-            return null;
-        }
-        Customer customer = new Customer();
-        customer.setClueId(clueId);
-        customer.setCreateTime(dateFormat.format(clue.getReportTime()));
-        customer.setIntentProjectName(clue.getIntentProjectName());
-        customer.setMobile(clue.getMobile());
-        customer.setName(clue.getCustomerName());
-        if (clue.getStatusText().equals("来访")) {
-            customer.setStatusText("到访");
-        } else {
-            customer.setStatusText(clue.getStatusText());
-        }
-        switch (customer.getStatusText()) {
-            case "报备成功":
-                customer.setTractSort("1");
-                break;
-            case "报备":
-                customer.setTractSort("1");
-                break;
-            case "到访":
-                customer.setTractSort("2");
-                break;
-            case "认购":
-                customer.setTractSort("3");
-                break;
-            case "签约":
-                customer.setTractSort("4");
-                break;
-            case "退房":
-                customer.setTractSort("5");
-                break;
-            case "无效":
-                customer.setTractSort("6");
-                break;
-        }
-        customer.setRemark(_clue.getRemark());
-        customer.setQrUrl(this.getQRString(_clue.getReportUserID(), clue.getMobile(), clueId, _clue.getSourceType()));
-        System.out.println(clue.getCustomerRank());
-
-        if (clue.getCustomerRank().length() > 0) {
-            customer.setCustomerRank(clue.getCustomerRank());
-        } else {
-            customer.setCustomerRank("1级");
-        }
-        List<CStatus> statuses = clueMapper.selectCustomerStatus(clueId);
-        List<CustomerStatus> customerStatuses = new ArrayList<>();
-        for (CStatus cs : statuses) {
-            CustomerStatus customerStatus = new CustomerStatus();
-            customerStatus.setStatus(cs.getStatus());
-            customerStatus.setStatusTime(dateFormat.format(cs.getStatusTime()));
-            customerStatuses.add(customerStatus);
-        }
-        customer.setCs(customerStatuses);
-
-        return customer;
-    }
-
-    private String getQRString(String tokerUserId, String mobile, String clueId, String sourceType) {
-        return "{\"TokerUserID\":\"" + tokerUserId + "\",\"ClueMobile\":\"" + mobile + "\",\"ClueID\":\"" + clueId
-                + "\",\"SourceType\":\"" + sourceType + "\"}";
-    }
-
-    /*
-     * 我的客户列表
-     */
-    @Override
-    public List<Customer> listMyCustomers(String reportUserId, String order, String nameOrMobile,
-                                          String status) {
-        if (reportUserId == null) {
-            return null;
-        }
-        List<VABrokerMycustomers> cusList = vABrokerMycustomersMapper.selectMyCustomer(reportUserId, order,
-                nameOrMobile, status);
-        List<Customer> customers = new ArrayList<Customer>();
-        if (cusList == null || cusList.isEmpty()) {
-            return null;
-
-        } else {
-            for (VABrokerMycustomers cus : cusList) {
-                Customer customer = new Customer();
-                customer.setClueId(cus.getClueID());
-                customer.setMobile(cus.getMobile());
-                customer.setName(cus.getCustomerName());
-                customer.setIntentProjectName(cus.getIntentProjectName());
-
-                if (cus.getStatusText().equals("来访")) {
-                    customer.setStatusText("到访");
-                } else {
-                    customer.setStatusText(cus.getStatusText());
-                }
-                customer.setCreateTime(dateFormat.format(cus.getReportTime()));
-                customer.setQrUrl("");
-                customer.setRemark("");
-                if (cus.getCustomerRank().length() > 0) {
-                    customer.setCustomerRank(cus.getCustomerRank());
-                } else {
-                    customer.setCustomerRank("1级");
-                }
-                customers.add(customer);
-            }
-        }
-        return customers;
-    }
-
-    /*
-     * 报备
-     */
-    @Override
-    public Result report(String reportUserId, String projectid, String customerName, String mobile,
-                         String gender, String remark, String projectName) {
-        Result result = new Result();
-        result.setData("");
-
-        System.out.println(projectid + projectName + adviserGroupId);
-
-        Date now = new Date();
-
-        BChanneluser channelUser = channeluserMapper.selectById(reportUserId);
-        SAccount account = accountMapper.selectById(reportUserId);
-        if (channelUser == null && account == null) {
-            return Result.errormsg(-1, "报备人不存在");
-        }
-        if (mobile == null || "".equals(mobile)) {
-            return Result.errormsg(-1, "手机号必须填写");
-        }
-
-        if (channelUser != null) {
-            if (mobile.equals(channelUser.getMobile())) {
-                return Result.errormsg(-1, "报备无效，不允许报备自己！");
-            }
-        }
-
-        if (account != null) {
-            if (mobile.equals(account.getMobile())) {
-                return Result.errormsg(-1, "报备无效，不允许报备自己！");
-            }
-        }
-
-        // 判断是否老业主
-        String isOwner = customerMapper.isOwner(projectid, mobile);
-        if (isOwner != null && isOwner.length() > 0) {
-            Map<String, Object> obj = new HashMap<String, Object>();
+		// 判断是否老业主
+		String isOwner = customerMapper.isOwner(projectid, mobile);
+		if (isOwner != null && isOwner.length() > 0) {
+			Map<String, Object> obj = new HashMap<String, Object>();
             obj.put("ProjectID", projectid);
             obj.put("CustomerMobile", mobile);
-            Map<String, Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
-            if (opp != null) {
-                if (opp.get("ID") != null) {
-                    //发送报备失败消息
-                    customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+			if(opp != null) {
+				if(opp.get("ID") != null) {
+					//发送报备失败消息
+					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+					
+				}
+			}
+			return Result.errormsg(-1,"报备无效，该客户为项目老客户！");
+		}
+		// 不是业主，新客户
 
-                }
-            }
-            return Result.errormsg(-1, "报备无效，该客户为项目老客户！");
-        }
-        // 不是业主，新客户
+		// 老客户，不在保护期
 
-        // 老客户，不在保护期
-
-        // 验证是否重复报备
-        String isRepeatedReg = clueMapper.isRepeatedReg(mobile, projectid, reportUserId);
-        if (isRepeatedReg != null && isRepeatedReg.length() > 0) {
-            Map<String, Object> obj = new HashMap<String, Object>();
+		// 验证是否重复报备
+		String isRepeatedReg = clueMapper.isRepeatedReg(mobile, projectid, reportUserId);
+		if (isRepeatedReg != null && isRepeatedReg.length() > 0) {
+			Map<String, Object> obj = new HashMap<String, Object>();
             obj.put("ProjectID", projectid);
             obj.put("CustomerMobile", mobile);
-            Map<String, Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
-            if (opp != null) {
-                if (opp.get("ID") != null) {
-                    //发送报备失败消息
-                    System.out.println("11111111111111111");
-                    customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+			if(opp != null) {
+				if(opp.get("ID") != null) {
+					//发送报备失败消息
+					System.out.println("11111111111111111");
+					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+					
+				}
+			}
+			return Result.errormsg(-1,"报备无效，该客户已被您报备!");
+		}
 
-                }
-            }
-            return Result.errormsg(-1, "报备无效，该客户已被您报备!");
-        }
-
-        // 验证是否已被其他渠道报备
-        String isProtected = clueMapper.isProtected(mobile, projectid, reportUserId);
-        if (isProtected != null && isProtected.length() > 0) {
-            Map<String, Object> obj = new HashMap<String, Object>();
+		// 验证是否已被其他渠道报备
+		String isProtected = clueMapper.isProtected(mobile, projectid, reportUserId);
+		if (isProtected != null && isProtected.length() > 0) {
+			Map<String, Object> obj = new HashMap<String, Object>();
             obj.put("ProjectID", projectid);
             obj.put("CustomerMobile", mobile);
-            Map<String, Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
-            if (opp != null) {
-                if (opp.get("ID") != null) {
-                    //发送报备失败消息
-                    System.out.println("11111111111111111");
-                    customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+			Map<String,Object> opp = customerpotentialMapper.ValidOpp_Select(obj);
+			if(opp != null) {
+				if(opp.get("ID") != null) {
+					//发送报备失败消息
+					System.out.println("11111111111111111");
+					customerTemplate.sendBBSBMsg((String) opp.get("ID"), customerName, reportUserId);
+					
+				}
+			}
+			return Result.errormsg(-1,"报备无效，该客户已被其他渠道报备!");
+		}
 
-                }
-            }
-            return Result.errormsg(-1, "报备无效，该客户已被其他渠道报备!");
-        }
+		// 潜在客户如果存在则更新
+		Map<String, Object> query = new HashMap<>();
+		query.put("Mobile", mobile);
+		query.put("IsDel", 0);
+		query.put("Status", 1);
+		List<BCustomerpotential> customerPotentials = customerpotentialMapper.selectByMap(query);
+		BCustomerpotential customerPotential;
+		boolean update = true;
+		if (customerPotentials == null || customerPotentials.isEmpty()) {
+			customerPotential = new BCustomerpotential();
+			customerPotential.setId(UUID.randomUUID().toString());
+			customerPotential.setCreateTime(now);
+			customerPotential.setCreator(reportUserId);
+			customerPotential.setIsDel(0);
+			customerPotential.setStatus(1);
+			update = false;
+		} else {
+			customerPotential = customerPotentials.get(0);
+		}
+		customerPotential.setName(customerName);
+		customerPotential.setLastName(customerName);
+		customerPotential.setGender(gender);
+		customerPotential.setMobile(mobile);
+		customerPotential.setRemark(remark);
+		customerPotential.setEditor(reportUserId);
+		customerPotential.setEditeTime(now);
 
-        // 潜在客户如果存在则更新
-        Map<String, Object> query = new HashMap<>();
-        query.put("Mobile", mobile);
-        query.put("IsDel", 0);
-        query.put("Status", 1);
-        List<BCustomerpotential> customerPotentials = customerpotentialMapper.selectByMap(query);
-        BCustomerpotential customerPotential;
-        boolean update = true;
-        if (customerPotentials == null || customerPotentials.isEmpty()) {
-            customerPotential = new BCustomerpotential();
-            customerPotential.setId(UUID.randomUUID().toString());
-            customerPotential.setCreateTime(now);
-            customerPotential.setCreator(reportUserId);
-            customerPotential.setIsDel(0);
-            customerPotential.setStatus(1);
-            update = false;
-        } else {
-            customerPotential = customerPotentials.get(0);
-        }
-        customerPotential.setName(customerName);
-        customerPotential.setLastName(customerName);
-        customerPotential.setGender(gender);
-        customerPotential.setMobile(mobile);
-        customerPotential.setRemark(remark);
-        customerPotential.setEditor(reportUserId);
-        customerPotential.setEditeTime(now);
+		if (update) {
+			customerpotentialMapper.updateById(customerPotential);
+		} else {
+			customerpotentialMapper.insert(customerPotential);
+		}
 
-        if (update) {
-            customerpotentialMapper.updateById(customerPotential);
-        } else {
-            customerpotentialMapper.insert(customerPotential);
-        }
+		BCluerule cluerule = clueruleMapper.selectById(ruleId);
+		int visitTime = 15;
+		if (cluerule != null) {
+			visitTime = cluerule.getProtectVisitTime();
+		}
+		BClue clue = new BClue();
+		clue.setId(UUID.randomUUID().toString());
+		clue.setCustomerPotentialID(customerPotential.getId());
+		clue.setName(customerName);
+		clue.setLastName(customerName);
+		clue.setGender(gender);
+		clue.setMobile(mobile);
+		clue.setIntentProjectID(projectid);
+		clue.setIntentProjectName(projectName);
+		clue.setRemark(remark);
+		clue.setSourceType(sourceType);
+		clue.setReportUserID(reportUserId);
+		if(channelUser != null) {
+			clue.setReportUserName(channelUser.getName());
+			clue.setReportUserMobile(channelUser.getMobile());
+			clue.setReportUserOrg(channelUser.getChannelOrgID());
+		}
+		else {
+			clue.setReportUserName(account.getEmployeeName());
+			clue.setReportUserMobile(account.getMobile());
+			clue.setReportUserOrg(account.getUserOrgID());
+		}
+		clue.setRuleID(ruleId);
+		clue.setAdviserGroupID(adviserGroupId);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String cometime = df.format(new Date(now.getTime() + (visitTime + 1) * 24 * 60 * 60 * 1000));
+		try {
+			clue.setComeOverdueTime(df.parse(cometime)); // 到访保护时间
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 
-        BCluerule cluerule = clueruleMapper.selectById(ruleId);
-        int visitTime = 15;
-        if (cluerule != null) {
-            visitTime = cluerule.getProtectVisitTime();
-        }
-        BClue clue = new BClue();
-        clue.setId(UUID.randomUUID().toString());
-        clue.setCustomerPotentialID(customerPotential.getId());
-        clue.setName(customerName);
-        clue.setLastName(customerName);
-        clue.setGender(gender);
-        clue.setMobile(mobile);
-        clue.setIntentProjectID(projectid);
-        clue.setIntentProjectName(projectName);
-        clue.setRemark(remark);
-        clue.setSourceType(sourceType);
-        clue.setReportUserID(reportUserId);
-        if (channelUser != null) {
-            clue.setReportUserName(channelUser.getName());
-            clue.setReportUserMobile(channelUser.getMobile());
-            clue.setReportUserOrg(channelUser.getChannelOrgID());
-        } else {
-            clue.setReportUserName(account.getEmployeeName());
-            clue.setReportUserMobile(account.getMobile());
-            clue.setReportUserOrg(account.getUserOrgID());
-        }
-        clue.setRuleID(ruleId);
-        clue.setAdviserGroupID(adviserGroupId);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String cometime = df.format(new Date(now.getTime() + (visitTime + 1) * 24 * 60 * 60 * 1000));
-        try {
-            clue.setComeOverdueTime(df.parse(cometime)); // 到访保护时间
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+		// clue.setTradeOverdueTime(TradeOverdueTime); //报备是不需更新
+		clue.setCreator(reportUserId);
+		clue.setCreateTime(now);
+		clue.setIsDel(0);
+		clue.setStatus(2); // TODO 状态需确认
+		clueMapper.insert(clue);
 
-        // clue.setTradeOverdueTime(TradeOverdueTime); //报备是不需更新
-        clue.setCreator(reportUserId);
-        clue.setCreateTime(now);
-        clue.setIsDel(0);
-        clue.setStatus(2); // TODO 状态需确认
-        clueMapper.insert(clue);
-
-        //插入跟进记录
-        BCustomerpotentialfollowup customerpotentialfollowup = new BCustomerpotentialfollowup();
-        customerpotentialfollowup.setId(UUID.randomUUID().toString());
-        customerpotentialfollowup.setClueID(clue.getId());
-        customerpotentialfollowup.setCreateTime(now);
-        customerpotentialfollowup.setCreator(reportUserId);
-        customerpotentialfollowup.setCustomerPotentialID(customerPotential.getId());
-        customerpotentialfollowup.setCustomerPotentialMobile(mobile);
-        customerpotentialfollowup.setCustomerPotentialName(customerName);
-        customerpotentialfollowup.setEditeTime(now);
-        customerpotentialfollowup.setEditor(reportUserId);
-        customerpotentialfollowup.setFollowUpContent("报备成功");
-        customerpotentialfollowup.setFollwUpType("69331990-DBF4-0A2F-80CD-7BC424AA8902");
-        customerpotentialfollowup.setFollwUpUserID(reportUserId);
-        if (channelUser != null) {
-            customerpotentialfollowup.setFollwUpUserMobile(channelUser.getMobile());
-            customerpotentialfollowup.setFollwUpUserName(channelUser.getName());
-            customerpotentialfollowup.setOrgID(channelUser.getChannelOrgID());
-        } else {
-            customerpotentialfollowup.setFollwUpUserMobile(account.getMobile());
-            customerpotentialfollowup.setFollwUpUserName(account.getEmployeeName());
-            customerpotentialfollowup.setOrgID(account.getUserOrgID());
-        }
-        customerpotentialfollowup.setFollwUpUserRole(adviserGroupId);
-        customerpotentialfollowup.setFollwUpWay("");
-        customerpotentialfollowup.setIsDel(0);
-        customerpotentialfollowup.setStatus(1);
-        customerpotentialfollowup.setProjectID(projectid);
-        customerpotentialfollowupMapper.insert(customerpotentialfollowup);
-        return result.ok("报备成功");
-    }
+		//插入跟进记录
+		BCustomerpotentialfollowup customerpotentialfollowup = new BCustomerpotentialfollowup();
+		customerpotentialfollowup.setId(UUID.randomUUID().toString());
+		customerpotentialfollowup.setClueID(clue.getId());
+		customerpotentialfollowup.setCreateTime(now);
+		customerpotentialfollowup.setCreator(reportUserId);
+		customerpotentialfollowup.setCustomerPotentialID(customerPotential.getId());
+		customerpotentialfollowup.setCustomerPotentialMobile(mobile);
+		customerpotentialfollowup.setCustomerPotentialName(customerName);
+		customerpotentialfollowup.setEditeTime(now);
+		customerpotentialfollowup.setEditor(reportUserId);
+		customerpotentialfollowup.setFollowUpContent("报备成功");
+		customerpotentialfollowup.setFollwUpType("69331990-DBF4-0A2F-80CD-7BC424AA8902");
+		customerpotentialfollowup.setFollwUpUserID(reportUserId);
+		if(channelUser != null) {
+			customerpotentialfollowup.setFollwUpUserMobile(channelUser.getMobile());
+			customerpotentialfollowup.setFollwUpUserName(channelUser.getName());
+			customerpotentialfollowup.setOrgID(channelUser.getChannelOrgID());
+		}
+		else {
+			customerpotentialfollowup.setFollwUpUserMobile(account.getMobile());
+			customerpotentialfollowup.setFollwUpUserName(account.getEmployeeName());
+			customerpotentialfollowup.setOrgID(account.getUserOrgID());
+		}
+		customerpotentialfollowup.setFollwUpUserRole(adviserGroupId);
+		customerpotentialfollowup.setFollwUpWay("");
+		customerpotentialfollowup.setIsDel(0);
+		customerpotentialfollowup.setStatus(1);
+		customerpotentialfollowup.setProjectID(projectid);
+		customerpotentialfollowupMapper.insert(customerpotentialfollowup);
+		return result.ok("报备成功");
+	}
 
     @Override
     public void updateComeOverdueTimeByDay(Integer extendArriveProDays, String clueRuleId) {
-        clueMapper.updateComeOverdueTimeByDay(extendArriveProDays, clueRuleId);
+        clueMapper.updateComeOverdueTimeByDay(extendArriveProDays,clueRuleId);
     }
 
     @Override
     public void updateComeOverdueTimeByDate(Date extendArriveProEndDate, String clueRuleId) {
-        clueMapper.updateComeOverdueTimeByDate(extendArriveProEndDate, clueRuleId);
+        clueMapper.updateComeOverdueTimeByDate(extendArriveProEndDate,clueRuleId);
     }
 
     @Override
     public void updateTradeOverdueTimeByDay(Integer extendSigningProDays, String clueRuleId) {
-        clueMapper.updateTradeOverdueTimeByDay(extendSigningProDays, clueRuleId);
+        clueMapper.updateTradeOverdueTimeByDay(extendSigningProDays,clueRuleId);
     }
 
     @Override
     public void updateTradeOverdueTimeByDate(Date extendSigningProEndDate, String clueRuleId) {
-        clueMapper.updateTradeOverdueTimeByDate(extendSigningProEndDate, clueRuleId);
+        clueMapper.updateTradeOverdueTimeByDate(extendSigningProEndDate,clueRuleId);
     }
 
-    @Override
-    public Map<String, Object> listMyCustomersCount(String reportUserId) {
-        if (reportUserId == null) {
-            return null;
-        }
-        List<VABrokerMycustomers> cusList = vABrokerMycustomersMapper.selectMyCustomerCount(reportUserId);
-        Map<String, Object> customer = new HashMap();
-        int baobei = 0, daofang = 0, rengou = 0, qianyue = 0, tuifang = 0, wuxiao = 0;
-        if (cusList == null || cusList.isEmpty()) {
-        } else {
-            for (VABrokerMycustomers cus : cusList) {
-                if (cus.getStatusText().equals("来访")) {
-                    cus.setStatusText("到访");
-                }
-                switch (cus.getStatusText()) {
-                    case "报备成功":
-                        baobei++;
-                        break;
-                    case "报备":
-                        baobei++;
-                        break;
-                    case "到访":
-                        daofang++;
-                        break;
-                    case "认购":
-                        rengou++;
-                        break;
-                    case "签约":
-                        qianyue++;
-                        break;
-                    case "退房":
-                        tuifang++;
-                        break;
-                    case "无效":
-                        wuxiao++;
-                        break;
-                }
-            }
-        }
-        customer.put("baobei", baobei);
-        customer.put("daofang", daofang);
-        customer.put("rengou", rengou);
-        customer.put("qianyue", qianyue);
-        customer.put("tuifang", tuifang);
-        customer.put("wuxiao", wuxiao);
-        customer.put("Count", baobei + daofang + qianyue + tuifang + wuxiao);
-        return customer;
-    }
+	@Override
+	public Map<String, Object> listMyCustomersCount(String reportUserId) {
+		if (reportUserId == null) {
+			return null;
+		}
+		List<VABrokerMycustomers> cusList = vABrokerMycustomersMapper.selectMyCustomerCount(reportUserId);
+		Map<String, Object> customer = new HashMap();
+		int baobei = 0, daofang = 0, rengou = 0,qianyue = 0, tuifang = 0, wuxiao = 0;
+		if (cusList == null || cusList.isEmpty()) {
+		} else {
+			for (VABrokerMycustomers cus : cusList) {
+				if(cus.getStatusText().equals("来访")) {
+					cus.setStatusText("到访");
+				}
+				switch(cus.getStatusText()) {
+				case "报备成功":
+					baobei++;
+					break;
+				case "报备":
+					baobei++;
+					break;
+				case "到访":
+					daofang++;
+					break;
+				case "认购":
+					rengou++;
+					break;
+				case "签约":
+					qianyue++;
+					break;
+				case "退房":
+					tuifang++;
+					break;
+				case "无效":
+					wuxiao++;
+					break;
+				}
+			}
+		}
+		customer.put("baobei",baobei);
+		customer.put("daofang",daofang);
+		customer.put("rengou",rengou);
+		customer.put("qianyue",qianyue);
+		customer.put("tuifang",tuifang);
+		customer.put("wuxiao",wuxiao);
+		customer.put("Count",baobei+daofang+qianyue+tuifang+wuxiao);
+		return customer;
+	}
 
 
 }
