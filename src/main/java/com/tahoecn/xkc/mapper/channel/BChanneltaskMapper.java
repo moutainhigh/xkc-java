@@ -1,12 +1,15 @@
 package com.tahoecn.xkc.mapper.channel;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tahoecn.xkc.model.channel.BChanneltask;
-import org.apache.ibatis.annotations.Param;
+import com.tahoecn.xkc.model.channel.BChanneltaskarea;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * <p>
@@ -90,7 +93,6 @@ public interface BChanneltaskMapper extends BaseMapper<BChanneltask> {
 	 * 强制结束任务 
 	 */
 	void mChannelLeaderQuit_Insert(Map<String, Object> map);
-
 	void mChannelLeaderQuit_Update2(Map<String, Object> map);
 	/*
 	 * 写入将分配的线索跟进记录
