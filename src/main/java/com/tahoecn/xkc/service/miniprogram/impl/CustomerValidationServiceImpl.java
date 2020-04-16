@@ -68,7 +68,7 @@ public class CustomerValidationServiceImpl extends ServiceImpl<BChanneluserMappe
         if (str1.indexOf(userRegisterVO.getChannelTypeID()) >= 0) {
             userRegisterVO.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
             BChanneluser bChanneluser = bChanneluserMapper.getBChannelUser(userRegisterVO);
-            if (null != bChanneluser){
+            if (null != bChanneluser) {
                 if (StringUtils.isNotEmpty(bChanneluser.getGender())) {
                     if (bChanneluser.getGender().length() > 1) {
                         bChanneluser.setGender(String.valueOf(SexEnum.getEnumByMessage(bChanneluser.getGender()).getCode()));
@@ -80,6 +80,8 @@ public class CustomerValidationServiceImpl extends ServiceImpl<BChanneluserMappe
                 if (StringUtils.isNotEmpty(bChanneluser.getCertificatesType())) {
                     bChanneluser.setCertificatesType(String.valueOf(CertificatesIdEnum.getEnumByMessage(bChanneluser.getCertificatesType()).getCode()));
                 }
+            } else {
+                return new JSONResult(1, "未获取相关客户信息!");
             }
             sysAccessRecord.setInterfaceState("0");
             sysAccessRecord.setReason("成功");
@@ -89,7 +91,7 @@ public class CustomerValidationServiceImpl extends ServiceImpl<BChanneluserMappe
             userRegisterVO.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
             BChanneluser bChanneluser = new BChanneluser();
             BSalesuser bSalesuser = bSalesuserMapper.getBSalesuser(userRegisterVO);
-            if (null != bSalesuser){
+            if (null != bSalesuser) {
                 bChanneluser.setId(bSalesuser.getId());
                 bChanneluser.setName(bSalesuser.getName());
                 bChanneluser.setMobile(bSalesuser.getTelPhone());
@@ -98,8 +100,8 @@ public class CustomerValidationServiceImpl extends ServiceImpl<BChanneluserMappe
                     bChanneluser.setChannelTypeID(String.valueOf(ChannelTypeIdEnum.getEnumByMessage(userRegisterVO.getChannelTypeID()).getCode()));
                 }
                 jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), bChanneluser, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
-            }else{
-                jsonResult = ResultUtil.setJsonResult(new JSONResult<>(), null, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
+            } else {
+                return new JSONResult(1, "未获取相关客户信息!");
             }
             sysAccessRecord.setInterfaceState("0");
             sysAccessRecord.setReason("成功");
