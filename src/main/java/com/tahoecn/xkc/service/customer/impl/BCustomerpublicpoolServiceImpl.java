@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
@@ -15,11 +16,7 @@ import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,13 +42,35 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 	private BCustomerpotentialMapper bCustomerpotentialMapper;
 	@Autowired
 	private BSalesuserMapper bSalesuserMapper;
+	@Autowired
+	private BCustomerWhiteListServiceImpl customerWhiteListService;
 	/**
 	 * 客户公共池查询
 	 */
 	@Override
 	public Map<String, Object> mCustomerGGCList_Select(Map<String, Object> paramMap) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("List", baseMapper.mCustomerGGCList_Select(paramMap));
+		List<Map<String, Object>> maps = baseMapper.mCustomerGGCList_Select(paramMap);
+
+		// 客户vip白名单过滤
+		Iterator<Map<String, Object>> iterator = maps.iterator();
+		while (iterator.hasNext()) {
+			Map<String, Object> map = iterator.next();
+			String customerID = (String)map.get("CustomerID");
+			if (customerID != null && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+				String customerName = (String)map.get("CustomerName");
+				if (customerName != null) {
+					map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar(customerName));
+				}
+
+				String customerMobile = (String)map.get("CustomerMobile");
+				if (customerMobile != null) {
+					map.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
+				}
+			}
+		}
+
+		result.put("List", maps);
 		result.put("AllCount", baseMapper.mCustomerGGCList_Select_count(paramMap));
 		result.put("PageSize", paramMap.get("PageSize"));
 		return result;

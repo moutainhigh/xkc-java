@@ -37,6 +37,9 @@ public class CustomerBook implements Serializable {
     @TableField("Address")
     private String address;
 
+    @TableField("WhiteStatus")
+    private Integer whiteStatus;
+
     public String getId() {
         return id;
     }
@@ -91,5 +94,13 @@ public class CustomerBook implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Integer getWhiteStatus() {
+        return whiteStatus;
+    }
+
+    public void setWhiteStatus(Integer whiteStatus) {
+        this.whiteStatus = whiteStatus;
     }
 }

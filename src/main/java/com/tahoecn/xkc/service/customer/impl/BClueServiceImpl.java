@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.common.enums.ActionType;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
@@ -34,10 +35,7 @@ import com.tahoecn.xkc.model.vo.CustomerStatus;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
-import com.tahoecn.xkc.service.customer.IBClueService;
-import com.tahoecn.xkc.service.customer.IBCustomerpotentialService;
-import com.tahoecn.xkc.service.customer.ICustomerHelp;
-import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
+import com.tahoecn.xkc.service.customer.*;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import java.text.DateFormat;
@@ -117,6 +115,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
     @Autowired
     private ICustomerHelp customerTemplate;
+
+    @Autowired
+    private IBCustomerWhiteListService customerWhiteListService;
     
 	@Value("${mobilesale.ruleid}")
 	private String ruleId;
@@ -138,6 +139,23 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             //获取轨迹记录
             List<Map<String, Object>> list = baseMapper.TrackList_Select(clueID);
             map.put("List", list);
+        }
+
+        // 客户vip白名单过滤
+        String customerID = (String)map.get("CustomerID");
+        String customerPotentialID = (String)map.get("CustomerPotentialID");
+
+        if ((StringUtils.isNotBlank(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID))
+                || (StringUtils.isNotBlank(customerPotentialID) && customerWhiteListService.judgeIsWhiteCustomer(customerPotentialID))) {
+            String name = (String)map.get("Name");
+            if (name != null) {
+                map.put("Name", StringShieldUtil.getFilterStrHasFirstChar(name));
+            }
+
+            String mobile = (String)map.get("Mobile");
+            if (mobile != null) {
+                map.put("Mobile", StringShieldUtil.getAllStarStr(mobile));
+            }
         }
 
         return map;

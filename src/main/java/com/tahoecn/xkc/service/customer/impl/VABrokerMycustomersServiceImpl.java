@@ -2,12 +2,15 @@ package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,9 @@ import java.util.Map;
  */
 @Service
 public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustomersMapper, VABrokerMycustomers> implements IVABrokerMycustomersService {
+
+    @Autowired
+    private BCustomerWhiteListServiceImpl customerWhiteListService;
 
     @Override
     public IPage<Map<String, Object>> mGetMyCustomers_Select(IPage page, int sort, String filter, String customerInfo, String brokerID) {
@@ -46,6 +52,27 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
                 record.put("StatusText","到访");
             }
         }
+
+        // 客户vip白名单过滤
+        Iterator<Map<String, Object>> iterator = mapIPage.getRecords().iterator();
+        while (iterator.hasNext()) {
+            Map<String, Object> map = iterator.next();
+            String customerID = (String)map.get("CustomerID");
+            String customerPotentialID = (String)map.get("CustomerPotentialID");
+            if ((customerID != null && customerWhiteListService.judgeIsWhiteCustomer(customerID))
+                    || (customerPotentialID != null && customerWhiteListService.judgeIsWhiteCustomer(customerPotentialID))) {
+                String customerName = (String) map.get("CustomerName");
+                if (customerName != null) {
+                    map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar(customerName));
+                }
+
+                String mobile = (String) map.get("Mobile");
+                if (mobile != null) {
+                    map.put("Mobile", StringShieldUtil.getAllStarStr(mobile));
+                }
+            }
+        }
+
         return mapIPage;
     }
 

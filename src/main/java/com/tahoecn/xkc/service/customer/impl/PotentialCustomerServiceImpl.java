@@ -1,17 +1,15 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
 import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
+import com.tahoecn.xkc.model.vo.*;
+import com.tahoecn.xkc.service.customer.IBCustomerWhiteListService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +22,6 @@ import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
-import com.tahoecn.xkc.model.vo.CGWDetailModel;
-import com.tahoecn.xkc.model.vo.CSearchModelVo;
-import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
-import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.CustomerModelVo;
-import com.tahoecn.xkc.model.vo.FilterItem;
-import com.tahoecn.xkc.model.vo.GWCustomerPageModel;
-import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
 import com.tahoecn.xkc.service.channel.IBChannelService;
 import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
 import com.tahoecn.xkc.service.customer.IPotentialCustomerService;
@@ -55,6 +45,8 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	private ISystemMessageService iSystemMessageService;
 	@Resource
 	private IBChannelService iBChannelService;
+    @Resource
+	private IBCustomerWhiteListService customerWhiteListService;
 
 	@Override
 	public Result mCustomerPotentialTagDetail_Insert(JSONObject paramAry) {
@@ -185,6 +177,21 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			// vip白名单信息过滤
+            String customerID = (String)data_re.get("CustomerID");
+            if (customerID != null && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+                String customerName = (String)data_re.get("CustomerName");
+                if (customerName != null) {
+                    data_re.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar(customerName));
+                }
+
+                String customerMobile = (String)data_re.get("CustomerMobile");
+                if (customerMobile != null) {
+                    data_re.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
+                }
+            }
+
 	        re.setData(data_re);
 	        re.setErrcode(0);
 	        re.setErrmsg("成功");
@@ -205,6 +212,35 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
             if (CustomerObj!=null){
                 String customerPotentialModeType = CustomerPotentialModeType.自渠_客户_详情.getTypeID();
                 CustomerModelVo customerModel = iCustomerPotentialTemplate.InitCustomerPotentialModeData(model, "ZQDetailCustomerPotential.json", CustomerObj, customerPotentialModeType);
+
+                // 客户vip白名单信息过滤
+                String customerID = (String) CustomerObj.get("CustomerID");
+                if (!StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+                    for (PanelItem panelItem : customerModel.getPanel()) {
+                        if ("客户信息".equals(panelItem.getName())) {
+                            for (ChildItem childItem : panelItem.getChild()) {
+                                // 证件号码
+                                if ("56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37".equals(childItem.getID())) {
+                                    if (!StringUtils.isEmpty(childItem.getValue())) {
+                                        childItem.setValue(StringShieldUtil.getAllStarStr(childItem.getValue()));
+                                    }
+                                }
+                            }
+                        }
+
+                        if ("客户特征".equals(panelItem.getName())) {
+                            for (ChildItem childItem : panelItem.getChild()) {
+                                // 户籍所在地
+                                if ("C7B06191-E032-45F4-A990-DB73450588DE".equals(childItem.getID())) {
+                                    if (!StringUtils.isEmpty(childItem.getValue())) {
+                                        childItem.setValue(StringShieldUtil.getAllStarStr(childItem.getValue()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 entity.setData(customerModel);
                 entity.setErrcode(0);
                 entity.setErrmsg("成功！");
@@ -1064,6 +1100,25 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 	        List<Map<String, Object>> data = bCustomerpotentialMapper.mCustomerPotentialZQList_Select(pmap);
 	        Long recordCount = bCustomerpotentialMapper.mCustomerPotentialZQList_Select_count(pmap);
 	        Map<String,Object> re_map = new HashMap<String, Object>();
+
+	        // 白名单数据过滤
+            Iterator<Map<String, Object>> iterator = data.iterator();
+            while (iterator.hasNext()) {
+                Map<String, Object> map = iterator.next();
+                String customerID = (String)map.get("CustomerID");
+                if (customerID != null && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+                    String customerName = (String)map.get("CustomerName");
+                    if (customerName != null) {
+                        map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar(customerName));
+                    }
+
+                    String customerMobile = (String)map.get("CustomerMobile");
+                    if (customerMobile != null) {
+                        map.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
+                    }
+                }
+            }
+
 	        re_map.put("List", data);
 	        re_map.put("AllCount", recordCount);
 	        re_map.put("PageSize", paramAry.get("PageSize"));

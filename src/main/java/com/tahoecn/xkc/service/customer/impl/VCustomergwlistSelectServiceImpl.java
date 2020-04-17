@@ -1,21 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,25 +10,25 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.model.customer.UpdateCustinfoLog;
 import com.tahoecn.xkc.model.dto.GWCustomerPageDto;
-import com.tahoecn.xkc.model.vo.CGWDetailModel;
-import com.tahoecn.xkc.model.vo.CSearchModelVo;
-import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.CustomerModelVo;
-import com.tahoecn.xkc.model.vo.FilterItem;
-import com.tahoecn.xkc.model.vo.PanelItem;
-import com.tahoecn.xkc.service.customer.ICustomerHelp;
-import com.tahoecn.xkc.service.customer.IProjectService;
-import com.tahoecn.xkc.service.customer.IUpdateCustinfoLogService;
-import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
+import com.tahoecn.xkc.model.vo.*;
+import com.tahoecn.xkc.service.customer.*;
 import com.tahoecn.xkc.service.sys.ISystemMessageService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.date.DateUtil;
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -71,6 +56,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
     private String SiteUrl;
 	@Autowired
     private IUpdateCustinfoLogService iUpdateCustinfoLogService;
+	@Autowired
+	private IBCustomerWhiteListService customerWhiteListService;
 	
 	@Override
 	public Result customerList(GWCustomerPageDto model) {
@@ -79,6 +66,28 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	setParamForCustomerList(model);
         	//设置分页
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
+
+        	Iterator<Map<String, Object>> iterator = data.iterator();
+			while (iterator.hasNext()) {
+				Map<String, Object> map = iterator.next();
+				String customerID = (String)map.get("CustomerID");
+				if (customerID != null && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+					String customerName = (String)map.get("CustomerName");
+					if (customerName != null) {
+						map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar(customerName));
+					}
+
+					String customerMobile = (String)map.get("CustomerMobile");
+					if (customerMobile != null) {
+						map.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
+					}
+
+					String useMobile = (String)map.get("UseMobile");
+					if (useMobile != null) {
+						map.put("UseMobile", StringShieldUtil.getAllStarStr(useMobile));
+					}
+				}
+			}
         	//OLD 通过父ID获取机会信息
 //        	List<String> OpportunityID_list = new ArrayList<String>();
 //        	if(data!=null && data.size()>0){
@@ -370,6 +379,26 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
          			}
                 }
                 data.put("Token", token);
+
+				String customerID = (String)data.get("CustomerID");
+				if (customerID != null
+						&& customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+					String customerName = (String)data.get("CustomerName");
+					if (customerName != null) {
+						data.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar(customerName));
+					}
+
+					String customerMobile = (String)data.get("CustomerMobile");
+					if (customerMobile != null) {
+						data.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
+					}
+
+					String useMobile = (String)data.get("UseMobile");
+					if (useMobile != null) {
+						data.put("UseMobile", StringShieldUtil.getAllStarStr(useMobile));
+					}
+				}
+
                 entity.setData(data);
                 entity.setErrmsg("成功");
         	}else{
@@ -921,6 +950,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         				}
                 	}
                 }
+
+                filterCustomerModelVo(customerModel);
                 entity.setData(customerModel);
                 entity.setErrmsg("成功");
                 entity.setErrcode(0);
@@ -935,6 +966,54 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
             e.printStackTrace();
         }
         return entity;
+	}
+
+	/**
+	 * 过滤白名单关键信息
+	 * @param model
+	 */
+	private void filterCustomerModelVo(CustomerModelVo model) {
+		String customerID = model.getCustomerID();
+
+		if (StringUtils.isBlank(customerID)) {
+			return;
+		}
+
+		if (!customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
+			return;
+		}
+
+		for (PanelItem panelItem : model.getPanel()) {
+			if ("客户信息".equals(panelItem.getName())) {
+				for (ChildItem childItem : panelItem.getChild()) {
+					// 证件号码
+					if ("56CAE4FF-83E7-4ADF-BAC8-5A32F0AD1D37".equals(childItem.getID())) {
+						if (StringUtils.isNotBlank(childItem.getValue())) {
+							childItem.setValue(StringShieldUtil.getAllStarStr(childItem.getValue()));
+						}
+					}
+
+					// 通讯地址
+					if ("9036F3E4-2EB7-4E7A-849D-FFF39EEB093D".equals(childItem.getID())) {
+						if (StringUtils.isNotBlank(childItem.getValue())) {
+							childItem.setValue(StringShieldUtil.getAllStarStr(childItem.getValue()));
+						}
+					}
+
+				}
+			}
+
+			if ("客户特征".equals(panelItem.getName())) {
+				for (ChildItem childItem : panelItem.getChild()) {
+					// 户籍所在地
+					if ("C7B06191-E032-45F4-A990-DB73450588DE".equals(childItem.getID())) {
+						if (StringUtils.isNotBlank(childItem.getValue())) {
+							childItem.setValue(StringShieldUtil.getAllStarStr(childItem.getValue()));
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
