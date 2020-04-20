@@ -123,4 +123,16 @@ public class RelationshipController extends TahoeBaseController {
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
+
+    @ApiOperation(value = "获取中介机构信息", notes = "获取中介机构信息")
+    @RequestMapping(value = "/getIntermediaryAgency", method = {RequestMethod.POST})
+    public JSONResult getIntermediaryAgency(HttpServletRequest request) {
+        try {
+            return relationshipService.getIntermediaryAgency(request);
+        } catch (Exception e) {
+            //记录错误日志
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
 }

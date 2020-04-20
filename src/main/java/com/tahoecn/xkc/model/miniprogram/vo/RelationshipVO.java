@@ -27,6 +27,8 @@ public class RelationshipVO {
 
     private String orgName;
 
+    private String orgCode;
+
     public String getUserId() {
         return userId;
     }
@@ -89,5 +91,13 @@ public class RelationshipVO {
 
     public void setOrgId(String orgId) {
         this.orgId = orgId;
+    }
+
+    public String getOrgCode() {
+        return orgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
     }
 }

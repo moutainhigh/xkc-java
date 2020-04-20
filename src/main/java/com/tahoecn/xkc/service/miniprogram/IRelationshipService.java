@@ -84,4 +84,13 @@ public interface IRelationshipService extends IService<BChanneluser> {
      * @throws Exception
      */
     public JSONResult getCustomer(HttpServletRequest request, RelationshipVO relationshipVO) throws Exception;
+
+    /**
+     * 获取中介机构信息
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    public JSONResult getIntermediaryAgency(HttpServletRequest request) throws Exception;
 }

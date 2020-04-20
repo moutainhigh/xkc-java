@@ -78,4 +78,11 @@ public interface RelationshipMapper extends BaseMapper<RelationshipVO> {
      * @return
      */
     List<Map> getCustomer2(@Param("relationship") RelationshipVO relationshipVO);
+
+    /**
+     * 获取中介机构
+     *
+     * @return
+     */
+    List<Map> getIntermediaryAgency();
 }

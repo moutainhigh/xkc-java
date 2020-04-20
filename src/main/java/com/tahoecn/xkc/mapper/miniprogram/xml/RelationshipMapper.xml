@@ -47,6 +47,7 @@
             D.Name AS userName,
             C.ID AS orgId,
             C.OrgName AS orgName,
+            C.OrgCode AS orgCode,
             B.ID AS projectId,
             B.Name AS projectName,
             E.ID AS roleId,
@@ -123,5 +124,22 @@
         WHERE
             SaleUserID = #{relationship.userId}
             AND ProjectID = #{relationship.projectId}
+    </select>
+
+    <select id="getIntermediaryAgency" resultType="java.util.Map">
+        SELECT
+            C.ID AS orgId,
+            C.OrgCode AS orgCode,
+            C.OrgName AS orgName,
+            B.ID AS projectId,
+            B.Name AS projectName
+        FROM
+            dbo.B_PojectChannelOrgRel A
+        INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID
+        INNER JOIN dbo.B_ChannelOrg C ON A.OrgID= C.ID AND C.IsDel = 0 AND C.OrgCode IS NOT NULL AND C.OrgCode &lt;&gt; ''
+        WHERE
+            A.IsDel = 0
+        ORDER BY
+            C.orgCode
     </select>
 </mapper>

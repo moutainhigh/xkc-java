@@ -104,7 +104,7 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
     public JSONResult getFormSessionId(HttpServletRequest request, Map<String, Object> map) throws Exception {
         // 记录接口访问信息
         SysAccessRecord sysAccessRecord = sysAccessRecordService.getSysAccessRecord(request);
-        if (null == map){
+        if (null == map) {
             sysAccessRecord.setInterfaceState("1");
             sysAccessRecord.setReason("参数不能为空");
             sysAccessRecordMapper.insert(sysAccessRecord);
@@ -130,6 +130,7 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
     @Transactional
     public JSONResult dynatownReport(HttpServletRequest request, MDynatownCustomerVO mDynatownCustomerVO) throws Exception {
         JSONResult jsonResult = new JSONResult();
+        String returnOpportunityId = "";
         // 记录接口访问信息
         SysAccessRecord sysAccessRecord = sysAccessRecordService.getSysAccessRecord(request);
         if (!StringUtils.isEmpty(mDynatownCustomerVO.getFormSessionId())) {
@@ -195,6 +196,7 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
                     if (jsonResult.getCode() == 0) {
                         parameter.put("TrackType", "BC2F967F-8FFE-1F52-49F6-CBCDFE8D044A");
                         parameter.put("OpportunityID", UUID.randomUUID().toString());
+                        returnOpportunityId = parameter.getString("OpportunityID");
                         parameter.put("SaleUserID", model.getUserID());
                         parameter.put("Status", 1);
                         parameter.put("IsCustomerFirstEdit", 0);
@@ -391,7 +393,10 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
             jsonResult.setCode(1);
             jsonResult.setMsg("参数不完整！");
         }
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("opportunityId", returnOpportunityId);
         jsonResult.setMsg("成功");
+        jsonResult.setData(result);
         return jsonResult;
     }
 

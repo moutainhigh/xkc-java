@@ -9,6 +9,7 @@ import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.miniprogram.RelationshipMapper;
 import com.tahoecn.xkc.mapper.sys.SysAccessRecordMapper;
 import com.tahoecn.xkc.model.channel.BChanneluser;
+import com.tahoecn.xkc.model.miniprogram.vo.IntermediaryAgencyVO;
 import com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO;
 import com.tahoecn.xkc.model.sys.SysAccessRecord;
 import com.tahoecn.xkc.service.miniprogram.IRelationshipService;
@@ -17,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -135,5 +134,57 @@ public class RelationshipServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             return new JSONResult(1, "roleId参数错误");
         }
         return ResultUtil.setJsonResult(new JSONResult<>(), result, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
+    }
+
+    @Override
+    public JSONResult getIntermediaryAgency(HttpServletRequest request) throws Exception {
+        // 记录接口访问信息
+        SysAccessRecord sysAccessRecord = sysAccessRecordService.getSysAccessRecord(request);
+        // 获取所有中介机构信息
+        List<IntermediaryAgencyVO> resultList = new ArrayList<IntermediaryAgencyVO>();
+        Map<String, IntermediaryAgencyVO> resultMap = new HashMap();
+        List<Map> queryList = relationshipMapper.getIntermediaryAgency();
+        if (null != queryList && queryList.size() > 0) {
+            // 去重整合数据
+            Map<String, IntermediaryAgencyVO> map = new HashMap<String, IntermediaryAgencyVO>(queryList.size());
+            Set<String> set = new HashSet<String>();
+            for (Map data : queryList) {
+                String orgId = data.get("orgId").toString();
+                if (!set.contains(orgId)) {
+                    IntermediaryAgencyVO newIntermediaryAgencyVO = new IntermediaryAgencyVO();
+                    List<Map> projectList = new ArrayList<Map>();
+                    Map projectMap = new HashMap(2);
+                    newIntermediaryAgencyVO.setOrgId(orgId);
+                    newIntermediaryAgencyVO.setOrgName(data.get("orgName").toString());
+                    newIntermediaryAgencyVO.setOrgCode(data.get("orgCode").toString());
+                    projectMap.put("projectId", data.get("projectId"));
+                    projectMap.put("projectName", data.get("projectName"));
+                    projectList.add(projectMap);
+                    newIntermediaryAgencyVO.setProjectList(projectList);
+                    resultMap.put(orgId, newIntermediaryAgencyVO);
+                    set.add(orgId);
+                } else {
+                    IntermediaryAgencyVO oldIntermediaryAgencyVO = resultMap.get(orgId);
+                    Map projectMap = new HashMap(2);
+                    projectMap.put("projectId", data.get("projectId"));
+                    projectMap.put("projectName", data.get("projectName"));
+                    oldIntermediaryAgencyVO.getProjectList().add(projectMap);
+                    resultMap.put(orgId, oldIntermediaryAgencyVO);
+                }
+            }
+            // 返回最终结果数据
+            for (IntermediaryAgencyVO intermediaryAgencyVO : resultMap.values()) {
+                resultList.add(intermediaryAgencyVO);
+            }
+        } else {
+            sysAccessRecord.setInterfaceState("1");
+            sysAccessRecord.setReason("获取中介机构信息失败");
+            sysAccessRecordMapper.insert(sysAccessRecord);
+            return new JSONResult(1, "获取中介机构信息失败");
+        }
+        sysAccessRecord.setInterfaceState("0");
+        sysAccessRecord.setReason("成功");
+        sysAccessRecordMapper.insert(sysAccessRecord);
+        return ResultUtil.setJsonResult(new JSONResult<>(), resultList, null, TipsEnum.Success.getCode(), TipsEnum.Success.getMsg());
     }
 }
