@@ -63,12 +63,12 @@ public class RelationshipServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public JSONResult getOrgPerson(HttpServletRequest request) throws Exception {
+    public JSONResult getOrgPerson(HttpServletRequest request, RelationshipVO relationshipVO) throws Exception {
         // 记录接口访问信息
         SysAccessRecord sysAccessRecord = sysAccessRecordService.getSysAccessRecord(request);
         List<RelationshipVO> result = new ArrayList<RelationshipVO>();
-        List<RelationshipVO> dataList1 = relationshipMapper.getOrgPerson1();
-        List<RelationshipVO> dataList2 = relationshipMapper.getOrgPerson2();
+        List<RelationshipVO> dataList1 = relationshipMapper.getOrgPerson1(relationshipVO.getProjectId());
+        List<RelationshipVO> dataList2 = relationshipMapper.getOrgPerson2(relationshipVO.getProjectId());
         result.addAll(dataList1);
         result.addAll(dataList2);
         sysAccessRecord.setInterfaceState("0");

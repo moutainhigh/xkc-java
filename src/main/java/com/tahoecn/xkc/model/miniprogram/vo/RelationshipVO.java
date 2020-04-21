@@ -13,6 +13,8 @@ public class RelationshipVO {
 
     private String userId;
 
+    private String name;
+
     private String userName;
 
     private String projectId;
@@ -28,6 +30,8 @@ public class RelationshipVO {
     private String orgName;
 
     private String orgCode;
+
+    private String mobile;
 
     public String getUserId() {
         return userId;
@@ -99,5 +103,21 @@ public class RelationshipVO {
 
     public void setOrgCode(String orgCode) {
         this.orgCode = orgCode;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -29,16 +29,18 @@ public interface RelationshipMapper extends BaseMapper<RelationshipVO> {
     /**
      * 获取组织角色
      *
+     * @param projectId
      * @return
      */
-    List<RelationshipVO> getOrgPerson1();
+    List<RelationshipVO> getOrgPerson1(@Param("projectId") String projectId);
 
     /**
      * 获取组织角色
      *
+     * @param projectId
      * @return
      */
-    List<RelationshipVO> getOrgPerson2();
+    List<RelationshipVO> getOrgPerson2(@Param("projectId") String projectId);
 
     /**
      * 获取项目

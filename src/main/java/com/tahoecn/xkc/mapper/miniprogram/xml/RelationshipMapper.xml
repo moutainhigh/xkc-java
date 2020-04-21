@@ -23,25 +23,30 @@
             </if>
     </select>
 
-    <select id="getOrgPerson1" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
-    SELECT
-        D.ID AS userId,
-        D.Name AS userName,
-        B.ID AS projectId,
-        B.Name AS projectName,
-        C.ID AS roleId,
-        C.DictName AS roleName
-    FROM
-        dbo.B_SalesGroupMember A
-        INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID --查询项目名称
-        INNER JOIN dbo.S_Dictionary C ON A.RoleID= C.ID --查询角色名称
-        INNER JOIN dbo.B_SalesUser D ON A.MemberID= D.ID
-        AND D.IsDel = 0 --查询人员信息
-    WHERE
-        A.IsDel = 0
+    <select id="getOrgPerson1" parameterType="string"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+        SELECT
+            D.ID AS userId,
+            D.Name AS userName,
+            B.ID AS projectId,
+            B.Name AS projectName,
+            C.ID AS roleId,
+            C.DictName AS roleName
+        FROM
+            dbo.B_SalesGroupMember A
+            INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID --查询项目名称
+            INNER JOIN dbo.S_Dictionary C ON A.RoleID= C.ID --查询角色名称
+            INNER JOIN dbo.B_SalesUser D ON A.MemberID= D.ID
+            AND D.IsDel = 0 --查询人员信息
+        WHERE
+            A.IsDel = 0
+        <if test="projectId != null and projectId != '' ">
+            AND B.ID = #{projectId}
+        </if>
     </select>
 
-    <select id="getOrgPerson2" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+    <select id="getOrgPerson2"  parameterType="string"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
         SELECT
             D.ID AS userId,
             D.Name AS userName,
@@ -63,6 +68,9 @@
             INNER JOIN dbo.S_Dictionary E ON D.ChannelTypeID = E.ID
         WHERE
             A.IsDel = 0
+        <if test="projectId != null and projectId != '' ">
+            AND B.ID = #{projectId}
+        </if>
     </select>
 
     <select id="getProject" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">

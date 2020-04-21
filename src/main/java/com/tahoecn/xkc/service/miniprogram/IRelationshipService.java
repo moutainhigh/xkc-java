@@ -41,10 +41,11 @@ public interface IRelationshipService extends IService<BChanneluser> {
      * 获取组织人员
      *
      * @param request
+     * @param relationshipVO
      * @return
      * @throws Exception
      */
-    public JSONResult getOrgPerson(HttpServletRequest request) throws Exception;
+    public JSONResult getOrgPerson(HttpServletRequest request, RelationshipVO relationshipVO) throws Exception;
 
     /**
      * 获取项目
