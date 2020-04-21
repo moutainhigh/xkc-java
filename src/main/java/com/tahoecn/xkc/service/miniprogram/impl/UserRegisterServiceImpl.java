@@ -103,22 +103,23 @@ public class UserRegisterServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         bChanneluser.setName(userRegisterVO.getName());
         bChanneluser.setGender(SexEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getGender())).getMessage());
         bChanneluser.setChannelOrgCode(userRegisterVO.getChannelOrgCode());
-        QueryWrapper<BChannelorg> query = new QueryWrapper<BChannelorg>();
-        query.eq("OrgCode", userRegisterVO.getChannelOrgCode());
-        BChannelorg bChannelorg = bChannelorgMapper.selectOne(query);
-        if (null == bChannelorg) {
-            sysAccessRecord.setInterfaceState("1");
-            sysAccessRecord.setReason("机构不存在");
-            sysAccessRecordMapper.insert(sysAccessRecord);
-            return new JSONResult(1, "机构不存在");
-        }
-        bChanneluser.setChannelOrgID(bChannelorg.getId());
-        bChanneluser.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
-        if (ChannelTypeIdEnum.MIDDLE.getCode() == Integer.valueOf(userRegisterVO.getChannelTypeID())) {
+        // 判断注册用户是否是中介同行
+        if (userRegisterVO.getChannelTypeID().equals(ChannelTypeIdEnum.MIDDLE.getCode())) {
+            QueryWrapper<BChannelorg> query = new QueryWrapper<BChannelorg>();
+            query.eq("OrgCode", userRegisterVO.getChannelOrgCode());
+            BChannelorg bChannelorg = bChannelorgMapper.selectOne(query);
+            if (null == bChannelorg) {
+                sysAccessRecord.setInterfaceState("1");
+                sysAccessRecord.setReason("机构不存在");
+                sysAccessRecordMapper.insert(sysAccessRecord);
+                return new JSONResult(1, "机构不存在");
+            }
+            bChanneluser.setChannelOrgID(bChannelorg.getId());
             bChanneluser.setJob(2);
-        } else {
+        }else{
             bChanneluser.setJob(3);
         }
+        bChanneluser.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
         bChanneluser.setApprover("99");
         bChanneluser.setApprovalStatus(1);
         Date date = new Date();
