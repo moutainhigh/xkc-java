@@ -43,6 +43,13 @@ public interface RelationshipMapper extends BaseMapper<RelationshipVO> {
     List<RelationshipVO> getOrgPerson2(@Param("projectId") String projectId);
 
     /**
+     * 获取组织角色
+     *
+     * @return
+     */
+    List<RelationshipVO> getOrgPerson3();
+
+    /**
      * 获取项目
      *
      * @return

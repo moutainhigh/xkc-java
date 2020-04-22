@@ -67,10 +67,15 @@ public class RelationshipServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         // 记录接口访问信息
         SysAccessRecord sysAccessRecord = sysAccessRecordService.getSysAccessRecord(request);
         List<RelationshipVO> result = new ArrayList<RelationshipVO>();
+        // 置业顾问/自渠人员/负责人等
         List<RelationshipVO> dataList1 = relationshipMapper.getOrgPerson1(relationshipVO.getProjectId());
+        // 中介同行
         List<RelationshipVO> dataList2 = relationshipMapper.getOrgPerson2(relationshipVO.getProjectId());
+        // 自由经纪
+        List<RelationshipVO> dataList3 = relationshipMapper.getOrgPerson3();
         result.addAll(dataList1);
         result.addAll(dataList2);
+        result.addAll(dataList3);
         sysAccessRecord.setInterfaceState("0");
         sysAccessRecord.setReason("成功");
         sysAccessRecordMapper.insert(sysAccessRecord);

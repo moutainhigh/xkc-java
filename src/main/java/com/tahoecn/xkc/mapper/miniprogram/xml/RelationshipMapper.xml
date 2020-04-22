@@ -27,7 +27,8 @@
             resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
         SELECT
             D.ID AS userId,
-            D.Name AS userName,
+            D.Name AS name,
+            D.UserName AS userName,
             B.ID AS projectId,
             B.Name AS projectName,
             C.ID AS roleId,
@@ -49,7 +50,8 @@
             resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
         SELECT
             D.ID AS userId,
-            D.Name AS userName,
+            D.Name AS name,
+            D.UserName AS userName,
             C.ID AS orgId,
             C.OrgName AS orgName,
             C.OrgCode AS orgCode,
@@ -71,6 +73,26 @@
         <if test="projectId != null and projectId != '' ">
             AND B.ID = #{projectId}
         </if>
+    </select>
+
+    <select id="getOrgPerson3" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+        SELECT
+            A.ID AS userId,
+            A.Name AS name,
+            A.UserName AS userName,
+            '' AS orgId,
+            '' AS orgName,
+            '' AS orgCode,
+            '' AS projectId,
+            '' AS projectName,
+            E.ID AS roleId,
+            E.DictName AS roleName
+        FROM
+            B_ChannelUser A
+            INNER JOIN dbo.S_Dictionary E ON A.ChannelTypeID = E.ID
+        WHERE
+            A.ChannelTypeID= '46830C26-0E01-4041-8054-3865CCDD26AD'
+            AND A.IsDel= 0
     </select>
 
     <select id="getProject" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">

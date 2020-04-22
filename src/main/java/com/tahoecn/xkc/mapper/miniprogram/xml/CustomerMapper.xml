@@ -29,7 +29,7 @@
 
     <select id="getCustomerFollowRecord" parameterType="string"
             resultType="com.tahoecn.xkc.model.miniprogram.vo.FollowRecordVO">
-        SELECT
+       SELECT
             T.*
         FROM
             (
