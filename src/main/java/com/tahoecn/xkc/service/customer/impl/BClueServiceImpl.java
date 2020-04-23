@@ -8,11 +8,7 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
-import com.tahoecn.xkc.mapper.customer.BClueMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
-import com.tahoecn.xkc.mapper.customer.BCustomerpotentialfollowupMapper;
-import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
+import com.tahoecn.xkc.mapper.customer.*;
 import com.tahoecn.xkc.mapper.project.BProjectMapper;
 import com.tahoecn.xkc.mapper.rule.BClueruleMapper;
 import com.tahoecn.xkc.mapper.sys.SAccountMapper;
@@ -24,35 +20,28 @@ import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
+import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MBrokerReportVO;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.rule.BCluerule;
 import com.tahoecn.xkc.model.sys.SAccount;
-import com.tahoecn.xkc.model.vo.ChannelRegisterModel;
-import com.tahoecn.xkc.model.vo.Customer;
-import com.tahoecn.xkc.model.vo.CustomerActionVo;
-import com.tahoecn.xkc.model.vo.CustomerStatus;
-import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+import com.tahoecn.xkc.model.vo.*;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.*;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -629,6 +618,16 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
         }
 
         return save;
+    }
+
+    @Override
+    public boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, MBrokerReportVO mBrokerReportVO) {
+        return false;
+    }
+
+    @Override
+    public boolean kfCreateClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) throws Exception {
+        return false;
     }
 
     @Transactional(rollbackFor = Exception.class)
