@@ -92,4 +92,12 @@ public interface ISAccountService extends IService<SAccount> {
     SAccount checkUser0(String username, String mobile);
 
     SAccount checkUser1(String username, String mobile);
+
+    /**
+     * 根据手机号获取存在员工数量
+     *
+     * @param mobile
+     * @return
+     */
+    int getUserAmount(String mobile) throws Exception;
 }

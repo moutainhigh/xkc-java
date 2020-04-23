@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.miniprogram.RelationshipMapper">
+    <select id="getOrgRole" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+       SELECT
+            B.ID AS projectId,
+            B.Name AS projectName,
+            C.ID AS roleId,
+            C.DictName AS roleName
+       FROM
+            dbo.B_SalesGroupMember A
+            INNER JOIN dbo.B_Project B ON A.ProjectID = B.ID --查询项目名称
+            INNER JOIN dbo.S_Dictionary C ON A.RoleID = B.ID --查询角色名称
+            INNER JOIN dbo.B_SalesUser D ON A.MemberID = D.ID --查询人员信息
+       WHERE
+            A.IsDel = 0
+            <if test="relationship.userId != null and relationship.userId != ''">
+                AND A.MemberID = #{relationship.userId}
+            </if>
+            <if test="relationship.projectId != null and relationship.projectId != ''">
+                AND A.ProjectID = #{relationship.projectId}
+            </if>
+    </select>
+
+    <select id="getOrgPerson1" parameterType="string"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+        SELECT
+            D.ID AS userId,
+            D.Name AS name,
+            D.UserName AS userName,
+            B.ID AS projectId,
+            B.Name AS projectName,
+            C.ID AS roleId,
+            C.DictName AS roleName
+        FROM
+            dbo.B_SalesGroupMember A
+            INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID --查询项目名称
+            INNER JOIN dbo.S_Dictionary C ON A.RoleID= C.ID --查询角色名称
+            INNER JOIN dbo.B_SalesUser D ON A.MemberID= D.ID
+            AND D.IsDel = 0 --查询人员信息
+        WHERE
+            A.IsDel = 0
+        <if test="projectId != null and projectId != '' ">
+            AND B.ID = #{projectId}
+        </if>
+    </select>
+
+    <select id="getOrgPerson2"  parameterType="string"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+        SELECT
+            D.ID AS userId,
+            D.Name AS name,
+            D.UserName AS userName,
+            C.ID AS orgId,
+            C.OrgName AS orgName,
+            C.OrgCode AS orgCode,
+            B.ID AS projectId,
+            B.Name AS projectName,
+            E.ID AS roleId,
+            E.DictName AS roleName
+        FROM
+            dbo.B_PojectChannelOrgRel A
+            INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID
+            INNER JOIN dbo.B_ChannelOrg C ON A.OrgID= C.ID
+            AND C.IsDel = 0
+            INNER JOIN dbo.B_ChannelUser D ON C.ID = D.ChannelOrgID
+            AND D.ChannelTypeID = '32C92DA0-DA13-4C21-A55E-A1D16955882C'
+            AND D.IsDel = 0
+            INNER JOIN dbo.S_Dictionary E ON D.ChannelTypeID = E.ID
+        WHERE
+            A.IsDel = 0
+        <if test="projectId != null and projectId != '' ">
+            AND B.ID = #{projectId}
+        </if>
+    </select>
+
+    <select id="getOrgPerson3" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+        SELECT
+            A.ID AS userId,
+            A.Name AS name,
+            A.UserName AS userName,
+            '' AS orgId,
+            '' AS orgName,
+            '' AS orgCode,
+            '' AS projectId,
+            '' AS projectName,
+            E.ID AS roleId,
+            E.DictName AS roleName
+        FROM
+            B_ChannelUser A
+            INNER JOIN dbo.S_Dictionary E ON A.ChannelTypeID = E.ID
+        WHERE
+            A.ChannelTypeID= '46830C26-0E01-4041-8054-3865CCDD26AD'
+            AND A.IsDel= 0
+    </select>
+
+    <select id="getProject" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+       SELECT
+            ID AS projectId,
+            Name AS projectName
+       FROM
+            dbo.B_Project
+       WHERE
+            LEVEL = 1
+            AND Category =1
+    </select>
+
+    <select id="getRole" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+      SELECT
+        B.ID AS roleId,
+        B.DictName AS roleName
+      FROM
+        dbo.B_SalesGroupMember A
+        INNER JOIN dbo.S_Dictionary B ON A.RoleID = B.ID
+      WHERE
+        A.IsDel = 0
+        AND A.ProjectID = #{relationship.projectId}
+    </select>
+
+    <select id="getPerson" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
+            resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+       SELECT
+            B.ID AS userId,
+            B.Name AS userName
+       FROM
+            dbo.B_SalesGroupMember A
+            INNER JOIN dbo.B_SalesUser B ON A.MemberID = B.ID
+            AND B.IsDel = 0
+       WHERE
+            A.IsDel = 0
+            AND A.ProjectID = #{relationship.projectId}
+            AND A.RoleID = #{relationship.roleId}
+    </select>
+
+    <select id="getCustomer1" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
+            resultType="java.util.HashMap">
+       SELECT
+            *
+       FROM
+            dbo.B_Clue
+       WHERE
+            ReportUserID = #{relationship.userId}
+            AND IntentProjectID = #{relationship.projectId}
+    </select>
+
+    <select id="getCustomer2" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
+            resultType="java.util.HashMap">
+        SELECT
+            *
+        FROM
+            dbo.B_Opportunity
+        WHERE
+            SaleUserID = #{relationship.userId}
+            AND ProjectID = #{relationship.projectId}
+    </select>
+
+    <select id="getIntermediaryAgency" resultType="java.util.Map">
+        SELECT
+            C.ID AS orgId,
+            C.OrgCode AS orgCode,
+            C.OrgName AS orgName,
+            B.ID AS projectId,
+            B.Name AS projectName
+        FROM
+            dbo.B_PojectChannelOrgRel A
+        INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID
+        INNER JOIN dbo.B_ChannelOrg C ON A.OrgID= C.ID AND C.IsDel = 0 AND C.OrgCode IS NOT NULL AND C.OrgCode &lt;&gt; ''
+        WHERE
+            A.IsDel = 0
+        ORDER BY
+            C.orgCode
+    </select>
+</mapper>

@@ -1,5 +1,7 @@
 package com.tahoecn.xkc.service.report.impl;
 
+import org.springframework.stereotype.Service;
+
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,7 +11,6 @@ import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.mapper.report.CostomerReportMapper;
 import com.tahoecn.xkc.model.customer.CostomerReport;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
-import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -29,4 +30,5 @@ public class CostomerReportServiceImpl extends ServiceImpl<CostomerReportMapper,
     public IPage<CostomerReport> page(IPage<CostomerReport> page, Wrapper<CostomerReport> queryWrapper) {
         return super.page(page, queryWrapper);
     }
+
 }
