@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.customer.BClue;
+import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MBrokerReportVO;
 import com.tahoecn.xkc.model.vo.Customer;
 import com.tahoecn.xkc.model.vo.RegisterRuleBaseModel;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,20 @@ public interface IBClueService extends IService<BClue> {
     String GetMessageForReturn(int invalidType, Map<String, Object> map);
 
     boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap);
+
+	/**
+	 * 思为小程序自由经纪人/自渠人员报备客户生成线索
+	 *
+	 * @param channelOrgId
+	 * @param ruleValidate
+	 * @param UserRule
+	 * @param status
+	 * @param mBrokerReportVO
+	 * @return
+	 */
+	boolean createClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, MBrokerReportVO mBrokerReportVO);
+
+	boolean kfCreateClue(String channelOrgId, Map<String, Object> ruleValidate, RegisterRuleBaseModel UserRule, int status, Map paramMap, Integer flag) throws Exception;
 	/**
 	 * 案场助手统计
 	 */

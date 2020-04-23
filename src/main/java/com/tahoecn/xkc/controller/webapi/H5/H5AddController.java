@@ -198,6 +198,7 @@ public class H5AddController extends TahoeBaseController {
     }
 
 //  如果要修改逻辑,请将H5Controller里的推荐提交一起看,逻辑相同,确认是否需要更改
+    //如果要修改逻辑,请将下面 /kfMBrokerReport_Insert 接口逻辑一起修改
     @ApiOperation(value = "渠道报备客户--推荐提交", notes = "渠道报备客户--提交")
     @RequestMapping(value = "/mBrokerReport_Insert", method = {RequestMethod.POST})
     public Result mBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
@@ -308,6 +309,130 @@ public class H5AddController extends TahoeBaseController {
                 if (CollectionUtil.isNotEmpty(opp)){
                     customerTemplate.sendBBSBMsg((String) opp.get("ID"),byId.getName(), userID);
                 }
+            re.setErrcode(1);
+            return re;
+        }
+    }
+
+
+    @ApiOperation(value = "kf渠道报备客户--推荐提交", notes = "kf渠道报备客户--提交")
+    @RequestMapping(value = "/kfMBrokerReport_Insert", method = {RequestMethod.POST})
+    public Result kfMBrokerReport_Insert(@RequestBody JSONObject jsonParam) {
+        Result re=new Result();
+        Map paramMap = (HashMap)jsonParam.get("_param");
+        String userID=(String) paramMap.get("UserID");
+        String userName=(String) paramMap.get("UserName");
+        String mobile=(String) paramMap.get("Mobile");
+        String projectId =(String) paramMap.get("IntentProjectID");
+        String formSessionID =(String) paramMap.get("FormSessionID");
+        String adviserGroupID =(String) paramMap.get("AdviserGroupID");
+
+        //验证是否重复请求
+        if (StringUtils.isBlank(formSessionID)){
+            return Result.errormsg(1,"FormSessionID不可为null");
+        }
+        //验证手机号格式
+        if (PhoneUtil.isNotValidChinesePhone(mobile)){
+            return Result.errormsg(1,"手机号格式错误");
+        }
+        //查询是否已经存在无效的FormSessionID,不存在则更新为无效状态
+        int RowCount =iSFormsessionService.checkFormSessionID(formSessionID);
+        if (RowCount==1){
+            return  Result.errormsg(1,"不能重复请求！");
+        }
+        //判断身份 是否有自渠和置业顾问 ,如果有,不可报备,返回错误信息
+        Result jobByUsername=accountService.getJobByUserName(userID);
+        if (jobByUsername.getErrcode()!=0){
+            return jobByUsername;
+        }
+
+        if (StringUtils.isBlank(adviserGroupID)){
+            return  Result.errormsg(1,"未能识别报备人的身份");
+        }
+        //1.不允许报备自己 0.允许报备自己  IsReportOwn
+        int IsReportOwn=projectService.isReport(projectId,userID,mobile);
+        if (IsReportOwn==1){
+            return  Result.errormsg(1,"不允许报备自己");
+        }
+        //没有ChannelOrgID 的不能报备
+        int IsReport=channeluserService.isReport(userID);
+        //没有ChannelOrgID 的不能报备
+        if (IsReport==-2){
+            return  Result.errormsg(1,"没有所属机构的人员，不能报备");
+        }
+        //ChannelOrgID禁用状态的不能报备
+        if (IsReport==0){
+            return  Result.errormsg(1,"所属机构在禁用状态，不能报备");
+        }
+        //获取报备用户所适用的规则
+
+        ChannelRegisterModel channelRegisterModel = iBChannelService.newChannelRegisterModel(userID, adviserGroupID, projectId);
+        if (org.springframework.util.StringUtils.isEmpty(channelRegisterModel.getUserRule().getRuleID())){
+            return Result.errormsg(21, "报备失败！所选项目未配置报备规则，请联系管理员！");
+        }
+
+        //验证报备客户是否有效
+        Map<String, Object> CustomerValidate = iBChannelService.ValidateForReport(mobile, projectId,channelRegisterModel);
+
+        String channelOrgId=channeluserService.getChannelOrgID(userID,adviserGroupID);
+        Map<String, Object> userRule=new HashMap<>();
+        userRule.put("RuleType",channelRegisterModel.getUserRule().getRuleType());
+        userRule.put("ValidationMode",channelRegisterModel.getUserRule().getImmissionRule().getValidationMode());
+        String msg=clueService.getMessage((int)CustomerValidate.get("InvalidType"),userRule);
+        CustomerValidate.put("Message",msg);
+        String reMsg = iBChannelService.GetMessageForReturn((int)CustomerValidate.get("InvalidType"), channelRegisterModel.getUserRule());
+        re.setErrmsg(reMsg);
+        //允许报备
+        if ((int)CustomerValidate.get("InvalidType")==0){
+            //通过有效验证
+            int status = 0;
+
+            if ((boolean)CustomerValidate.get("Tag")){
+                //竞争带看
+                if (channelRegisterModel.getUserRule().getRuleType() == 1 ){
+                    //创建新线索，线索状态是待确认
+                    status = 1;
+                }else//报备保护
+                {
+                    //创建新线索，线索状态是待分配，插入到访逾期时间
+                    status = 2;
+                }
+            } else//验证不通过
+            {
+                //创建新线索，状态是无效，无效时间是当前时间，无效类型取，无效原因取
+                status = 3;
+            }
+            //线索报备验证后，创建线索信息
+            boolean b = false;
+			try {
+				b = clueService.kfCreateClue(channelOrgId,CustomerValidate,channelRegisterModel.getUserRule(),status,paramMap,1);
+			} catch (Exception e) {
+				e.printStackTrace();
+				re.setErrcode(1);
+                re.setErrmsg(e.getMessage());
+                return re;
+			}
+            if (reMsg!=null){
+                re.setErrmsg(reMsg);
+            }
+            if (b){
+                re.setErrcode(0);
+                return re;
+            }else {
+                re.setErrcode(1);
+                re.setErrmsg("存储错误,请联系管理员");
+                return re;
+            }
+        }else {//不允许报备
+            //存在销售机会且SaleUserID不为空 发送报备失败消息
+            BChanneluser byId = channeluserService.getById(userID);
+            Map<String, Object> obj = new HashMap<String, Object>();
+            obj.put("ProjectID", projectId);
+            obj.put("CustomerMobile", mobile);
+            Map<String,Object> opp = bCustomerpotentialMapper.ValidOpp_Select(obj);
+            if (CollectionUtil.isNotEmpty(opp)){
+                customerTemplate.sendBBSBMsg((String) opp.get("ID"),byId.getName(), userID);
+            }
             re.setErrcode(1);
             return re;
         }

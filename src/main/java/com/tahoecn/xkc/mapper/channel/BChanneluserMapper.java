@@ -2,13 +2,14 @@ package com.tahoecn.xkc.mapper.channel;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dto.ChannelInsertDto;
+import com.tahoecn.xkc.model.miniprogram.vo.UserRegisterVO;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -158,4 +159,20 @@ public interface BChanneluserMapper extends BaseMapper<BChanneluser> {
     Map<String, Object> checkUser(@Param("username")String username, @Param("mobile")String mobile);
 
     Map<String, Object> getUserInfo(@Param("id")String id);
+
+	/**
+	 * 思为小程序用户注册校验是否存在
+	 *
+	 * @param mobile
+	 * @return
+	 */
+	int isExist(@Param("mobile") String mobile);
+
+	/**
+	 * 思为小程序客储用户中心验证
+	 *
+	 * @param userRegisterVO
+	 * @return
+	 */
+	BChanneluser getBChannelUser(@Param("userRegister") UserRegisterVO userRegisterVO);
 }

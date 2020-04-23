@@ -1,10 +1,10 @@
 package com.tahoecn.xkc.service.opportunity;
 
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -93,4 +93,12 @@ public interface IBOpportunityService extends IService<BOpportunity> {
 	 */
 	void mCustomerSalePartnerSetNull_Update(Map<String,Object> paramMap);
 
+	/**
+	 * 根据手机号获取已到访状态的销售机会数量
+	 *
+	 * @param mobile
+	 * @return
+	 * @throws Exception
+	 */
+	int getBOpportunityAmount(String mobile)throws Exception;
 }

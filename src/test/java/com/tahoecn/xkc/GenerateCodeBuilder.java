@@ -37,7 +37,7 @@ public class GenerateCodeBuilder {
     private static String basePackage="com.tahoecn.xkc";
 
     //要生成的表名
-    private static String[] tables= {"costomer_report"};
+    private static String[] tables= {"B_ChannelUser"};
 
     @Test
     public void generateCodeBuilder(){
