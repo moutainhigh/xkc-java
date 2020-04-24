@@ -2,7 +2,6 @@ package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.project.BProject;
@@ -13,24 +12,13 @@ import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.project.IBRoomService;
 import com.tahoecn.xkc.service.project.IVProjectbuildingService;
 import com.tahoecn.xkc.service.project.IVProjectroomService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 /**
  * <p>
@@ -480,12 +468,20 @@ public class ProjectAppController extends TahoeBaseController {
 
                 Map<String, Object> map = re.get(0);
                 String customerID = (String) map.get("CustomerID");
+
+                // chenghong  白名单start
                 // 判断是否白名单用户
-                boolean isWhiteCustomer = !StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID);
+                // boolean isWhiteCustomer = !StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID);
+                // chenghong  白名单end
 
                 //xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格0:隐藏，1:显示)
-                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0 || isWhiteCustomer){
+
+                // chenghong  白名单start
+                // if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0 || isWhiteCustomer){
+                // chenghong  白名单end
+
+                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0){
                 	re.get(0).put("BldPrice","****");
             		re.get(0).put("TnPrice","****");
             		re.get(0).put("Total","****");
@@ -501,7 +497,8 @@ public class ProjectAppController extends TahoeBaseController {
                 	}
                 }
 
-                if (isWhiteCustomer) {
+                // chenghong  白名单start
+                /*if (isWhiteCustomer) {
                     if (!StringUtils.isEmpty(map.get("CustomerName"))) {
                         map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar((String)map.get("CustomerName")));
                     }
@@ -524,7 +521,9 @@ public class ProjectAppController extends TahoeBaseController {
                     if (dealTotal != null) {
                         map.put("DealTotal", "****");
                     }
-                }
+                }*/
+                // chenghong  白名单end
+
                 return Result.ok(re.get(0));
             }else{
             	return Result.ok("");

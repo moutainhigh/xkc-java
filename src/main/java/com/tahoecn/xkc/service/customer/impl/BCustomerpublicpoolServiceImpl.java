@@ -1,7 +1,6 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
@@ -15,12 +14,11 @@ import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
 import com.tahoecn.xkc.model.salegroup.BSalesuser;
 import com.tahoecn.xkc.service.customer.IBCustomerpublicpoolService;
-
-import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * <p>
@@ -53,7 +51,8 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 		List<Map<String, Object>> maps = baseMapper.mCustomerGGCList_Select(paramMap);
 
 		// 客户vip白名单过滤
-		Iterator<Map<String, Object>> iterator = maps.iterator();
+		// chenghong  白名单start
+		/*Iterator<Map<String, Object>> iterator = maps.iterator();
 		while (iterator.hasNext()) {
 			Map<String, Object> map = iterator.next();
 			String customerID = (String)map.get("CustomerID");
@@ -68,7 +67,8 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 					map.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
 				}
 			}
-		}
+		}*/
+		// chenghong  白名单end
 
 		result.put("List", maps);
 		result.put("AllCount", baseMapper.mCustomerGGCList_Select_count(paramMap));
