@@ -67,7 +67,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	//设置分页
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
 
-        	Iterator<Map<String, Object>> iterator = data.iterator();
+			// chenghong  白名单start
+			/*Iterator<Map<String, Object>> iterator = data.iterator();
 			while (iterator.hasNext()) {
 				Map<String, Object> map = iterator.next();
 				String customerID = (String)map.get("CustomerID");
@@ -88,6 +89,9 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 					}
 				}
 			}
+*/
+            // chenghong  白名单end
+
         	//OLD 通过父ID获取机会信息
 //        	List<String> OpportunityID_list = new ArrayList<String>();
 //        	if(data!=null && data.size()>0){
@@ -380,7 +384,9 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                 }
                 data.put("Token", token);
 
-				String customerID = (String)data.get("CustomerID");
+
+				// chenghong  白名单start
+				/*String customerID = (String)data.get("CustomerID");
 				if (customerID != null
 						&& customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
 					String customerName = (String)data.get("CustomerName");
@@ -398,7 +404,8 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 						data.put("UseMobile", StringShieldUtil.getAllStarStr(useMobile));
 					}
 				}
-
+*/
+				// chenghong  白名单end
                 entity.setData(data);
                 entity.setErrmsg("成功");
         	}else{
@@ -951,7 +958,10 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                 	}
                 }
 
-                filterCustomerModelVo(customerModel);
+				// chenghong  白名单start
+                // filterCustomerModelVo(customerModel);
+				// chenghong  白名单end
+
                 entity.setData(customerModel);
                 entity.setErrmsg("成功");
                 entity.setErrcode(0);
