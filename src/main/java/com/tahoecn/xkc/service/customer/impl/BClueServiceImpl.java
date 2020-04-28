@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tahoecn.xkc.async.BOpportunityOtherRunnable;
 import com.tahoecn.xkc.async.ExecutorsUtils;
 import com.tahoecn.xkc.common.enums.ActionType;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.customer.*;
@@ -143,7 +144,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
         // 客户vip白名单过滤
         // chenghong  白名单start
-  /*      String customerID = (String)map.get("CustomerID");
+        String customerID = (String)map.get("CustomerID");
         String customerPotentialID = (String)map.get("CustomerPotentialID");
 
         if ((StringUtils.isNotBlank(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID))
@@ -157,7 +158,7 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             if (mobile != null) {
                 map.put("Mobile", StringShieldUtil.getAllStarStr(mobile));
             }
-        }*/
+        }
         // chenghong  白名单end
 
         return map;
