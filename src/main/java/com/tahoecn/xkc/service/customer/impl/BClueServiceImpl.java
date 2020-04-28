@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.async.BOpportunityOtherRunnable;
+import com.tahoecn.xkc.async.ExecutorsUtils;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
@@ -19,6 +21,7 @@ import com.tahoecn.xkc.model.customer.BClue;
 import com.tahoecn.xkc.model.customer.BCustomer;
 import com.tahoecn.xkc.model.customer.BCustomerpotential;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
+import com.tahoecn.xkc.model.miniprogram.BOpportunityOther;
 import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MBrokerReportVO;
 import com.tahoecn.xkc.model.opportunity.BOpportunity;
 import com.tahoecn.xkc.model.project.BProject;
@@ -29,6 +32,7 @@ import com.tahoecn.xkc.model.vo.*;
 import com.tahoecn.xkc.service.channel.IBChannelorgService;
 import com.tahoecn.xkc.service.channel.IBChanneluserService;
 import com.tahoecn.xkc.service.customer.*;
+import com.tahoecn.xkc.service.miniprogram.IBOpportunityOtherService;
 import com.tahoecn.xkc.service.opportunity.IBOpportunityService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.sys.IBMedialargeService;
@@ -111,6 +115,9 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
 
     @Autowired
     private IBCustomerWhiteListService customerWhiteListService;
+
+    @Autowired
+    private IBOpportunityOtherService ibOpportunityOtherService;
     
 	@Value("${mobilesale.ruleid}")
 	private String ruleId;
@@ -753,6 +760,10 @@ public class BClueServiceImpl extends ServiceImpl<BClueMapper, BClue> implements
             obj1.put("NextFollowUpDate", "");
             CustomerActionVo customerActionVo = JSONObject.parseObject(obj1.toJSONString(), CustomerActionVo.class);
             iVCustomergwlistSelectService.CustomerFollowUp_Insert(customerActionVo);
+            ExecutorsUtils.fkExecute(new BOpportunityOtherRunnable(ibOpportunityOtherService, new BOpportunityOther() {{
+                setId(UUID.randomUUID().toString());
+                setClueID(clue.getId());
+            }}));
         }
         return save;
     }

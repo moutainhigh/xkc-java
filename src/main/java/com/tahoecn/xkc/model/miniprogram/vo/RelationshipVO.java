@@ -33,6 +33,10 @@ public class RelationshipVO {
 
     private String mobile;
 
+    private String channelTypeId;
+
+    private String channelTypeName;
+
     public String getUserId() {
         return userId;
     }
@@ -119,5 +123,21 @@ public class RelationshipVO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getChannelTypeId() {
+        return channelTypeId;
+    }
+
+    public void setChannelTypeId(String channelTypeId) {
+        this.channelTypeId = channelTypeId;
+    }
+
+    public String getChannelTypeName() {
+        return channelTypeName;
+    }
+
+    public void setChannelTypeName(String channelTypeName) {
+        this.channelTypeName = channelTypeName;
     }
 }
