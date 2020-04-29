@@ -7,6 +7,7 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerPotentialModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.utils.SqlInjectionUtil;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
@@ -177,7 +178,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 
 			// vip白名单信息过滤
             // chenghong  白名单start
-/*            String customerID = (String)data_re.get("CustomerID");
+            String customerID = (String)data_re.get("CustomerID");
             if (customerID != null && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
                 String customerName = (String)data_re.get("CustomerName");
                 if (customerName != null) {
@@ -188,7 +189,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                 if (customerMobile != null) {
                     data_re.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
                 }
-            }*/
+            }
             // chenghong  白名单end
 
 	        re.setData(data_re);
@@ -214,7 +215,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 
                 // 客户vip白名单信息过滤
                 // chenghong  白名单start
-               /* String customerID = (String) CustomerObj.get("CustomerID");
+                String customerID = (String) CustomerObj.get("CustomerID");
                 if (!StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
                     for (PanelItem panelItem : customerModel.getPanel()) {
                         if ("客户信息".equals(panelItem.getName())) {
@@ -239,7 +240,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                             }
                         }
                     }
-                }*/
+                }
                 // chenghong  白名单end
 
                 entity.setData(customerModel);
@@ -1104,7 +1105,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
 
 	        // 白名单数据过滤
             // chenghong  白名单start
-          /*  Iterator<Map<String, Object>> iterator = data.iterator();
+            Iterator<Map<String, Object>> iterator = data.iterator();
             while (iterator.hasNext()) {
                 Map<String, Object> map = iterator.next();
                 String customerID = (String)map.get("CustomerID");
@@ -1119,7 +1120,7 @@ public class PotentialCustomerServiceImpl implements IPotentialCustomerService {
                         map.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
                     }
                 }
-            }*/
+            }
             // chenghong  白名单end
 
 	        re_map.put("List", data);

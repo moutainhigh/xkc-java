@@ -3,28 +3,64 @@
 <mapper namespace="com.tahoecn.xkc.mapper.miniprogram.CustomerMapper">
    <select id="getCustomerList1" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
            resultType="java.util.Map">
-     SELECT * FROM dbo.B_Clue WHERE ReportUserID = #{relationship.userId}
+     SELECT
+        A.*
+    FROM
+        dbo.B_Clue A
+    INNER JOIN B_Opportunity_Other B ON A.ID = B.ClueID
+    WHERE
+        A.ReportUserID = #{ relationship.userId }
    </select>
 
     <select id="getCustomerList2" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
             resultType="java.util.Map">
-     SELECT * FROM dbo.B_Opportunity WHERE SaleUserID = #{relationship.userId}
+    SELECT
+        A.*
+    FROM
+        dbo.B_Opportunity A
+        INNER JOIN B_Opportunity_Other B ON A.ID = B.OpportunityID
+    WHERE
+        A.SaleUserID = #{ relationship.userId }
     </select>
 
     <select id="getCustomerDetail1" parameterType="string" resultType="java.util.Map">
-       SELECT * FROM dbo.B_Clue WHERE ID = #{opportunityId}
+    SELECT
+        A.*
+    FROM
+        dbo.B_Clue A
+    INNER JOIN B_Opportunity_Other B ON A.ID = B.ClueID
+    WHERE
+        A.ID = #{ opportunityId }
     </select>
 
     <select id="getCustomerDetail2" parameterType="string" resultType="java.util.Map">
-       SELECT * FROM dbo.B_Opportunity WHERE ID = #{opportunityId}
+    SELECT
+        A.*
+    FROM
+        dbo.B_Opportunity A
+    INNER JOIN B_Opportunity_Other B ON A.ID = B.OpportunityID
+    WHERE
+        A.ID = #{ opportunityId }
     </select>
 
     <select id="getCustomerId1" parameterType="string" resultType="string">
-      SELECT CustomerPotentialID CustomerID FROM dbo.B_Clue WHERE ID = #{opportunityId}
+    SELECT
+        A.CustomerPotentialID CustomerID
+    FROM
+        dbo.B_Clue A
+    INNER JOIN B_Opportunity_Other B ON A.ID = B.ClueID
+    WHERE
+        A.ID = #{ opportunityId }
     </select>
 
     <select id="getCustomerId2" parameterType="string" resultType="string">
-      SELECT CustomerID FROM dbo.B_Opportunity WHERE ID = #{opportunityId}
+    SELECT
+        A.CustomerID
+    FROM
+        dbo.B_Opportunity A
+    INNER JOIN B_Opportunity_Other B ON A.ID = B.OpportunityID
+    WHERE
+        A.ID = #{ opportunityId }
     </select>
 
     <select id="getCustomerFollowRecord" parameterType="string"

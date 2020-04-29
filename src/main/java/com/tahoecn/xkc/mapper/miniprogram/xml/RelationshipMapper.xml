@@ -3,73 +3,109 @@
 <mapper namespace="com.tahoecn.xkc.mapper.miniprogram.RelationshipMapper">
     <select id="getOrgRole" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
             resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
-       SELECT
-            B.ID AS projectId,
-            B.Name AS projectName,
-            C.ID AS roleId,
-            C.DictName AS roleName
-       FROM
-            dbo.B_SalesGroupMember A
-            INNER JOIN dbo.B_Project B ON A.ProjectID = B.ID --查询项目名称
-            INNER JOIN dbo.S_Dictionary C ON A.RoleID = B.ID --查询角色名称
-            INNER JOIN dbo.B_SalesUser D ON A.MemberID = D.ID --查询人员信息
-       WHERE
-            A.IsDel = 0
-            <if test="relationship.userId != null and relationship.userId != ''">
-                AND A.MemberID = #{relationship.userId}
-            </if>
-            <if test="relationship.projectId != null and relationship.projectId != ''">
-                AND A.ProjectID = #{relationship.projectId}
-            </if>
+        SELECT
+        B.ID AS projectId,
+        B.Name AS projectName,
+        C.ID AS roleId,
+        C.DictName AS roleName
+        FROM
+        dbo.B_SalesGroupMember A
+        INNER JOIN dbo.B_Project B ON A.ProjectID = B.ID --查询项目名称
+        INNER JOIN dbo.S_Dictionary C ON A.RoleID = B.ID --查询角色名称
+        INNER JOIN dbo.B_SalesUser D ON A.MemberID = D.ID --查询人员信息
+        WHERE
+        A.IsDel = 0
+        <if test="relationship.userId != null and relationship.userId != ''">
+            AND A.MemberID = #{relationship.userId}
+        </if>
+        <if test="relationship.projectId != null and relationship.projectId != ''">
+            AND A.ProjectID = #{relationship.projectId}
+        </if>
     </select>
 
     <select id="getOrgPerson1" parameterType="string"
             resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
         SELECT
-            D.ID AS userId,
-            D.Name AS name,
-            D.UserName AS userName,
-            B.ID AS projectId,
-            B.Name AS projectName,
-            C.ID AS roleId,
-            C.DictName AS roleName
+        D.ID AS userId,
+        D.Name AS name,
+        D.UserName AS userName,
+        B.ID AS projectId,
+        B.Name AS projectName,
+        C.ID AS roleId,
+        C.DictName AS roleName,
+        (
+        CASE E.Nature
+        WHEN '3' THEN
+        '0E88065E-AF3E-4905-8809-7BD30610323F'
+        WHEN '4' THEN
+        'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A'
+        WHEN '5' THEN
+        '8D70D821-3BD4-46D1-8342-8B16C4BE642A'
+        WHEN '6' THEN
+        'FC09F0DF-D3DF-4378-91C0-7146EC451F43'
+        WHEN '7' THEN
+        'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'
+        ELSE
+        ''
+        END
+        ) channelTypeId,
+        dbo.F_GetDictionaryName (
+        (
+        CASE E.Nature
+        WHEN '3' THEN
+        '0E88065E-AF3E-4905-8809-7BD30610323F'
+        WHEN '4' THEN
+        'DBCF76B2-BB1D-438C-B562-7A6FF3D9163A'
+        WHEN '5' THEN
+        '8D70D821-3BD4-46D1-8342-8B16C4BE642A'
+        WHEN '6' THEN
+        'FC09F0DF-D3DF-4378-91C0-7146EC451F43'
+        WHEN '7' THEN
+        'C07D5987-ACDD-40B8-9CBD-6257AA59C88C'
+        ELSE
+        ''
+        END
+        )
+        ) channelTypeName
         FROM
-            dbo.B_SalesGroupMember A
-            INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID --查询项目名称
-            INNER JOIN dbo.S_Dictionary C ON A.RoleID= C.ID --查询角色名称
-            INNER JOIN dbo.B_SalesUser D ON A.MemberID= D.ID
-            AND D.IsDel = 0 --查询人员信息
+        dbo.B_SalesGroupMember A
+        INNER JOIN dbo.B_Project B ON A.ProjectID = B.ID --查询项目名称
+        INNER JOIN dbo.S_Dictionary C ON A.RoleID = C.ID --查询角色名称
+        INNER JOIN dbo.B_SalesUser D ON A.MemberID = D.ID
+        AND D.IsDel = 0 --查询人员信息
+        LEFT JOIN B_SalesGroup E ON A.ReceptionGroupID = E.ID
+        AND E.IsDel = 0
         WHERE
-            A.IsDel = 0
+        A.IsDel = 0
         <if test="projectId != null and projectId != '' ">
             AND B.ID = #{projectId}
         </if>
     </select>
 
-    <select id="getOrgPerson2"  parameterType="string"
+    <select id="getOrgPerson2" parameterType="string"
             resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
         SELECT
-            D.ID AS userId,
-            D.Name AS name,
-            D.UserName AS userName,
-            C.ID AS orgId,
-            C.OrgName AS orgName,
-            C.OrgCode AS orgCode,
-            B.ID AS projectId,
-            B.Name AS projectName,
-            E.ID AS roleId,
-            E.DictName AS roleName
+        D.ID AS userId,
+        D.Name AS name,
+        D.UserName AS userName,
+        C.ID AS orgId,
+        C.OrgName AS orgName,
+        C.OrgCode AS orgCode,
+        B.ID AS projectId,
+        B.Name AS projectName,
+        E.ID AS roleId,
+        E.DictName AS roleName
         FROM
-            dbo.B_PojectChannelOrgRel A
-            INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID
-            INNER JOIN dbo.B_ChannelOrg C ON A.OrgID= C.ID
-            AND C.IsDel = 0
-            INNER JOIN dbo.B_ChannelUser D ON C.ID = D.ChannelOrgID
-            AND D.ChannelTypeID = '32C92DA0-DA13-4C21-A55E-A1D16955882C'
-            AND D.IsDel = 0
-            INNER JOIN dbo.S_Dictionary E ON D.ChannelTypeID = E.ID
+        dbo.B_PojectChannelOrgRel A
+        INNER JOIN dbo.B_Project B ON A.ProjectID= B.ID
+        INNER JOIN dbo.B_ChannelOrg C ON A.OrgID= C.ID
+        AND C.IsDel = 0
+        INNER JOIN dbo.B_ChannelUser D ON C.ID = D.ChannelOrgID
+        AND D.ChannelTypeID = '32C92DA0-DA13-4C21-A55E-A1D16955882C'
+        AND D.IsDel = 0
+        INNER JOIN dbo.S_Dictionary E ON D.ChannelTypeID = E.ID
         WHERE
-            A.IsDel = 0
+        A.IsDel = 0
         <if test="projectId != null and projectId != '' ">
             AND B.ID = #{projectId}
         </if>
@@ -136,24 +172,26 @@
 
     <select id="getCustomer1" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
             resultType="java.util.HashMap">
-       SELECT
-            *
-       FROM
-            dbo.B_Clue
-       WHERE
-            ReportUserID = #{relationship.userId}
-            AND IntentProjectID = #{relationship.projectId}
+        SELECT
+            A.*
+        FROM
+            dbo.B_Clue A
+        INNER JOIN B_Opportunity_Other B ON A.ID = B.ClueID
+        WHERE
+            A.ReportUserID = #{ relationship.userId }
+        AND A.IntentProjectID = #{ relationship.projectId }
     </select>
 
     <select id="getCustomer2" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
             resultType="java.util.HashMap">
         SELECT
-            *
+            A.*
         FROM
-            dbo.B_Opportunity
+            dbo.B_Opportunity A
+        INNER JOIN B_Opportunity_Other B ON A.ID = B.OpportunityID
         WHERE
-            SaleUserID = #{relationship.userId}
-            AND ProjectID = #{relationship.projectId}
+            A.SaleUserID = #{relationship.userId}
+            AND A.ProjectID = #{relationship.projectId}
     </select>
 
     <select id="getIntermediaryAgency" resultType="java.util.Map">

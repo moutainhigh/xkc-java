@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.BCustomerpublicpoolMapper;
@@ -52,7 +53,7 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 
 		// 客户vip白名单过滤
 		// chenghong  白名单start
-		/*Iterator<Map<String, Object>> iterator = maps.iterator();
+		Iterator<Map<String, Object>> iterator = maps.iterator();
 		while (iterator.hasNext()) {
 			Map<String, Object> map = iterator.next();
 			String customerID = (String)map.get("CustomerID");
@@ -67,7 +68,7 @@ public class BCustomerpublicpoolServiceImpl extends ServiceImpl<BCustomerpublicp
 					map.put("CustomerMobile", StringShieldUtil.getAllStarStr(customerMobile));
 				}
 			}
-		}*/
+		}
 		// chenghong  白名单end
 
 		result.put("List", maps);

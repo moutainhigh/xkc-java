@@ -5,6 +5,8 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tahoecn.core.json.JSONResult;
+import com.tahoecn.xkc.async.BOpportunityOtherRunnable;
+import com.tahoecn.xkc.async.ExecutorsUtils;
 import com.tahoecn.xkc.common.enums.*;
 import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.ResultUtil;
@@ -14,6 +16,7 @@ import com.tahoecn.xkc.mapper.customer.BCustomerpotentialMapper;
 import com.tahoecn.xkc.mapper.customer.VCustomergwlistSelectMapper;
 import com.tahoecn.xkc.mapper.sys.SysAccessRecordMapper;
 import com.tahoecn.xkc.model.channel.BChanneluser;
+import com.tahoecn.xkc.model.miniprogram.BOpportunityOther;
 import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MBrokerReportVO;
 import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MCustomerPotentialVO;
 import com.tahoecn.xkc.model.miniprogram.vo.customerreport.MDynatownCustomerVO;
@@ -30,6 +33,7 @@ import com.tahoecn.xkc.service.customer.ICustomerPotentialTemplate;
 import com.tahoecn.xkc.service.customer.IVCustomergwlistSelectService;
 import com.tahoecn.xkc.service.customer.impl.PotentialCustomerServiceImpl;
 import com.tahoecn.xkc.service.customer.impl.VCustomergwlistSelectServiceImpl;
+import com.tahoecn.xkc.service.miniprogram.IBOpportunityOtherService;
 import com.tahoecn.xkc.service.miniprogram.IMiniprogramService;
 import com.tahoecn.xkc.service.project.IBProjectService;
 import com.tahoecn.xkc.service.sys.ISFormsessionService;
@@ -99,6 +103,9 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
 
     @Resource
     private IVCustomergwlistSelectService iVCustomergwlistSelectService;
+
+    @Resource
+    private IBOpportunityOtherService ibOpportunityOtherService;
 
     @Override
     public JSONResult getFormSessionId(HttpServletRequest request, Map<String, Object> map) throws Exception {
@@ -380,6 +387,11 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
                         iSystemMessageService.DetailByHandle_Update(BizIDs, "Opportunity", MessageHandleType.新增跟进.getValue());
                         // 同步明源客户数据
                         customerTemplate.SyncCustomer(opportunityID, 0);
+                        final String roId = returnOpportunityId;
+                        ExecutorsUtils.fkExecute(new BOpportunityOtherRunnable(ibOpportunityOtherService, new BOpportunityOther() {{
+                            setId(UUID.randomUUID().toString());
+                            setOpportunityID(roId);
+                        }}));
                     }
                 } else {
                     jsonResult.setCode(1);
@@ -552,6 +564,10 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
                     // 潜在客户线索跟进记录更新
                     potentialCustomerServiceImpl.CustomerPotentialClueFollowUpDetail_Update(Parameter);
                 }
+                ExecutorsUtils.fkExecute(new BOpportunityOtherRunnable(ibOpportunityOtherService, new BOpportunityOther() {{
+                    setId(UUID.randomUUID().toString());
+                    setClueID(Parameter.getString("ClueID"));
+                }}));
                 jsonResult.setCode(0);
                 jsonResult.setMsg("成功");
             } else {

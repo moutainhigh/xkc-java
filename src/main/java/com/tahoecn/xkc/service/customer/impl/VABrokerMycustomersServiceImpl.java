@@ -2,6 +2,7 @@ package com.tahoecn.xkc.service.customer.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.mapper.customer.VABrokerMycustomersMapper;
 import com.tahoecn.xkc.model.customer.VABrokerMycustomers;
 import com.tahoecn.xkc.service.customer.IVABrokerMycustomersService;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -52,7 +54,7 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
 
         // 客户vip白名单过滤
         // chenghong  白名单start
-       /* Iterator<Map<String, Object>> iterator = mapIPage.getRecords().iterator();
+        Iterator<Map<String, Object>> iterator = mapIPage.getRecords().iterator();
         while (iterator.hasNext()) {
             Map<String, Object> map = iterator.next();
             String customerID = (String)map.get("CustomerID");
@@ -69,7 +71,7 @@ public class VABrokerMycustomersServiceImpl extends ServiceImpl<VABrokerMycustom
                     map.put("Mobile", StringShieldUtil.getAllStarStr(mobile));
                 }
             }
-        }*/
+        }
         // chenghong  白名单end
 
         return mapIPage;

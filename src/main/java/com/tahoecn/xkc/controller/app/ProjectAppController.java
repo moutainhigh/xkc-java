@@ -2,6 +2,7 @@ package com.tahoecn.xkc.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
 import com.tahoecn.xkc.converter.Result;
 import com.tahoecn.xkc.model.project.BProject;
@@ -464,74 +465,76 @@ public class ProjectAppController extends TahoeBaseController {
             wrapper.eq("Status","1");
             wrapper.eq("IsDel","0");
             BProject isHide = projectService.getOne(wrapper);
-            if(re != null && re.size() > 0){
+            if(re != null && re.size() > 0) {
 
                 Map<String, Object> map = re.get(0);
                 String customerID = (String) map.get("CustomerID");
 
                 // chenghong  白名单start
                 // 判断是否白名单用户
-                // boolean isWhiteCustomer = !StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID);
+                boolean isWhiteCustomer = !StringUtils.isEmpty(customerID) && customerWhiteListService.judgeIsWhiteCustomer(customerID);
                 // chenghong  白名单end
 
                 //xkc修改---根据PC端配置
                 //b_project 中根据projectid查询(HouseList隐藏房源列表价格0:隐藏，1:显示)
 
                 // chenghong  白名单start
-                // if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0 || isWhiteCustomer){
-                // chenghong  白名单end
+                if (isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0 || isWhiteCustomer) {
+                    // chenghong  白名单end
 
-                if(isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0){
-                	re.get(0).put("BldPrice","****");
-            		re.get(0).put("TnPrice","****");
-            		re.get(0).put("Total","****");
-                }else{
-                	if(re.get(0).get("BldPrice") == null || "".equals(re.get(0).get("BldPrice"))){
-                		re.get(0).put("BldPrice", "--");
-                	}
-                	if(re.get(0).get("TnPrice") == null || "".equals(re.get(0).get("TnPrice"))){
-                		re.get(0).put("TnPrice", "--");
-                	}
-                	if(re.get(0).get("Total") == null || "".equals(re.get(0).get("Total"))){
-                		re.get(0).put("Total", "--");
-                	}
+                    if (isHide.getHouseDetail() != null && isHide.getHouseDetail() == 0) {
+                        re.get(0).put("BldPrice", "****");
+                        re.get(0).put("TnPrice", "****");
+                        re.get(0).put("Total", "****");
+                    } else {
+                        if (re.get(0).get("BldPrice") == null || "".equals(re.get(0).get("BldPrice"))) {
+                            re.get(0).put("BldPrice", "--");
+                        }
+                        if (re.get(0).get("TnPrice") == null || "".equals(re.get(0).get("TnPrice"))) {
+                            re.get(0).put("TnPrice", "--");
+                        }
+                        if (re.get(0).get("Total") == null || "".equals(re.get(0).get("Total"))) {
+                            re.get(0).put("Total", "--");
+                        }
+                    }
+
+                    // chenghong  白名单start
+                    if (isWhiteCustomer) {
+                        if (!StringUtils.isEmpty(map.get("CustomerName"))) {
+                            map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar((String) map.get("CustomerName")));
+                        }
+
+                        if (!StringUtils.isEmpty(map.get("CustomerPhone"))) {
+                            map.put("CustomerPhone", StringShieldUtil.getAllStarStr((String) map.get("CustomerPhone")));
+                        }
+
+                        Object bldDealPrice = map.get("BldDealPrice");
+                        if (bldDealPrice != null) {
+                            map.put("BldDealPrice", "****");
+                        }
+
+                        Object tnDealPrice = map.get("TnDealPrice");
+                        if (tnDealPrice != null) {
+                            map.put("TnDealPrice", "****");
+                        }
+
+                        Object dealTotal = map.get("DealTotal");
+                        if (dealTotal != null) {
+                            map.put("DealTotal", "****");
+                        }
+                    }
+                    // chenghong  白名单end
+
+                    return Result.ok(re.get(0));
+                } else {
+                    return Result.ok("");
                 }
-
-                // chenghong  白名单start
-                /*if (isWhiteCustomer) {
-                    if (!StringUtils.isEmpty(map.get("CustomerName"))) {
-                        map.put("CustomerName", StringShieldUtil.getFilterStrHasFirstChar((String)map.get("CustomerName")));
-                    }
-
-                    if(!StringUtils.isEmpty(map.get("CustomerPhone"))){
-                        map.put("CustomerPhone", StringShieldUtil.getAllStarStr((String)map.get("CustomerPhone")));
-                    }
-
-                    Object bldDealPrice = map.get("BldDealPrice");
-                    if (bldDealPrice != null) {
-                        map.put("BldDealPrice", "****");
-                    }
-
-                    Object tnDealPrice = map.get("TnDealPrice");
-                    if (tnDealPrice != null) {
-                        map.put("TnDealPrice", "****");
-                    }
-
-                    Object dealTotal = map.get("DealTotal");
-                    if (dealTotal != null) {
-                        map.put("DealTotal", "****");
-                    }
-                }*/
-                // chenghong  白名单end
-
-                return Result.ok(re.get(0));
-            }else{
-            	return Result.ok("");
             }
-    	}catch(Exception e){
+    	} catch (Exception e) {
     		e.printStackTrace();
     		return Result.errormsg(1, "系统异常，请联系管理员");
     	}
+        return Result.ok("");
 	}
 
     @ApiOperation(value = "区域项目列表", notes = "区域项目列表")

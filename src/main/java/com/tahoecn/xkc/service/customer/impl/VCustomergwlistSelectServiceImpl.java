@@ -68,7 +68,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
         	List<Map<String,Object>> data = vCustomergwlistSelectMapper.sCustomerGWListNew_Select(model);
 
 			// chenghong  白名单start
-			/*Iterator<Map<String, Object>> iterator = data.iterator();
+			Iterator<Map<String, Object>> iterator = data.iterator();
 			while (iterator.hasNext()) {
 				Map<String, Object> map = iterator.next();
 				String customerID = (String)map.get("CustomerID");
@@ -89,7 +89,6 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 					}
 				}
 			}
-*/
             // chenghong  白名单end
 
         	//OLD 通过父ID获取机会信息
@@ -386,7 +385,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 
 
 				// chenghong  白名单start
-				/*String customerID = (String)data.get("CustomerID");
+				String customerID = (String)data.get("CustomerID");
 				if (customerID != null
 						&& customerWhiteListService.judgeIsWhiteCustomer(customerID)) {
 					String customerName = (String)data.get("CustomerName");
@@ -404,7 +403,6 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 						data.put("UseMobile", StringShieldUtil.getAllStarStr(useMobile));
 					}
 				}
-*/
 				// chenghong  白名单end
                 entity.setData(data);
                 entity.setErrmsg("成功");
@@ -959,7 +957,7 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
                 }
 
 				// chenghong  白名单start
-                // filterCustomerModelVo(customerModel);
+                 filterCustomerModelVo(customerModel);
 				// chenghong  白名单end
 
                 entity.setData(customerModel);
