@@ -343,27 +343,33 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                 return result;
             }
 
-            //验证老业主
-            Integer oldOwner = this.bOpportunityMapper.selectCount(new QueryWrapper<BOpportunity>() {{
-                eq("Status", 5);
-                eq("IsDel", 0);
-                eq("CustomerMobile", mobile);
-            }});
-            if (null != oldOwner && oldOwner > 0 && !channelTypeID.equals("EB4AD331-F4AD-46D6-889A-D45575ECEE66")) {
-                result.setErrcode(1);
-                result.setErrmsg("注册失败，您是老业主, 不能注册其他选项");
-                return result;
+
+            if (channelTypeID.equals("EB4AD331-F4AD-46D6-889A-D45575ECEE66")) {
+                //验证老业主
+                Integer oldOwner = this.bOpportunityMapper.selectCount(new QueryWrapper<BOpportunity>() {{
+                    eq("Status", 5);
+                    eq("IsDel", 0);
+                    eq("CustomerMobile", mobile);
+                }});
+                if (null == oldOwner || oldOwner < 1) {
+                    result.setErrcode(1);
+                    result.setErrmsg("注册失败，您不能注册老业主");
+                    return result;
+                }
             }
-            //验证员工
-            Integer staff = this.sAccountMapper.selectCount(new QueryWrapper<SAccount>() {{
-                eq("Mobile", mobile);
-                eq("Status", 1);
-                eq("IsDel", 0);
-            }});
-            if (null != staff && staff > 0 && !channelTypeID.equals("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD")) {
-                result.setErrcode(1);
-                result.setErrmsg("注册失败，您是泰禾员工, 不能注册其他选项");
-                return result;
+
+            if (channelTypeID.equals("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD")) {
+                //验证员工
+                Integer staff = this.sAccountMapper.selectCount(new QueryWrapper<SAccount>() {{
+                    eq("Mobile", mobile);
+                    eq("Status", 1);
+                    eq("IsDel", 0);
+                }});
+                if (null == staff || staff < 1) {
+                    result.setErrcode(1);
+                    result.setErrmsg("注册失败，您不能注册泰禾员工");
+                    return result;
+                }
             }
 
             SDictionary channelType = dictionaryService.getById(channelTypeID);
