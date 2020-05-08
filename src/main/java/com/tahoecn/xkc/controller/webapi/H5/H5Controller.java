@@ -754,23 +754,23 @@ public class H5Controller extends TahoeBaseController {
     public Result mLoginTKUser_InsertN(@RequestBody JSONObject jsonParam) {
         Map paramMap = (HashMap) jsonParam.get("_param");
         String orgcode = (String) paramMap.get("ChannelOrgCode");
-        try {
-            String mobile = (String) paramMap.get("Mobile");
-            int amount = 0;
-            // 注册人员是否员工校验
-            amount = accountService.getUserAmount(mobile);
-            if (amount > 0) {
-                return Result.errormsg(1, "该用户为员工角色,请选择其他角色!");
-            }
-            // 注册人员是否老业主校验
-            amount = ibOpportunityService.getBOpportunityAmount(mobile);
-            if (amount > 0) {
-                return Result.errormsg(1, "该用户为老业主角色,请选择其他角色!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.errormsg(1, "系统异常，请联系管理员");
-        }
+//        try {
+//            String mobile = (String) paramMap.get("Mobile");
+//            int amount = 0;
+//            // 注册人员是否员工校验
+//            amount = accountService.getUserAmount(mobile);
+//            if (amount > 0) {
+//                return Result.errormsg(1, "该用户为员工角色,请选择其他角色!");
+//            }
+//            // 注册人员是否老业主校验
+//            amount = ibOpportunityService.getBOpportunityAmount(mobile);
+//            if (amount > 0) {
+//                return Result.errormsg(1, "该用户为老业主角色,请选择其他角色!");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return Result.errormsg(1, "系统异常，请联系管理员");
+//        }
         if (StringUtils.isNotBlank(orgcode)) {
             return channeluserService.register(paramMap);
         } else {
