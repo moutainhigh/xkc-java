@@ -354,7 +354,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                 return result;
             }
 
-            QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
+            /*QueryWrapper<SAccount> wrapper = new QueryWrapper<>();
             wrapper.lambda().eq(SAccount::getIsDel, 0);
             wrapper.lambda().and(rolewrapper -> rolewrapper.eq(SAccount::getUserName, mobile).or().eq(SAccount::getMobile, mobile));
             SAccount account = accountService.getOne(wrapper);
@@ -362,7 +362,7 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
                 result.setErrcode(1);
                 result.setErrmsg("注册失败，请联系管理员开通");
                 return result;
-            }
+            }*/
 
 
             //验证老业主
