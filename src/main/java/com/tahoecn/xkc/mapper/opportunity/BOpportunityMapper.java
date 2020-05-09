@@ -1,5 +1,6 @@
 package com.tahoecn.xkc.mapper.opportunity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -101,4 +102,13 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
 	 * 客户管理分类
 	 */
 	List<Map<String,Object>> mCustomerCateList_Select(Map<String, Object> paramMap);
+
+	/**
+	 *
+	 * @description: 风控查询防截客数据
+	 * @return:
+	 * @author: 张晓东
+	 * @time: 2020/5/8 18:05
+	 */
+	List<Map<String,Object>> fkProtectCustomer(Date startTime, Date endTime);
 }

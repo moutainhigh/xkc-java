@@ -45,9 +45,9 @@ public class BProjectServiceImpl extends ServiceImpl<BProjectMapper, BProject> i
     }
 
     @Override
-    public Map<String, Object> findAllProject(String name, int pageIndex, int pageSize) {
-        List<Map<String, Object>> byOrgID = baseMapper.findAllProject(name, pageIndex, pageSize);
-        int byOrgID_count = baseMapper.findAllProject_count(name, pageIndex, pageSize);
+    public Map<String, Object> findAllProject(String name, int pageIndex, int pageSize, Object userId) {
+        List<Map<String, Object>> byOrgID = baseMapper.findAllProject(name, pageIndex, pageSize, userId);
+        int byOrgID_count = baseMapper.findAllProject_count(name, pageIndex, pageSize, userId);
         Map<String,Object> map=new HashMap<>();
         map.put("List",byOrgID);
         map.put("total",byOrgID_count);
