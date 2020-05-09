@@ -1714,7 +1714,7 @@
         WHERE
         p.IsDel= 0
         <if test="userId!=null and userId!=''">
-            AND p.id not in (select ProjectID from B_SalesGroupMember where memberid=(select id from B_SalesUser where telphone=(select mobile from B_ChannelUser where id=#{userId} and channeltypeid= '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD')))
+            AND p.id not in (select ProjectID from B_SalesGroupMember where memberid=(select id from B_SalesUser where telphone=(select mobile from B_ChannelUser where id=#{userId} and channeltypeid= '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD')) and isdel=0)
         </if>
         AND p.Status= 1
         <if test="Name!=null and Name!=''">
@@ -1749,7 +1749,7 @@
         WHERE
         p.IsDel= 0
         <if test="userId!=null and userId!=''">
-            AND p.id not in (select ProjectID from B_SalesGroupMember where memberid=(select id from B_SalesUser where telphone=(select mobile from B_ChannelUser where id=#{userId} and channeltypeid= '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD')))
+            AND p.id not in (select ProjectID from B_SalesGroupMember where memberid=(select id from B_SalesUser where telphone=(select mobile from B_ChannelUser where id=#{userId} and channeltypeid= '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD')) and isdel=0)
         </if>
         AND p.Status= 1
         <if test="Name!=null and Name!=''">

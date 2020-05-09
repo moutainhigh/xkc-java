@@ -133,7 +133,7 @@ public class ProtectCustomerTask {
                 setOpportunityId((String)i.get("ID"));
                 setCustomerName((String)i.get("CustomerName"));
                 setCustomerMobile((String)i.get("CustomerMobile"));
-                setCustomerStatus(i.get("CustomerStatus") != null ? Integer.valueOf((String)i.get("CustomerStatus")): null);
+                setCustomerStatus(i.get("CustomerStatus") != null ? Integer.valueOf(i.get("CustomerStatus").toString()): null);
                 setCustomerStatusName((String)i.get("CustomerStatusName"));
                 setReportUserID((String)i.get("ReportUserID"));
                 setReportUserName((String)i.get("ReportUserName"));
