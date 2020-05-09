@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.risk.BRiskconfigMapper">
+
+    <update id="disableAll" >
+        UPDATE B_RiskConfig SET Status = 0 , IsDel = 1 WHERE Type != 0 and (Status != 0 or IsDel != 1)
+    </update>
+
+    <update id="disable" parameterType="string">
+        UPDATE B_RiskConfig SET Status = 0 , IsDel = 1 WHERE ID = #{ID}
+    </update>
+
+</mapper>

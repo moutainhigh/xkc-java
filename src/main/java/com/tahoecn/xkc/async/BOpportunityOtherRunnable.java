@@ -2,17 +2,13 @@ package com.tahoecn.xkc.async;
 
 import com.tahoecn.xkc.model.miniprogram.BOpportunityOther;
 import com.tahoecn.xkc.service.miniprogram.IBOpportunityOtherService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * @description:
+ * @description: 写BOpportunityOther表信息, 实现业务为上海无法查看集团报备人员
  * @author: 张晓东
  * @time: 2020/4/28 17:32
  */
-public class BOpportunityOtherRunnable implements Runnable {
-
-    private final Logger log = LoggerFactory.getLogger(BOpportunityOtherRunnable.class);
+public class BOpportunityOtherRunnable extends BaseRunnable {
 
     private IBOpportunityOtherService service;
     private BOpportunityOther other;
@@ -23,13 +19,7 @@ public class BOpportunityOtherRunnable implements Runnable {
     }
 
     @Override
-    public void run() {
-        try {
-            this.service.insert(this.other);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("async insert error -> className : {} , args : {} , e : {}", service.getClass().getName(), other, e);
-        }
+    public void invoke()  throws Exception {
+        this.service.insert(this.other);
     }
-
 }

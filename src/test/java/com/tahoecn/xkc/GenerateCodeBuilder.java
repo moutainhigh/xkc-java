@@ -31,14 +31,14 @@ public class GenerateCodeBuilder {
     private String driver;
 
     //生成文件所在项目路径
-    private static String baseProjectPath = "d:/wc/";
+    private static String baseProjectPath = "E:/GenerateCodeBuilder/";
 
     //基本包名
     private static String basePackage="com.tahoecn.xkc";
 
     //要生成的表名
-    private static String[] tables= {"B_ChannelUser"};
-
+    private static String[] tables= {"B_RiskBatchLog", "B_RiskNnameLog"};
+// B_RiskBatchLog B_RiskNnameLog
     @Test
     public void generateCodeBuilder(){
 
