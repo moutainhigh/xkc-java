@@ -784,6 +784,7 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 					AND OP.ProjectID = #{ ProjectID }
 		]]>		        
     </select>
+
     <!-- 今日待跟进 -->
     <select id="DRDGJCalendar" parameterType="java.util.Map" resultType="java.lang.String">
     	<![CDATA[
