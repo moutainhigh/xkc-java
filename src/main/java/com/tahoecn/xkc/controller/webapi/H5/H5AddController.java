@@ -106,7 +106,7 @@ public class H5AddController extends TahoeBaseController {
             list = projectService.findByOrgID(OrgID,Name,PageIndex,PageSize);
         } else {
 
-            list =projectService.findAllProject(Name,PageIndex,PageSize);
+            list =projectService.findAllProject(Name,PageIndex,PageSize, null);
         }
 
         return Result.ok(list);

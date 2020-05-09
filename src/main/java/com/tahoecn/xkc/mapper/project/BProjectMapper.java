@@ -90,7 +90,7 @@ public interface BProjectMapper extends BaseMapper<BProject> {
 
     Map<String, Object> addName(@Param("projectID")String projectID);
 
-    List<Map<String, Object>> findAllProject(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize);
+    List<Map<String, Object>> findAllProject(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize, @Param("userId") Object userId);
 
-    int findAllProject_count(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize);
+    int findAllProject_count(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize, @Param("userId") Object userId);
 }

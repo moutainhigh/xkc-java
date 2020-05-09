@@ -1713,6 +1713,9 @@
         AND s.Status= 1
         WHERE
         p.IsDel= 0
+        <if test="userId!=null and userId!=''">
+            AND p.id not in (select ProjectID from B_SalesGroupMember where memberid=(select id from B_SalesUser where telphone=(select mobile from B_ChannelUser where id=#{userId} and channeltypeid= '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD')))
+        </if>
         AND p.Status= 1
         <if test="Name!=null and Name!=''">
             AND p.Name like CONCAT('%',#{Name},'%')
@@ -1745,6 +1748,9 @@
         AND s.Status= 1
         WHERE
         p.IsDel= 0
+        <if test="userId!=null and userId!=''">
+            AND p.id not in (select ProjectID from B_SalesGroupMember where memberid=(select id from B_SalesUser where telphone=(select mobile from B_ChannelUser where id=#{userId} and channeltypeid= '725FA5F6-EC92-4DC6-8D47-A8E74B7829AD')))
+        </if>
         AND p.Status= 1
         <if test="Name!=null and Name!=''">
             AND p.Name like CONCAT('%',#{Name},'%')
@@ -1752,7 +1758,5 @@
         AND o.IsDel= 0
         AND o.Status= 1
         AND p.[Level]=1
-
-
     </select>
 </mapper>
