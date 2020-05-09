@@ -439,9 +439,11 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 						SELECT a.OpportunityID OpportunityID,
 							MAX ( CONVERT ( VARCHAR ( 10 ), a.NextFollowUpDate, 120 ) ) MaxFollowUpDate 
 						FROM B_CustomerFollowUp a
+						INNER JOIN B_Opportunity b ON a.OpportunityID=b.id
 						WHERE
 							a.FollwUpUserID = #{UserID}
 							AND a.ProjectID = #{ProjectID}
+							AND b.SALEUSERID=  #{UserID}
 						GROUP BY a.OpportunityID 
 					) b LEFT JOIN B_Opportunity o ON o.id = b.OpportunityID  
 					WHERE CONVERT ( VARCHAR (10), MaxFollowUpDate, 120 ) = #{CurDate}
@@ -459,9 +461,11 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 				SELECT a.OpportunityID OpportunityID,
 					MAX(CONVERT(VARCHAR(10), a.NextFollowUpDate, 120)) MaxFollowUpDate 
 				FROM B_CustomerFollowUp a 
+				INNER JOIN B_Opportunity b ON a.OpportunityID=b.id 
 				WHERE
 					a.FollwUpUserID = #{UserID} 
 					AND a.ProjectID = #{ProjectID}
+					AND b.SALEUSERID=  #{UserID} 
 				GROUP BY
 					a.OpportunityID 
 				) b
@@ -789,10 +793,12 @@ SELECT A.ID, A.[Content], dbo.F_FormatDate(A.SendTime) SendTime, A.IsRead, D.Dic
 				SELECT a.OpportunityID OpportunityID,
 					MAX(CONVERT(VARCHAR(10), a.NextFollowUpDate, 120)) NextFollowUpDate 
 				FROM
-					B_CustomerFollowUp a 
+					B_CustomerFollowUp a
+					INNER JOIN B_Opportunity b ON a.OpportunityID=b.id
 				WHERE
 					a.FollwUpUserID = #{UserID} 
 					AND a.ProjectID = #{ProjectID}
+					AND b.SALEUSERID= #{UserID}
 				GROUP BY
 					a.OpportunityID 
 				) b

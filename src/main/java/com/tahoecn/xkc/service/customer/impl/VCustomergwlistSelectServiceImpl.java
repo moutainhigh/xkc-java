@@ -382,6 +382,13 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
          			}
                 }
                 data.put("Token", token);
+                if(data.containsKey("UseMobile")){
+					data.put("UseMobile",data.get("UseMobile")==null ? "":PhoneUtil.setAsterisk((String)data.get("UseMobile"),3,7));
+
+				}
+				if(data.containsKey("CustomerMobile")){
+					data.put("CustomerMobile",data.get("CustomerMobile")==null ? "" : PhoneUtil.setAsterisk((String)data.get("CustomerMobile"),3,7));
+				}
 
 
 				// chenghong  白名单start
