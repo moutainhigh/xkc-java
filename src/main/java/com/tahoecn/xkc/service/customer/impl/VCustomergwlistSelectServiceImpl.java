@@ -12,6 +12,7 @@ import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
 import com.tahoecn.xkc.common.enums.MessageType;
+import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.StringShieldUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
 import com.tahoecn.xkc.converter.Result;
@@ -393,7 +394,13 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 					}
 				}
 				data.put("Token", token);
+				if(data.containsKey("UseMobile")){
+					data.put("UseMobile",data.get("UseMobile")==null ? "": PhoneUtil.setAsterisk((String)data.get("UseMobile"),3,7));
 
+				}
+				if(data.containsKey("CustomerMobile")){
+					data.put("CustomerMobile",data.get("CustomerMobile")==null ? "" : PhoneUtil.setAsterisk((String)data.get("CustomerMobile"),3,7));
+				}
 
 				// chenghong  白名单start
 				String customerID = (String) data.get("CustomerID");
