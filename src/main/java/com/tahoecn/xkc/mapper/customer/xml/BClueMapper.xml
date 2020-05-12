@@ -626,4 +626,20 @@
         where TradeOverdueTime IS NOT NULL AND CONVERT(DATE, TradeOverdueTime) != '1900-01-01' and DATEDIFF(DAY, GETDATE(),TradeOverdueTime) &gt;= 0
         AND RuleID  = #{clueRuleId} and status in (1,2)
     </update>
+
+    <select id="fkSearchMobile" parameterType="java.util.Date" resultType="java.util.Map">
+        --某段时间报备的数据,排除掉顾问报备的数据
+        SELECT
+        opp.ID as OpportunityID,
+        opp.ProjectID,
+        clue.CreateTime as ReportTime,
+        opp.CustomerMobile,
+        FROM dbo.B_Clue clue
+        LEFT JOIN dbo.B_Opportunity opp ON clue.ID=opp.ClueID opp.IsDel=0
+        WHERE
+        clue.Status IN (1,2) AND clue.IsDel=0--只查询有效的线索
+        AND clue.CreateTime between #{startTime} and #{endTime}
+        AND (clue.ReportUserID IS NULL OR clue.ReportUserID='')--排除掉置业顾问报备的数据
+    </select>
+
 </mapper>

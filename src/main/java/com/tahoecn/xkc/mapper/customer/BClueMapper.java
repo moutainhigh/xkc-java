@@ -92,4 +92,6 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	void updateTradeOverdueTimeByDay(@Param("extendSigningProDays")Integer extendSigningProDays, @Param("clueRuleId")String clueRuleId);
 
 	void updateTradeOverdueTimeByDate(@Param("extendSigningProEndDate")Date extendSigningProEndDate, @Param("clueRuleId")String clueRuleId);
+
+	List<Map<String, Object>> fkSearchMobile(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

@@ -25,13 +25,13 @@ public class CGWDetailModel implements Serializable{
 	private String OpportunityID;
 
 	private String CustomerID;
-    /// 是否发送通知
+    // 是否发送通知
 	private String IsSend;
-    /// 是否首次访问 
+    // 是否首次访问
 	private String IsCustomerFirstEdit;
 
 	private List<Item> ItemList;
-    /// 渠道身份ID
+    // 渠道身份ID
 	private String ChannelTypeID;
 	
 	private String JobCode;

@@ -2,67 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.risk.BCustomermobilesearchMapper">
 
-    <select id="fkSearchMobile" parameterType="java.util.Date" resultType="java.util.Map">
-        SELECT DISTINCT
-            A.Creator AS SearchUserId, --搜索人
-            dbo.F_GetSaleUserName (A.Creator) AS SearchUserName, --搜索人
-            '0269F35E-B32D-4D12-8496-4E6E4CE597B7' as SearchUserRoleID,--搜索人类型id
-            '销售人员' as SearchUserRoleName,--搜索人类型名称
-            area.ID AS RegionalId,
-            area.OrgName AS RegionalName,
-            city.ID AS CityId,
-            city.OrgName AS CityName,
-            B.ID AS ProjectId,
-            B.Name AS ProjectName,
-            clue.ID AS ClueID,
-            opp.ID AS OpportunityID,
-            clue.Name AS CustomerName,
-            clue.Mobile AS CustomerMobile,
-            opp.Status AS CustomerStatus
-            F_GetClueStatusName_xkc(clue.Status,opp.Status) AS CustomerStatusName,
-            clue.ReportUserID,
-            clue.ReportUserName,
-            clue.AdviserGroupID AS AdviserGroupID,
-            dbo.F_GetDictionaryName (clue.AdviserGroupID) AdviserGroupName,--报备人渠道类型
-            clue.CreateTime ReportTime,
-            opp.TheFirstVisitDate,
-            opp.SaleUserID,
-            opp.SaleUserName
+<!--    @Param("projectID") String projectID, @Param("mobile") String mobile, @Param("createTime") Date createTime-->
+    <select id="fkSearchMobileInfo" parameterType="java.util.Date" resultType="java.util.Map">
+        --查出来数据后， 去置业顾问搜电话表里查询，是否有置业顾问搜索时间在前，但是被渠道报备了的数据
+        --遍历报备的客户数据， 去搜索电话表里判断
+        --可能搜到有多条数据，可能是
+        SELECT
+            search.*
         FROM
-            dbo.B_CustomerMobileSearch A
-                INNER JOIN dbo.B_Project B ON A.ProjectID = B.ID
-                INNER JOIN dbo.S_Organization city ON B.BUGUID = city.ID
-                INNER JOIN dbo.S_Organization area ON city.PID = area.ID
-                INNER JOIN dbo.B_Clue clue ON A.Mobile = clue.Mobile
-                    AND A.ProjectID = clue.IntentProjectID
-                    AND clue.Status IN (1, 2)
-                    AND clue.CreateTime > A.CreateTime
-                LEFT JOIN dbo.B_Opportunity opp ON clue.ID = opp.ClueID
+            dbo.B_CustomerMobileSearch search
         WHERE
-            A.CreateTime between #{startTime} and #{endTime}
-            AND A.OpportunityID IS NULL
-            AND A.JobCode = 'GW'
-            AND EXISTS (
-                SELECT
-                    1
-                FROM
-                    dbo.B_Opportunity OO
-                WHERE
-                    A.Mobile = OO.CustomerMobile
-                AND A.Creator = OO.SaleUserID
-            )
-            AND NOT EXISTS (
-                SELECT
-                    1
-                FROM
-                    dbo.B_Clue CC
-                WHERE
-                    A.Mobile = CC.Mobile
-                AND (
-                    A.Creator = CC.ReportUserID
-                    OR CC.ReportUserID IS NULL
-                )
-            )
+            search.ProjectID=#{projectID} AND
+            search.Mobile=#{mobile} AND
+            search.JobCode='GW' AND
+            search.CreateTime !> #{createTime}
 	</select>
 
 </mapper>

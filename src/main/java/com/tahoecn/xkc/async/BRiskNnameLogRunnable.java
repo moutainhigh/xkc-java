@@ -50,7 +50,7 @@ public class BRiskNnameLogRunnable extends BaseRunnable {
             this.service.insert(new BRisknnamelog() {{
                 setId(UUID.randomUUID().toString());
                 setProjectID(before.getString("ProjectID"));
-                setCustomerMobile(before.getString("Mobile"));//
+                setCustomerMobile(before.getString("Mobile"));
                 setCustomerOldName(before.getString("CustomerName"));
                 setCustomerNewName(after.get("Name").toString());
                 setClueId(before.getString("ClueID"));
