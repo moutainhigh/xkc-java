@@ -5,6 +5,7 @@ import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.enums.TipsEnum;
 import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
+import com.tahoecn.xkc.model.ratio.vo.RatioConfigInfoVO;
 import com.tahoecn.xkc.model.ratio.vo.RatioconfigVO;
 import com.tahoecn.xkc.service.ratio.IBRatioconfigService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +57,6 @@ public class BRatioconfigController extends TahoeBaseController {
             }
             return this.service.replace(request, vo);
         } catch (Exception e) {
-            //记录错误日志
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
@@ -74,7 +75,6 @@ public class BRatioconfigController extends TahoeBaseController {
         try {
             return this.service.listConfig();
         } catch (Exception e) {
-            //记录错误日志
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
@@ -94,7 +94,6 @@ public class BRatioconfigController extends TahoeBaseController {
             if (StringUtils.isEmpty(id)) ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "id不能为空");
             return this.service.iRemove(request, id);
         } catch (Exception e) {
-            //记录错误日志
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
@@ -123,7 +122,6 @@ public class BRatioconfigController extends TahoeBaseController {
             if (!all && StringUtils.isEmpty(id)) ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "id不能为空");
             return this.service.disable(request, all, id);
         } catch (Exception e) {
-            //记录错误日志
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
@@ -141,7 +139,6 @@ public class BRatioconfigController extends TahoeBaseController {
         try {
             return this.service.command(request);
         } catch (Exception e) {
-            //记录错误日志
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
@@ -155,7 +152,44 @@ public class BRatioconfigController extends TahoeBaseController {
             if (StringUtils.isEmpty(id)) return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "id不能为空");
             return this.service.enable(request, id);
         } catch (Exception e) {
-            //记录错误日志
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
+
+
+
+    @ApiOperation(value = "风控规则明细", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "regionalId", value = "区域id",
+                    paramType = "query", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "cityId", value = "城市id",
+                    paramType = "query", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "projectId", value = "项目id",
+                    paramType = "query", required = false, dataType = "String")
+    })
+    @GetMapping(value = "/list")
+    public JSONResult list(HttpServletRequest request, String regionalId,String cityId, String projectId) {
+        try {
+            return this.service.list(request, regionalId, cityId, projectId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "风控规则明细修改", httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "infos", value = "修改明细",
+                    paramType = "query", required = false, dataType = "List")
+    })
+    @PostMapping(value = "/update")
+    public JSONResult update(HttpServletRequest request, @Valid @RequestBody List<RatioConfigInfoVO> infos, BindingResult bindingResult) {
+        try {
+            if (bindingResult.hasErrors())
+                return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), bindingResult.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
+            return this.service.iUpdate(request, infos);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }

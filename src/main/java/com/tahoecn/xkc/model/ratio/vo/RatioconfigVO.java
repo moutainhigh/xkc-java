@@ -7,7 +7,9 @@ import io.swagger.annotations.ApiModel;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * @description: 渠道占比配置新增vo
@@ -22,7 +24,7 @@ public class RatioconfigVO implements Serializable {
     private String name;
     @NotNull(message = "渠道类型不能为空")
     @NotEmpty(message = "渠道类型不能为空")
-    private String channels;
+    private String[] channels;
     @NotNull(message = "报备占比不能为空")
     @Min(value = 0, message = "报备占比0-100")
     @Max(value = 100, message = "报备占比0-100")
@@ -48,11 +50,11 @@ public class RatioconfigVO implements Serializable {
         this.name = name;
     }
 
-    public String getChannels() {
+    public String[] getChannels() {
         return channels;
     }
 
-    public void setChannels(String channels) {
+    public void setChannels(String[] channels) {
         this.channels = channels;
     }
 
@@ -71,4 +73,5 @@ public class RatioconfigVO implements Serializable {
     public void setDealRatio(Integer dealRatio) {
         this.dealRatio = dealRatio;
     }
+
 }

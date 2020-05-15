@@ -3,9 +3,11 @@ package com.tahoecn.xkc.service.ratio;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.model.ratio.BRatioconfig;
+import com.tahoecn.xkc.model.ratio.vo.RatioConfigInfoVO;
 import com.tahoecn.xkc.model.ratio.vo.RatioconfigVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -68,4 +70,22 @@ public interface IBRatioconfigService extends IService<BRatioconfig> {
      * @time: 2020/5/12 20:31
      */
     JSONResult enable(HttpServletRequest request, String id);
+
+    /**
+     *
+     * @description: 风控规则明细
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/13 11:16
+     */
+    JSONResult list(HttpServletRequest request, String regionalId, String cityId, String projectId);
+
+    /**
+     *
+     * @description: 风控规则明细修改
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/13 14:53
+     */
+    JSONResult iUpdate(HttpServletRequest request, List<RatioConfigInfoVO> infos);
 }

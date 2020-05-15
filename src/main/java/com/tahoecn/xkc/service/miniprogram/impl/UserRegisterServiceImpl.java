@@ -11,11 +11,15 @@ import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.mapper.channel.BChannelorgMapper;
 import com.tahoecn.xkc.mapper.channel.BChanneluserMapper;
 import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
+import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
+import com.tahoecn.xkc.mapper.sys.SAccountMapper;
 import com.tahoecn.xkc.mapper.sys.SysAccessRecordMapper;
 import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.model.channel.BChanneluser;
 import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.miniprogram.vo.UserRegisterVO;
+import com.tahoecn.xkc.model.opportunity.BOpportunity;
+import com.tahoecn.xkc.model.sys.SAccount;
 import com.tahoecn.xkc.model.sys.SysAccessRecord;
 import com.tahoecn.xkc.service.miniprogram.IUserRegisterService;
 import com.tahoecn.xkc.service.sys.ISysAccessManagementService;
@@ -58,6 +62,12 @@ public class UserRegisterServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 
     @Resource
     private SDictionaryMapper sDictionaryMapper;
+
+    @Resource
+    private BOpportunityMapper bOpportunityMapper;
+
+    @Resource
+    private SAccountMapper sAccountMapper;
 
     @Override
     @Transactional
@@ -117,6 +127,34 @@ public class UserRegisterServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
             bChanneluser.setChannelOrgID(bChannelorg.getId());
             bChanneluser.setJob(2);
         }else{
+            //验证老业主
+            Integer oldOwner = this.bOpportunityMapper.selectCount(new QueryWrapper<BOpportunity>() {{
+                eq("Status", 5);
+                eq("IsDel", 0);
+                eq("CustomerMobile", userRegisterVO.getMobile());
+            }});
+            if (userRegisterVO.getChannelTypeID().equals("EB4AD331-F4AD-46D6-889A-D45575ECEE66")) {
+                if (null == oldOwner || oldOwner < 1) {
+                    return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "注册失败，您不能注册老业主");
+                }
+            }
+            if (oldOwner > 0 && !userRegisterVO.getChannelTypeID().equals("EB4AD331-F4AD-46D6-889A-D45575ECEE66")) {
+                return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "注册失败，您只能注册老业主");
+            }
+            //验证员工
+            Integer staff = this.sAccountMapper.selectCount(new QueryWrapper<SAccount>() {{
+                eq("Mobile", userRegisterVO.getMobile());
+                eq("Status", 1);
+                eq("IsDel", 0);
+            }});
+            if (userRegisterVO.getChannelTypeID().equals("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD")) {
+                if (null == staff || staff < 1) {
+                    return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "注册失败，您不能注册泰禾员工");
+                }
+            }
+            if (staff > 0 && !userRegisterVO.getChannelTypeID().equals("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD")) {
+                return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "注册失败，您只能注册泰禾员工");
+            }
             bChanneluser.setJob(3);
         }
         bChanneluser.setChannelTypeID(ChannelTypeIdEnum.getEnumByCode(Integer.valueOf(userRegisterVO.getChannelTypeID())).getMessage());
@@ -136,6 +174,7 @@ public class UserRegisterServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         SDictionary certificatesSDictionary = new SDictionary();
         certificatesSDictionary = sDictionaryMapper.selectById(bChanneluser.getCertificatesType());
         bChanneluser.setCertificatesName(certificatesSDictionary.getDictName());
+        bChanneluser.setPassword("C8837B23FF8AAA8A2DDE915473CE0991");//设置默认密码123321
         bChanneluserMapper.insert(bChanneluser);
         Map<String, String> map = new HashMap<String, String>();
         map.put("userId", bChanneluser.getId());

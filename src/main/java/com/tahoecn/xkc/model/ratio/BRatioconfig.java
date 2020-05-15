@@ -1,12 +1,13 @@
 package com.tahoecn.xkc.model.ratio;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -17,8 +18,8 @@ import io.swagger.annotations.ApiModelProperty;
  * @since 2020-05-12
  */
 @TableName("B_RatioConfig")
-@ApiModel(value="BRatioconfig对象", description="")
-public class BRatioconfig implements Serializable {
+@ApiModel(value = "BRatioconfig对象", description = "")
+public class BRatioconfig implements Serializable, Comparable<BRatioconfig> {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,6 +43,12 @@ public class BRatioconfig implements Serializable {
 
     @TableField("DealRatio")
     private Integer DealRatio;
+
+    @TableField("ReportRatioName")
+    private String ReportRatioName;
+
+    @TableField("DealRatioName")
+    private String DealRatioName;
 
     @TableField("ProjectId")
     private String ProjectId;
@@ -86,6 +93,7 @@ public class BRatioconfig implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
     public Integer getType() {
         return Type;
     }
@@ -93,6 +101,7 @@ public class BRatioconfig implements Serializable {
     public void setType(Integer Type) {
         this.Type = Type;
     }
+
     public String getMasterId() {
         return MasterId;
     }
@@ -100,6 +109,7 @@ public class BRatioconfig implements Serializable {
     public void setMasterId(String MasterId) {
         this.MasterId = MasterId;
     }
+
     public String getName() {
         return Name;
     }
@@ -107,6 +117,7 @@ public class BRatioconfig implements Serializable {
     public void setName(String Name) {
         this.Name = Name;
     }
+
     public String getChannels() {
         return Channels;
     }
@@ -114,6 +125,7 @@ public class BRatioconfig implements Serializable {
     public void setChannels(String Channels) {
         this.Channels = Channels;
     }
+
     public Integer getReportRatio() {
         return ReportRatio;
     }
@@ -121,13 +133,32 @@ public class BRatioconfig implements Serializable {
     public void setReportRatio(Integer ReportRatio) {
         this.ReportRatio = ReportRatio;
     }
+
     public Integer getDealRatio() {
         return DealRatio;
+    }
+
+    public String getReportRatioName() {
+        return ReportRatioName;
+    }
+
+    public void setReportRatioName(String ReportRatioName) {
+        this.ReportRatioName = ReportRatioName;
+    }
+
+
+    public String getDealRatioName() {
+        return DealRatioName;
+    }
+
+    public void setDealRatioName(String DealRatioName) {
+        this.DealRatioName = DealRatioName;
     }
 
     public void setDealRatio(Integer DealRatio) {
         this.DealRatio = DealRatio;
     }
+
     public String getProjectId() {
         return ProjectId;
     }
@@ -135,6 +166,7 @@ public class BRatioconfig implements Serializable {
     public void setProjectId(String ProjectId) {
         this.ProjectId = ProjectId;
     }
+
     public String getProjectName() {
         return ProjectName;
     }
@@ -142,6 +174,7 @@ public class BRatioconfig implements Serializable {
     public void setProjectName(String ProjectName) {
         this.ProjectName = ProjectName;
     }
+
     public String getRegionalId() {
         return RegionalId;
     }
@@ -149,6 +182,7 @@ public class BRatioconfig implements Serializable {
     public void setRegionalId(String RegionalId) {
         this.RegionalId = RegionalId;
     }
+
     public String getRegionalName() {
         return RegionalName;
     }
@@ -156,6 +190,7 @@ public class BRatioconfig implements Serializable {
     public void setRegionalName(String RegionalName) {
         this.RegionalName = RegionalName;
     }
+
     public String getCityId() {
         return CityId;
     }
@@ -163,6 +198,7 @@ public class BRatioconfig implements Serializable {
     public void setCityId(String CityId) {
         this.CityId = CityId;
     }
+
     public String getCityName() {
         return CityName;
     }
@@ -170,6 +206,7 @@ public class BRatioconfig implements Serializable {
     public void setCityName(String CityName) {
         this.CityName = CityName;
     }
+
     public String getCreator() {
         return Creator;
     }
@@ -177,6 +214,7 @@ public class BRatioconfig implements Serializable {
     public void setCreator(String Creator) {
         this.Creator = Creator;
     }
+
     public Date getCreateTime() {
         return CreateTime;
     }
@@ -184,6 +222,7 @@ public class BRatioconfig implements Serializable {
     public void setCreateTime(Date CreateTime) {
         this.CreateTime = CreateTime;
     }
+
     public String getEditor() {
         return Editor;
     }
@@ -191,6 +230,7 @@ public class BRatioconfig implements Serializable {
     public void setEditor(String Editor) {
         this.Editor = Editor;
     }
+
     public Date getEditeTime() {
         return EditeTime;
     }
@@ -198,6 +238,7 @@ public class BRatioconfig implements Serializable {
     public void setEditeTime(Date EditeTime) {
         this.EditeTime = EditeTime;
     }
+
     public Integer getIsDel() {
         return IsDel;
     }
@@ -205,6 +246,7 @@ public class BRatioconfig implements Serializable {
     public void setIsDel(Integer IsDel) {
         this.IsDel = IsDel;
     }
+
     public Integer getStatus() {
         return Status;
     }
@@ -236,5 +278,12 @@ public class BRatioconfig implements Serializable {
                 ", IsDel=" + IsDel +
                 ", Status=" + Status +
                 "}";
+    }
+
+    @Override
+    public int compareTo(BRatioconfig o) {
+        int sorte = this.getId().compareTo(o.getId());
+        if (StringUtils.isNotEmpty(this.getMasterId())) sorte = this.getMasterId().compareTo(o.getMasterId());
+        return sorte;
     }
 }

@@ -56,7 +56,7 @@ public class SearchMobileTask {
     @Transactional(rollbackFor = Exception.class)
     public void task() {
 
-        // 查询是否存在运行中的防截客批任务, 存在直接返回
+        // 查询是否存在运行中的搜电批任务, 存在直接返回
         List<BRiskbatchlog> runs = this.bRiskbatchlogMapper.selectList(new QueryWrapper<BRiskbatchlog>() {{
             eq("RiskType", 2);
             eq("Status", 1);
