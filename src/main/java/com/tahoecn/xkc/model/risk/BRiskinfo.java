@@ -1,12 +1,12 @@
 package com.tahoecn.xkc.model.risk;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @since 2020-05-06
  */
 @TableName("B_RiskInfo")
-@ApiModel(value="BRiskinfo对象", description="")
+@ApiModel(value = "BRiskinfo对象", description = "")
 public class BRiskinfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -130,6 +130,9 @@ public class BRiskinfo implements Serializable {
     @TableField("RiskProtectCustomerTime")
     private Date RiskProtectCustomerTime;
 
+    @TableField("JointNameMasterId")
+    private String JointNameMasterId;
+
     public String getId() {
         return id;
     }
@@ -137,6 +140,7 @@ public class BRiskinfo implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
     public String getRiskConfigId() {
         return RiskConfigId;
     }
@@ -144,6 +148,7 @@ public class BRiskinfo implements Serializable {
     public void setRiskConfigId(String RiskConfigId) {
         this.RiskConfigId = RiskConfigId;
     }
+
     public String getRegionalId() {
         return RegionalId;
     }
@@ -151,6 +156,7 @@ public class BRiskinfo implements Serializable {
     public void setRegionalId(String RegionalId) {
         this.RegionalId = RegionalId;
     }
+
     public String getRegionalName() {
         return RegionalName;
     }
@@ -158,6 +164,7 @@ public class BRiskinfo implements Serializable {
     public void setRegionalName(String RegionalName) {
         this.RegionalName = RegionalName;
     }
+
     public String getCityId() {
         return CityId;
     }
@@ -165,6 +172,7 @@ public class BRiskinfo implements Serializable {
     public void setCityId(String CityId) {
         this.CityId = CityId;
     }
+
     public String getCityName() {
         return CityName;
     }
@@ -172,6 +180,7 @@ public class BRiskinfo implements Serializable {
     public void setCityName(String CityName) {
         this.CityName = CityName;
     }
+
     public String getProjectId() {
         return ProjectId;
     }
@@ -179,6 +188,7 @@ public class BRiskinfo implements Serializable {
     public void setProjectId(String ProjectId) {
         this.ProjectId = ProjectId;
     }
+
     public String getProjectName() {
         return ProjectName;
     }
@@ -186,6 +196,7 @@ public class BRiskinfo implements Serializable {
     public void setProjectName(String ProjectName) {
         this.ProjectName = ProjectName;
     }
+
     public Integer getRiskType() {
         return RiskType;
     }
@@ -193,6 +204,7 @@ public class BRiskinfo implements Serializable {
     public void setRiskType(Integer RiskType) {
         this.RiskType = RiskType;
     }
+
     public Date getCreateTime() {
         return CreateTime;
     }
@@ -200,6 +212,7 @@ public class BRiskinfo implements Serializable {
     public void setCreateTime(Date CreateTime) {
         this.CreateTime = CreateTime;
     }
+
     public String getClueId() {
         return ClueId;
     }
@@ -207,6 +220,7 @@ public class BRiskinfo implements Serializable {
     public void setClueId(String ClueId) {
         this.ClueId = ClueId;
     }
+
     public String getOpportunityId() {
         return OpportunityId;
     }
@@ -214,6 +228,7 @@ public class BRiskinfo implements Serializable {
     public void setOpportunityId(String OpportunityId) {
         this.OpportunityId = OpportunityId;
     }
+
     public String getCustomerName() {
         return CustomerName;
     }
@@ -221,6 +236,7 @@ public class BRiskinfo implements Serializable {
     public void setCustomerName(String CustomerName) {
         this.CustomerName = CustomerName;
     }
+
     public String getCustomerMobile() {
         return CustomerMobile;
     }
@@ -228,6 +244,7 @@ public class BRiskinfo implements Serializable {
     public void setCustomerMobile(String CustomerMobile) {
         this.CustomerMobile = CustomerMobile;
     }
+
     public Integer getCustomerStatus() {
         return CustomerStatus;
     }
@@ -235,6 +252,7 @@ public class BRiskinfo implements Serializable {
     public void setCustomerStatus(Integer CustomerStatus) {
         this.CustomerStatus = CustomerStatus;
     }
+
     public String getCustomerStatusName() {
         return CustomerStatusName;
     }
@@ -242,6 +260,7 @@ public class BRiskinfo implements Serializable {
     public void setCustomerStatusName(String CustomerStatusName) {
         this.CustomerStatusName = CustomerStatusName;
     }
+
     public String getReportUserID() {
         return ReportUserID;
     }
@@ -249,6 +268,7 @@ public class BRiskinfo implements Serializable {
     public void setReportUserID(String ReportUserID) {
         this.ReportUserID = ReportUserID;
     }
+
     public String getReportUserName() {
         return ReportUserName;
     }
@@ -256,6 +276,7 @@ public class BRiskinfo implements Serializable {
     public void setReportUserName(String ReportUserName) {
         this.ReportUserName = ReportUserName;
     }
+
     public String getAdviserGroupID() {
         return AdviserGroupID;
     }
@@ -263,6 +284,7 @@ public class BRiskinfo implements Serializable {
     public void setAdviserGroupID(String AdviserGroupID) {
         this.AdviserGroupID = AdviserGroupID;
     }
+
     public String getAdviserGroupName() {
         return AdviserGroupName;
     }
@@ -270,6 +292,7 @@ public class BRiskinfo implements Serializable {
     public void setAdviserGroupName(String AdviserGroupName) {
         this.AdviserGroupName = AdviserGroupName;
     }
+
     public Date getReportTime() {
         return ReportTime;
     }
@@ -277,6 +300,7 @@ public class BRiskinfo implements Serializable {
     public void setReportTime(Date ReportTime) {
         this.ReportTime = ReportTime;
     }
+
     public Date getTheFirstVisitDate() {
         return TheFirstVisitDate;
     }
@@ -284,6 +308,7 @@ public class BRiskinfo implements Serializable {
     public void setTheFirstVisitDate(Date TheFirstVisitDate) {
         this.TheFirstVisitDate = TheFirstVisitDate;
     }
+
     public Date getSubscribeTime() {
         return SubscribeTime;
     }
@@ -291,6 +316,7 @@ public class BRiskinfo implements Serializable {
     public void setSubscribeTime(Date SubscribeTime) {
         this.SubscribeTime = SubscribeTime;
     }
+
     public Date getContractTime() {
         return ContractTime;
     }
@@ -298,6 +324,7 @@ public class BRiskinfo implements Serializable {
     public void setContractTime(Date ContractTime) {
         this.ContractTime = ContractTime;
     }
+
     public String getSaleUserID() {
         return SaleUserID;
     }
@@ -305,6 +332,7 @@ public class BRiskinfo implements Serializable {
     public void setSaleUserID(String SaleUserID) {
         this.SaleUserID = SaleUserID;
     }
+
     public String getSaleUserName() {
         return SaleUserName;
     }
@@ -312,6 +340,7 @@ public class BRiskinfo implements Serializable {
     public void setSaleUserName(String SaleUserName) {
         this.SaleUserName = SaleUserName;
     }
+
     public Date getFirstFaceTime() {
         return FirstFaceTime;
     }
@@ -319,6 +348,7 @@ public class BRiskinfo implements Serializable {
     public void setFirstFaceTime(Date FirstFaceTime) {
         this.FirstFaceTime = FirstFaceTime;
     }
+
     public String getRiskDesc() {
         return RiskDesc;
     }
@@ -391,6 +421,14 @@ public class BRiskinfo implements Serializable {
         RiskProtectCustomerTime = riskProtectCustomerTime;
     }
 
+    public String getJointNameMasterId() {
+        return JointNameMasterId;
+    }
+
+    public void setJointNameMasterId(String jointNameMasterId) {
+        JointNameMasterId = jointNameMasterId;
+    }
+
     @Override
     public String toString() {
         return "BRiskinfo{" +
@@ -430,6 +468,7 @@ public class BRiskinfo implements Serializable {
                 ", OpportunitySource=" + OpportunitySource +
                 ", ProjectProtectCustomerTime=" + ProjectProtectCustomerTime +
                 ", RiskProtectCustomerTime=" + RiskProtectCustomerTime +
+                ", JointNameMasterId=" + JointNameMasterId +
                 "}";
     }
 }

@@ -64,8 +64,9 @@ public class EditNameRunnable extends BaseRunnable {
             eq("ProjectID", cgwDetailModel.getProjectID());
         }});
 
-        if (null != bRisknnamelogs && null != bRiskconfig && bRisknnamelogs.size() > 0
-                && bRiskconfig.getEditNameCount() > 0 && bRisknnamelogs.size() >= bRiskconfig.getEditNameCount()) {
+        if (null != bRisknnamelogs && null != bRiskconfig && bRiskconfig.getIsEditName() == 1
+                && bRisknnamelogs.size() > 0 && bRiskconfig.getEditNameCount() > 0
+                && bRisknnamelogs.size() >= bRiskconfig.getEditNameCount()) {
             boolean flag = true;
             long count = bRisknnamelogs.size();
             long surnameCount = bRisknnamelogs.stream().

@@ -89,7 +89,7 @@ public class SearchMobileTask {
                 startTime = bRiskbatchlogs.get(0).getDataMaxTime();
             }
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.running(bRiskbatchlog));
-            AtomicReference<Date> dataMaxTime = new AtomicReference<>();
+            AtomicReference<Date> dataMaxTime = new AtomicReference<>(DateUtil.date());
             this.bClueMapper.fkSearchMobile(startTime, DateUtil.date()).stream()
                     .filter(i -> bRiskconfigMap.get(i.get("ProjectID")) != null
                             && bRiskconfigMap.get(i.get("ProjectID")).getIsSearchMobile() == 1)
