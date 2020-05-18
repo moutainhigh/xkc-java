@@ -8,6 +8,7 @@ import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.async.BOpportunityOtherRunnable;
 import com.tahoecn.xkc.async.ExecutorsUtils;
 import com.tahoecn.xkc.common.enums.*;
+import com.tahoecn.xkc.common.utils.NetUtil;
 import com.tahoecn.xkc.common.utils.PhoneUtil;
 import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.converter.CareerConsCustConverter;
@@ -120,7 +121,7 @@ public class MiniprogramServiceImpl implements IMiniprogramService {
         String param = JSONArray.toJSONString(map);
         SFormsession sess = new SFormsession();
         sess.setId(UUID.randomUUID().toString().toUpperCase());
-        sess.setIp(sysAccessRecord.getAccessIp());
+        sess.setIp(NetUtil.getRemoteAddr2(request));
         sess.setData(param);
         sess.setCreateTime(new Date());
         sess.setStatus(1);
