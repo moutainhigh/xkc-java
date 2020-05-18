@@ -17,7 +17,6 @@
         dbo.F_DictName(tr.SourceType) OpportunitySource ,
         dbo.F_GetMediaLargeName(tr.CognitiveChannel) CognitiveChannel ,
         dbo.F_GetMediaChildName(tr.CognitiveChannelSub) CognitiveChannelSub ,
-        dbo.F_GetDictionaryName ( tr.Follwupway ) Follwupway,
         tr.SaleUserID ,
         tr.SaleUserName ,
         tr.TheFirstVisitDate ,
@@ -57,7 +56,6 @@
                                 b.OpportunitySource ,
                                 b.CognitiveChannel ,
                                 b.CognitiveChannelSub ,
-                                f.Follwupway ,
                                 b.SaleUserID ,
                                 b.SaleUserName ,
                                 b.TheFirstVisitDate ,
@@ -93,8 +91,6 @@
 	   AND ProjectID=#{paramMap.ProjectID} ${paramMap.Where}
 	  GROUP BY OpportunityID
 								) G ON G.OpportunityID=b.ID
-								 LEFT JOIN  dbo.B_CustomerFollowUp f ON (G.OpportunityID = f.OpportunityID
-                                AND G.CreateTime=f.CreateTime)
                       WHERE     b.ProjectID=#{paramMap.ProjectID}
                                 AND NOT EXISTS (
                                     SELECT
@@ -146,7 +142,6 @@
                                 b.SourceType OpportunitySource ,
                                 b.CognitiveChannel ,
                                 b.CognitiveChannelSub ,
-                                '' Follwupway,
                                 '' SaleUserID ,
                                 '' SaleUserName ,
                                 '' TheFirstVisitDate ,
@@ -553,7 +548,6 @@ FROM    dbo.B_Opportunity A
         dbo.F_DictName(tr.SourceType) OpportunitySource ,
         dbo.F_GetMediaLargeName(tr.CognitiveChannel) CognitiveChannel ,
         dbo.F_GetMediaChildName(tr.CognitiveChannelSub) CognitiveChannelSub ,
-        dbo.F_GetDictionaryName (tr.Follwupway ) Follwupway,
         tr.SaleUserID ,
         tr.SaleUserName ,
         tr.TheFirstVisitDate ,
@@ -594,7 +588,6 @@ FROM    dbo.B_Opportunity A
                                 b.OpportunitySource ,
                                 b.CognitiveChannel ,
                                 b.CognitiveChannelSub ,
-                                f.Follwupway,
                                 b.SaleUserID ,
                                 b.SaleUserName ,
                                 b.TheFirstVisitDate ,
@@ -631,8 +624,6 @@ FROM    dbo.B_Opportunity A
 	  GROUP BY OpportunityID
 								) G ON G.OpportunityID=b.ID
 
-                            LEFT JOIN  dbo.B_CustomerFollowUp f ON (G.OpportunityID = f.OpportunityID
-                            AND G.CreateTime=f.CreateTime)
                       WHERE     b.ProjectID=#{paramMap.ProjectID}
                       		AND NOT EXISTS (
                                 SELECT
@@ -683,7 +674,6 @@ FROM    dbo.B_Opportunity A
                                 b.SourceType OpportunitySource ,
                                 b.CognitiveChannel ,
                                 b.CognitiveChannelSub ,
-                                '' Follwupway,
                                 '' SaleUserID ,
                                 '' SaleUserName ,
                                 '' TheFirstVisitDate ,
