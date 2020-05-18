@@ -4,6 +4,9 @@ import com.tahoecn.core.util.StrUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class NetUtil {
     public static String getClientIp(HttpServletRequest request) {
@@ -38,4 +41,26 @@ public class NetUtil {
         }
         return remoteAddr != null ? remoteAddr : request.getRemoteAddr();
     }
+
+    /**
+     *
+     * @description: 获取id去重 + 去127.0.0.1
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/18 13:12
+     */
+    public static String getRemoteAddr2(HttpServletRequest request){
+        String remoteAddr = request.getRemoteAddr();
+        if (StringUtils.isNotEmpty(remoteAddr)) {
+            return Arrays.stream(remoteAddr.split(","))
+                    .map(String::trim)
+                    .filter(i -> !i.equals("127.0.0.1"))
+                    .collect(Collectors.toSet()).stream()
+                    .collect(Collectors.joining(","));
+        }
+        return "";
+    }
+
+
+
 }
