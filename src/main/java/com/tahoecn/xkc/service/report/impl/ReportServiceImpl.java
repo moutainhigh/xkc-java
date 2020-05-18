@@ -16,6 +16,7 @@ import com.tahoecn.xkc.model.channel.BChannelorg;
 import com.tahoecn.xkc.service.report.ReportService;
 
 import cn.hutool.core.date.DateUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -26,6 +27,7 @@ import cn.hutool.core.date.DateUtil;
  * @since 2019-06-25
  */
 @Service
+@Transactional(readOnly = true)
 public class ReportServiceImpl extends ServiceImpl<ReportMapper, BChannelorg> implements ReportService {
 
     @Override
