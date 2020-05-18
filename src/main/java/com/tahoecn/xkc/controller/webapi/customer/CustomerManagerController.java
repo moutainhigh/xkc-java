@@ -212,7 +212,6 @@ public class CustomerManagerController extends TahoeBaseController {
         entity.add(new ExcelExportEntity("置业顾问","SaleUserName"));
         entity.add(new ExcelExportEntity("媒体大类","CognitiveChannel"));
         entity.add(new ExcelExportEntity("媒体子类","CognitiveChannelSub"));
-        entity.add(new ExcelExportEntity("跟进方式","Follwupway"));
         entity.add(new ExcelExportEntity("成交房源","Room"));
         entity.add(new ExcelExportEntity("报备时间","ReportTime"));
         entity.add(new ExcelExportEntity("首访时间","TheFirstVisitDate"));
