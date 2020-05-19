@@ -19,4 +19,15 @@ public interface STrade2CstMapper {
     @DataSource(value = DataSourceEnum.DB2)
     List<Map<String, Object>> searchJointName(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+
+    /**
+     *
+     * @description: 按时间搜索短期成交
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/18 17:25
+     */
+    @DataSource(value = DataSourceEnum.DB2)
+    List<Map<String, Object>> searchShortDeal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
 }

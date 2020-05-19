@@ -3,24 +3,22 @@ package com.tahoecn.xkc.schedule.risk;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.core.date.DateUtil;
 import com.tahoecn.xkc.common.utils.RiskBatchLogUtils;
-import com.tahoecn.xkc.mapper.risk.BCustomerattachMapper;
-import com.tahoecn.xkc.mapper.risk.BRiskbatchlogMapper;
-import com.tahoecn.xkc.mapper.risk.BRiskconfigMapper;
-import com.tahoecn.xkc.mapper.risk.STrade2CstMapper;
+import com.tahoecn.xkc.mapper.risk.*;
 import com.tahoecn.xkc.model.risk.BRiskbatchlog;
 import com.tahoecn.xkc.model.risk.BRiskconfig;
+import com.tahoecn.xkc.model.risk.BRiskinfo;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.ast.Var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +43,8 @@ public class JointNameTask {
     @Resource
     private BCustomerattachMapper bCustomerattachMapper;
 
+    @Resource
+    private BRiskinfoMapper bRiskinfoMapper;
 
     @Transactional
     public void task() {
@@ -93,12 +93,6 @@ public class JointNameTask {
                 record(v, bRiskconfigMap, dataMaxTime);
             });
 
-            searchJointName.keySet().stream().forEach(i -> {
-                String masterId = UUID.randomUUID().toString();
-                searchJointName.get(i).stream().forEach(i1 -> {
-                    dataMaxTime.set(serchMaxTime(i1, dataMaxTime.get()));//获取数据最大时间
-                });
-            });
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.success(bRiskbatchlog, dataMaxTime.get()));
         } catch (Exception e) {
             log.error("fk batcg error : ProtectCustomerTask : {}", e.getMessage());
@@ -107,10 +101,8 @@ public class JointNameTask {
 
     }
 
-    private void record(List<Map<String, Object>> v, Map<String, BRiskconfig> bRiskconfigMap,
-                        AtomicReference<Date> dataMaxTime) {
-
-        if (null != v && v.size() > 0) {
+    private void record(List<Map<String, Object>> v, Map<String, BRiskconfig> bRiskconfigMap, AtomicReference<Date> dataMaxTime) {
+        if (null != v && v.size() > 1) {
             Object[] ID = new Object[v.size()];
             Object[] ProjectID = new Object[v.size()];
             Object[] ClueID = new Object[v.size()];
@@ -137,7 +129,8 @@ public class JointNameTask {
             Object[] OrgId = new Object[v.size()];
             Object[] OpportunitySource = new Object[v.size()];
             for (int i = 0; i < v.size(); i++) {
-                Map<String, Object> xsOppGuid = bCustomerattachMapper.fkJointName(v.get(i).get("xsOppGuid").toString());
+                dataMaxTime.set(serchMaxTime(v.get(i), dataMaxTime.get()));//获取数据最大时间
+                Map<String, Object> xsOppGuid = bCustomerattachMapper.fkJointNameOrShortDeal(v.get(i).get("xsOppGuid").toString());
                 ID[i] = xsOppGuid.get("ID");
                 ProjectID[i] = xsOppGuid.get("ProjectID");
                 ClueID[i] = xsOppGuid.get("ClueID");
@@ -164,53 +157,173 @@ public class JointNameTask {
                 OrgId[i] = xsOppGuid.get("OrgId");
                 OpportunitySource[i] = xsOppGuid.get("OpportunitySource");
             }
-            if (ProjectID.length > 0 && bRiskconfigMap.containsKey(ProjectID[0].toString())
-                    && bRiskconfigMap.get(ProjectID[0].toString()).getIsJointName() == 1) {
+            if (bRiskconfigMap.containsKey(ProjectID[0])
+                    && bRiskconfigMap.get(ProjectID[0]).getIsJointName() == 1) {
+                Integer jointNameType = bRiskconfigMap.get(ProjectID[0]).getJointNameType();
 
+                if (null != jointNameType && jointNameType == 0) {
+                    boolean flag = false;
+                    Object obj = null;
+                    for (Object o : AdviserGroupID) {
+                        if (null ==  obj) {
+                            obj = o;
+                        } else if (!flag) {
+                            flag = !obj.equals(o);
+                        }
+                    }
+                    if (flag) {
+                        String masterId = UUID.randomUUID().toString();
+                        for (int i = 0; i < ID.length; i++) {
+                            insertData(bRiskconfigMap, masterId, (Date)v.get(i).get("QSDate"),ID[i],ProjectID[i],ClueID[i],Name[i]
+                                    ,CustomerName[i],CustomerMobile[i],CustomerStatus[i],CustomerStatusName[i]
+                                    ,ReportUserID[i],ReportUserName[i],AdviserGroupID[i],AdviserGroupName[i]
+                                    ,ReportTime[i],TheFirstVisitDate[i],SaleUserID[i],SaleUserName[i]
+                                    ,CityId[i],CityName[i],RegionalId[i],RegionalName[i],IsPreIntercept[i]
+                                    ,PreInterceptTime[i],CreateTime[i],OrgId[i],OpportunitySource[i]);
+                        }
+                        insertData(bRiskconfigMap, null, (Date)v.get(0).get("QSDate"), Arrays.stream(ID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(ProjectID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(ClueID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(Name).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CustomerName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CustomerMobile).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CustomerStatus).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CustomerStatusName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(ReportUserID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(ReportUserName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(AdviserGroupID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(AdviserGroupName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(ReportTime).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(TheFirstVisitDate).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(SaleUserID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(SaleUserName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CityId).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CityName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(RegionalId).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(RegionalName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(IsPreIntercept).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(PreInterceptTime).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(CreateTime).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(OrgId).map(i -> (String)i).collect(Collectors.joining(",")),
+                                Arrays.stream(OpportunitySource).map(i -> (String)i).collect(Collectors.joining(",")));
+                    }
+                } else if (null != jointNameType && jointNameType == 1) {
+                    //获取案场报备索引
+                    Integer index = null;
+                    int count = 0 ;
+                    for (int i = 0; i < AdviserGroupID.length; i++) {
+                        if (StringUtils.isEmpty((String)AdviserGroupID[i])) {
+                            index = i;
+                            count++;
+                        }
+                    }
+                    if (count < v.size() && null != index) {
+                        //循环判断案场报备时间是否小于渠道报备时间
+                        boolean flag = false;
+                        for (int i = 0; i < ReportTime.length; i++) {
+                            if (i != index)  {
+                                flag = ((Date)ReportTime[i]).getTime() < ((Date)ReportTime[index]).getTime();
+                            }
+                        }
+                        //案场时间大于渠道时间为风险数据
+                        if (flag) {
+                            String masterId = UUID.randomUUID().toString();
+                            for (int i = 0; i < ID.length; i++) {
+                                insertData(bRiskconfigMap, masterId, (Date)v.get(i).get("QSDate"),ID[i],ProjectID[i],ClueID[i],Name[i]
+                                        ,CustomerName[i],CustomerMobile[i],CustomerStatus[i],CustomerStatusName[i]
+                                        ,ReportUserID[i],ReportUserName[i],AdviserGroupID[i],AdviserGroupName[i]
+                                        ,ReportTime[i],TheFirstVisitDate[i],SaleUserID[i],SaleUserName[i]
+                                        ,CityId[i],CityName[i],RegionalId[i],RegionalName[i],IsPreIntercept[i]
+                                        ,PreInterceptTime[i],CreateTime[i],OrgId[i],OpportunitySource[i]);
+                            }
+                            insertData(bRiskconfigMap, null, (Date)v.get(0).get("QSDate"), Arrays.stream(ID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(ProjectID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(ClueID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(Name).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CustomerName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CustomerMobile).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CustomerStatus).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CustomerStatusName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(ReportUserID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(ReportUserName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(AdviserGroupID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(AdviserGroupName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(ReportTime).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(TheFirstVisitDate).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(SaleUserID).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(SaleUserName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CityId).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CityName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(RegionalId).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(RegionalName).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(IsPreIntercept).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(PreInterceptTime).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(CreateTime).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(OrgId).map(i -> (String)i).collect(Collectors.joining(",")),
+                                    Arrays.stream(OpportunitySource).map(i -> (String)i).collect(Collectors.joining(",")));
+                        }
+                    }
+                }
             }
         }
+    }
 
-
-            /*bRiskinfoMapper.insert(new BRiskinfo() {{
-                setId(UUID.randomUUID().toString());
-                setRiskConfigId(bRiskconfigMap.get(i.get("ProjectID")).getId());
-                setRegionalId((String)i.get("RegionalId"));
-                setRegionalName((String)i.get("RegionalName"));
-                setCityId((String)i.get("CityId"));
-                setCityName((String)i.get("CityName"));
-                setProjectId((String)i.get("ProjectID"));
-                setProjectName((String)i.get("Name"));
-                setRiskType(2);
-                setCreateTime(DateUtil.date());
-                setClueId((String)i.get("ClueID"));
-                setOpportunityId((String)i.get("ID"));
-                setCustomerName((String)i.get("CustomerName"));
-                setCustomerMobile((String)i.get("CustomerMobile"));
-                setCustomerStatus(i.get("CustomerStatus") != null ? Integer.valueOf(i.get("CustomerStatus").toString()): null);
-                setCustomerStatusName((String)i.get("CustomerStatusName"));
-                setReportUserID((String)i.get("ReportUserID"));
-                setReportUserName((String)i.get("ReportUserName"));
-                setAdviserGroupID((String)i.get("AdviserGroupID"));
-                setAdviserGroupName((String)i.get("AdviserGroupName"));
-                setReportTime((Date) i.get("ReportTime"));
-                setTheFirstVisitDate((Date) i.get("TheFirstVisitDate"));
-                setSaleUserID((String)i.get("SaleUserID"));
-                setSaleUserName((String)i.get("SaleUserName"));
-                setOrgId((String)i.get("OrgId"));
-                setOpportunitySource((String)i.get("OpportunitySource"));
+    private void insertData(Map<String, BRiskconfig> bRiskconfigMap, String masterId, Date qsDate,Object ID,
+                            Object ProjectID,Object ClueID,Object Name,Object CustomerName,Object CustomerMobile,
+                            Object CustomerStatus,Object CustomerStatusName,Object ReportUserID,Object ReportUserName,
+                            Object AdviserGroupID,Object AdviserGroupName,Object ReportTime,Object TheFirstVisitDate,
+                            Object SaleUserID,Object SaleUserName,Object CityId,Object CityName,Object RegionalId,
+                            Object RegionalName,Object IsPreIntercept,Object PreInterceptTime,Object CreateTime,
+                            Object OrgId,Object OpportunitySource) {
+        bRiskinfoMapper.insert(new BRiskinfo() {{
+            if (StringUtils.isNotEmpty(masterId)) {
+                setId(masterId);
+                setRiskType(4);
                 setRiskDesc(
-                        new StringBuilder("存在搜电未报备风险, 项目名为:{")
-                                .append(i.get("Name"))
-                                .append("}, 搜索手机号为:{")
-                                .append(i.get("CustomerMobile"))
-                                .append("}, 搜索次数为:{")
-                                .append(fkSearchMobileInfos.size())
+                        new StringBuilder("存在联名购房风险, 项目名为:{")
+                                .append(Name)
+                                .append("}, 渠道类型为:{")
+                                .append(AdviserGroupName)
+                                .append("}, 报备人为:{")
+                                .append(ReportUserName)
+                                .append("}, 报备时间为:{")
+                                .append(ReportTime)
                                 .append("}")
                                 .toString()
                 );
-            }});*/
-
+            } else {
+                setId(UUID.randomUUID().toString());
+                setRiskType(6);
+                setJointNameMasterId(masterId);
+            }
+            setRiskConfigId(bRiskconfigMap.get(ProjectID).getId());
+            setRegionalId((String)RegionalId);
+            setRegionalName((String)RegionalName);
+            setCityId((String)CityId);
+            setCityName((String)CityName);
+            setProjectId((String)ProjectID);
+            setProjectName((String)Name);
+            setCreateTime(DateUtil.date());
+            setClueId((String)ClueID);
+            setOpportunityId((String)ID);
+            setCustomerName((String)CustomerName);
+            setCustomerMobile((String)CustomerMobile);
+            setCustomerStatus(CustomerStatus != null ? Integer.valueOf((String)CustomerStatus): null);
+            setCustomerStatusName((String)CustomerStatusName);
+            setReportUserID((String)ReportUserID);
+            setReportUserName((String)ReportUserName);
+            setAdviserGroupID((String)AdviserGroupID);
+            setAdviserGroupName((String)AdviserGroupName);
+            setReportTime((Date) ReportTime);
+            setTheFirstVisitDate((Date)TheFirstVisitDate);
+            setSaleUserID((String)SaleUserID);
+            setSaleUserName((String)SaleUserName);
+            setOrgId((String)OrgId);
+            setOpportunitySource((String)OpportunitySource);
+            setSubscribeTime(qsDate);
+        }});
     }
+
 
     private Date serchMaxTime(Map<String, Object> i, Date date) {
         Date result = (Date) i.get("QSDate");

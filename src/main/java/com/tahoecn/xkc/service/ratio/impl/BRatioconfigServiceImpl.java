@@ -302,7 +302,6 @@ public class BRatioconfigServiceImpl extends ServiceImpl<BRatioconfigMapper, BRa
         Map<String, BRatioconfig> blocMap = this.baseMapper.selectList(new QueryWrapper<BRatioconfig>() {{
             eq("Type", 0);
             eq("IsDel", 0);
-            eq("Status", 1);
         }}).stream().collect(Collectors.toMap(BRatioconfig::getId, i1 -> i1));
         //项目明细
         List<BRatioconfig> infos = this.baseMapper.selectList(new QueryWrapper<BRatioconfig>() {{

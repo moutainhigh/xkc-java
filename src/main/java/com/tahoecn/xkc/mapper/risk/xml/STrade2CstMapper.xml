@@ -19,10 +19,26 @@
         LEFT JOIN p_Customer c ON t.CstGUID = c.CstGUID
         WHERE
         t.cstnum > 1
-        AND s.QSDate BETWEEN #{startTime} AND #{endTime})
+        AND s.QSDate BETWEEN #{startTime} AND #{endTime}
         AND t.xsOppGuid IS NOT NULL
         AND s.Status = '激活'
         ) T
         ORDER BY T.RoomGUID
 	</select>
+
+    <select id="searchShortDeal" parameterType="java.util.Date" resultType="java.util.Map">
+        SELECT
+            A.xsOppGuid,
+            A.QSDate AS ContractTime,
+            B.QSDate AS SubscribeTime
+        FROM
+            dbo.s_Contract A
+        INNER JOIN dbo.s_Order B ON A.TradeGUID = B.TradeGUID
+        WHERE
+            A.Status = '激活'
+        AND A.QSDate BETWEEN #{ startTime }AND #{ endTime }
+        AND A.xsOppGuid IS NOT NULL
+	</select>
+
+
 </mapper>

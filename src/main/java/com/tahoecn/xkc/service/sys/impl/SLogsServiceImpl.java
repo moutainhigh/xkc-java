@@ -44,7 +44,7 @@ public class SLogsServiceImpl extends ServiceImpl<SLogsMapper, SLogs> implements
             log.setBizDesc((String) logMap.get("BizDesc"));
         }
 //		log.setIp(NetUtil.localIpv4s().toString());//本地ip
-		log.setIp(NetUtil.getRemoteAddr(request));//客户端IP
+		log.setIp(NetUtil.getRemoteAddr2(request));//客户端IP
         if (logMap.get("Ext1")!=null){
             log.setExt1((String) logMap.get("Ext1"));
         }

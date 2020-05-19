@@ -16,6 +16,6 @@ import java.util.Map;
  */
 public interface BCustomerattachMapper extends BaseMapper<BCustomerattach> {
 
-    Map<String, Object> fkJointName(@Param("id")String id);
+    Map<String, Object> fkJointNameOrShortDeal(@Param("id")String id);
 
 }
