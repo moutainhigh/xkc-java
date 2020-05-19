@@ -102,9 +102,8 @@
                                     AND cw.CustomerID = b.CustomerID
                                 )
 								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
-
-                                SELECT  OpportunityID FROM (SELECT  b.ID OpportunityID
-                                FROM B_Opportunity b
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
+                          FROM B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
                                 LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
@@ -115,8 +114,12 @@
 								          ) G ON G.OpportunityID=b.ID
                                 WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
                       UNION
-                      SELECT b.ID OpportunityID
-
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
@@ -180,10 +183,8 @@
                         )
                       AND EXISTS(
 									SELECT OpportunityID FROM (select OpportunityID from (
-        SELECT OpportunityID FROM (
-                                SELECT
-                                    b.ID OpportunityID
-                                FROM B_Opportunity b
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
+                          FROM B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
                                 LEFT JOIN B_SalesGroupMember SM ON SM.MemberID=b.SaleUserID  AND SM.IsDel=0 AND SM.ProjectID=#{paramMap.ProjectID} AND sm.RoleID='0269F35E-B32D-4D12-8496-4E6E4CE597B7'
@@ -194,8 +195,12 @@
 								          ) G ON G.OpportunityID=b.ID
                                 WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
                       UNION
-                      SELECT b.ID OpportunityID
-
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
@@ -623,7 +628,6 @@ FROM    dbo.B_Opportunity A
 	   AND ProjectID=#{paramMap.ProjectID} ${paramMap.Where}
 	  GROUP BY OpportunityID
 								) G ON G.OpportunityID=b.ID
-
                       WHERE     b.ProjectID=#{paramMap.ProjectID}
                       		AND NOT EXISTS (
                                 SELECT
@@ -635,7 +639,7 @@ FROM    dbo.B_Opportunity A
                                 AND cw.CustomerID = b.CustomerID
                             )
 								            AND EXISTS(SELECT OpportunityID FROM (select OpportunityID from (
-        SELECT OpportunityID FROM (SELECT  b.ID OpportunityID
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
@@ -647,7 +651,12 @@ FROM    dbo.B_Opportunity A
 								          ) G ON G.OpportunityID=b.ID
                                 WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
                       UNION
-                      SELECT b.ID OpportunityID
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
@@ -712,7 +721,7 @@ FROM    dbo.B_Opportunity A
                         )
                       AND EXISTS(
 									SELECT OpportunityID FROM (select OpportunityID from (
-                            SELECT OpportunityID FROM (SELECT b.ID OpportunityID
+        SELECT * FROM (SELECT b.ID OpportunityID,d.CreateTime,b.Status OpportunityStatus,b.TheFirstVisitDate,0 ClueStatus,G.CreateTime ZJDF,b.TheLatestFollowUpDate
                           FROM B_Opportunity b
                                 LEFT JOIN B_Customer a ON a.ID = b.CustomerID
                                 LEFT JOIN B_Clue d ON b.ClueID = d.ID AND d.Status<>3 AND d.IntentProjectID =#{paramMap.ProjectID}
@@ -724,7 +733,12 @@ FROM    dbo.B_Opportunity A
 								          ) G ON G.OpportunityID=b.ID
                                 WHERE b.IsDel = 0 AND b.ProjectID = #{paramMap.ProjectID} ${paramMap.OppWhere}
                       UNION
-                      SELECT b.ID OpportunityID
+                      SELECT b.ID OpportunityID , b.CreateTime ,
+                                0 OpportunityStatus,
+                                '' TheFirstVisitDate,
+								                b.Status ClueStatus,
+												        '' ZJDF,
+												        '' TheLatestFollowUpDate
                       FROM      B_Clue b
                                 LEFT JOIN B_ChannelOrg CO ON CO.ID=b.ReportUserOrg
                                 LEFT JOIN dbo.B_CustomerPotential CP ON b.CustomerPotentialID=CP.ID
