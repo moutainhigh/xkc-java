@@ -130,7 +130,7 @@ public class JointNameTask {
             Object[] OpportunitySource = new Object[v.size()];
             for (int i = 0; i < v.size(); i++) {
                 dataMaxTime.set(serchMaxTime(v.get(i), dataMaxTime.get()));//获取数据最大时间
-                Map<String, Object> xsOppGuid = bCustomerattachMapper.fkJointName(v.get(i).get("xsOppGuid").toString());
+                Map<String, Object> xsOppGuid = bCustomerattachMapper.fkJointNameOrShortDeal(v.get(i).get("xsOppGuid").toString());
                 ID[i] = xsOppGuid.get("ID");
                 ProjectID[i] = xsOppGuid.get("ProjectID");
                 ClueID[i] = xsOppGuid.get("ClueID");

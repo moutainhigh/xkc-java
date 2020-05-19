@@ -27,6 +27,7 @@
             resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
         SELECT
         D.ID AS userId,
+        (SELECT TOP 1 fdSid FROM dbo.C_UCUser WHERE fdUsername=D.UserName ORDER BY CreateTime DESC) ucId,
         D.Name AS name,
         D.UserName AS userName,
         B.ID AS projectId,
