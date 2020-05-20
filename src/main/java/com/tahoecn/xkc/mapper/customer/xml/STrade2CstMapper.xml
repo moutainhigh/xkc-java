@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.STrade2CstMapper">
+
+    <select id="searchJointName" resultType="java.util.Map">
+        <![CDATA[
+		SELECT * FROM (
+        SELECT DISTINCT
+        t.CstGUID,
+        cus.CstName,
+        t.xsOppGuid,
+        s.RoomGUID,
+        p.RoomCode,
+        s.QSDate
+        FROM
+        dbo.s_Trade2Cst t
+        LEFT JOIN dbo.s_Order s ON t.TradeGUID = s.TradeGUID
+        LEFT JOIN dbo.p_Room p ON s.RoomGUID = p.RoomGUID
+        LEFT JOIN dbo.p_Customer cus ON t.CstGUID = cus.CstGUID
+        WHERE
+        t.cstnum > 1
+        AND s.QSDate BETWEEN #{startTime} AND #{endTime}
+        AND t.xsOppGuid IS NOT NULL
+        AND s.Status = '激活'
+        ) T
+        ORDER BY T.RoomGUID
+        ]]>
+	</select>
+
+    <select id="searchShortDeal" resultType="java.util.Map">
+	<![CDATA[
+        SELECT
+            A.xsOppGuid,
+            A.QSDate AS ContractTime,
+            B.QSDate AS SubscribeTime
+        FROM
+            dbo.s_Contract A
+        INNER JOIN dbo.s_Order B ON A.TradeGUID = B.TradeGUID
+        WHERE
+            A.Status = '激活'
+        AND A.xsOppGuid IS NOT NULL
+        AND A.QSDate BETWEEN #{ startTime } AND #{ endTime }
+	]]>
+	</select>
+
+	<select id="searchShortDeal1" resultType="java.util.Map">
+	<![CDATA[
+        SELECT
+            top 10 *
+        FROM
+            dbo.B_RiskBatchLog
+	]]>
+	</select>
+</mapper>

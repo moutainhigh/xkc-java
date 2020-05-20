@@ -78,7 +78,7 @@ public class ProtectCustomerTask {
                 startTime = bRiskbatchlogs.get(0).getDataMaxTime();
             }
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.running(bRiskbatchlog));
-            AtomicReference<Date> dataMaxTime = new AtomicReference<>();
+            AtomicReference<Date> dataMaxTime = new AtomicReference<>(DateUtil.date());
             this.bOpportunityMapper.fkProtectCustomer(startTime, DateUtil.date()).stream()
                     .filter(i -> bRiskconfigMap.get(i.get("ProjectID")) != null
                             && bRiskconfigMap.get(i.get("ProjectID")).getIsProtectCustomer() == 1)

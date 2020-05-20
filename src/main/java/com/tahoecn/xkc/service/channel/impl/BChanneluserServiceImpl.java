@@ -328,6 +328,10 @@ public class BChanneluserServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
 //        String channelTypeID = "46830C26-0E01-4041-8054-3865CCDD26AD";
             //全部可以注册
             String channelTypeID = paramMap.get("ChannelTypeID").toString();
+
+            if (StringUtils.isEmpty(channelTypeID))
+                    channelTypeID = "46830C26-0E01-4041-8054-3865CCDD26AD";
+
             String userID = (String) paramMap.get("UserID");
             int job = 3;
             int approvalStatus = 1;

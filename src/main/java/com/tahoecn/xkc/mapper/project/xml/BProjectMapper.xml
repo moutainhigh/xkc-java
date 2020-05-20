@@ -1759,4 +1759,24 @@
         AND o.Status= 1
         AND p.[Level]=1
     </select>
+
+    <select id="searchProject" resultType="java.util.Map">
+        SELECT
+            project.ID AS ProjectId,
+            project.Name AS ProjectName,
+            city.ID AS CityId,
+            city.OrgName AS CityName,
+            area.ID AS RegionalId,
+            area.OrgName AS RegionalName
+        FROM
+            B_Project project
+        INNER JOIN S_Organization city ON project.BUGUID = city.ID
+        INNER JOIN S_Organization area ON area.ID = city.PID
+        WHERE
+            project. LEVEL = 1
+            AND project.IsDel = 0
+            AND project.Status = 1
+    </select>
+
+
 </mapper>

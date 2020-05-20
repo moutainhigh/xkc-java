@@ -37,6 +37,7 @@ public class BRiskNnameLogRunnable extends BaseRunnable {
 
     @Override
     void invoke() throws Exception {
+        if (true) return;
         if (!this.before.getString("CustomerName").equals(this.after.get("Name").toString())) {
             BClue clue = this.bClueMapper.selectById(new BClue() {{
                 setId(before.getString("ClueID"));
@@ -50,7 +51,7 @@ public class BRiskNnameLogRunnable extends BaseRunnable {
             this.service.insert(new BRisknnamelog() {{
                 setId(UUID.randomUUID().toString());
                 setProjectID(before.getString("ProjectID"));
-                setCustomerMobile(before.getString("Mobile"));//
+                setCustomerMobile(before.getString("Mobile"));
                 setCustomerOldName(before.getString("CustomerName"));
                 setCustomerNewName(after.get("Name").toString());
                 setClueId(before.getString("ClueID"));

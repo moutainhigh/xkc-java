@@ -786,40 +786,6 @@
 					cw.IsDel = 0
 				AND cw.CustomerID = b.CustomerID
 			)
-            UNION ALL
-            SELECT d.Name IntentProjectName,c.SaleUserName,c.ID,c.CustomerName,replace(c.CustomerMobile,substring(c.CustomerMobile,4,4),'****') CustomerMobile,3 CustomerRankValue,a.BgnDate
-            FROM   C_MYBooking (NOLOCK) a
-            INNER JOIN dbo.B_CustomerAttach (NOLOCK) b ON a.OppGUID=b.ID
-            INNER JOIN dbo.B_Opportunity (NOLOCK) c ON b.OpportunityID=c.ID
-            LEFT JOIN dbo.B_Project (NOLOCK) d ON c.ProjectID=d.ID
-            WHERE  a.Status IN ( '排号','关闭') AND a.BgnDate >= #{startDate} AND a.BgnDate < #{endDate}
-                AND c.ProjectID=#{orgID}
-                AND NOT EXISTS (
-					SELECT
-						ID
-					FROM
-						dbo.B_CustomerWhiteList cw
-					WHERE
-						cw.IsDel = 0
-					AND cw.CustomerID = c.CustomerID
-				)
-            UNION ALL
-            SELECT d.Name IntentProjectName,c.SaleUserName,c.ID,c.CustomerName,replace(c.CustomerMobile,substring(c.CustomerMobile,4,4),'****') CustomerMobile,-3 CustomerRankValue,a.CloseDate BgnDate
-            FROM   C_MYBooking (NOLOCK) a
-            INNER JOIN dbo.B_CustomerAttach (NOLOCK) b ON a.OppGUID=b.ID
-            INNER JOIN dbo.B_Opportunity (NOLOCK) c ON b.OpportunityID=c.ID
-            LEFT JOIN dbo.B_Project (NOLOCK) d ON c.ProjectID=d.ID
-            WHERE  a.CloseYy IN ( '退号','作废') AND a.CloseDate >= #{startDate} AND a.CloseDate < #{endDate}
-                AND c.ProjectID=#{orgID}
-                AND NOT EXISTS (
-						SELECT
-							ID
-						FROM
-							dbo.B_CustomerWhiteList cw
-						WHERE
-							cw.IsDel = 0
-						AND cw.CustomerID = c.CustomerID
-				)
             ) r
             ORDER BY SaleUserName,CustomerName,CreateTime
         ]]>

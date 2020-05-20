@@ -452,12 +452,50 @@
 			inner join S_Organization area on area.ID = city.PID
 			inner join B_ClueRule clueRule on clueRule.ID = clue.RuleID
 		where
-			opp.CreateTime between '2020-05-08' and '2020-05-09'
+			opp.CreateTime between #{startTime} and #{endTime}
 			and clue.AdviserGroupID in (
 				'46830C26-0E01-4041-8054-3865CCDD26AD',
 				'32C92DA0-DA13-4C21-A55E-A1D16955882C',
 				'EB4AD331-F4AD-46D6-889A-D45575ECEE66',
 				'725FA5F6-EC92-4DC6-8D47-A8E74B7829AD'
 			)
+	</select>
+
+	<select id="fkSearchInfo" parameterType="java.lang.String" resultType="java.util.Map">
+		select
+			opp.ID,
+			opp.ProjectID,
+			opp.ClueID,
+			project.Name,
+			opp.CustomerName,
+			opp.CustomerMobile,
+			opp.Status as CustomerStatus,
+			dbo.F_GetClueStatusName_xkc(clue.Status,opp.Status) as CustomerStatusName,
+			clue.ReportUserID,
+			clue.ReportUserName,
+			clue.AdviserGroupID,
+			dict.DictName as AdviserGroupName,
+			clue.CreateTime as ReportTime,
+			opp.TheFirstVisitDate,
+			opp.SaleUserID,
+			opp.SaleUserName,
+			city.ID as CityId,
+			city.OrgName as CityName,
+			area.ID as RegionalId,
+			area.OrgName as RegionalName,
+			clueRule.IsPreIntercept,
+			clueRule.PreInterceptTime,
+			opp.CreateTime,
+			clue.ReportUserOrg as OrgId,
+			opp.OpportunitySource
+		from B_Opportunity opp
+			inner join B_Clue clue on opp.ClueID = clue.ID
+			inner join B_Project project on opp.ProjectID = project.ID
+			left join S_Dictionary dict on clue.AdviserGroupID = dict.ID
+			inner join S_Organization city on project.BUGUID = city.ID
+			inner join S_Organization area on area.ID = city.PID
+			left join B_ClueRule clueRule on clueRule.ID = clue.RuleID
+		where
+			opp.ID = #{id}
 	</select>
 </mapper>

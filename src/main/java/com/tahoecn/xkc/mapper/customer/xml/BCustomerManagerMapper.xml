@@ -756,6 +756,7 @@ FROM    dbo.B_Opportunity A
 									WHERE tab.OpportunityID=b.ID
 									)
                     ) tr ${paramMap.updateWhere}
+
         ]]>
     </select>
 </mapper>
