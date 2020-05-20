@@ -3,41 +3,42 @@
 <mapper namespace="com.tahoecn.xkc.mapper.risk.BCustomerattachMapper">
 
     <select id="fkJointNameOrShortDeal" parameterType="java.lang.String" resultType="java.util.Map">
-    select
-    opp.ID,
-    opp.ProjectID,
-    opp.ClueID,
-    project.Name,
-    opp.CustomerName,
-    opp.CustomerMobile,
-    opp.Status as CustomerStatus,
-    dbo.F_GetClueStatusName_xkc(clue.Status,opp.Status) as CustomerStatusName,
-    clue.ReportUserID,
-    clue.ReportUserName,
-    clue.AdviserGroupID,
-    dict.DictName as AdviserGroupName,
-    clue.CreateTime as ReportTime,
-    opp.TheFirstVisitDate,
-    opp.SaleUserID,
-    opp.SaleUserName,
-    city.ID as CityId,
-    city.OrgName as CityName,
-    area.ID as RegionalId,
-    area.OrgName as RegionalName,
-    clueRule.IsPreIntercept,
-    clueRule.PreInterceptTime,
-    opp.CreateTime,
-    clue.ReportUserOrg as OrgId,
-    opp.OpportunitySource
-    from B_CustomerAttach attach
-    inner join B_Opportunity opp on attach.OpportunityID = opp.ID
-    inner join B_Clue clue on opp.ClueID = clue.ID
-    inner join B_Project project on opp.ProjectID = project.ID
-    inner join S_Dictionary dict on clue.AdviserGroupID = dict.ID
-    inner join S_Organization city on project.BUGUID = city.ID
-    inner join S_Organization area on area.ID = city.PID
-    inner join B_ClueRule clueRule on clueRule.ID = clue.RuleID
-    where
-    attach.ID = #{id}
+        SELECT
+            opp.ID,
+            opp.ProjectID,
+            opp.ClueID,
+            project.Name,
+            opp.CustomerName,
+            opp.CustomerMobile,
+            opp.Status AS CustomerStatus,
+            dbo.F_GetClueStatusName_xkc (clue.Status, opp.Status) AS CustomerStatusName,
+            clue.ReportUserID,
+            clue.ReportUserName,
+            clue.AdviserGroupID,
+            dict.DictName AS AdviserGroupName,
+            clue.CreateTime AS ReportTime,
+            opp.TheFirstVisitDate,
+            opp.SaleUserID,
+            opp.SaleUserName,
+            city.ID AS CityId,
+            city.OrgName AS CityName,
+            area.ID AS RegionalId,
+            area.OrgName AS RegionalName,
+            clueRule.IsPreIntercept,
+            clueRule.PreInterceptTime,
+            opp.CreateTime,
+            clue.ReportUserOrg AS OrgId,
+            opp.OpportunitySource
+        FROM
+            B_CustomerAttach attach
+        INNER JOIN B_Opportunity opp ON attach.OpportunityID = opp.ID
+        INNER JOIN B_Clue clue ON opp.ClueID = clue.ID
+        INNER JOIN B_Project project ON opp.ProjectID = project.ID
+        LEFT JOIN S_Dictionary dict ON clue.AdviserGroupID = dict.ID
+        INNER JOIN S_Organization city ON project.BUGUID = city.ID
+        INNER JOIN S_Organization area ON area.ID = city.PID
+        LEFT JOIN B_ClueRule clueRule ON clueRule.ID = clue.RuleID
+        WHERE
+            attach.ID = #{ id }
     </select>
 </mapper>

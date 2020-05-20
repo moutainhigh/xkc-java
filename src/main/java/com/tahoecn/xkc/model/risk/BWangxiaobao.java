@@ -25,39 +25,41 @@ public class BWangxiaobao implements Serializable {
     @TableId("ID")
     private String id;
 
-    @TableField("projectId")
-    private String projectId;
+    @TableField("ProjectId")
+    private String ProjectId;
 
-    @TableField("projectName")
-    private String projectName;
+    @TableField("ProjectName")
+    private String ProjectName;
 
-    private String name;
+    @TableField("Name")
+    private String Name;
 
-    @TableField("idNumber")
-    private String idNumber;
+    @TableField("IdNumber")
+    private String IdNumber;
 
-    @TableField("verifyTime")
-    private Date verifyTime;
+    @TableField("VerifyTime")
+    private Date VerifyTime;
 
-    @TableField("riskStatus")
-    private String riskStatus;
+    @TableField("RiskStatus")
+    private String RiskStatus;
 
-    @TableField("riskApproveStatus")
-    private String riskApproveStatus;
+    @TableField("RiskApproveStatus")
+    private String RiskApproveStatus;
 
-    @TableField("riskApproveRemark")
-    private String riskApproveRemark;
+    @TableField("RiskApproveRemark")
+    private String RiskApproveRemark;
 
-    @TableField("verifyResult")
-    private Integer verifyResult;
+    @TableField("VerifyResult")
+    private Integer VerifyResult;
 
-    @TableField("firstPhotoTime")
-    private Date firstPhotoTime;
+    @TableField("FirstPhotoTime")
+    private Date FirstPhotoTime;
 
-    private String image;
+    @TableField("Image")
+    private String Image;
 
-    @TableField("panoramicView")
-    private String panoramicView;
+    @TableField("PanoramicView")
+    private String PanoramicView;
 
     @TableField("CreateTime")
     private Date CreateTime;
@@ -70,88 +72,88 @@ public class BWangxiaobao implements Serializable {
         this.id = id;
     }
     public String getProjectId() {
-        return projectId;
+        return ProjectId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setProjectId(String ProjectId) {
+        this.ProjectId = ProjectId;
     }
     public String getProjectName() {
-        return projectName;
+        return ProjectName;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectName(String ProjectName) {
+        this.ProjectName = ProjectName;
     }
     public String getName() {
-        return name;
+        return Name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String Name) {
+        this.Name = Name;
     }
     public String getIdNumber() {
-        return idNumber;
+        return IdNumber;
     }
 
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
+    public void setIdNumber(String IdNumber) {
+        this.IdNumber = IdNumber;
     }
     public Date getVerifyTime() {
-        return verifyTime;
+        return VerifyTime;
     }
 
-    public void setVerifyTime(Date verifyTime) {
-        this.verifyTime = verifyTime;
+    public void setVerifyTime(Date VerifyTime) {
+        this.VerifyTime = VerifyTime;
     }
     public String getRiskStatus() {
-        return riskStatus;
+        return RiskStatus;
     }
 
-    public void setRiskStatus(String riskStatus) {
-        this.riskStatus = riskStatus;
+    public void setRiskStatus(String RiskStatus) {
+        this.RiskStatus = RiskStatus;
     }
     public String getRiskApproveStatus() {
-        return riskApproveStatus;
+        return RiskApproveStatus;
     }
 
-    public void setRiskApproveStatus(String riskApproveStatus) {
-        this.riskApproveStatus = riskApproveStatus;
+    public void setRiskApproveStatus(String RiskApproveStatus) {
+        this.RiskApproveStatus = RiskApproveStatus;
     }
     public String getRiskApproveRemark() {
-        return riskApproveRemark;
+        return RiskApproveRemark;
     }
 
-    public void setRiskApproveRemark(String riskApproveRemark) {
-        this.riskApproveRemark = riskApproveRemark;
+    public void setRiskApproveRemark(String RiskApproveRemark) {
+        this.RiskApproveRemark = RiskApproveRemark;
     }
     public Integer getVerifyResult() {
-        return verifyResult;
+        return VerifyResult;
     }
 
-    public void setVerifyResult(Integer verifyResult) {
-        this.verifyResult = verifyResult;
+    public void setVerifyResult(Integer VerifyResult) {
+        this.VerifyResult = VerifyResult;
     }
     public Date getFirstPhotoTime() {
-        return firstPhotoTime;
+        return FirstPhotoTime;
     }
 
-    public void setFirstPhotoTime(Date firstPhotoTime) {
-        this.firstPhotoTime = firstPhotoTime;
+    public void setFirstPhotoTime(Date FirstPhotoTime) {
+        this.FirstPhotoTime = FirstPhotoTime;
     }
     public String getImage() {
-        return image;
+        return Image;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImage(String Image) {
+        this.Image = Image;
     }
     public String getPanoramicView() {
-        return panoramicView;
+        return PanoramicView;
     }
 
-    public void setPanoramicView(String panoramicView) {
-        this.panoramicView = panoramicView;
+    public void setPanoramicView(String PanoramicView) {
+        this.PanoramicView = PanoramicView;
     }
     public Date getCreateTime() {
         return CreateTime;
@@ -165,18 +167,18 @@ public class BWangxiaobao implements Serializable {
     public String toString() {
         return "BWangxiaobao{" +
         "id=" + id +
-        ", projectId=" + projectId +
-        ", projectName=" + projectName +
-        ", name=" + name +
-        ", idNumber=" + idNumber +
-        ", verifyTime=" + verifyTime +
-        ", riskStatus=" + riskStatus +
-        ", riskApproveStatus=" + riskApproveStatus +
-        ", riskApproveRemark=" + riskApproveRemark +
-        ", verifyResult=" + verifyResult +
-        ", firstPhotoTime=" + firstPhotoTime +
-        ", image=" + image +
-        ", panoramicView=" + panoramicView +
+        ", projectId=" + ProjectId +
+        ", projectName=" + ProjectName +
+        ", name=" + Name +
+        ", idNumber=" + IdNumber +
+        ", verifyTime=" + VerifyTime +
+        ", riskStatus=" + RiskStatus +
+        ", riskApproveStatus=" + RiskApproveStatus +
+        ", riskApproveRemark=" + RiskApproveRemark +
+        ", verifyResult=" + VerifyResult +
+        ", firstPhotoTime=" + FirstPhotoTime +
+        ", image=" + Image +
+        ", panoramicView=" + PanoramicView +
         ", CreateTime=" + CreateTime +
         "}";
     }

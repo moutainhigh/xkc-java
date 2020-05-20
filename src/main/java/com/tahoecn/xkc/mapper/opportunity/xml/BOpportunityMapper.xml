@@ -491,10 +491,10 @@
 		from B_Opportunity opp
 			inner join B_Clue clue on opp.ClueID = clue.ID
 			inner join B_Project project on opp.ProjectID = project.ID
-			inner join S_Dictionary dict on clue.AdviserGroupID = dict.ID
+			left join S_Dictionary dict on clue.AdviserGroupID = dict.ID
 			inner join S_Organization city on project.BUGUID = city.ID
 			inner join S_Organization area on area.ID = city.PID
-			inner join B_ClueRule clueRule on clueRule.ID = clue.RuleID
+			left join B_ClueRule clueRule on clueRule.ID = clue.RuleID
 		where
 			opp.ID = #{id}
 	</select>

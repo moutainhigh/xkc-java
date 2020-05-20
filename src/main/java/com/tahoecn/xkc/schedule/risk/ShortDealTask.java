@@ -3,7 +3,11 @@ package com.tahoecn.xkc.schedule.risk;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.core.date.DateUtil;
 import com.tahoecn.xkc.common.utils.RiskBatchLogUtils;
-import com.tahoecn.xkc.mapper.risk.*;
+import com.tahoecn.xkc.mapper.customer.STrade2CstMapper;
+import com.tahoecn.xkc.mapper.risk.BCustomerattachMapper;
+import com.tahoecn.xkc.mapper.risk.BRiskbatchlogMapper;
+import com.tahoecn.xkc.mapper.risk.BRiskconfigMapper;
+import com.tahoecn.xkc.mapper.risk.BRiskinfoMapper;
 import com.tahoecn.xkc.model.risk.BRiskbatchlog;
 import com.tahoecn.xkc.model.risk.BRiskconfig;
 import com.tahoecn.xkc.model.risk.BRiskinfo;
@@ -38,7 +42,6 @@ public class ShortDealTask {
 
     @Resource
     private STrade2CstMapper sTrade2CstMapper;
-
     @Resource
     private BCustomerattachMapper bCustomerattachMapper;
 
@@ -47,6 +50,7 @@ public class ShortDealTask {
 
     @Transactional
     public void task() {
+
 // 查询是否存在运行中的搜电批任务, 存在直接返回
         List<BRiskbatchlog> runs = this.bRiskbatchlogMapper.selectList(new QueryWrapper<BRiskbatchlog>() {{
             eq("RiskType", 5);
@@ -76,7 +80,7 @@ public class ShortDealTask {
             }}).stream().collect(Collectors.toMap(BRiskconfig::getProjectID, i -> i));
 
             Date startTime = DateUtil.yesterday();
-            if (runs != null && bRiskbatchlogs.size() > 0) {
+            if (bRiskbatchlogs.size() > 0) {
                 startTime = bRiskbatchlogs.get(0).getDataMaxTime();
             }
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.running(bRiskbatchlog));
@@ -87,14 +91,6 @@ public class ShortDealTask {
                         dataMaxTime.set(serchMaxTime(i, dataMaxTime.get()));//获取数据最大时间
                         record(i, bRiskconfigMap);//记录风险数据
                     });
-
-            /*this.bClueMapper.fkSearchMobile(startTime, DateUtil.date()).stream()
-                    .filter(i -> bRiskconfigMap.get(i.get("ProjectID")) != null
-                            && bRiskconfigMap.get(i.get("ProjectID")).getIsSearchMobile() == 1)
-                    .forEach(i -> {
-                        dataMaxTime.set(serchMaxTime(i, dataMaxTime.get()));//获取数据最大时间
-                        record(i, bRiskconfigMap);//记录风险数据
-                    });*/
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.success(bRiskbatchlog, dataMaxTime.get()));
         } catch (Exception e) {
             log.error("fk batcg error : ProtectCustomerTask : {}", e.getMessage());
@@ -103,9 +99,7 @@ public class ShortDealTask {
     }
 
     private void record(Map<String, Object> shortDeal, Map<String, BRiskconfig> bRiskconfigMap) {
-
         Map<String, Object> xsOppGuid = this.bCustomerattachMapper.fkJointNameOrShortDeal(shortDeal.get("xsOppGuid").toString());
-
 
         if (null != xsOppGuid && xsOppGuid.size() > 0 && bRiskconfigMap.containsKey(xsOppGuid.get("ProjectID")) &&
                 bRiskconfigMap.get(xsOppGuid.get("ProjectID")).getIsShortDeal() == 1) {

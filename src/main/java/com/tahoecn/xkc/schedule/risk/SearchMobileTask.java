@@ -53,7 +53,7 @@ public class SearchMobileTask {
     @Resource
     private BOpportunityMapper bOpportunityMapper;
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void task() {
 
         // 查询是否存在运行中的搜电批任务, 存在直接返回

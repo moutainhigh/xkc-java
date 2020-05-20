@@ -37,6 +37,7 @@ public class BRiskNnameLogRunnable extends BaseRunnable {
 
     @Override
     void invoke() throws Exception {
+        if (true) return;
         if (!this.before.getString("CustomerName").equals(this.after.get("Name").toString())) {
             BClue clue = this.bClueMapper.selectById(new BClue() {{
                 setId(before.getString("ClueID"));

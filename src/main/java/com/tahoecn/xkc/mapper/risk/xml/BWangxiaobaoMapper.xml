@@ -2,4 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.risk.BWangxiaobaoMapper">
 
+<!--    List<Map<String, Object>> (@Param("startTime") Date startTime, @Param("endTime") Date endTime);-->
+    <select id="searchFace" parameterType="java.util.Date" resultType="java.util.Map">
+        SELECT
+            opp.ID,
+            opp.ProjectID,
+            opp.ClueID,
+            project.Name,
+            opp.CustomerName,
+            opp.CustomerMobile,
+            opp.Status AS CustomerStatus,
+            dbo.F_GetClueStatusName_xkc (clue.Status, opp.Status) AS CustomerStatusName,
+            clue.ReportUserID,
+            clue.ReportUserName,
+            clue.AdviserGroupID,
+            dict.DictName AS AdviserGroupName,
+            clue.CreateTime AS ReportTime,
+            opp.TheFirstVisitDate,
+            opp.SaleUserID,
+            opp.SaleUserName,
+            city.ID AS CityId,
+            city.OrgName AS CityName,
+            area.ID AS RegionalId,
+            area.OrgName AS RegionalName,
+            clueRule.IsPreIntercept,
+            clueRule.PreInterceptTime,
+            wxb.CreateTime,
+            clue.ReportUserOrg AS OrgId,
+            opp.OpportunitySource,
+            wxb.FirstPhotoTime AS FirstFaceTime
+        FROM
+            B_WangXiaobao wxb
+        INNER JOIN B_Opportunity opp ON wxb.ProjectId = opp.ProjectID
+        INNER JOIN B_Customer cust ON opp.CustomerID = cust.ID AND wxb.IdNumber = cust.CardID
+        INNER JOIN B_Clue clue ON opp.ClueID = clue.ID
+        INNER JOIN B_Project project ON opp.ProjectID = project.ID
+        LEFT JOIN S_Dictionary dict ON clue.AdviserGroupID = dict.ID
+        INNER JOIN S_Organization city ON project.BUGUID = city.ID
+        INNER JOIN S_Organization area ON area.ID = city.PID
+        LEFT JOIN B_ClueRule clueRule ON clueRule.ID = clue.RuleID
+        WHERE
+            wxb.CreateTime BETWEEN #{startTime} AND #{endTime}
+	</select>
+
 </mapper>

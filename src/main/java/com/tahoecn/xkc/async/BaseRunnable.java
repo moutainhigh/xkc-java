@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseRunnable implements Runnable {
 
-    protected final Logger log = LoggerFactory.getLogger(BOpportunityOtherRunnable.class);
+    protected final Logger log = LoggerFactory.getLogger(BaseRunnable.class);
 
     /**
      * @description: 实现抽象类, 实现自己的执行逻辑

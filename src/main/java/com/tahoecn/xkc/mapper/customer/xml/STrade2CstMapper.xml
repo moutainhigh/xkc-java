@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tahoecn.xkc.mapper.risk.STrade2CstMapper">
+<mapper namespace="com.tahoecn.xkc.mapper.customer.STrade2CstMapper">
 
-<!--    List<Map<String, Object>> searchJointName(@Param("startTime") Date startTime, @Param("endTime") Date endTime);-->
-    <select id="searchJointName" parameterType="java.util.Date" resultType="java.util.Map">
-        SELECT * FROM (
+    <select id="searchJointName" resultType="java.util.Map">
+        <![CDATA[
+		SELECT * FROM (
         SELECT DISTINCT
         t.CstGUID,
-        c.CstName,
+        cus.CstName,
         t.xsOppGuid,
         s.RoomGUID,
         p.RoomCode,
         s.QSDate
         FROM
-        s_Trade2Cst t
-        LEFT JOIN s_Order s ON t.TradeGUID = s.TradeGUID
-        LEFT JOIN p_Room p ON s.RoomGUID = p.RoomGUID
-        LEFT JOIN p_Customer c ON t.CstGUID = c.CstGUID
+        dbo.s_Trade2Cst t
+        LEFT JOIN dbo.s_Order s ON t.TradeGUID = s.TradeGUID
+        LEFT JOIN dbo.p_Room p ON s.RoomGUID = p.RoomGUID
+        LEFT JOIN dbo.p_Customer cus ON t.CstGUID = cus.CstGUID
         WHERE
         t.cstnum > 1
         AND s.QSDate BETWEEN #{startTime} AND #{endTime}
@@ -24,9 +24,11 @@
         AND s.Status = '激活'
         ) T
         ORDER BY T.RoomGUID
+        ]]>
 	</select>
 
-    <select id="searchShortDeal" parameterType="java.util.Date" resultType="java.util.Map">
+    <select id="searchShortDeal" resultType="java.util.Map">
+	<![CDATA[
         SELECT
             A.xsOppGuid,
             A.QSDate AS ContractTime,
@@ -36,9 +38,17 @@
         INNER JOIN dbo.s_Order B ON A.TradeGUID = B.TradeGUID
         WHERE
             A.Status = '激活'
-        AND A.QSDate BETWEEN #{ startTime }AND #{ endTime }
         AND A.xsOppGuid IS NOT NULL
+        AND A.QSDate BETWEEN #{ startTime } AND #{ endTime }
+	]]>
 	</select>
 
-
+	<select id="searchShortDeal1" resultType="java.util.Map">
+	<![CDATA[
+        SELECT
+            top 10 *
+        FROM
+            dbo.B_RiskBatchLog
+	]]>
+	</select>
 </mapper>

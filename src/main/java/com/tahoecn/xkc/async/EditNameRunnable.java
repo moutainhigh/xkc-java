@@ -50,6 +50,7 @@ public class EditNameRunnable extends BaseRunnable {
     @Override
     @Transactional
     void invoke() throws Exception {
+        if (true) return;
         //修改姓名日志表
         List<BRisknnamelog> bRisknnamelogs = this.bRisknnamelogMapper.selectList(new QueryWrapper<BRisknnamelog>() {{
             eq("ProjectID", cgwDetailModel.getProjectID());
