@@ -136,8 +136,8 @@
        SELECT
             ID AS projectId,
             Name AS projectName,
-            IsNoAllotRole,
-            AllowDeviceType
+            IsNoAllotRole as isNoAllotRole,
+            AllowDeviceType as allowDeviceType
        FROM
             dbo.B_Project
        WHERE
