@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @DataSource(DataSourceEnum.DB3)
 public class CostomerReportServiceImpl extends ServiceImpl<CostomerReportMapper, CostomerReport> implements ICostomerReportService {
 
-    @DataSource(DataSourceEnum.DB3)
+
     @Override
     public IPage<CostomerReport> page(IPage<CostomerReport> page, Wrapper<CostomerReport> queryWrapper) {
         return super.page(page, queryWrapper);
