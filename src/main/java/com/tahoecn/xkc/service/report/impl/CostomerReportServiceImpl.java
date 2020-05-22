@@ -11,6 +11,7 @@ import com.tahoecn.xkc.common.enums.DataSourceEnum;
 import com.tahoecn.xkc.mapper.report.CostomerReportMapper;
 import com.tahoecn.xkc.model.customer.CostomerReport;
 import com.tahoecn.xkc.service.report.ICostomerReportService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -21,11 +22,11 @@ import com.tahoecn.xkc.service.report.ICostomerReportService;
  * @since 2019-07-31
  */
 @Service
+@Transactional(readOnly = true)
 @DataSource(DataSourceEnum.DB3)
-@DS("s199")
 public class CostomerReportServiceImpl extends ServiceImpl<CostomerReportMapper, CostomerReport> implements ICostomerReportService {
 
-    @DataSource(DataSourceEnum.DB3)
+
     @Override
     public IPage<CostomerReport> page(IPage<CostomerReport> page, Wrapper<CostomerReport> queryWrapper) {
         return super.page(page, queryWrapper);
