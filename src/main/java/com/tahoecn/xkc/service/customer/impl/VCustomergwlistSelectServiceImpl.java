@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tahoecn.xkc.async.BRiskNnameLogRunnable;
 import com.tahoecn.xkc.async.EditNameRunnable;
 import com.tahoecn.xkc.async.ExecutorsUtils;
+import com.tahoecn.xkc.common.constants.AppAssignmentConstants;
 import com.tahoecn.xkc.common.enums.ActionType;
 import com.tahoecn.xkc.common.enums.CustomerModeType;
 import com.tahoecn.xkc.common.enums.MessageHandleType;
@@ -407,13 +408,17 @@ public class VCustomergwlistSelectServiceImpl implements IVCustomergwlistSelectS
 					}
 				}
 				data.put("Token", token);
-				if(data.containsKey("UseMobile")){
-					data.put("UseMobile",data.get("UseMobile")==null ? "": PhoneUtil.setAsterisk((String)data.get("UseMobile"),3,7));
+                //置业顾问、自渠可以看到全号，其他角色隐藏手机号中间4位
+                String JobID = paramAry.getString("JobID");
+                if(!AppAssignmentConstants.PROPERTY_ROLE_ID.equals(JobID) && !AppAssignmentConstants.SINCE_THE_CANAL_ROLE_ID.equals(JobID)) {
+                    if (data.containsKey("UseMobile")) {
+                        data.put("UseMobile", data.get("UseMobile") == null ? "" : PhoneUtil.setAsterisk((String) data.get("UseMobile"), 3, 7));
 
-				}
-				if(data.containsKey("CustomerMobile")){
-					data.put("CustomerMobile",data.get("CustomerMobile")==null ? "" : PhoneUtil.setAsterisk((String)data.get("CustomerMobile"),3,7));
-				}
+                    }
+                    if (data.containsKey("CustomerMobile")) {
+                        data.put("CustomerMobile", data.get("CustomerMobile") == null ? "" : PhoneUtil.setAsterisk((String) data.get("CustomerMobile"), 3, 7));
+                    }
+                }
 
                 // chenghong  白名单start
                 String customerID = (String) data.get("CustomerID");
