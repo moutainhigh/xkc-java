@@ -135,7 +135,9 @@
     <select id="getProject" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
        SELECT
             ID AS projectId,
-            Name AS projectName
+            Name AS projectName,
+            IsNoAllotRole as isNoAllotRole,
+            AllowDeviceType as allowDeviceType
        FROM
             dbo.B_Project
        WHERE

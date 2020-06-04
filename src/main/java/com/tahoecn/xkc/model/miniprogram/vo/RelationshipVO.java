@@ -37,6 +37,34 @@ public class RelationshipVO {
 
     private String channelTypeName;
 
+    private Integer isNoAllotRole;
+    private Integer allowDeviceType;
+    private String ucId;
+
+    public String getUcId() {
+        return ucId;
+    }
+
+    public void setUcId(String ucId) {
+        this.ucId = ucId;
+    }
+
+    public Integer getIsNoAllotRole() {
+        return isNoAllotRole;
+    }
+
+    public void setIsNoAllotRole(Integer isNoAllotRole) {
+        this.isNoAllotRole = isNoAllotRole;
+    }
+
+    public Integer getAllowDeviceType() {
+        return allowDeviceType;
+    }
+
+    public void setAllowDeviceType(Integer allowDeviceType) {
+        this.allowDeviceType = allowDeviceType;
+    }
+
     public String getUserId() {
         return userId;
     }
