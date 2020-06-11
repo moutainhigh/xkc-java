@@ -33,12 +33,8 @@ public class CustomerTask {
     private String ak;
     @Value("${wxb.sk}")
     private String sk;
-    @Value("${wxb.projectId}")
-    private String projectId;
     @Value("${wxb.baseUrl}")
     private String baseUrl;
-    @Value("${wxb.urlCustomerrAdd}")
-    private String urlCustomerrAdd;
     @Value("${bind_host}")
     private String bindHost;
 
@@ -60,7 +56,6 @@ public class CustomerTask {
                 return;
             }
         }
-
         List<Map<String, Object>> customerForSingle = customerMapper.getCustomerForSingle();
 
         if (customerForSingle.size() > 0){
@@ -81,11 +76,9 @@ public class CustomerTask {
                 params.put("ts",ts);
                 params.put("nonce",nonce);
                 params.put("sign",sign);
-                params.put("projectId",projectId);
-                //   params.put("channelCompany","通用规则");
 
                 Object toJSON = JSONObject.toJSON(params);
-                String url = baseUrl + urlCustomerrAdd;
+                String url = baseUrl ;
                 log.info("旺小宝请求地址："+ url);
                 log.info("旺小宝请求参数：" + toJSON.toString());
                 Object result = HttpsUtil.doPost(url, toJSON);
