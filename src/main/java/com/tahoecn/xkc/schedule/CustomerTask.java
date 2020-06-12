@@ -42,9 +42,9 @@ public class CustomerTask {
     @Autowired
     BCustomerMapper customerMapper;
 
-    @Scheduled(cron = "0 18 19 * * ?")
+    @Scheduled(cron = "0 20 19 * * ?")
     public void pushCustomerToWxb(){
-       /* if (StringUtils.isNotBlank(bindHost)) {
+        if (StringUtils.isNotBlank(bindHost)) {
             Boolean flg = false;
             for (String ip : NetUtil.localIpv4s()) {
                 log.info("bind host str={} ,localhost str = {}", bindHost, ip);
@@ -55,7 +55,7 @@ public class CustomerTask {
                 log.info("bind host {} != localhost pullUserInfo scheduled exit! ", bindHost);
                 return;
             }
-        }*/
+        }
         List<Map<String, Object>> customerForSingle = customerMapper.getCustomerForSingle();
 
         if (customerForSingle.size() > 0){
