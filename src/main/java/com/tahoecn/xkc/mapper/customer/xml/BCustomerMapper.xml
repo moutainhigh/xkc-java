@@ -1493,7 +1493,7 @@ FROM (
 	</select>
 
     <select id="getCustomerForSingle" resultType="java.util.HashMap">
-        select projectId,name,mobile,idNumber,salerName,firstReadTime,reportTime,RTrim(channelCompany) channelCompany,finishTime,finishNo
+        select projectId,name,mobile,idNumber,salerName,firstReadTime,reportTime,RTrim(channelCompany) channelCompany,agent,finishTime,finishNo
         from V_CustomerForSingle order by ReportTime
     </select>
 </mapper>
