@@ -42,7 +42,7 @@ public class CustomerTask {
     @Autowired
     BCustomerMapper customerMapper;
 
-    @Scheduled(cron = "0 20 19 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void pushCustomerToWxb(){
         if (StringUtils.isNotBlank(bindHost)) {
             Boolean flg = false;
