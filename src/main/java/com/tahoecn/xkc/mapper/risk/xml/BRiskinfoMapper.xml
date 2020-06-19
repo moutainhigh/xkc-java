@@ -2,4 +2,123 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tahoecn.xkc.mapper.risk.BRiskinfoMapper">
 
+    <select id="findNot46Bloc" resultType="com.tahoecn.xkc.model.risk.BRiskinfo">
+       SELECT
+			*
+		FROM
+			B_RiskInfo
+		WHERE
+            RiskType not in (4,6)
+        <if test="regionalId != null and '' != regionalId">
+            and RegionalId = #{regionalId}
+        </if>
+        <if test="cityId != null and '' != cityId">
+            and CityId = #{cityId}
+        </if>
+        <if test="projectId != null and '' != projectId">
+            and ProjectId = #{projectId}
+        </if>
+        <if test="startTime != null and endTime != null">
+            and CreateTime between  #{startTime} and  #{endTime}
+        </if>
+    </select>
+
+    <select id="find6Bloc" resultType="com.tahoecn.xkc.model.risk.BRiskinfo">
+        SELECT
+        *
+        FROM
+        B_RiskInfo
+        WHERE
+        RiskType = 6
+        <if test="regionalId != null and '' != regionalId">
+            and RegionalId = #{regionalId}
+        </if>
+        <if test="cityId != null and '' != cityId">
+            and CityId = #{cityId}
+        </if>
+        <if test="projectId != null and '' != projectId">
+            and ProjectId = #{projectId}
+        </if>
+        <if test="startTime != null and endTime != null">
+            and CreateTime between  #{startTime} and  #{endTime}
+        </if>
+    </select>
+
+
+    <select id="listExport" parameterType="com.tahoecn.xkc.model.risk.vo.TiskInfoFindVO" resultType="java.util.Map">
+        SELECT
+        *
+        FROM
+        B_RiskInfo
+        WHERE
+        <choose>
+            <when test="null != riskType">
+                RiskType = #{riskType}
+            </when>
+            <otherwise>
+                RiskType != 6
+            </otherwise>
+        </choose>
+
+        <if test="userName != null and '' != userName">
+            and CustomerName like %#{userName}%
+        </if>
+        <if test="saleUserName != null and '' != saleUserName">
+            and SaleUserName like %#{saleUserName}%
+        </if>
+
+        <if test="adviserGroupID != null and '' != adviserGroupID">
+            and AdviserGroupID = #{adviserGroupID}
+        </if>
+
+        <if test="customerMobile != null and '' != customerMobile">
+            and CustomerMobile = #{customerMobile}
+        </if>
+
+        <if test="reportUserName != null and '' != reportUserName">
+            and ReportUserName like %#{reportUserName}%
+        </if>
+
+        <if test="customerStatus != null and '' != customerStatus">
+            and CustomerStatus = #{customerStatus}
+        </if>
+
+        <if test="startTime != null and endTime != null">
+            and CreateTime between  #{startTime} and  #{endTime}
+        </if>
+
+        <if test="regionalId != null and '' != regionalId">
+            and RegionalId = #{regionalId}
+        </if>
+
+        <if test="cityId != null and '' != cityId">
+            and CityId = #{cityId}
+        </if>
+
+        <if test="projectId != null and '' != projectId">
+            and ProjectId = #{projectId}
+        </if>
+    </select>
+
+    <select id="findNot6Bloc" resultType="com.tahoecn.xkc.model.risk.BRiskinfo">
+        SELECT
+        *
+        FROM
+        B_RiskInfo
+        WHERE
+        RiskType != 6
+        <if test="regionalId != null and '' != regionalId">
+            and RegionalId = #{regionalId}
+        </if>
+        <if test="cityId != null and '' != cityId">
+            and CityId = #{cityId}
+        </if>
+        <if test="projectId != null and '' != projectId">
+            and ProjectId = #{projectId}
+        </if>
+        <if test="startTime != null and endTime != null">
+            and CreateTime between  #{startTime} and  #{endTime}
+        </if>
+    </select>
+
 </mapper>

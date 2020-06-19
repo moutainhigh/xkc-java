@@ -70,12 +70,12 @@ public class RelationshipServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
         // 置业顾问/自渠人员/负责人等
         List<RelationshipVO> dataList1 = relationshipMapper.getOrgPerson1(relationshipVO.getProjectId());
         // 中介同行
-        List<RelationshipVO> dataList2 = relationshipMapper.getOrgPerson2(relationshipVO.getProjectId());
+        /*List<RelationshipVO> dataList2 = relationshipMapper.getOrgPerson2(relationshipVO.getProjectId());
         // 自由经纪
-        List<RelationshipVO> dataList3 = relationshipMapper.getOrgPerson3();
+        List<RelationshipVO> dataList3 = relationshipMapper.getOrgPerson3();*/
         result.addAll(dataList1);
-        result.addAll(dataList2);
-        result.addAll(dataList3);
+        /*result.addAll(dataList2);
+        result.addAll(dataList3);*/
         sysAccessRecord.setInterfaceState("0");
         sysAccessRecord.setReason("成功");
         sysAccessRecordMapper.insert(sysAccessRecord);
@@ -83,10 +83,10 @@ public class RelationshipServiceImpl extends ServiceImpl<BChanneluserMapper, BCh
     }
 
     @Override
-    public JSONResult getProject(HttpServletRequest request) throws Exception {
+    public JSONResult getProject(HttpServletRequest request, RelationshipVO relationshipVO) throws Exception {
         // 记录接口访问信息
         SysAccessRecord sysAccessRecord = sysAccessRecordService.getSysAccessRecord(request);
-        List<RelationshipVO> list = relationshipMapper.getProject();
+        List<RelationshipVO> list = relationshipMapper.getProject(relationshipVO);
         sysAccessRecord.setInterfaceState("0");
         sysAccessRecord.setReason("成功");
         sysAccessRecordMapper.insert(sysAccessRecord);

@@ -133,6 +133,12 @@ public class BRiskinfo implements Serializable {
     @TableField("JointNameMasterId")
     private String JointNameMasterId;
 
+    @TableField("ImgPath")
+    private String ImgPath;
+
+    @TableField("PreInterceptTime")
+    private Integer PreInterceptTime;
+
     public String getId() {
         return id;
     }
@@ -429,6 +435,23 @@ public class BRiskinfo implements Serializable {
         JointNameMasterId = jointNameMasterId;
     }
 
+
+    public String getImgPath() {
+        return ImgPath;
+    }
+
+    public void setImgPath(String ImgPath) {
+        this.ImgPath = ImgPath;
+    }
+
+    public Integer getPreInterceptTime() {
+        return PreInterceptTime;
+    }
+
+    public void setPreInterceptTime(Integer preInterceptTime) {
+        PreInterceptTime = preInterceptTime;
+    }
+
     @Override
     public String toString() {
         return "BRiskinfo{" +
@@ -468,7 +491,8 @@ public class BRiskinfo implements Serializable {
                 ", OpportunitySource=" + OpportunitySource +
                 ", ProjectProtectCustomerTime=" + ProjectProtectCustomerTime +
                 ", RiskProtectCustomerTime=" + RiskProtectCustomerTime +
-                ", JointNameMasterId=" + JointNameMasterId +
+                ", ImgPath=" + ImgPath +
+                ", PreInterceptTime=" + PreInterceptTime +
                 "}";
     }
 }

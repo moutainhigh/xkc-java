@@ -161,6 +161,9 @@ public class SDictionaryController extends TahoeBaseController {
 //    }
 
 
-
+    @RequestMapping(value = "/riskAdviserGroup", method = {RequestMethod.GET})
+    public Result riskAdviserGroup(){
+        return Result.ok(dictionaryService.riskAdviserGroup());
+    }
 
 }

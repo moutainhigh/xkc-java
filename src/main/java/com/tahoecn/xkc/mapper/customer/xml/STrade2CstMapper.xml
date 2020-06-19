@@ -11,17 +11,18 @@
         t.xsOppGuid,
         s.RoomGUID,
         p.RoomCode,
-        s.QSDate
+        s.QSDate,
+		t.IsMainLinkMan
         FROM
-        dbo.s_Trade2Cst t
-        LEFT JOIN dbo.s_Order s ON t.TradeGUID = s.TradeGUID
-        LEFT JOIN dbo.p_Room p ON s.RoomGUID = p.RoomGUID
-        LEFT JOIN dbo.p_Customer cus ON t.CstGUID = cus.CstGUID
+        MY.dotnet_erp25.dbo.s_Trade2Cst t
+        LEFT JOIN MY.dotnet_erp25.dbo.s_Order s ON t.TradeGUID = s.TradeGUID
+        LEFT JOIN MY.dotnet_erp25.dbo.p_Room p ON s.RoomGUID = p.RoomGUID
+        LEFT JOIN MY.dotnet_erp25.dbo.p_Customer cus ON t.CstGUID = cus.CstGUID
         WHERE
-        t.cstnum > 1
+        t.TradeGUID IN (SELECT sT2C.TradeGUID FROM MY.dotnet_erp25.dbo.s_Trade2Cst sT2C WHERE sT2C.CstNum>1)
         AND s.QSDate BETWEEN #{startTime} AND #{endTime}
         AND t.xsOppGuid IS NOT NULL
-        AND s.Status = '激活'
+        AND (s.Status = '激活' OR (s.Status='关闭' AND s.CloseReason='转签约'))
         ) T
         ORDER BY T.RoomGUID
         ]]>
@@ -34,8 +35,8 @@
             A.QSDate AS ContractTime,
             B.QSDate AS SubscribeTime
         FROM
-            dbo.s_Contract A
-        INNER JOIN dbo.s_Order B ON A.TradeGUID = B.TradeGUID
+            MY.dotnet_erp25.dbo.s_Contract A
+        INNER JOIN MY.dotnet_erp25.dbo.s_Order B ON A.TradeGUID = B.TradeGUID
         WHERE
             A.Status = '激活'
         AND A.xsOppGuid IS NOT NULL
@@ -43,12 +44,55 @@
 	]]>
 	</select>
 
-	<select id="searchShortDeal1" resultType="java.util.Map">
+	<select id="agreement" resultType="java.util.Map">
 	<![CDATA[
         SELECT
-            top 10 *
-        FROM
-            dbo.B_RiskBatchLog
+			Aa.CloseReason,
+			Bb.CstName,
+			Bb.CardID,
+			Cc.Room,
+			Cc.RoomCode,
+			Aa.Status,
+			Aa.BldArea,
+			Aa.QSDate AS ContractTime,
+            D.QSDate AS SubscribeTime
+		FROM
+			MY.dotnet_erp25.dbo.s_Contract Aa
+		INNER JOIN MY.dotnet_erp25.dbo.p_Customer Bb ON Aa.CstGUID = Bb.CstGUID
+		INNER JOIN MY.dotnet_erp25.dbo.p_Room Cc ON Aa.RoomGUID = Cc.RoomGUID
+		INNER JOIN MY.dotnet_erp25.dbo.s_Order D ON Aa.TradeGUID = D.TradeGUID
+		WHERE
+			Aa.xsOppGuid = #{attachId}
+			AND Aa.Status = '激活'
+	]]>
+	</select>
+
+	<select id="subscribe" resultType="java.util.Map">
+	<![CDATA[
+        SELECT
+			A.CloseReason,
+			B.CstName,
+			B.CardID,
+			Cc.Room,
+			Cc.RoomCode,
+			A.Status,
+			A.OrderType,
+			A.BldArea,
+			A.QSDate
+		FROM
+			MY.dotnet_erp25.dbo.s_Trade D
+		INNER JOIN MY.dotnet_erp25.dbo.s_Order A ON D.TradeGUID = A.TradeGUID
+		INNER JOIN MY.dotnet_erp25.dbo.p_Customer B ON A.CstGUID = B.CstGUID
+		INNER JOIN MY.dotnet_erp25.dbo.p_Room Cc ON A.RoomGUID = Cc.RoomGUID
+		WHERE
+			D.OppGUID = #{attachId}
+		AND (
+			A.Status = '激活'
+			OR (
+				A.Status = '关闭'
+				OR A.CloseReason = '转签约'
+			)
+		)
 	]]>
 	</select>
 </mapper>

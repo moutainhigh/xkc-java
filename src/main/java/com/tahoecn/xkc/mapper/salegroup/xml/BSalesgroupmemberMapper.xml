@@ -136,4 +136,25 @@
 	                AND A.IsDel = 0
 	                AND A.RoleID = '0269F35E-B32D-4D12-8496-4E6E4CE597B7'
     </select>
+
+<!--    置业顾问 自渠-->
+    <select id="findSaleGroupName" resultType="java.util.Map">
+    SELECT A.MemberID,B.ID,B.Name,
+    CASE B.Nature
+    WHEN '1' THEN '自销'
+    WHEN '2' THEN '代理'
+    WHEN '3' THEN '外展'
+    WHEN '4' THEN '外呼'
+    WHEN '5' THEN '拦截'
+    WHEN '6' THEN '圈层'
+    WHEN '7' THEN '外拓'
+    END ChannelType
+    FROM dbo.B_SalesGroupMember A
+    INNER JOIN dbo.B_SalesGroup B ON A.ReceptionGroupID=B.ID
+    WHERE A.MemberID=#{id}
+    AND A.ProjectID=#{projectId}
+    AND A.IsDel=0
+    </select>
+
+
 </mapper>

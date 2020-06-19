@@ -631,15 +631,77 @@
         --某段时间报备的数据,排除掉顾问报备的数据
         SELECT
         opp.ID as OpportunityID,
-        opp.ProjectID,
+        clue.ID AS ClueID,
+        (CASE WHEN ISNULL(opp.ProjectID,'')='' THEN clue.IntentProjectID ELSE opp.ProjectID END) ProjectID,
         clue.CreateTime as ReportTime,
-        opp.CustomerMobile,
+        (CASE WHEN ISNULL(opp.CustomerMobile,'')='' THEN clue.Mobile ELSE opp.CustomerMobile END) CustomerMobile
         FROM dbo.B_Clue clue
-        LEFT JOIN dbo.B_Opportunity opp ON clue.ID=opp.ClueID opp.IsDel=0
+        LEFT JOIN dbo.B_Opportunity opp ON clue.ID=opp.ClueID and opp.IsDel=0
         WHERE
         clue.Status IN (1,2) AND clue.IsDel=0--只查询有效的线索
         AND clue.CreateTime between #{startTime} and #{endTime}
-        AND (clue.ReportUserID IS NULL OR clue.ReportUserID='')--排除掉置业顾问报备的数据
+        AND (clue.ReportUserID IS NOT NULL AND clue.ReportUserID!='')--排除掉置业顾问报备的数据
     </select>
+
+
+    <select id="fkSearchInfo" parameterType="java.lang.String" resultType="java.util.Map">
+		select
+			opp.ID,
+			(CASE WHEN ISNULL(opp.ProjectID,'')='' THEN clue.IntentProjectID ELSE opp.ProjectID END) ProjectID,
+			clue.ID ClueID,
+			project.Name,
+			(CASE WHEN ISNULL(opp.CustomerName,'')='' THEN clue.Name ELSE opp.CustomerName END) CustomerName,
+			(CASE WHEN ISNULL(opp.CustomerMobile,'')='' THEN clue.Mobile ELSE opp.CustomerMobile END) CustomerMobile,
+			(CASE WHEN ISNULL(opp.Status,'')='' THEN clue.Status ELSE opp.Status END) CustomerStatus,
+			dbo.F_GetClueStatusName_xkc(clue.Status,opp.Status) as CustomerStatusName,
+			clue.ReportUserID,
+			clue.ReportUserName,
+			clue.AdviserGroupID,
+			dict.DictName as AdviserGroupName,
+			clue.CreateTime as ReportTime,
+			opp.TheFirstVisitDate,
+			opp.SaleUserID,
+			opp.SaleUserName,
+			city.ID as CityId,
+			city.OrgName as CityName,
+			area.ID as RegionalId,
+			area.OrgName as RegionalName,
+			clueRule.IsPreIntercept,
+			clueRule.PreInterceptTime,
+			opp.CreateTime,
+			clue.ReportUserOrg as OrgId,
+			(CASE WHEN ISNULL(opp.OpportunitySource,'')='' THEN clue.SourceType ELSE opp.OpportunitySource END) OpportunitySource
+		from B_Clue clue
+			left join B_Opportunity opp on clue.ID = opp.ClueID
+			inner join B_Project project on clue.IntentProjectID = project.ID
+			left join S_Dictionary dict on clue.AdviserGroupID = dict.ID
+			inner join S_Organization city on project.BUGUID = city.ID
+			inner join S_Organization area on area.ID = city.PID
+			left join B_ClueRule clueRule on clueRule.ID = clue.RuleID
+		where
+			clue.ID = #{id}
+	</select>
+
+
+    <!--查当前的置业顾问和报备人-->
+    <select id="fkSearchCurrentInfo" parameterType="java.lang.String" resultType="java.util.Map">
+	    SELECT
+			clue.ReportUserID,
+			clue.ReportUserName,
+			opp.SaleUserID,
+			opp.SaleUserName,
+			org.OrgName,
+		    org.ID OrgID,
+			dbo.F_GetDictionaryName(clue.AdviserGroupID) as adviserGroupName
+		FROM
+			B_Clue clue
+		LEFT JOIN B_Opportunity opp ON opp.ClueID = clue.ID
+		LEFT JOIN B_ChannelOrg org on clue.ReportUserOrg = org.ID
+		WHERE
+			clue.Mobile = #{mobile}
+			AND clue.IntentProjectID = #{projectId}
+			AND clue.IsDel = 0
+			AND clue.Status in (1,2)
+	</select>
 
 </mapper>

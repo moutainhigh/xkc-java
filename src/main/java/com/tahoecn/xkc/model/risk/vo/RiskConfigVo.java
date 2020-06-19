@@ -41,6 +41,16 @@ public class RiskConfigVo implements Serializable {
     private Integer isShortDeal;
     //短期成交周期/小时
     private Integer shortDealTime;
+    //认筹未刷证 0禁用 1启用
+    private Integer isUnverified;
+
+    public Integer getIsUnverified() {
+        return isUnverified;
+    }
+
+    public void setIsUnverified(Integer isUnverified) {
+        this.isUnverified = isUnverified;
+    }
 
     public String getId() {
         return id;

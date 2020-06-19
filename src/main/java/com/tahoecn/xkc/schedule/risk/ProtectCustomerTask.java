@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.schedule.risk;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tahoecn.core.date.DateField;
 import com.tahoecn.core.date.DateUtil;
 import com.tahoecn.xkc.common.utils.RiskBatchLogUtils;
 import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
@@ -10,6 +11,7 @@ import com.tahoecn.xkc.mapper.risk.BRiskinfoMapper;
 import com.tahoecn.xkc.model.risk.BRiskbatchlog;
 import com.tahoecn.xkc.model.risk.BRiskconfig;
 import com.tahoecn.xkc.model.risk.BRiskinfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -71,31 +73,32 @@ public class ProtectCustomerTask {
                 eq("Type", 1);
                 eq("IsDel", 0);
                 eq("Status", 1);
-            }}).stream().collect(Collectors.toMap(BRiskconfig::getProjectID, i -> i));
+            }}).stream().collect(Collectors.toMap(i -> i.getProjectID().toUpperCase(), i -> i));
 
             Date startTime = DateUtil.yesterday();
-            if (runs != null && bRiskbatchlogs.size() > 0) {
+            if (runs != null && bRiskbatchlogs.size() > 0 && null != bRiskbatchlogs.get(0).getDataMaxTime()) {
                 startTime = bRiskbatchlogs.get(0).getDataMaxTime();
             }
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.running(bRiskbatchlog));
-            AtomicReference<Date> dataMaxTime = new AtomicReference<>(DateUtil.date());
+            AtomicReference<Date> dataMaxTime = new AtomicReference<>(startTime);
             this.bOpportunityMapper.fkProtectCustomer(startTime, DateUtil.date()).stream()
-                    .filter(i -> bRiskconfigMap.get(i.get("ProjectID")) != null
-                            && bRiskconfigMap.get(i.get("ProjectID")).getIsProtectCustomer() == 1)
+                    .filter(i -> StringUtils.isNotEmpty((String)i.get("ProjectID")) &&
+                            bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()) != null
+                            && bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()).getIsProtectCustomer() == 1)
                     .forEach(i -> {
-                        dataMaxTime.set(serchMaxTime(i, dataMaxTime.get()));//获取数据最大时间
                         record(i, bRiskconfigMap);//记录风险数据
+                        dataMaxTime.set(serchMaxTime(i, dataMaxTime.get()));//获取数据最大时间
                     });
-            this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.success(bRiskbatchlog, dataMaxTime.get()));
+            this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.success(bRiskbatchlog, DateUtil.offset(dataMaxTime.get(), DateField.SECOND, 1)));
         } catch (Exception e) {
-            log.error("fk batcg error : ProtectCustomerTask : {}" , e.getMessage());
+            log.error("fk batcg error : ProtectCustomerTask : {}", e.getMessage());
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.failure(bRiskbatchlog, e.getMessage()));
         }
     }
 
     private Date serchMaxTime(Map<String, Object> i, Date date) {
         Date result = (Date) i.get("CreateTime");
-        if (date != null) {
+        if (null != date) {
             result = result.getTime() > date.getTime() ? result : date;
         }
         return result;
@@ -113,45 +116,46 @@ public class ProtectCustomerTask {
         //报备时间
         long reportTime = ((Date) i.get("ReportTime")).getTime();
         //风控防截客时间
-        long riskInterceptTime = bRiskconfigMap.get(i.get("ProjectID")).getProtectTime();
+        long riskInterceptTime = bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()).getProtectTime();
 
         if (((theFirstVisitDate - reportTime) > (preInterceptTime * 60 * 1000)) &&
                 ((theFirstVisitDate - reportTime) <= ((preInterceptTime + riskInterceptTime) * 60 * 1000))) {
             int finalPreInterceptTime = preInterceptTime;
             bRiskinfoMapper.insert(new BRiskinfo() {{
                 setId(UUID.randomUUID().toString());
-                setRiskConfigId(bRiskconfigMap.get(i.get("ProjectID")).getId());
-                setRegionalId((String)i.get("RegionalId"));
-                setRegionalName((String)i.get("RegionalName"));
-                setCityId((String)i.get("CityId"));
-                setCityName((String)i.get("CityName"));
-                setProjectId((String)i.get("ProjectID"));
-                setProjectName((String)i.get("Name"));
+                setRiskConfigId(bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()).getId());
+                setRegionalId((String) i.get("RegionalId"));
+                setRegionalName((String) i.get("RegionalName"));
+                setCityId((String) i.get("CityId"));
+                setCityName((String) i.get("CityName"));
+                setProjectId((String) i.get("ProjectID"));
+                setProjectName((String) i.get("Name"));
                 setRiskType(0);
                 setCreateTime(DateUtil.date());
-                setClueId((String)i.get("ClueID"));
-                setOpportunityId((String)i.get("ID"));
-                setCustomerName((String)i.get("CustomerName"));
-                setCustomerMobile((String)i.get("CustomerMobile"));
-                setCustomerStatus(i.get("CustomerStatus") != null ? Integer.valueOf(i.get("CustomerStatus").toString()): null);
-                setCustomerStatusName((String)i.get("CustomerStatusName"));
-                setReportUserID((String)i.get("ReportUserID"));
-                setReportUserName((String)i.get("ReportUserName"));
-                setAdviserGroupID((String)i.get("AdviserGroupID"));
-                setAdviserGroupName((String)i.get("AdviserGroupName"));
+                setClueId((String) i.get("ClueID"));
+                setOpportunityId((String) i.get("ID"));
+                setCustomerName((String) i.get("CustomerName"));
+                setCustomerMobile((String) i.get("CustomerMobile"));
+                setCustomerStatus(i.get("CustomerStatus") != null ? Integer.valueOf(i.get("CustomerStatus").toString()) : null);
+                setCustomerStatusName((String) i.get("CustomerStatusName"));
+                setReportUserID((String) i.get("ReportUserID"));
+                setReportUserName((String) i.get("ReportUserName"));
+                setAdviserGroupID((String) i.get("AdviserGroupID"));
+                setAdviserGroupName((String) i.get("AdviserGroupName"));
                 setReportTime((Date) i.get("ReportTime"));
                 setTheFirstVisitDate((Date) i.get("TheFirstVisitDate"));
-                setSaleUserID((String)i.get("SaleUserID"));
-                setSaleUserName((String)i.get("SaleUserName"));
-                setOrgId((String)i.get("OrgId"));
-                setOpportunitySource((String)i.get("OpportunitySource"));
+                setSaleUserID((String) i.get("SaleUserID"));
+                setSaleUserName((String) i.get("SaleUserName"));
+                setOrgId((String) i.get("OrgId"));
+                setOpportunitySource((String) i.get("OpportunitySource"));
                 setProjectProtectCustomerTime(DateUtil.date(reportTime + (finalPreInterceptTime * 60 * 1000)));
                 setRiskProtectCustomerTime(DateUtil.date(reportTime + (finalPreInterceptTime * 60 * 1000) + (riskInterceptTime * 60 * 1000)));
+                setPreInterceptTime(finalPreInterceptTime);
                 setRiskDesc(
                         new StringBuilder("存在防截客风险, 项目防截客时间为:")
                                 .append(i.get("PreInterceptTime"))
                                 .append(", 风控防截客时间为:")
-                                .append(bRiskconfigMap.get(i.get("ProjectID")).getProtectTime())
+                                .append(bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()).getProtectTime())
                                 .append(". 报备时间为:{")
                                 .append(DateUtil.formatDateTime((Date) i.get("ReportTime")))
                                 .append("}, 到访时间为:{")

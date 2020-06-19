@@ -426,7 +426,7 @@
 			opp.CustomerName,
 			opp.CustomerMobile,
 			opp.Status as CustomerStatus,
-			dbo.F_GetClueStatusName_xkc(clue.Status,opp.Status) as CustomerStatusName,
+			dbo.F_GetStatusName_xkc(opp.Status) as CustomerStatusName,
 			clue.ReportUserID,
 			clue.ReportUserName,
 			clue.AdviserGroupID,
@@ -470,7 +470,7 @@
 			opp.CustomerName,
 			opp.CustomerMobile,
 			opp.Status as CustomerStatus,
-			dbo.F_GetClueStatusName_xkc(clue.Status,opp.Status) as CustomerStatusName,
+			dbo.F_GetStatusName_xkc(opp.Status) as CustomerStatusName,
 			clue.ReportUserID,
 			clue.ReportUserName,
 			clue.AdviserGroupID,
@@ -498,4 +498,65 @@
 		where
 			opp.ID = #{id}
 	</select>
+
+<!--查当前的置业顾问和报备人-->
+	<select id="fkSearchCurrentInfo" parameterType="java.lang.String" resultType="java.util.Map">
+		SELECT
+			clue.ReportUserID,
+			clue.ReportUserName,
+			opp.SaleUserID,
+			opp.SaleUserName,
+			org.OrgName,
+		    org.ID OrgID,
+			dbo.F_GetDictionaryName(clue.AdviserGroupID) as adviserGroupName
+		FROM
+			B_Opportunity opp
+		INNER JOIN B_Clue clue ON opp.ClueID = clue.ID
+		LEFT JOIN B_ChannelOrg org on clue.ReportUserOrg = org.ID
+		WHERE
+			opp.CustomerMobile = #{mobile}
+			AND opp.ProjectID = #{projectId}
+			AND opp.IsDel = 0
+	</select>
+
+	<select id="fkSearchFaceInfo" resultType="java.util.Map">
+		SELECT
+			opp.ID,
+			opp.ProjectID,
+			opp.ClueID,
+			project.Name,
+			opp.CustomerName,
+			opp.CustomerMobile,
+			opp.Status AS CustomerStatus,
+			dbo.F_GetClueStatusName_xkc (clue.Status, opp.Status) AS CustomerStatusName,
+			clue.ReportUserID,
+			clue.ReportUserName,
+			clue.AdviserGroupID,
+			dict.DictName AS AdviserGroupName,
+			clue.CreateTime AS ReportTime,
+			opp.TheFirstVisitDate,
+			opp.SaleUserID,
+			opp.SaleUserName,
+			city.ID AS CityId,
+			city.OrgName AS CityName,
+			area.ID AS RegionalId,
+			area.OrgName AS RegionalName,
+			clueRule.IsPreIntercept,
+			clueRule.PreInterceptTime,
+			clue.ReportUserOrg AS OrgId,
+			opp.OpportunitySource
+		FROM
+			B_Opportunity opp
+		INNER JOIN B_Customer cust ON opp.CustomerID = cust.ID
+		INNER JOIN B_Clue clue ON opp.ClueID = clue.ID
+		INNER JOIN B_Project project ON opp.ProjectID = project.ID
+		LEFT JOIN S_Dictionary dict ON clue.AdviserGroupID = dict.ID
+		INNER JOIN S_Organization city ON project.BUGUID = city.ID
+		INNER JOIN S_Organization area ON area.ID = city.PID
+		LEFT JOIN B_ClueRule clueRule ON clueRule.ID = clue.RuleID
+		WHERE
+			opp.ProjectID = #{projectId}
+		AND cust.CardID = #{cardId}
+	</select>
+
 </mapper>

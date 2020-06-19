@@ -5,6 +5,7 @@ import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.common.enums.TipsEnum;
 import com.tahoecn.xkc.common.utils.ResultUtil;
 import com.tahoecn.xkc.controller.TahoeBaseController;
+import com.tahoecn.xkc.model.risk.vo.RiskConfigProjectVO;
 import com.tahoecn.xkc.model.risk.vo.RiskConfigVo;
 import com.tahoecn.xkc.service.risk.IBRiskconfigService;
 import io.swagger.annotations.Api;
@@ -107,6 +108,28 @@ public class BRiskconfigController extends TahoeBaseController {
                 return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), "flag不能为空并且必须为true");
             }
             return this.service.release(request);
+        } catch (Exception e) {
+            //记录错误日志
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
+
+    /**
+     * @description: 风控配置项目列表
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/6/6 11:25
+     */
+    @ApiOperation(value = "风控配置项目列表", httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "vo", value = "风控项目列表配置查询vo",
+                    paramType = "query", required = true, dataType = "RiskConfigProjectVO")
+    })
+    @PostMapping(value = "/projectList")
+    public JSONResult projectList(HttpServletRequest request, @RequestBody RiskConfigProjectVO vo) {
+        try {
+            return this.service.projectList(request, vo);
         } catch (Exception e) {
             //记录错误日志
             e.printStackTrace();

@@ -132,7 +132,8 @@
             AND A.IsDel= 0
     </select>
 
-    <select id="getProject" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
+    <select id="getProject" resultType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"
+            parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO">
        SELECT
             ID AS projectId,
             Name AS projectName,
@@ -143,6 +144,9 @@
        WHERE
             LEVEL = 1
             AND Category =1
+            <if test="projectId != null and projectId != '' ">
+                AND ID = #{projectId}
+            </if>
     </select>
 
     <select id="getRole" parameterType="com.tahoecn.xkc.model.miniprogram.vo.RelationshipVO"

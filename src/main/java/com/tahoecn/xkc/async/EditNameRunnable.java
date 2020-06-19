@@ -50,8 +50,7 @@ public class EditNameRunnable extends BaseRunnable {
     @Override
     @Transactional
     void invoke() throws Exception {
-        if (true) return;
-        //修改姓名日志表
+        //修改姓名日志表/mCustomerSubscribeDetail_Insert
         List<BRisknnamelog> bRisknnamelogs = this.bRisknnamelogMapper.selectList(new QueryWrapper<BRisknnamelog>() {{
             eq("ProjectID", cgwDetailModel.getProjectID());
             eq("CustomerMobile", cgwDetailModel.getUseMobile());
@@ -68,14 +67,16 @@ public class EditNameRunnable extends BaseRunnable {
         if (null != bRisknnamelogs && null != bRiskconfig && bRiskconfig.getIsEditName() == 1
                 && bRisknnamelogs.size() > 0 && bRiskconfig.getEditNameCount() > 0
                 && bRisknnamelogs.size() >= bRiskconfig.getEditNameCount()) {
-            boolean flag = true;
+            boolean flag = false;
             long count = bRisknnamelogs.size();
             long surnameCount = bRisknnamelogs.stream().
                     filter(i -> !i.getCustomerOldName().substring(0, 1).equals(i.getCustomerNewName().substring(0, 1))).
                     count();
-            if (bRiskconfig.getEditNameType() == 0 && surnameCount < bRiskconfig.getEditNameCount()) {
+            if (bRiskconfig.getEditNameType() == 0 && surnameCount >= bRiskconfig.getEditNameCount()) {
                 count = surnameCount;
-                flag = false;
+                flag = true;
+            } else if (surnameCount >= bRiskconfig.getEditNameCount()) {
+                flag = true;
             }
             if (flag) {
                 Map<String, Object> result = bOpportunityMapper.fkSearchInfo(cgwDetailModel.getOpportunityID());

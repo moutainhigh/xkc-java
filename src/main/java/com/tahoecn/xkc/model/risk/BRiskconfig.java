@@ -64,6 +64,9 @@ public class BRiskconfig implements Serializable, Cloneable {
     @TableField("ShortDealTime")
     private Integer ShortDealTime;
 
+    @TableField("IsUnverified")
+    private Integer IsUnverified;
+
     @TableField("Creator")
     private String Creator;
 
@@ -186,6 +189,15 @@ public class BRiskconfig implements Serializable, Cloneable {
 
     public void setShortDealTime(Integer ShortDealTime) {
         this.ShortDealTime = ShortDealTime;
+    }
+
+
+    public Integer getIsUnverified() {
+        return IsUnverified;
+    }
+
+    public void setIsUnverified(Integer IsUnverified) {
+        this.IsUnverified = IsUnverified;
     }
 
     public String getCreator() {

@@ -29,4 +29,22 @@ public interface STrade2CstMapper {
     @DataSource(DataSourceEnum.DB2)
     List<Map<String, Object>> searchShortDeal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    /**
+     * @description: 签约
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/25 10:52
+     */
+//    @DataSource(DataSourceEnum.DB2)
+    List<Map<String, Object>> agreement(@Param("attachId") String attachId);
+
+    /**
+     * @description: 认购
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/25 10:52
+     */
+//    @DataSource(DataSourceEnum.DB2)
+    List<Map<String, Object>> subscribe(@Param("attachId") String attachId);
+
 }

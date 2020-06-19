@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tahoecn.xkc.mapper.risk.BWxbriskcountMapper">
+    <select id="one" resultType="com.tahoecn.xkc.model.risk.BWxbriskcount">
+        SELECT
+        top 1 *
+        FROM
+        B_WxbRiskCount
+    </select>
+
+    <select id="pageList" parameterType="com.tahoecn.xkc.model.risk.vo.WxbRiskStatisticalPageVO" resultType="java.util.Map">
+        SELECT
+        TOP ${pageSize}
+        RegionalId,
+        CityId,
+        ProjectId,
+        ChannelCompany
+        FROM
+        (
+        SELECT
+        UPPER (RegionalId) RegionalId,
+        UPPER (CityId) CityId,
+        UPPER (ProjectId) ProjectId,
+        UPPER (ChannelCompany) ChannelCompany,
+        row_number () OVER (
+        ORDER BY
+        RegionalId,
+        CityId,
+        ProjectId,
+        ChannelCompany ASC
+        ) AS rownumber
+        FROM
+        B_WxbRiskCount
+        WHERE
+        1 = 1
+        <if test="regionalId != null and '' != regionalId">
+            AND RegionalId = #{ regionalId }
+        </if>
+        <if test="cityId != null and '' != cityId">
+            AND CityId = #{ cityId }
+        </if>
+        <if test="projectId != null and '' != projectId">
+            AND ProjectId = #{ projectId }
+        </if>
+        <if test="channelSource != null and '' != channelSource">
+            AND DictId = #{ channelSource }
+        </if>
+        <if test="channelOrg != null and '' != channelOrg">
+            AND ChannelCompany LIKE CONCAT('%',#{ channelOrg },'%')
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND FreshCardTime BETWEEN #{ startTime } AND #{ endTime }
+        </if>
+        GROUP BY
+        RegionalId,
+        CityId,
+        ProjectId,
+        ChannelCompany
+        ) temp_row
+        WHERE
+        rownumber > ((#{pageNum} - 1) * #{pageSize})
+    </select>
+
+    <select id="pageCount" parameterType="com.tahoecn.xkc.model.risk.vo.WxbRiskStatisticalPageVO" resultType="java.lang.Long">
+        SELECT
+            COUNT(a.c)
+        FROM
+            (
+                SELECT
+                    COUNT(*) c
+                FROM
+                    B_WxbRiskCount
+                WHERE
+                    1=1
+                    <if test="regionalId != null and '' != regionalId">
+                        AND RegionalId = #{ regionalId }
+                    </if>
+                    <if test="cityId != null and '' != cityId">
+                        AND CityId = #{ cityId }
+                    </if>
+                    <if test="projectId != null and '' != projectId">
+                        AND ProjectId = #{ projectId }
+                    </if>
+                    <if test="channelSource != null and '' != channelSource">
+                        AND DictId = #{ channelSource }
+                    </if>
+                    <if test="channelOrg != null and '' != channelOrg">
+                        AND ChannelCompany LIKE CONCAT('%',#{ channelOrg },'%')
+                    </if>
+                    <if test="startTime != null and endTime != null">
+                        AND FreshCardTime BETWEEN #{ startTime } AND #{ endTime }
+                    </if>
+                GROUP BY
+                    RegionalId,
+                    CityId,
+                    ProjectId,
+                    ChannelCompany
+            ) a
+    </select>
+</mapper>
