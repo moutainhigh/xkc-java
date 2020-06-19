@@ -3,7 +3,7 @@
 <mapper namespace="com.tahoecn.xkc.mapper.risk.BCustomermobilesearchMapper">
 
 <!--    @Param("projectID") String projectID, @Param("mobile") String mobile, @Param("createTime") Date createTime-->
-    <select id="fkSearchMobileInfo" parameterType="java.util.Date" resultType="java.util.Map">
+    <select id="fkSearchMobileInfo" resultType="java.util.Map">
         --查出来数据后， 去置业顾问搜电话表里查询，是否有置业顾问搜索时间在前，但是被渠道报备了的数据
         --遍历报备的客户数据， 去搜索电话表里判断
         --可能搜到有多条数据，可能是
@@ -16,6 +16,7 @@
             search.Mobile=#{mobile} AND
             search.JobCode='GW' AND
             search.CreateTime !> #{createTime}
+        ORDER BY search.CreateTime
 	</select>
 
 </mapper>

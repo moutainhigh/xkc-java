@@ -17,7 +17,7 @@ import com.tahoecn.xkc.model.customer.BCustomerpotential;
  * @author YYY
  * @since 2019-07-06
  */
-public interface BCustomerpotentialMapper extends BaseMapper<BCustomerpotential> {
+	public interface BCustomerpotentialMapper extends BaseMapper<BCustomerpotential> {
 	
 	/**
 	 * 潜在客户标签新增

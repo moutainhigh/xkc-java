@@ -94,4 +94,21 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	void updateTradeOverdueTimeByDate(@Param("extendSigningProEndDate")Date extendSigningProEndDate, @Param("clueRuleId")String clueRuleId);
 
 	List<Map<String, Object>> fkSearchMobile(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+	/**
+	 * @description: 风控查询修改用户姓名数据
+	 * @return:
+	 * @author: 张晓东
+	 * @time: 2020/5/8 18:05
+	 */
+	Map<String, Object> fkSearchInfo(@Param("id") String id);
+
+	/**
+	 * @description: 查当前的置业顾问和报备人
+	 * @return:
+	 * @author: 张晓东
+	 * @time: 2020/5/23 14:53
+	 */
+	Map<String, Object> fkSearchCurrentInfo(@Param("mobile") String mobile, @Param("projectId") String projectId);
+
 }

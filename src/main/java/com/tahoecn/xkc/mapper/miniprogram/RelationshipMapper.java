@@ -54,7 +54,7 @@ public interface RelationshipMapper extends BaseMapper<RelationshipVO> {
      *
      * @return
      */
-    List<RelationshipVO> getProject();
+    List<RelationshipVO> getProject(RelationshipVO relationshipVO);
 
     /**
      * 获取角色

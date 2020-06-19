@@ -54,7 +54,7 @@ public interface IRelationshipService extends IService<BChanneluser> {
      * @return
      * @throws Exception
      */
-    public JSONResult getProject(HttpServletRequest request) throws Exception;
+    public JSONResult getProject(HttpServletRequest request,RelationshipVO relationshipVO) throws Exception;
 
     /**
      * 获取角色

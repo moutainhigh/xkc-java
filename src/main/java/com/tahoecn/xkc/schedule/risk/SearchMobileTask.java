@@ -1,6 +1,7 @@
 package com.tahoecn.xkc.schedule.risk;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tahoecn.core.date.DateField;
 import com.tahoecn.core.date.DateUtil;
 import com.tahoecn.xkc.common.utils.RiskBatchLogUtils;
 import com.tahoecn.xkc.mapper.customer.BClueMapper;
@@ -12,6 +13,7 @@ import com.tahoecn.xkc.mapper.risk.BRiskinfoMapper;
 import com.tahoecn.xkc.model.risk.BRiskbatchlog;
 import com.tahoecn.xkc.model.risk.BRiskconfig;
 import com.tahoecn.xkc.model.risk.BRiskinfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -82,23 +84,24 @@ public class SearchMobileTask {
                 eq("Type", 1);
                 eq("IsDel", 0);
                 eq("Status", 1);
-            }}).stream().collect(Collectors.toMap(BRiskconfig::getProjectID, i -> i));
+            }}).stream().collect(Collectors.toMap(i -> i.getProjectID().toUpperCase(), i -> i));
 
             Date startTime = DateUtil.yesterday();
-            if (runs != null && bRiskbatchlogs.size() > 0) {
+            if (runs != null && bRiskbatchlogs.size() > 0 && null != bRiskbatchlogs.get(0).getDataMaxTime()) {
                 startTime = bRiskbatchlogs.get(0).getDataMaxTime();
             }
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.running(bRiskbatchlog));
-            AtomicReference<Date> dataMaxTime = new AtomicReference<>(DateUtil.date());
+            AtomicReference<Date> dataMaxTime = new AtomicReference<>(startTime);
             this.bClueMapper.fkSearchMobile(startTime, DateUtil.date()).stream()
-                    .filter(i -> bRiskconfigMap.get(i.get("ProjectID")) != null
-                            && bRiskconfigMap.get(i.get("ProjectID")).getIsSearchMobile() == 1)
+                    .filter(i -> StringUtils.isNotEmpty((String)i.get("ProjectID")) &&
+                            bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()) != null
+                            && bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()).getIsSearchMobile() == 1)
                     .forEach(i -> {
                         dataMaxTime.set(serchMaxTime(i, dataMaxTime.get()));//获取数据最大时间
                         record(i, bRiskconfigMap);//记录风险数据
                     });
-            this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.success(bRiskbatchlog, dataMaxTime.get()));
-        } catch (Exception e) {
+            this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.success(bRiskbatchlog, DateUtil.offset(dataMaxTime.get(), DateField.SECOND, 1)));
+        } catch (Exception e) {e.printStackTrace();
             log.error("fk batcg error : ProtectCustomerTask : {}" , e.getMessage());
             this.bRiskbatchlogMapper.updateById(RiskBatchLogUtils.failure(bRiskbatchlog, e.getMessage()));
         }
@@ -106,22 +109,21 @@ public class SearchMobileTask {
 
     private void record(Map<String, Object> clueM, Map<String, BRiskconfig> bRiskconfigMap) {
         List<Map<String, Object>> fkSearchMobileInfos = this.bCustomermobilesearchMapper.fkSearchMobileInfo(
-                (String) clueM.get("ProjectID"),
+                clueM.get("ProjectID").toString().toUpperCase(),
                 (String) clueM.get("CustomerMobile"),
                 (Date) clueM.get("ReportTime")
         );
 
         if (null != fkSearchMobileInfos && fkSearchMobileInfos.size()>0){
-            Map<String, Object> i = bOpportunityMapper.fkSearchInfo((String) clueM.get("OpportunityID"));
-
+            Map<String, Object> i = bClueMapper.fkSearchInfo((String) clueM.get("ClueID"));
             bRiskinfoMapper.insert(new BRiskinfo() {{
                 setId(UUID.randomUUID().toString());
-                setRiskConfigId(bRiskconfigMap.get(i.get("ProjectID")).getId());
+                setRiskConfigId(bRiskconfigMap.get(i.get("ProjectID").toString().toUpperCase()).getId());
                 setRegionalId((String)i.get("RegionalId"));
                 setRegionalName((String)i.get("RegionalName"));
                 setCityId((String)i.get("CityId"));
                 setCityName((String)i.get("CityName"));
-                setProjectId((String)i.get("ProjectID"));
+                setProjectId((String)i.get("ProjectID").toString().toUpperCase());
                 setProjectName((String)i.get("Name"));
                 setRiskType(2);
                 setCreateTime(DateUtil.date());
@@ -129,7 +131,9 @@ public class SearchMobileTask {
                 setOpportunityId((String)i.get("ID"));
                 setCustomerName((String)i.get("CustomerName"));
                 setCustomerMobile((String)i.get("CustomerMobile"));
-                setCustomerStatus(i.get("CustomerStatus") != null ? Integer.valueOf(i.get("CustomerStatus").toString()): null);
+                int CustomerStatus = i.get("CustomerStatus") != null ? Integer.valueOf(i.get("CustomerStatus").toString()): 2;
+                if (StringUtils.isEmpty((String)i.get("ID"))) CustomerStatus =1 ;
+                setCustomerStatus(CustomerStatus);
                 setCustomerStatusName((String)i.get("CustomerStatusName"));
                 setReportUserID((String)i.get("ReportUserID"));
                 setReportUserName((String)i.get("ReportUserName"));
@@ -156,9 +160,9 @@ public class SearchMobileTask {
     }
 
     private Date serchMaxTime(Map<String, Object> i, Date date) {
-        Date result = (Date) i.get("CreateTime");
+        Date result = (Date) i.get("ReportTime");
         if (date != null) {
-            result = result.getTime() > date.getTime() ? result : date;
+            result = result.compareTo(date) >= 0 ? result : date;
         }
         return result;
     }

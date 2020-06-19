@@ -30,4 +30,7 @@ public interface BSalesgroupmemberMapper extends BaseMapper<BSalesgroupmember> {
     SalesGroupMemberExistProjectVo SalesGroupMemberExistProject_Select(Map<String, Object> map);
 
 	Map<String,Object> getSaleGroupName(Map<String, Object> map);
+
+    Map<String,Object> findSaleGroupName(@Param("id")String id, @Param("projectId")String projectId);
+
 }

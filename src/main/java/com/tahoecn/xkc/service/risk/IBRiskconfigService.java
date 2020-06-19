@@ -3,6 +3,7 @@ package com.tahoecn.xkc.service.risk;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tahoecn.core.json.JSONResult;
 import com.tahoecn.xkc.model.risk.BRiskconfig;
+import com.tahoecn.xkc.model.risk.vo.RiskConfigProjectVO;
 import com.tahoecn.xkc.model.risk.vo.RiskConfigVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface IBRiskconfigService extends IService<BRiskconfig> {
 
     /**
-     *
      * @description: 风控规则配置查询
      * @return:
      * @author: 张晓东
@@ -27,7 +27,6 @@ public interface IBRiskconfigService extends IService<BRiskconfig> {
     JSONResult search(HttpServletRequest request, Integer type, String projectId);
 
     /**
-     *
      * @description: 替换配置
      * @return:
      * @author: 张晓东
@@ -36,7 +35,6 @@ public interface IBRiskconfigService extends IService<BRiskconfig> {
     JSONResult replace(HttpServletRequest request, RiskConfigVo vo);
 
     /**
-     *
      * @description: 集团下达风控规则配置到项目
      * @return:
      * @author: 张晓东
@@ -45,4 +43,11 @@ public interface IBRiskconfigService extends IService<BRiskconfig> {
     JSONResult release(HttpServletRequest request);
 
 
+    /**
+     * @description: 风控配置项目列表
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/6/6 11:29
+     */
+    JSONResult projectList(HttpServletRequest request, RiskConfigProjectVO vo);
 }

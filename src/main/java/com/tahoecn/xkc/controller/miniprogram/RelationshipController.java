@@ -78,9 +78,9 @@ public class RelationshipController extends TahoeBaseController {
 
     @ApiOperation(value = "获取项目", notes = "获取项目")
     @RequestMapping(value = "/getProject", method = {RequestMethod.POST})
-    public JSONResult getProject(HttpServletRequest request) {
+    public JSONResult getProject(HttpServletRequest request, @RequestBody RelationshipVO relationshipVO) {
         try {
-            return relationshipService.getProject(request);
+            return relationshipService.getProject(request, relationshipVO);
         } catch (Exception e) {
             //记录错误日志
             e.printStackTrace();

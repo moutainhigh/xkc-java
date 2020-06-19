@@ -1231,5 +1231,25 @@ public class SDictionaryServiceImpl extends ServiceImpl<SDictionaryMapper, SDict
         return Result.okm("成功");
     }
 
-
+    @Override
+    public List<SDictionary> riskAdviserGroup() {
+        List ids =  new ArrayList(){{
+            add("46830C26-0E01-4041-8054-3865CCDD26AD");
+            add("32C92DA0-DA13-4C21-A55E-A1D16955882C");
+            add("EB4AD331-F4AD-46D6-889A-D45575ECEE66");
+            add("725FA5F6-EC92-4DC6-8D47-A8E74B7829AD");
+            add("E55FC76C-4696-40F9-8640-EF18572822CD");
+            add("0E88065E-AF3E-4905-8809-7BD30610323F");
+            add("DBCF76B2-BB1D-438C-B562-7A6FF3D9163A");
+            add("8D70D821-3BD4-46D1-8342-8B16C4BE642A");
+            add("FC09F0DF-D3DF-4378-91C0-7146EC451F43");
+            add("C07D5987-ACDD-40B8-9CBD-6257AA59C88C");
+        }};
+        List list = this.baseMapper.selectBatchIds(ids);
+        list.add( new SDictionary(){{
+           setId("zrfk");
+           setDictName("自然访客");
+        }});
+        return list;
+    }
 }

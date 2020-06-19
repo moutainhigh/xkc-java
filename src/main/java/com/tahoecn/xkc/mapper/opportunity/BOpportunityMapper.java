@@ -134,4 +134,21 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
      * @time: 2020/5/8 18:05
      */
     Map<String, Object> fkSearchInfo(@Param("id") String id);
+
+    /**
+     * @description: 查当前的置业顾问和报备人
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/5/23 14:53
+     */
+    Map<String, Object> fkSearchCurrentInfo(@Param("mobile") String mobile, @Param("projectId") String projectId);
+
+    /**
+     * @description: 风控人脸明细查询
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/6/11 18:00
+     */
+    Map<String, Object> fkSearchFaceInfo(@Param("projectId") String projectId, @Param("cardId") String cardId);
+
 }

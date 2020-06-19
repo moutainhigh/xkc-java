@@ -41,5 +41,5 @@ public interface ISDictionaryService extends IService<SDictionary> {
 
     Result saveMedia(String pid, String id, String dictName, int listIndex, String projectID);
 
-
+    List<SDictionary> riskAdviserGroup();
 }
