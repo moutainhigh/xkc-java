@@ -33,6 +33,9 @@
         RegionalId,
         CityId,
         ProjectId,
+        DictId,
+        DictName,
+        ChannelCompanyId,
         ChannelCompany ASC
         ) AS rownumber
         FROM
@@ -64,6 +67,9 @@
         RegionalId,
         CityId,
         ProjectId,
+        DictId,
+        DictName,
+        ChannelCompanyId,
         ChannelCompany
         ) temp_row
         WHERE
