@@ -1,8 +1,12 @@
 package com.tahoecn.xkc.schedule;
 
+import com.tahoecn.xkc.config.TomcatPort;
 import com.tahoecn.xkc.schedule.risk.*;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -285,13 +289,22 @@ public class RiskTask {
         return trigger;
     }*/
 
+    @Value("${execute.task.port}")
+    private String executeTaskPort;
+
+    @Autowired
+    private TomcatPort tomcatPort;
+
+    private Logger log = LoggerFactory.getLogger(RiskTask.class);
+
     // 配置Scheduler
     @Bean(name = "scheduler")
     public SchedulerFactoryBean schedulerFactory(Trigger faceTrigger, Trigger jointNameTrigger, Trigger protectCustomerTrigger,
                                                  Trigger searchMobileTrigger, Trigger shortDealTrigger, Trigger unverifiedTrigger,
                                                  Trigger updateInfoTrigger/*, Trigger wxbriskcountTrigger*/) {
         SchedulerFactoryBean bean = new SchedulerFactoryBean();
-        if (ipList().contains(executeTaskIp)) {
+        log.info("zhangxiaodong log ip : {} , port : {} , if : {}", executeTaskIp, tomcatPort.getHttpPort(), ipList().contains(executeTaskIp) && executeTaskPort.equals(tomcatPort.getHttpPort()+""));
+        if (ipList().contains(executeTaskIp) && executeTaskPort.equals(tomcatPort.getHttpPort()+"")) {
             // 延时启动，应用启动1秒后
             bean.setStartupDelay(1);
             // 注册触发器
