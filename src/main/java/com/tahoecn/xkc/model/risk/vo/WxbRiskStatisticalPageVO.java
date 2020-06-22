@@ -17,7 +17,7 @@ public class WxbRiskStatisticalPageVO implements Serializable {
     private String projectId;//项目主键
 
     private String type;
-    private String SourceType;
+    private String sourceType;
 
     private List<String> dictId;
     private String channelCompanyId;
@@ -63,11 +63,11 @@ public class WxbRiskStatisticalPageVO implements Serializable {
     }
 
     public String getSourceType() {
-        return SourceType;
+        return sourceType;
     }
 
     public void setSourceType(String sourceType) {
-        SourceType = sourceType;
+        this.sourceType = sourceType;
     }
 
     public Date getStartTime() {

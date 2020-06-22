@@ -16,7 +16,7 @@ public class WxbRiskInfoPageVO implements Serializable {
     private String projectId;//项目主键
     private String homeName;//房间
     private String type;
-    private String SourceType;
+    private String sourceType;
     private String agent;//经纪人
     private String salerName;//置业顾问
     private Integer riskStatus;//风险类型0疑似风险1无风险2确认风险3未知客户
@@ -78,11 +78,11 @@ public class WxbRiskInfoPageVO implements Serializable {
     }
 
     public String getSourceType() {
-        return SourceType;
+        return sourceType;
     }
 
     public void setSourceType(String sourceType) {
-        SourceType = sourceType;
+        this.sourceType = sourceType;
     }
 
     public Integer getStyle() {
