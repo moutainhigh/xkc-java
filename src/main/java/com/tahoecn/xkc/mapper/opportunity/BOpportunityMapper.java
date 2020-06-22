@@ -151,4 +151,14 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
      */
     Map<String, Object> fkSearchFaceInfo(@Param("projectId") String projectId, @Param("cardId") String cardId);
 
+
+    /**
+     *
+     * @description: 旺小宝统计报表
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/6/22 15:55
+     */
+    Map<String, Object> wxbriskcountTaskInfo(@Param("projectId") String projectId, @Param("cardId") String cardId);
+
 }

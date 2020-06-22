@@ -1,4 +1,3 @@
-/*
 package com.tahoecn.xkc.service.risk;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,7 +8,6 @@ import com.tahoecn.xkc.model.risk.vo.WxbRiskStatisticalPageVO;
 
 import java.util.Map;
 
-*/
 /**
  * <p>
  * 服务类
@@ -17,7 +15,7 @@ import java.util.Map;
  *
  * @author YYY
  * @since 2020-06-17
- *//*
+ */
 
 public interface IBWxbriskcountService extends IService<BWxbriskcount> {
 
@@ -25,4 +23,3 @@ public interface IBWxbriskcountService extends IService<BWxbriskcount> {
 
     Map list(WxbRiskInfoPageVO vo);
 }
-*/

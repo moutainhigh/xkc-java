@@ -15,8 +15,8 @@ public class WxbRiskInfoPageVO implements Serializable {
     private String cityId;//城市主键
     private String projectId;//项目主键
     private String homeName;//房间
-    private String channelSource;//渠道来源
-    private String channelOrg;//渠道机构
+    private String type;
+    private String SourceType;
     private String agent;//经纪人
     private String salerName;//置业顾问
     private Integer riskStatus;//风险类型0疑似风险1无风险2确认风险3未知客户
@@ -30,20 +30,12 @@ public class WxbRiskInfoPageVO implements Serializable {
     private Date finishEndTime;//签约结束时间
     private Date freshCardStartTime;//统计(刷证)起始时间
     private Date freshCardEndTime;//统计(刷证)结束时间
-    private Integer type;//1全部客户2刷证客户3认证失败4报备客户5成交客户6未知客户7疑似风险8疑似待确认9确认风险10确认无风险
+    private Integer style;//1全部客户2刷证客户3认证失败4报备客户5成交客户6未知客户7疑似风险8疑似待确认9确认风险10确认无风险
 
     @NotNull(message = "起始页不能为空")
     private Integer pageNum;
     @NotNull(message = "页大小不能为空")
     private Integer pageSize;
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
 
     public String getRegionalId() {
         return regionalId;
@@ -77,20 +69,28 @@ public class WxbRiskInfoPageVO implements Serializable {
         this.homeName = homeName;
     }
 
-    public String getChannelSource() {
-        return channelSource;
+    public String getType() {
+        return type;
     }
 
-    public void setChannelSource(String channelSource) {
-        this.channelSource = channelSource;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getChannelOrg() {
-        return channelOrg;
+    public String getSourceType() {
+        return SourceType;
     }
 
-    public void setChannelOrg(String channelOrg) {
-        this.channelOrg = channelOrg;
+    public void setSourceType(String sourceType) {
+        SourceType = sourceType;
+    }
+
+    public Integer getStyle() {
+        return style;
+    }
+
+    public void setStyle(Integer style) {
+        this.style = style;
     }
 
     public String getAgent() {

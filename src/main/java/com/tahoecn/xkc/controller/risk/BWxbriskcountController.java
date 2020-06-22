@@ -1,4 +1,3 @@
-/*
 package com.tahoecn.xkc.controller.risk;
 
 
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.stream.Collectors;
 
-*/
 /**
  * <p>
  * 前端控制器 旺小宝风控报表
@@ -32,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * @author YYY
  * @since 2020-06-17
- *//*
+ */
 
 @RestController
 @RequestMapping("/bWxbriskcount")
@@ -77,4 +75,3 @@ public class BWxbriskcountController extends TahoeBaseController {
         }
     }
 }
-*/

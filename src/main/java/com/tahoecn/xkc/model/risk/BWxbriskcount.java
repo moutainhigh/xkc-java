@@ -58,6 +58,9 @@ public class BWxbriskcount implements Serializable {
     @TableField("DictName")
     private String DictName;
 
+    @TableField("ChannelCompanyId")
+    private String ChannelCompanyId;
+
     @TableField("ChannelCompany")
     private String ChannelCompany;
 
@@ -177,6 +180,15 @@ public class BWxbriskcount implements Serializable {
     public void setDictName(String DictName) {
         this.DictName = DictName;
     }
+
+    public String getChannelCompanyId() {
+        return ChannelCompanyId;
+    }
+
+    public void setChannelCompanyId(String channelCompanyId) {
+        ChannelCompanyId = channelCompanyId;
+    }
+
     public String getChannelCompany() {
         return ChannelCompany;
     }

@@ -14,6 +14,9 @@
         RegionalId,
         CityId,
         ProjectId,
+        DictId,
+        DictName,
+        ChannelCompanyId,
         ChannelCompany
         FROM
         (
@@ -21,7 +24,10 @@
         UPPER (RegionalId) RegionalId,
         UPPER (CityId) CityId,
         UPPER (ProjectId) ProjectId,
-        UPPER (ChannelCompany) ChannelCompany,
+        UPPER (DictId) DictId,
+        DictName,
+        ChannelCompanyId,
+        ChannelCompany,
         row_number () OVER (
         ORDER BY
         RegionalId,
@@ -42,11 +48,14 @@
         <if test="projectId != null and '' != projectId">
             AND ProjectId = #{ projectId }
         </if>
-        <if test="channelSource != null and '' != channelSource">
-            AND DictId = #{ channelSource }
+        <if test="dictId != null">
+            AND DictId IN
+            <foreach item="item" index="index" collection="dictId" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
-        <if test="channelOrg != null and '' != channelOrg">
-            AND ChannelCompany LIKE CONCAT('%',#{ channelOrg },'%')
+        <if test="channelCompanyId != null and '' != channelCompanyId">
+            AND ChannelCompanyId = #{ channelCompanyId }
         </if>
         <if test="startTime != null and endTime != null">
             AND FreshCardTime BETWEEN #{ startTime } AND #{ endTime }
@@ -81,11 +90,14 @@
                     <if test="projectId != null and '' != projectId">
                         AND ProjectId = #{ projectId }
                     </if>
-                    <if test="channelSource != null and '' != channelSource">
-                        AND DictId = #{ channelSource }
+                    <if test="dictId != null">
+                        AND DictId IN
+                        <foreach item="item" index="index" collection="dictId" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
                     </if>
-                    <if test="channelOrg != null and '' != channelOrg">
-                        AND ChannelCompany LIKE CONCAT('%',#{ channelOrg },'%')
+                    <if test="channelCompanyId != null and '' != channelCompanyId">
+                        AND ChannelCompanyId = #{ channelCompanyId }
                     </if>
                     <if test="startTime != null and endTime != null">
                         AND FreshCardTime BETWEEN #{ startTime } AND #{ endTime }
