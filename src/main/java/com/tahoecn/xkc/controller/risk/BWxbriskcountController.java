@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @since 2020-06-17
  */
 
-@RestController
+//@RestController
 @RequestMapping("/bWxbriskcount")
 @Api(tags = "旺小宝风控报表")
 public class BWxbriskcountController extends TahoeBaseController {

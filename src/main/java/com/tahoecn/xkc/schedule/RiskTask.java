@@ -309,7 +309,7 @@ public class RiskTask {
             bean.setStartupDelay(1);
             // 注册触发器
             bean.setTriggers(faceTrigger, jointNameTrigger, protectCustomerTrigger, searchMobileTrigger,
-                    shortDealTrigger, unverifiedTrigger, updateInfoTrigger, wxbriskcountTrigger);
+                    shortDealTrigger, unverifiedTrigger, updateInfoTrigger/*, wxbriskcountTrigger*/);
         }
         return bean;
     }
