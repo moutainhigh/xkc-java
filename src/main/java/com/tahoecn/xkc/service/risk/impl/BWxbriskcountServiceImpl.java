@@ -80,7 +80,8 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                     break;
             }
         }
-
+        vo.setDictId(dictId);
+        vo.setChannelCompanyId(channelCompanyId);
         Long total = this.baseMapper.pageCount(vo);
         List<Map> tmpData = this.baseMapper.pageList(vo);
         List<WxbRiskStatisticalResultVO> data = tmpData.stream().map(i -> {

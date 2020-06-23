@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.model.risk.vo;
 
+import com.tahoecn.core.date.DateUtil;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @description:
@@ -76,6 +78,9 @@ public class WxbRiskStatisticalPageVO implements Serializable {
 
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
+        if (null != startTime) {
+            this.startTime = startDate(startTime);
+        }
     }
 
     public Date getEndTime() {
@@ -84,6 +89,9 @@ public class WxbRiskStatisticalPageVO implements Serializable {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+        if (null != endTime) {
+            this.endTime = endDate(endTime);
+        }
     }
 
     public Integer getPageNum() {
@@ -116,5 +124,23 @@ public class WxbRiskStatisticalPageVO implements Serializable {
 
     public void setChannelCompanyId(String channelCompanyId) {
         this.channelCompanyId = channelCompanyId;
+    }
+
+    public static Date startDate(Date startDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        cal.add(Calendar.HOUR, 0);
+        cal.add(Calendar.MINUTE, 0);
+        cal.add(Calendar.SECOND, 0);
+        return cal.getTime();
+    }
+
+    public static Date endDate(Date endDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endDate);
+        cal.add(Calendar.HOUR, 23);
+        cal.add(Calendar.MINUTE, 59);
+        cal.add(Calendar.SECOND, 59);
+        return cal.getTime();
     }
 }

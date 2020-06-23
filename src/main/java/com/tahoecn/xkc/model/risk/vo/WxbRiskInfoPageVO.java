@@ -123,6 +123,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setReportStartTime(Date reportStartTime) {
         this.reportStartTime = reportStartTime;
+        if (null != reportStartTime) {
+            this.reportStartTime = WxbRiskStatisticalPageVO.startDate(reportStartTime);
+        }
     }
 
     public Date getReportEndTime() {
@@ -131,6 +134,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setReportEndTime(Date reportEndTime) {
         this.reportEndTime = reportEndTime;
+        if (null != reportEndTime) {
+            this.reportEndTime = WxbRiskStatisticalPageVO.endDate(reportEndTime);
+        }
     }
 
     public Date getFirstPhotoStartTime() {
@@ -139,6 +145,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setFirstPhotoStartTime(Date firstPhotoStartTime) {
         this.firstPhotoStartTime = firstPhotoStartTime;
+        if (null != firstPhotoStartTime) {
+            this.firstPhotoStartTime = WxbRiskStatisticalPageVO.startDate(firstPhotoStartTime);
+        }
     }
 
     public Date getFirstPhotoEndTime() {
@@ -147,6 +156,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setFirstPhotoEndTime(Date firstPhotoEndTime) {
         this.firstPhotoEndTime = firstPhotoEndTime;
+        if (null != firstPhotoEndTime) {
+            this.firstPhotoEndTime = WxbRiskStatisticalPageVO.endDate(reportEndTime);
+        }
     }
 
     public Date getSubscribeStartTime() {
@@ -155,6 +167,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setSubscribeStartTime(Date subscribeStartTime) {
         this.subscribeStartTime = subscribeStartTime;
+        if (null != subscribeStartTime) {
+            this.subscribeStartTime = WxbRiskStatisticalPageVO.startDate(subscribeStartTime);
+        }
     }
 
     public Date getSubscribeEndTime() {
@@ -163,6 +178,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setSubscribeEndTime(Date subscribeEndTime) {
         this.subscribeEndTime = subscribeEndTime;
+        if (null != subscribeEndTime) {
+            this.subscribeEndTime = WxbRiskStatisticalPageVO.endDate(subscribeEndTime);
+        }
     }
 
     public Date getFinishStartTime() {
@@ -171,6 +189,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setFinishStartTime(Date finishStartTime) {
         this.finishStartTime = finishStartTime;
+        if (null != finishStartTime) {
+            this.finishStartTime = WxbRiskStatisticalPageVO.startDate(finishStartTime);
+        }
     }
 
     public Date getFinishEndTime() {
@@ -179,6 +200,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setFinishEndTime(Date finishEndTime) {
         this.finishEndTime = finishEndTime;
+        if (null != finishEndTime) {
+            this.finishEndTime = WxbRiskStatisticalPageVO.endDate(finishEndTime);
+        }
     }
 
     public Date getFreshCardStartTime() {
@@ -187,6 +211,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setFreshCardStartTime(Date freshCardStartTime) {
         this.freshCardStartTime = freshCardStartTime;
+        if (null != freshCardStartTime) {
+            this.freshCardStartTime = WxbRiskStatisticalPageVO.startDate(freshCardStartTime);
+        }
     }
 
     public Date getFreshCardEndTime() {
@@ -195,6 +222,9 @@ public class WxbRiskInfoPageVO implements Serializable {
 
     public void setFreshCardEndTime(Date freshCardEndTime) {
         this.freshCardEndTime = freshCardEndTime;
+        if (null != freshCardEndTime) {
+            this.freshCardEndTime = WxbRiskStatisticalPageVO.endDate(freshCardEndTime);
+        }
     }
 
     public Integer getPageNum() {
