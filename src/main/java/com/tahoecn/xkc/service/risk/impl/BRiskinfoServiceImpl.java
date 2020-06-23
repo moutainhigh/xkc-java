@@ -1181,7 +1181,7 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
     private Map getFaceImg(BRiskinfo bRiskinfo) {
         if (StringUtils.isEmpty(bRiskinfo.getOpportunityId())) return Maps.newHashMap();
         BOpportunity bOpportunity = bOpportunityMapper.selectById(bRiskinfo.getOpportunityId());
-        Map<String, Object> customerInfo = faceDetectCustomerService.findCustomerInfo(bRiskinfo.getProjectId(), bCustomerMapper.selectById(bOpportunity.getCustomerID()).getCardID());
+        Map<String, Object> customerInfo = faceDetectCustomerService.findCustomerInfoOrXkcProjectId(bRiskinfo.getProjectId(), bCustomerMapper.selectById(bOpportunity.getCustomerID()).getCardID());
         return faceDetectCustomerService.firstFace(customerInfo);
     }
 

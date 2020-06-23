@@ -1,4 +1,3 @@
-/*
 package com.tahoecn.xkc.mapper.risk;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -7,16 +6,6 @@ import com.tahoecn.xkc.model.risk.vo.WxbRiskStatisticalPageVO;
 
 import java.util.List;
 import java.util.Map;
-
-*/
-/**
- * <p>
- *  Mapper 接口
- * </p>
- *
- * @author YYY
- * @since 2020-06-17
- *//*
 
 public interface BWxbriskcountMapper extends BaseMapper<BWxbriskcount> {
 
@@ -27,4 +16,3 @@ public interface BWxbriskcountMapper extends BaseMapper<BWxbriskcount> {
     Long pageCount(WxbRiskStatisticalPageVO vo);
 
 }
-*/

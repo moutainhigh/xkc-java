@@ -1,8 +1,11 @@
 package com.tahoecn.xkc.model.risk.vo;
 
+import com.tahoecn.core.date.DateUtil;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @description:
@@ -15,8 +18,11 @@ public class WxbRiskStatisticalPageVO implements Serializable {
     private String cityId;//城市主键
     private String projectId;//项目主键
 
-    private String channelSource;//渠道来源
-    private String channelOrg;//渠道机构
+    private String type;
+    private String sourceType;
+
+    private List<String> dictId;
+    private String channelCompanyId;
 
     private Date startTime;//统计时间
     private Date endTime;//统计时间
@@ -50,20 +56,20 @@ public class WxbRiskStatisticalPageVO implements Serializable {
         this.projectId = projectId;
     }
 
-    public String getChannelSource() {
-        return channelSource;
+    public String getType() {
+        return type;
     }
 
-    public void setChannelSource(String channelSource) {
-        this.channelSource = channelSource;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getChannelOrg() {
-        return channelOrg;
+    public String getSourceType() {
+        return sourceType;
     }
 
-    public void setChannelOrg(String channelOrg) {
-        this.channelOrg = channelOrg;
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 
     public Date getStartTime() {
@@ -72,6 +78,9 @@ public class WxbRiskStatisticalPageVO implements Serializable {
 
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
+        if (null != startTime) {
+            this.startTime = startDate(startTime);
+        }
     }
 
     public Date getEndTime() {
@@ -80,6 +89,9 @@ public class WxbRiskStatisticalPageVO implements Serializable {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+        if (null != endTime) {
+            this.endTime = endDate(endTime);
+        }
     }
 
     public Integer getPageNum() {
@@ -96,5 +108,39 @@ public class WxbRiskStatisticalPageVO implements Serializable {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public List<String> getDictId() {
+        return dictId;
+    }
+
+    public void setDictId(List<String> dictId) {
+        this.dictId = dictId;
+    }
+
+    public String getChannelCompanyId() {
+        return channelCompanyId;
+    }
+
+    public void setChannelCompanyId(String channelCompanyId) {
+        this.channelCompanyId = channelCompanyId;
+    }
+
+    public static Date startDate(Date startDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        cal.add(Calendar.HOUR, 0);
+        cal.add(Calendar.MINUTE, 0);
+        cal.add(Calendar.SECOND, 0);
+        return cal.getTime();
+    }
+
+    public static Date endDate(Date endDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endDate);
+        cal.add(Calendar.HOUR, 23);
+        cal.add(Calendar.MINUTE, 59);
+        cal.add(Calendar.SECOND, 59);
+        return cal.getTime();
     }
 }

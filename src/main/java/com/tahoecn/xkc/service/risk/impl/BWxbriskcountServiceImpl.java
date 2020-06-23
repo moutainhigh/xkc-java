@@ -1,4 +1,3 @@
-/*
 package com.tahoecn.xkc.service.risk.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -6,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.tahoecn.xkc.mapper.risk.BWxbriskcountMapper;
 import com.tahoecn.xkc.model.risk.BWxbriskcount;
 import com.tahoecn.xkc.model.risk.vo.*;
@@ -14,12 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-*/
 /**
  * <p>
  * 服务实现类
@@ -27,13 +27,61 @@ import java.util.stream.Collectors;
  *
  * @author YYY
  * @since 2020-06-17
- *//*
+ */
 
 @Service
 public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, BWxbriskcount> implements IBWxbriskcountService {
 
+    private List<String> zyqd = new ArrayList() {{
+        add("80D2A7B1-115A-4F3A-BB7D-F227F641C5F1");//外展
+        add("266E0F4F-2EE1-4305-9115-49DDE2186D57");//外呼
+        add("B32BB4EC-74C5-4F7C-BF85-F9A02452B8A2");//拦截
+        add("8FDFDE89-E1F1-43DE-9094-92D77B22FC1F");//圈层
+        add("709CD8F1-7E1A-42B9-B4E9-6EAFB428EAEF");//外拓
+    }};
+
+    private String fxzj = new String("E4DFA1D5-95F9-4D89-B754-E7CC81D58196");
+
+    private List<String> tjqd = new ArrayList() {{
+        add("7F4E0089-E21D-0F97-DC48-0DBF0740367D");//老业主
+        add("BA06AE1D-E29A-4BC7-A811-A26E103B5E7E");//员工推荐
+        add("798A45A6-9169-4E5C-BEE3-1CDB158F5D69");//自由经纪
+        add("86D702BC-F30F-4091-B520-CA0909CADCDD");//案场联动
+    }};
+
+    private String zyfk = new String("0390CD8C-D6D4-4C92-995B-08C7E18E6EC2");
+
     @Override
     public IPage statistical(WxbRiskStatisticalPageVO vo) {
+        List<String> dictId = null;
+        String channelCompanyId = null;
+        if (StringUtils.isNotEmpty(vo.getType()) || StringUtils.isNotEmpty(vo.getSourceType())) {
+            switch (vo.getType()) {
+                case "one":
+                    dictId = Lists.newArrayList();
+                    dictId.addAll(zyqd);
+                    break;
+                case "two":
+                    dictId = Lists.newArrayList();
+                    dictId.add(fxzj);
+                    break;
+                case "three":
+                    dictId = Lists.newArrayList();
+                    dictId.addAll(tjqd);
+                    break;
+                case "0":
+                    if (zyqd.contains(vo.getSourceType().toUpperCase()) || tjqd.contains(vo.getSourceType().toUpperCase())
+                            || zyfk.equals(vo.getSourceType().toUpperCase())) {
+                        dictId = Lists.newArrayList();
+                        dictId.add(vo.getSourceType());
+                    } else {
+                        channelCompanyId = vo.getSourceType();
+                    }
+                    break;
+            }
+        }
+        vo.setDictId(dictId);
+        vo.setChannelCompanyId(channelCompanyId);
         Long total = this.baseMapper.pageCount(vo);
         List<Map> tmpData = this.baseMapper.pageList(vo);
         List<WxbRiskStatisticalResultVO> data = tmpData.stream().map(i -> {
@@ -41,9 +89,9 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 eq("RegionalId", i.get("RegionalId"));
                 eq("CityId", i.get("CityId"));
                 eq("ProjectId", i.get("ProjectId"));
-                eq("ChannelCompany", i.get("ChannelCompany"));
-                if (StringUtils.isNotEmpty(vo.getChannelSource()))
-                    eq("DictId", vo.getChannelSource());
+                eq("DictId", i.get("DictId"));
+                if (StringUtils.isNotEmpty((String) i.get("ChannelCompanyId")))
+                    eq("ChannelCompanyId", i.get("ChannelCompanyId"));
                 if (null != vo.getStartTime() && null != vo.getEndTime())
                     between("FreshCardTime", vo.getStartTime(), vo.getEndTime());
             }});
@@ -52,8 +100,21 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 wxbRiskStatisticalResultVO.setRegionalName(bWxbriskcount.getRegionalName());//区域
                 wxbRiskStatisticalResultVO.setCityName(bWxbriskcount.getCityName());//城市
                 wxbRiskStatisticalResultVO.setProjectName(bWxbriskcount.getProjectName());//项目
-                wxbRiskStatisticalResultVO.setDictName(bWxbriskcount.getDictName()); //渠道来源名称
-                wxbRiskStatisticalResultVO.setChannelCompany(bWxbriskcount.getChannelCompany());// 渠道机构
+                if (StringUtils.isNotEmpty(bWxbriskcount.getDictId())) {
+                    if (zyqd.contains(bWxbriskcount.getDictId())) {
+                        wxbRiskStatisticalResultVO.setDictName("自有渠道"); //渠道来源名称
+                        wxbRiskStatisticalResultVO.setChannelCompany(bWxbriskcount.getDictName());// 渠道机构
+                    } else if (fxzj.equals(bWxbriskcount.getDictId())) {
+                        wxbRiskStatisticalResultVO.setDictName("分销中介"); //渠道来源名称
+                        wxbRiskStatisticalResultVO.setChannelCompany(bWxbriskcount.getChannelCompany());// 渠道机构
+                    } else if (tjqd.contains(bWxbriskcount.getDictId())) {
+                        wxbRiskStatisticalResultVO.setDictName("推荐渠道"); //渠道来源名称
+                        wxbRiskStatisticalResultVO.setChannelCompany(bWxbriskcount.getDictName());// 渠道机构
+                    } else if (zyfk.equals(bWxbriskcount.getDictId())) {
+                        wxbRiskStatisticalResultVO.setDictName("自然访客"); //渠道来源名称
+                        wxbRiskStatisticalResultVO.setChannelCompany(bWxbriskcount.getDictName());// 渠道机构
+                    }
+                }
                 if (null != bWxbriskcount.getFreshCardTime())
                     wxbRiskStatisticalResultVO.setCardCustomers(wxbRiskStatisticalResultVO.getCardCustomers() + 1);//刷证客户
                 if (null != bWxbriskcount.getSubscribeTime())
@@ -96,10 +157,6 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 eq("ProjectId", vo.getProjectId());//项目主键
             if (StringUtils.isNotEmpty(vo.getHomeName()))
                 eq("House", vo.getHomeName());//房间
-            if (StringUtils.isNotEmpty(vo.getChannelSource()))
-                eq("DictId", vo.getChannelSource());//渠道来源
-            if (StringUtils.isNotEmpty(vo.getChannelOrg()))
-                like("ChannelCompany", "%" + vo.getChannelOrg() + "%");//渠道机构
             if (StringUtils.isNotEmpty(vo.getAgent()))
                 like("Agent", "%" + vo.getAgent() + "%");//经纪人
             if (StringUtils.isNotEmpty(vo.getSalerName()))
@@ -116,8 +173,29 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 between("FinishTime", vo.getFinishStartTime(), vo.getFinishEndTime());//签约时间
             if (null != vo.getFreshCardStartTime() && null != vo.getFreshCardEndTime())
                 between("FinishTime", vo.getFreshCardStartTime(), vo.getFreshCardEndTime());//统计(刷证)时间
-            if (null != vo.getType()) {
+            if (StringUtils.isNotEmpty(vo.getType()) || StringUtils.isNotEmpty(vo.getSourceType())) {
                 switch (vo.getType()) {
+                    case "one":
+                        in("DictId", zyqd);
+                        break;
+                    case "two":
+                        eq("DictId", fxzj);
+                        break;
+                    case "three":
+                        in("DictId", tjqd);
+                        break;
+                    case "0":
+                        if (zyqd.contains(vo.getSourceType().toUpperCase()) || tjqd.contains(vo.getSourceType().toUpperCase())
+                                || zyfk.equals(vo.getSourceType().toUpperCase())) {
+                            eq("DictId", vo.getSourceType());
+                        } else {
+                            eq("ChannelCompanyId", vo.getSourceType());
+                        }
+                        break;
+                }
+            }
+            if (null != vo.getStyle()) {
+                switch (vo.getStyle()) {
                     case 1://全部客户
                         //全部客户不处理
                         break;
@@ -177,8 +255,21 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 setProjectName(i.getProjectName());//项目
                 setHouse(i.getHouse());//房间编号
                 setCustomerName(i.getCustomerName());//客户姓名
-                setDictName(i.getDictName());//渠道来源名称
-                setChannelCompany(i.getChannelCompany());//渠道机构
+                if (StringUtils.isNotEmpty(i.getDictId())) {
+                    if (zyqd.contains(i.getDictId())) {
+                        setDictName("自有渠道"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    } else if (fxzj.equals(i.getDictId())) {
+                        setDictName("分销中介"); //渠道来源名称
+                        setChannelCompany(i.getChannelCompany());// 渠道机构
+                    } else if (tjqd.contains(i.getDictId())) {
+                        setDictName("推荐渠道"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    } else if (zyfk.equals(i.getDictId())) {
+                        setDictName("自然访客"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    }
+                }
                 setAgent(i.getAgent());//经纪人
                 setSalerName(i.getSalerName());//置业顾问
                 setSubscribeMoney(i.getSubscribeMoney());//认购金额
@@ -220,4 +311,3 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
         }};
     }
 }
-*/

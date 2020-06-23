@@ -1,4 +1,3 @@
-/*
 package com.tahoecn.xkc.schedule.risk;
 
 import com.alibaba.fastjson.JSONObject;
@@ -32,12 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-*/
 /**
  * @description:
  * @author: 张晓东
  * @time: 2020/6/17 21:52
- *//*
+ */
 
 @Component
 public class WxbriskcountTask {
@@ -81,9 +79,8 @@ public class WxbriskcountTask {
                 if (null != faceDetectProjectThirdMappings && faceDetectProjectThirdMappings.size() > 0) {
                     String projectId = faceDetectProjectThirdMappings.get(0).getOuterProjectId();
                     String projectName = faceDetectProjectThirdMappings.get(0).getProjectName();
-                    Map<String, Object> fkSearchFaceInfo = bOpportunityMapper.fkSearchFaceInfo(projectId, i.getIdNumber());
+                    Map<String, Object> fkSearchFaceInfo = bOpportunityMapper.wxbriskcountTaskInfo(projectId, i.getIdNumber());
                     if (null != fkSearchFaceInfo) {
-                        SDictionary sDictionary = sDictionaryMapper.selectById((String) fkSearchFaceInfo.get("OpportunitySource"));
                         BCustomerattach bCustomerattach = bCustomerattachMapper.selectOne(new QueryWrapper<BCustomerattach>() {{
                             eq("OpportunityID", (String) fkSearchFaceInfo.get("ID"));
                             gt("SalesStatus", 2);
@@ -103,7 +100,6 @@ public class WxbriskcountTask {
                             setId(i.getId());//主键
                             setCustomerName(i.getName());//客户姓名
                             setCustomerCardId(i.getIdNumber());//客户身份证号
-                            setChannelCompany(i.getChannelCompany());//渠道机构
                             setAgent(i.getAgent());//经纪人
                             setSalerName(i.getSalerName());//置业顾问
                             setReportTime(i.getReportTime());//报备时间
@@ -118,13 +114,15 @@ public class WxbriskcountTask {
                             setRegionalName((String) fkSearchFaceInfo.get("RegionalName"));//区域名称
                             setCityId((String) fkSearchFaceInfo.get("CityId"));//城市主键
                             setCityName((String) fkSearchFaceInfo.get("CityName"));//城市名称
+                            setDictId((String) fkSearchFaceInfo.get("DictId"));//渠道来源
+                            setDictName((String) fkSearchFaceInfo.get("DictName"));//渠道来源
+                            setChannelCompanyId((String) fkSearchFaceInfo.get("ReportUserOrg"));//渠道机构ID
+                            setChannelCompany((String) fkSearchFaceInfo.get("OrgName"));//渠道机构
                             setProjectId(projectId);//项目主键
                             setProjectName(projectName);//项目名称
-                            setDictId(null != sDictionary ? sDictionary.getId() : "");//渠道来源
-                            setDictName(null != sDictionary ? sDictionary.getDictName() : "");//渠道来源
-                            setHouse(null != agreementCopy && agreementCopy.size() > 0 ? (String) agreementCopy.get(0).get("RoomCode") : "");//房间编号
-                            setSubscribeMoney(null != subscribeCopy && subscribeCopy.size() > 0 ? (Float) subscribeCopy.get(0).get("") : 0);//认购金额
-                            setContractMoney(null != agreementCopy && agreementCopy.size() > 0 ? (Float) agreementCopy.get(0).get("") : 0);//签约金额
+                            setHouse(null != subscribeCopy && subscribeCopy.size() > 0 ? (String) subscribeCopy.get(0).get("RoomCode") : null);//房间编号
+                            setSubscribeMoney(null != subscribeCopy && subscribeCopy.size() > 0 ? (Float) subscribeCopy.get(0).get("CjTotal") : null);//认购金额
+                            setContractMoney(null != agreementCopy && agreementCopy.size() > 0 ? (Float) agreementCopy.get(0).get("HtTotal") : null);//签约金额
                             if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && StringUtils.isEmpty(i.getRiskApproveStatus())) {
                                 setRiskStatus(0);//风险类别:0疑似风险
                             } else if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && i.getRiskApproveStatus().equals("NORMAL")) {
@@ -156,4 +154,3 @@ public class WxbriskcountTask {
     }
 
 }
-*/

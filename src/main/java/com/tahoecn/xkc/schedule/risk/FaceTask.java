@@ -8,6 +8,7 @@ import com.tahoecn.xkc.mapper.risk.BRiskbatchlogMapper;
 import com.tahoecn.xkc.mapper.risk.BRiskconfigMapper;
 import com.tahoecn.xkc.mapper.risk.BRiskinfoMapper;
 import com.tahoecn.xkc.model.mongo.FaceDetectCustomer;
+import com.tahoecn.xkc.model.mongo.FaceDetectProjectThirdMapping;
 import com.tahoecn.xkc.model.risk.BRiskbatchlog;
 import com.tahoecn.xkc.model.risk.BRiskconfig;
 import com.tahoecn.xkc.model.risk.BRiskinfo;
@@ -100,21 +101,19 @@ public class FaceTask {
     }
 
     private void record(FaceDetectCustomer faceDetectCustomer, Map<String, BRiskconfig> bRiskconfigMap) {
-
-        if (StringUtils.isNotEmpty(faceDetectCustomer.getProjectId()) &&
-                bRiskconfigMap.containsKey(faceDetectCustomer.getProjectId().toUpperCase()) &&
-                bRiskconfigMap.get(faceDetectCustomer.getProjectId().toUpperCase()).getIsFace() == 1) {
-
-            //人脸明细
-            Map<String, Object> customerInfo = faceDetectCustomerService.findCustomerInfo(faceDetectCustomer.getProjectId(), faceDetectCustomer.getIdNumber());
-            if (null == customerInfo.get("faceDetectCustomers") || ((List) customerInfo.get("faceDetectCustomers")).size() <= 0 ||
-                    null == customerInfo.get("faceDetectCustomerDetail") || null == customerInfo.get("faceDetectImageDatails") ||
-                    ((List) customerInfo.get("faceDetectImageDatails")).size() <= 0) return;
-
+        if (StringUtils.isEmpty(faceDetectCustomer.getProjectId()) || StringUtils.isEmpty(faceDetectCustomer.getIdNumber())) return;
+        //人脸明细
+        Map<String, Object> customerInfo = faceDetectCustomerService.findCustomerInfo(faceDetectCustomer.getProjectId(), faceDetectCustomer.getIdNumber());
+        if (null == customerInfo.get("faceDetectCustomers") || ((List) customerInfo.get("faceDetectCustomers")).size() <= 0 ||
+                null == customerInfo.get("faceDetectCustomerDetail") || null == customerInfo.get("faceDetectProjectThirdMapping") ||
+                null == customerInfo.get("faceDetectImageDatails") || ((List) customerInfo.get("faceDetectImageDatails")).size() <= 0) return;
+        FaceDetectProjectThirdMapping faceDetectProjectThirdMapping = (FaceDetectProjectThirdMapping) customerInfo.get("faceDetectProjectThirdMapping");
+        if (StringUtils.isNotEmpty(faceDetectProjectThirdMapping.getOuterProjectId().toUpperCase()) &&
+                bRiskconfigMap.containsKey(faceDetectProjectThirdMapping.getOuterProjectId().toUpperCase()) &&
+                bRiskconfigMap.get(faceDetectProjectThirdMapping.getOuterProjectId().toUpperCase()).getIsFace() == 1) {
             //客储明细
-            Map<String, Object> fkSearchFaceInfo = bOpportunityMapper.fkSearchFaceInfo(faceDetectCustomer.getProjectId(), faceDetectCustomer.getIdNumber());
+            Map<String, Object> fkSearchFaceInfo = bOpportunityMapper.fkSearchFaceInfo(faceDetectProjectThirdMapping.getOuterProjectId(), faceDetectCustomer.getIdNumber());
             if (null == fkSearchFaceInfo) return;
-
             Map<String, Object> firstFace = faceDetectCustomerService.firstFace(customerInfo);
             Date reportTime = (Date) fkSearchFaceInfo.get("ReportTime");
             if (null != firstFace.get("firstFaceTime") && reportTime.compareTo((Date) firstFace.get("firstFaceTime")) >= 0) {

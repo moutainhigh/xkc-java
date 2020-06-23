@@ -55,7 +55,8 @@
 			Aa.Status,
 			Aa.BldArea,
 			Aa.QSDate AS ContractTime,
-            D.QSDate AS SubscribeTime
+            D.QSDate AS SubscribeTime,
+            Aa.HtTotal
 		FROM
 			MY.dotnet_erp25.dbo.s_Contract Aa
 		INNER JOIN MY.dotnet_erp25.dbo.p_Customer Bb ON Aa.CstGUID = Bb.CstGUID
@@ -78,7 +79,8 @@
 			A.Status,
 			A.OrderType,
 			A.BldArea,
-			A.QSDate
+			A.QSDate,
+			A.CjTotal
 		FROM
 			MY.dotnet_erp25.dbo.s_Trade D
 		INNER JOIN MY.dotnet_erp25.dbo.s_Order A ON D.TradeGUID = A.TradeGUID

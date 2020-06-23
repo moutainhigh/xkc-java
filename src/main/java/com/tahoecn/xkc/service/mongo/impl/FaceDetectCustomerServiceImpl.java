@@ -39,8 +39,10 @@ public class FaceDetectCustomerServiceImpl implements FaceDetectCustomerService 
         List<FaceDetectCustomer> faceDetectCustomers = null;
         FaceDetectCustomerDetail faceDetectCustomerDetail = null;
         List<FaceDetectImageDatail> faceDetectImageDatails = null;
+        FaceDetectProjectThirdMapping faceDetectProjectThirdMapping = null;
         if (null != faceDetectProjectThirdMappings && faceDetectProjectThirdMappings.size() > 0) {
-            this.mongoTemplate.find(new Query(Criteria.where("projectId").is(faceDetectProjectThirdMappings.get(0).getOuterProjectId()).and("idNumber").is(idCard)), FaceDetectCustomer.class);
+            faceDetectProjectThirdMapping = faceDetectProjectThirdMappings.get(0);
+            faceDetectCustomers = this.mongoTemplate.find(new Query(Criteria.where("projectId").is(faceDetectProjectThirdMappings.get(0).getProjectId()).and("idNumber").is(idCard)), FaceDetectCustomer.class);
             if (null != faceDetectCustomers && faceDetectCustomers.size() > 0) {
                 faceDetectCustomerDetail = this.mongoTemplate.findById(faceDetectCustomers.get(0).getId(), FaceDetectCustomerDetail.class);
                 if (null != faceDetectCustomerDetail && null != faceDetectCustomerDetail.getMatchFaces() && faceDetectCustomerDetail.getMatchFaces().size() > 0) {
@@ -54,6 +56,7 @@ public class FaceDetectCustomerServiceImpl implements FaceDetectCustomerService 
         result.put("faceDetectCustomers", faceDetectCustomers);
         result.put("faceDetectCustomerDetail", faceDetectCustomerDetail);
         result.put("faceDetectImageDatails", faceDetectImageDatails);
+        result.put("faceDetectProjectThirdMapping", faceDetectProjectThirdMapping);
         return result;
     }
 
@@ -84,6 +87,30 @@ public class FaceDetectCustomerServiceImpl implements FaceDetectCustomerService 
         });
         result.put("firstFaceTime", firstFaceTime.get());
         result.put("imgUrl", imgUrl.get());
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> findCustomerInfoOrXkcProjectId(String projectId, String idCard) {
+        List<FaceDetectProjectThirdMapping> faceDetectProjectThirdMappings = this.mongoTemplate.find(new Query(Criteria.where("outerProjectId").is(projectId)), FaceDetectProjectThirdMapping.class);
+        List<FaceDetectCustomer> faceDetectCustomers = null;
+        FaceDetectCustomerDetail faceDetectCustomerDetail = null;
+        List<FaceDetectImageDatail> faceDetectImageDatails = null;
+        if (null != faceDetectProjectThirdMappings && faceDetectProjectThirdMappings.size() > 0) {
+            faceDetectCustomers = this.mongoTemplate.find(new Query(Criteria.where("projectId").is(faceDetectProjectThirdMappings.get(0).getProjectId()).and("idNumber").is(idCard)), FaceDetectCustomer.class);
+            if (null != faceDetectCustomers && faceDetectCustomers.size() > 0) {
+                faceDetectCustomerDetail = this.mongoTemplate.findById(faceDetectCustomers.get(0).getId(), FaceDetectCustomerDetail.class);
+                if (null != faceDetectCustomerDetail && null != faceDetectCustomerDetail.getMatchFaces() && faceDetectCustomerDetail.getMatchFaces().size() > 0) {
+                    faceDetectImageDatails = this.mongoTemplate.find(new Query(Criteria.where("faceToken").in(
+                            (Set)faceDetectCustomerDetail.getMatchFaces().stream().map(i -> ((Map) i).get("faceToken").toString()).collect(Collectors.toSet())
+                    )), FaceDetectImageDatail.class);
+                }
+            }
+        }
+        Map result = Maps.newHashMap();
+        result.put("faceDetectCustomers", faceDetectCustomers);
+        result.put("faceDetectCustomerDetail", faceDetectCustomerDetail);
+        result.put("faceDetectImageDatails", faceDetectImageDatails);
         return result;
     }
 }

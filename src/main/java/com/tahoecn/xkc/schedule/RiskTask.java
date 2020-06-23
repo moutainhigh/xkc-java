@@ -55,8 +55,8 @@ public class RiskTask {
     @Value("${updateInfo.task:0 7 1 * * ?}")
     private String updateInfoCron;
 
-    /*@Value("${wxbriskcount.task:0 8 1 * * ?}")
-    private String wxbriskcountCron;*/
+    @Value("${wxbriskcount.task:0 8 1 * * ?}")
+    private String wxbriskcountCron;
 
 
     // 配置定时任务:
@@ -262,7 +262,7 @@ public class RiskTask {
     }
 
 
-    /*@Bean(name = "wxbriskcountDetail")
+    @Bean(name = "wxbriskcountDetail")
     public MethodInvokingJobDetailFactoryBean wxbriskcountDetail(WxbriskcountTask wxbriskcountTask) {
         MethodInvokingJobDetailFactoryBean jobDetail = new MethodInvokingJobDetailFactoryBean();
         // 是否并发执行
@@ -287,7 +287,7 @@ public class RiskTask {
         // cron表达式
         trigger.setCronExpression(wxbriskcountCron);
         return trigger;
-    }*/
+    }
 
     @Value("${execute.task.port}")
     private String executeTaskPort;
@@ -301,14 +301,14 @@ public class RiskTask {
     @Bean(name = "scheduler")
     public SchedulerFactoryBean schedulerFactory(Trigger faceTrigger, Trigger jointNameTrigger, Trigger protectCustomerTrigger,
                                                  Trigger searchMobileTrigger, Trigger shortDealTrigger, Trigger unverifiedTrigger,
-                                                 Trigger updateInfoTrigger/*, Trigger wxbriskcountTrigger*/) {
+                                                 Trigger updateInfoTrigger, Trigger wxbriskcountTrigger) {
         SchedulerFactoryBean bean = new SchedulerFactoryBean();
         log.info("zhangxiaodong log ip : {} , port : {} , if : {}", executeTaskIp, tomcatPort.getHttpPort(), ipList().contains(executeTaskIp) && executeTaskPort.equals(tomcatPort.getHttpPort()+""));
         if (ipList().contains(executeTaskIp) && executeTaskPort.equals(tomcatPort.getHttpPort()+"")) {
             // 延时启动，应用启动1秒后
             bean.setStartupDelay(1);
             // 注册触发器
-            bean.setTriggers(/*editNameTrigger, */faceTrigger, jointNameTrigger, protectCustomerTrigger, searchMobileTrigger,
+            bean.setTriggers(faceTrigger, jointNameTrigger, protectCustomerTrigger, searchMobileTrigger,
                     shortDealTrigger, unverifiedTrigger, updateInfoTrigger/*, wxbriskcountTrigger*/);
         }
         return bean;

@@ -559,4 +559,29 @@
 		AND cust.CardID = #{cardId}
 	</select>
 
+	<select id="wxbriskcountTaskInfo" resultType="java.util.Map">
+		SELECT
+			opp.ID,
+			city.ID AS CityId,
+			city.OrgName AS CityName,
+			area.ID AS RegionalId,
+			area.OrgName AS RegionalName,
+			dict.id AS DictId,
+			dict.dictname AS DictName,
+			clue.ReportUserOrg AS OrgId,
+			co.OrgName AS OrgName
+		FROM
+			B_Opportunity opp
+		INNER JOIN B_Customer cust ON opp.CustomerID = cust.ID
+		INNER JOIN B_Clue clue ON opp.ClueID = clue.ID
+		INNER JOIN B_Project project ON opp.ProjectID = project.ID
+		LEFT JOIN S_Dictionary dict ON opp.OpportunitySource = dict.ID
+		INNER JOIN S_Organization city ON project.BUGUID = city.ID
+		INNER JOIN S_Organization area ON area.ID = city.PID
+		LEFT JOIN B_ChannelOrg co on clue.ReportUserOrg=co.ID
+		WHERE
+			opp.ProjectID = #{projectId}
+		AND cust.CardID = #{cardId}
+	</select>
+
 </mapper>
