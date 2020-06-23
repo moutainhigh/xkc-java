@@ -106,7 +106,7 @@ public class UnverifiedTask {
         if (null != xsOppGuid && xsOppGuid.size() > 0 && StringUtils.isNotEmpty((String) xsOppGuid.get("ProjectID")) &&
                 bRiskconfigMap.containsKey(xsOppGuid.get("ProjectID").toString().toUpperCase()) &&
                 bRiskconfigMap.get(xsOppGuid.get("ProjectID").toString().toUpperCase()).getIsUnverified() == 1) {
-            Map<String, Object> customerInfo = this.faceDetectCustomerService.findCustomerInfo(xsOppGuid.get("ProjectID").toString(),
+            Map<String, Object> customerInfo = this.faceDetectCustomerService.findCustomerInfoOrXkcProjectId(xsOppGuid.get("ProjectID").toString(),
                     xsOppGuid.get("CardID").toString());
             if (null == customerInfo.get("faceDetectCustomers") || ((List) customerInfo.get("faceDetectCustomers")).size() <= 0 ||
                     null == customerInfo.get("faceDetectCustomerDetail") || null == customerInfo.get("faceDetectImageDatails") ||

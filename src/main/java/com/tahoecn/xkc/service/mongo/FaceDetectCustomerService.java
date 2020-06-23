@@ -14,9 +14,9 @@ import java.util.Map;
 public interface FaceDetectCustomerService {
 
     /**
-     * @param projectId 项目id
+     * @param projectId mongo项目id
      * @param idCard    身份证号
-     * @description: 过去客户详情数据
+     * @description: 获取客户详情数据
      * @return:
      * @author: 张晓东
      * @time: 2020/6/11 16:24
@@ -41,5 +41,15 @@ public interface FaceDetectCustomerService {
      * @time: 2020/6/12 14:16
      */
     Map<String, Object> firstFace(Map<String, Object> customerInfo);
+
+    /**
+     * @param projectId 客储项目id
+     * @param idCard    身份证号
+     * @description: 获取客户详情数据
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/6/11 16:24
+     */
+    Map<String, Object> findCustomerInfoOrXkcProjectId(String projectId, String idCard);
 
 }
