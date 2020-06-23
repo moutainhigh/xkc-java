@@ -120,9 +120,9 @@ public class WxbriskcountTask {
                             setChannelCompany((String) fkSearchFaceInfo.get("OrgName"));//渠道机构
                             setProjectId(projectId);//项目主键
                             setProjectName(projectName);//项目名称
-                            setHouse(null != agreementCopy && agreementCopy.size() > 0 ? (String) agreementCopy.get(0).get("RoomCode") : "");//房间编号
-                            setSubscribeMoney(null != subscribeCopy && subscribeCopy.size() > 0 ? (Float) subscribeCopy.get(0).get("") : 0);//认购金额
-                            setContractMoney(null != agreementCopy && agreementCopy.size() > 0 ? (Float) agreementCopy.get(0).get("") : 0);//签约金额
+                            setHouse(null != subscribeCopy && subscribeCopy.size() > 0 ? (String) subscribeCopy.get(0).get("RoomCode") : null);//房间编号
+                            setSubscribeMoney(null != subscribeCopy && subscribeCopy.size() > 0 ? (Float) subscribeCopy.get(0).get("CjTotal") : null);//认购金额
+                            setContractMoney(null != agreementCopy && agreementCopy.size() > 0 ? (Float) agreementCopy.get(0).get("HtTotal") : null);//签约金额
                             if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && StringUtils.isEmpty(i.getRiskApproveStatus())) {
                                 setRiskStatus(0);//风险类别:0疑似风险
                             } else if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && i.getRiskApproveStatus().equals("NORMAL")) {

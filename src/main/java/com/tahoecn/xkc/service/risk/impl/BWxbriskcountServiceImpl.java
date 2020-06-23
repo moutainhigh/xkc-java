@@ -70,8 +70,8 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                     dictId.addAll(tjqd);
                     break;
                 case "0":
-                    if (!zyqd.contains(vo.getSourceType().toUpperCase()) && !tjqd.contains(vo.getSourceType().toUpperCase())
-                            && !zyfk.equals(vo.getSourceType().toUpperCase())) {
+                    if (zyqd.contains(vo.getSourceType().toUpperCase()) || tjqd.contains(vo.getSourceType().toUpperCase())
+                            || zyfk.equals(vo.getSourceType().toUpperCase())) {
                         dictId = Lists.newArrayList();
                         dictId.add(vo.getSourceType());
                     } else {
@@ -184,8 +184,8 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         in("DictId", tjqd);
                         break;
                     case "0":
-                        if (!zyqd.contains(vo.getSourceType().toUpperCase()) && !tjqd.contains(vo.getSourceType().toUpperCase())
-                                && !zyfk.equals(vo.getSourceType().toUpperCase())) {
+                        if (zyqd.contains(vo.getSourceType().toUpperCase()) || tjqd.contains(vo.getSourceType().toUpperCase())
+                                || zyfk.equals(vo.getSourceType().toUpperCase())) {
                             eq("DictId", vo.getSourceType());
                         } else {
                             eq("ChannelCompanyId", vo.getSourceType());

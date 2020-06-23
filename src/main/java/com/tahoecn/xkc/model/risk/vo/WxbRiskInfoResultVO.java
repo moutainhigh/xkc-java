@@ -1,5 +1,7 @@
 package com.tahoecn.xkc.model.risk.vo;
 
+import com.tahoecn.core.date.DateUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -116,40 +118,40 @@ public class WxbRiskInfoResultVO implements Serializable {
         this.contractMoney = contractMoney;
     }
 
-    public Date getReportTime() {
-        return reportTime;
+    public String getReportTime() {
+        return DateUtil.formatDate(reportTime);
     }
 
     public void setReportTime(Date reportTime) {
         this.reportTime = reportTime;
     }
 
-    public Date getFirstPhotoTime() {
-        return firstPhotoTime;
+    public String getFirstPhotoTime() {
+        return DateUtil.formatDate(firstPhotoTime);
     }
 
     public void setFirstPhotoTime(Date firstPhotoTime) {
         this.firstPhotoTime = firstPhotoTime;
     }
 
-    public Date getFreshCardTime() {
-        return freshCardTime;
+    public String getFreshCardTime() {
+        return DateUtil.formatDate(freshCardTime);
     }
 
     public void setFreshCardTime(Date freshCardTime) {
         this.freshCardTime = freshCardTime;
     }
 
-    public Date getSubscribeTime() {
-        return subscribeTime;
+    public String getSubscribeTime() {
+        return DateUtil.formatDate(subscribeTime);
     }
 
     public void setSubscribeTime(Date subscribeTime) {
         this.subscribeTime = subscribeTime;
     }
 
-    public Date getFinishTime() {
-        return finishTime;
+    public String getFinishTime() {
+        return DateUtil.formatDate(finishTime);
     }
 
     public void setFinishTime(Date finishTime) {
