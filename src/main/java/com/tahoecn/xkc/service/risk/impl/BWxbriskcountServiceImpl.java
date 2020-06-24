@@ -172,7 +172,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             if (null != vo.getFinishStartTime() && null != vo.getFinishEndTime())
                 between("FinishTime", vo.getFinishStartTime(), vo.getFinishEndTime());//签约时间
             if (null != vo.getFreshCardStartTime() && null != vo.getFreshCardEndTime())
-                between("FinishTime", vo.getFreshCardStartTime(), vo.getFreshCardEndTime());//统计(刷证)时间
+                between("FreshCardTime", vo.getFreshCardStartTime(), vo.getFreshCardEndTime());//统计(刷证)时间
             if (StringUtils.isNotEmpty(vo.getType()) || StringUtils.isNotEmpty(vo.getSourceType())) {
                 switch (vo.getType()) {
                     case "one":
