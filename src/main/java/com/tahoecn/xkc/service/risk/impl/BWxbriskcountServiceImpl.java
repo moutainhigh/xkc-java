@@ -194,6 +194,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         break;
                 }
             }
+            boolean flag = false;
             if (null != vo.getStyle()) {
                 switch (vo.getStyle()) {
                     case 1://全部客户
@@ -203,7 +204,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         isNotNull("FreshCardTime");
                         break;
                     case 3://认证失败
-                        lambda().and(wrapper -> wrapper.isNotNull(BWxbriskcount::getHasPass).or().gt(BWxbriskcount::getHasPass, 0));
+                       and(wrapper -> wrapper.isNull("HasPass").or().le("HasPass", 0));
                         break;
                     case 4://报备客户
                         isNotNull("ReportTime");
