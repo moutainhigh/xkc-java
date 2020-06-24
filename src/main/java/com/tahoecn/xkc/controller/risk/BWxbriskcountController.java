@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -86,7 +87,9 @@ public class BWxbriskcountController extends TahoeBaseController {
         try {
             if (bindingResult.hasErrors())
                 return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), bindingResult.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
-            return ResultUtil.setJsonResult(TipsEnum.Success.getCode(), this.service.label(vo));
+            Map label = this.service.label(vo);
+            label.remove("wrapper");
+            return ResultUtil.setJsonResult(TipsEnum.Success.getCode(), label);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());

@@ -15,6 +15,8 @@ public class WxbRiskInfoResultVO implements Serializable {
     private String regionalName;//区域
     private String cityName;//城市
     private String projectName;//项目
+    private String projectId;//项目id
+    private String opportunityId;
     private String house;//房间编号
     private String customerName;//客户姓名
     private String customerId;//客户id
@@ -37,6 +39,22 @@ public class WxbRiskInfoResultVO implements Serializable {
 
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getOpportunityId() {
+        return opportunityId;
+    }
+
+    public void setOpportunityId(String opportunityId) {
+        this.opportunityId = opportunityId;
     }
 
     public String getRegionalName() {
