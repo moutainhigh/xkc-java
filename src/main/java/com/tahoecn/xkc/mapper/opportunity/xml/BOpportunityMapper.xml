@@ -569,7 +569,8 @@
 			dict.id AS DictId,
 			dict.dictname AS DictName,
 			clue.ReportUserOrg AS OrgId,
-			co.OrgName AS OrgName
+			co.OrgName AS OrgName,
+			opp.CustomerID AS CustomerId
 		FROM
 			B_Opportunity opp
 		INNER JOIN B_Customer cust ON opp.CustomerID = cust.ID

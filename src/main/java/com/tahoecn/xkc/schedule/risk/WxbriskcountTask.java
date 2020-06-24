@@ -9,7 +9,6 @@ import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
 import com.tahoecn.xkc.mapper.risk.BCustomerattachMapper;
 import com.tahoecn.xkc.mapper.risk.BMongotosqlservererrorlogMapper;
 import com.tahoecn.xkc.mapper.risk.BWxbriskcountMapper;
-import com.tahoecn.xkc.model.dict.SDictionary;
 import com.tahoecn.xkc.model.mongo.FaceDetectCustomer;
 import com.tahoecn.xkc.model.mongo.FaceDetectCustomerFreshCardInfo;
 import com.tahoecn.xkc.model.mongo.FaceDetectProjectThirdMapping;
@@ -118,6 +117,7 @@ public class WxbriskcountTask {
                             setDictName((String) fkSearchFaceInfo.get("DictName"));//渠道来源
                             setChannelCompanyId((String) fkSearchFaceInfo.get("ReportUserOrg"));//渠道机构ID
                             setChannelCompany((String) fkSearchFaceInfo.get("OrgName"));//渠道机构
+                            setCustomerId((String) fkSearchFaceInfo.get("CustomerId"));
                             setProjectId(projectId);//项目主键
                             setProjectName(projectName);//项目名称
                             setHouse(null != subscribeCopy && subscribeCopy.size() > 0 ? (String) subscribeCopy.get(0).get("RoomCode") : null);//房间编号

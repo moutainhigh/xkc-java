@@ -17,6 +17,7 @@ public class WxbRiskInfoResultVO implements Serializable {
     private String projectName;//项目
     private String house;//房间编号
     private String customerName;//客户姓名
+    private String customerId;//客户id
     private String dictName; //渠道来源名称
     private String channelCompany;// 渠道机构
     private String agent;//经纪人
@@ -29,6 +30,14 @@ public class WxbRiskInfoResultVO implements Serializable {
     private Date subscribeTime;//认购时间
     private Date finishTime;//签约时间
     private String riskStatus;//风险类别:0疑似风险1无风险2确认风险3未知客户
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
 
     public String getRegionalName() {
         return regionalName;

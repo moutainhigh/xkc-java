@@ -22,4 +22,6 @@ public interface IBWxbriskcountService extends IService<BWxbriskcount> {
     IPage statistical(WxbRiskStatisticalPageVO vo);
 
     Map list(WxbRiskInfoPageVO vo);
+
+    Map label(WxbRiskInfoPageVO vo);
 }

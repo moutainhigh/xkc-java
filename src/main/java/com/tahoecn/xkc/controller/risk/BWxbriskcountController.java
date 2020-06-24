@@ -74,4 +74,22 @@ public class BWxbriskcountController extends TahoeBaseController {
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
         }
     }
+
+
+    @ApiOperation(value = "旺小宝-风控-label查询", httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "vo", value = "旺小宝-风控-label查询",
+                    paramType = "query", required = true, dataType = "WxbRiskInfoPageVO")
+    })
+    @PostMapping(value = "/label")
+    public JSONResult label(@Valid @RequestBody WxbRiskInfoPageVO vo, BindingResult bindingResult) {
+        try {
+            if (bindingResult.hasErrors())
+                return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), bindingResult.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
+            return ResultUtil.setJsonResult(TipsEnum.Success.getCode(), this.service.label(vo));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
 }

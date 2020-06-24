@@ -134,7 +134,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             if (wxbRiskStatisticalResultVO.getCardCustomers() > 0) {
                 NumberFormat numberFormat = NumberFormat.getInstance();
                 numberFormat.setMaximumFractionDigits(2);
-                result = numberFormat.format(wxbRiskStatisticalResultVO.getOk() / wxbRiskStatisticalResultVO.getCardCustomers() * 100);
+                result = numberFormat.format((float) wxbRiskStatisticalResultVO.getOk() / (float) wxbRiskStatisticalResultVO.getCardCustomers() * 100);
             }
             wxbRiskStatisticalResultVO.setRate(result);//风险率
             return wxbRiskStatisticalResultVO;
@@ -144,7 +144,6 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             setTotal(total);
         }};
     }
-
 
     @Override
     public Map list(WxbRiskInfoPageVO vo) {
@@ -204,7 +203,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         isNotNull("FreshCardTime");
                         break;
                     case 3://认证失败
-                       and(wrapper -> wrapper.isNull("HasPass").or().le("HasPass", 0));
+                        and(wrapper -> wrapper.isNull("HasPass").or().le("HasPass", 0));
                         break;
                     case 4://报备客户
                         isNotNull("ReportTime");
@@ -280,6 +279,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 setFreshCardTime(i.getFreshCardTime());//刷证时间
                 setSubscribeTime(i.getSubscribeTime());//认购时间
                 setFinishTime(i.getFinishTime());//签约时间
+                setCustomerId(i.getCustomerId());
                 setRiskStatus(null != i.getRiskStatus()
                         ? i.getRiskStatus() == 0
                         ? "疑似风险"
@@ -299,7 +299,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
         if (wxbLabel.getFreshCardCustomer() > 0) {
             NumberFormat numberFormat = NumberFormat.getInstance();
             numberFormat.setMaximumFractionDigits(2);
-            result = numberFormat.format(wxbLabel.getOk() / wxbLabel.getFreshCardCustomer() * 100);
+            result = numberFormat.format((float) wxbLabel.getOk() / (float) wxbLabel.getFreshCardCustomer() * 100);
         }
         wxbLabel.setRate(result);//风险率
         return new HashMap() {{
@@ -309,6 +309,147 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             put("current", pages.getCurrent());
             put("pages", pages.getPages());
             put("label", wxbLabel);
+        }};
+    }
+
+
+    @Override
+    public Map label(WxbRiskInfoPageVO vo) {
+        Wrapper<BWxbriskcount> wrapper = new QueryWrapper<BWxbriskcount>() {{
+            if (StringUtils.isNotEmpty(vo.getRegionalId()))
+                eq("RegionalId", vo.getRegionalId());//区域主键
+            if (StringUtils.isNotEmpty(vo.getCityId()))
+                eq("CityId", vo.getCityId());//城市主键
+            if (StringUtils.isNotEmpty(vo.getProjectId()))
+                eq("ProjectId", vo.getProjectId());//项目主键
+            if (StringUtils.isNotEmpty(vo.getHomeName()))
+                eq("House", vo.getHomeName());//房间
+            if (StringUtils.isNotEmpty(vo.getAgent()))
+                like("Agent", "%" + vo.getAgent() + "%");//经纪人
+            if (StringUtils.isNotEmpty(vo.getSalerName()))
+                like("SalerName", "%" + vo.getSalerName() + "%");//置业顾问
+            if (null != vo.getRiskStatus())
+                eq("RiskStatus", vo.getRiskStatus());//风险类型0疑似风险1无风险2确认风险3未知客户
+            if (null != vo.getReportStartTime() && null != vo.getReportEndTime())
+                between("ReportTime", vo.getReportStartTime(), vo.getReportEndTime());//报备时间
+            if (null != vo.getFirstPhotoStartTime() && null != vo.getFirstPhotoEndTime())
+                between("FirstPhotoTime", vo.getFirstPhotoStartTime(), vo.getFirstPhotoEndTime());//抓拍时间
+            if (null != vo.getSubscribeStartTime() && null != vo.getSubscribeEndTime())
+                between("SubscribeTime", vo.getSubscribeStartTime(), vo.getSubscribeEndTime());//认购时间
+            if (null != vo.getFinishStartTime() && null != vo.getFinishEndTime())
+                between("FinishTime", vo.getFinishStartTime(), vo.getFinishEndTime());//签约时间
+            if (null != vo.getFreshCardStartTime() && null != vo.getFreshCardEndTime())
+                between("FreshCardTime", vo.getFreshCardStartTime(), vo.getFreshCardEndTime());//统计(刷证)时间
+            if (StringUtils.isNotEmpty(vo.getType()) || StringUtils.isNotEmpty(vo.getSourceType())) {
+                switch (vo.getType()) {
+                    case "one":
+                        in("DictId", zyqd);
+                        break;
+                    case "two":
+                        eq("DictId", fxzj);
+                        break;
+                    case "three":
+                        in("DictId", tjqd);
+                        break;
+                    case "0":
+                        if (zyqd.contains(vo.getSourceType().toUpperCase()) || tjqd.contains(vo.getSourceType().toUpperCase())
+                                || zyfk.equals(vo.getSourceType().toUpperCase())) {
+                            eq("DictId", vo.getSourceType());
+                        } else {
+                            eq("ChannelCompanyId", vo.getSourceType());
+                        }
+                        break;
+                }
+            }
+            boolean flag = false;
+            if (null != vo.getStyle()) {
+                switch (vo.getStyle()) {
+                    case 1://全部客户
+                        //全部客户不处理
+                        break;
+                    case 2://刷证客户
+                        isNotNull("FreshCardTime");
+                        break;
+                    case 3://认证失败
+                        and(wrapper -> wrapper.isNull("HasPass").or().le("HasPass", 0));
+                        break;
+                    case 4://报备客户
+                        isNotNull("ReportTime");
+                        break;
+                    case 5://成交客户
+                        isNotNull("FinishTime");
+                        break;
+                    case 6://未知客户
+                        eq("RiskStatus", 3);
+                        break;
+                    case 7://疑似风险
+                        in("RiskStatus", 0, 1, 2);
+                        break;
+                    case 8://疑似待确认
+                        eq("RiskStatus", 0);
+                        break;
+                    case 9://确认风险
+                        eq("RiskStatus", 2);
+                        break;
+                    case 10://确认无风险
+                        eq("RiskStatus", 1);
+                        break;
+                }
+            }
+        }};
+        IPage<BWxbriskcount> pages = super.page(new Page(vo.getPageNum(), vo.getPageSize()), wrapper);
+        List<WxbRiskInfoResultVO> data = pages.getRecords().stream().map(i -> {
+            WxbRiskInfoResultVO wxbRiskInfoResult = new WxbRiskInfoResultVO() {{
+                setRegionalName(i.getRegionalName());//区域
+                setCityName(i.getCityName());//城市
+                setProjectName(i.getProjectName());//项目
+                setHouse(i.getHouse());//房间编号
+                setCustomerName(i.getCustomerName());//客户姓名
+                if (StringUtils.isNotEmpty(i.getDictId())) {
+                    if (zyqd.contains(i.getDictId())) {
+                        setDictName("自有渠道"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    } else if (fxzj.equals(i.getDictId())) {
+                        setDictName("分销中介"); //渠道来源名称
+                        setChannelCompany(i.getChannelCompany());// 渠道机构
+                    } else if (tjqd.contains(i.getDictId())) {
+                        setDictName("推荐渠道"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    } else if (zyfk.equals(i.getDictId())) {
+                        setDictName("自然访客"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    }
+                }
+                setAgent(i.getAgent());//经纪人
+                setSalerName(i.getSalerName());//置业顾问
+                setSubscribeMoney(i.getSubscribeMoney());//认购金额
+                setContractMoney(i.getContractMoney());//签约金额
+                setReportTime(i.getReportTime());//报备时间
+                setFirstPhotoTime(i.getFirstPhotoTime());//首次抓拍时间
+                setFreshCardTime(i.getFreshCardTime());//刷证时间
+                setSubscribeTime(i.getSubscribeTime());//认购时间
+                setFinishTime(i.getFinishTime());//签约时间
+                setCustomerId(i.getCustomerId());
+                setRiskStatus(null != i.getRiskStatus()
+                        ? i.getRiskStatus() == 0
+                        ? "疑似风险"
+                        : i.getRiskStatus() == 1
+                        ? "无风险"
+                        : i.getRiskStatus() == 2
+                        ? "确认风险"
+                        : i.getRiskStatus() == 3
+                        ? "未知客户"
+                        : ""
+                        : "");//风险类别:0疑似风险1无风险2确认风险3未知客户
+            }};
+            return wxbRiskInfoResult;
+        }).collect(Collectors.toList());
+        return new HashMap() {{
+            put("records", data);
+            put("size", pages.getSize());
+            put("total", pages.getTotal());
+            put("current", pages.getCurrent());
+            put("pages", pages.getPages());
         }};
     }
 }
