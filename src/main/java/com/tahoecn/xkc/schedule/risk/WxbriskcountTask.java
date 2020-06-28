@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +68,13 @@ public class WxbriskcountTask {
         if (null != bWxbriskcount) {
             Date startTime = JointNameTask.getMinAndMaxDate().get("min");
             Date endTime = JointNameTask.getMinAndMaxDate().get("max");
-            faceDetectCustomers = this.mongoTemplate.find(new Query(Criteria.where("createTime").exists(true).gte(startTime).lte(endTime).
-                    orOperator(Criteria.where("updateTime").exists(true).gte(startTime).lte(endTime))), FaceDetectCustomer.class);
+//            Date startTime = new Date(1592928000000l);
+//            Date endTime = new Date(1593014399000l);
+            faceDetectCustomers = mongoTemplate.find(
+                    new Query(new Criteria().orOperator(
+                            Criteria.where("createTime").exists(true).gte(startTime).lte(endTime),
+                            Criteria.where("updateTime").exists(true).gte(startTime).lte(endTime))),
+                    FaceDetectCustomer.class);
         } else {
             faceDetectCustomers = this.mongoTemplate.find(new Query(), FaceDetectCustomer.class);
         }
@@ -121,8 +127,8 @@ public class WxbriskcountTask {
                             setProjectId(projectId);//项目主键
                             setProjectName(projectName);//项目名称
                             setHouse(null != subscribeCopy && subscribeCopy.size() > 0 ? (String) subscribeCopy.get(0).get("RoomCode") : null);//房间编号
-                            setSubscribeMoney(null != subscribeCopy && subscribeCopy.size() > 0 ? (Float) subscribeCopy.get(0).get("CjTotal") : null);//认购金额
-                            setContractMoney(null != agreementCopy && agreementCopy.size() > 0 ? (Float) agreementCopy.get(0).get("HtTotal") : null);//签约金额
+                            setSubscribeMoney(null != subscribeCopy && subscribeCopy.size() > 0 ? ((BigDecimal) subscribeCopy.get(0).get("CjTotal")).floatValue() : null);//认购金额
+                            setContractMoney(null != agreementCopy && agreementCopy.size() > 0 ? ((BigDecimal) agreementCopy.get(0).get("HtTotal")).floatValue() : null);//签约金额
                             if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && StringUtils.isEmpty(i.getRiskApproveStatus())) {
                                 setRiskStatus(0);//风险类别:0疑似风险
                             } else if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && i.getRiskApproveStatus().equals("NORMAL")) {

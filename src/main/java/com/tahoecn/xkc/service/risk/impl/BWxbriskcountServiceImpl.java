@@ -140,6 +140,8 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             return wxbRiskStatisticalResultVO;
         }).collect(Collectors.toList());
         return new Page() {{
+            setCurrent(vo.getPageNum());
+            setSize(vo.getPageSize());
             setRecords(data);
             setTotal(total);
         }};
