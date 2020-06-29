@@ -727,6 +727,9 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
                 fkSearchCurrentInfo = bOpportunityMapper.fkSearchCurrentInfo(bRiskinfo.getCustomerMobile(), bRiskinfo.getProjectId());
             } else {
                 fkSearchCurrentInfo = bClueMapper.fkSearchCurrentInfo(bRiskinfo.getCustomerMobile(), bRiskinfo.getProjectId());
+                if (null == fkSearchCurrentInfo) {
+                    fkSearchCurrentInfo = bClueMapper.fkSearchCurrentInfoById(bRiskinfo.getClueId());
+                }
             }
 
             String orgName2 = (String) fkSearchCurrentInfo.get("adviserGroupName");//渠道名称
