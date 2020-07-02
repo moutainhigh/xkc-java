@@ -112,6 +112,9 @@
                     RegionalId,
                     CityId,
                     ProjectId,
+                    DictId,
+                    DictName,
+                    ChannelCompanyId,
                     ChannelCompany
             ) a
     </select>

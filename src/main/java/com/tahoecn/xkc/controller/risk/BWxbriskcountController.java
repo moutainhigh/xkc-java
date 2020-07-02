@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * @since 2020-06-17
  */
 
-//@RestController
+@RestController
 @RequestMapping("/bWxbriskcount")
 @Api(tags = "旺小宝风控报表")
 public class BWxbriskcountController extends TahoeBaseController {
@@ -69,6 +70,26 @@ public class BWxbriskcountController extends TahoeBaseController {
             if (bindingResult.hasErrors())
                 return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), bindingResult.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
             return ResultUtil.setJsonResult(TipsEnum.Success.getCode(), this.service.list(vo));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "旺小宝-风控-label查询", httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "vo", value = "旺小宝-风控-label查询",
+                    paramType = "query", required = true, dataType = "WxbRiskInfoPageVO")
+    })
+    @PostMapping(value = "/label")
+    public JSONResult label(@Valid @RequestBody WxbRiskInfoPageVO vo, BindingResult bindingResult) {
+        try {
+            if (bindingResult.hasErrors())
+                return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), bindingResult.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
+            Map label = this.service.label(vo);
+            label.remove("wrapper");
+            return ResultUtil.setJsonResult(TipsEnum.Success.getCode(), label);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());

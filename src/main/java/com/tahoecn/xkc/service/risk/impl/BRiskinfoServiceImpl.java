@@ -579,11 +579,12 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
             put("customerName", bRiskinfo.getCustomerName());//客户姓名
             put("customerMobile", bRiskinfo.getCustomerMobile());//联系方式
             putAll(currentAndFirst(bRiskinfo));
+            Map faceImg = getFaceImg(bRiskinfo);//旺小宝人脸识别数据
             //人脸识别
             put("faceDiscern", new HashMap() {{
                 put("firstTime", bRiskinfo.getFirstFaceTime());//首访时间：2020-04-06 09:20:29
                 put("imgLink", bRiskinfo.getImgPath());//图片链接：http://mobilesaleadmin.tahoecndemo.com:5678/
-                put("videoLink", "");//短视频链接：http://mobilesaleadmin.tahoecndemo.com:5678/
+                put("videoLink", faceImg.get("videoUrl"));//短视频链接：http://mobilesaleadmin.tahoecndemo.com:5678/
             }});
             //报备
             Map dm = this;
@@ -593,7 +594,6 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
                 put("adviserGroupName", dm.get("relatedAdviserGroupName"));//渠道类型
                 put("reportTime", bRiskinfo.getReportTime());//报备时间
             }});
-            Map faceImg = getFaceImg(bRiskinfo);
             //到访
             put("visit", new HashMap() {{
                 put("saleUserName", bRiskinfo.getSaleUserName());//置业顾问：李强
@@ -727,6 +727,9 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
                 fkSearchCurrentInfo = bOpportunityMapper.fkSearchCurrentInfo(bRiskinfo.getCustomerMobile(), bRiskinfo.getProjectId());
             } else {
                 fkSearchCurrentInfo = bClueMapper.fkSearchCurrentInfo(bRiskinfo.getCustomerMobile(), bRiskinfo.getProjectId());
+                if (null == fkSearchCurrentInfo) {
+                    fkSearchCurrentInfo = bClueMapper.fkSearchCurrentInfoById(bRiskinfo.getClueId());
+                }
             }
 
             String orgName2 = (String) fkSearchCurrentInfo.get("adviserGroupName");//渠道名称

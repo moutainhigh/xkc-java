@@ -157,7 +157,7 @@ public class WxbRiskInfoPageVO implements Serializable {
     public void setFirstPhotoEndTime(Date firstPhotoEndTime) {
         this.firstPhotoEndTime = firstPhotoEndTime;
         if (null != firstPhotoEndTime) {
-            this.firstPhotoEndTime = WxbRiskStatisticalPageVO.endDate(reportEndTime);
+            this.firstPhotoEndTime = WxbRiskStatisticalPageVO.endDate(firstPhotoEndTime);
         }
     }
 

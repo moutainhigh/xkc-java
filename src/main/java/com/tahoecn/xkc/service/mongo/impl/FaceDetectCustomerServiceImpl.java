@@ -70,23 +70,28 @@ public class FaceDetectCustomerServiceImpl implements FaceDetectCustomerService 
         Map result = new HashMap();
         result.put("firstFaceTime", null);
         result.put("imgUrl", null);
+        result.put("videoUrl", null);
         if (null == customerInfo.get("faceDetectCustomers") || ((List) customerInfo.get("faceDetectCustomers")).size() <= 0 ||
                 null == customerInfo.get("faceDetectCustomerDetail") || null == customerInfo.get("faceDetectImageDatails") ||
                 ((List) customerInfo.get("faceDetectImageDatails")).size() <= 0) return result;
         AtomicReference<Date> firstFaceTime = new AtomicReference();
         AtomicReference<String> imgUrl = new AtomicReference();
+        AtomicReference<String> videoUrl = new AtomicReference();
         ((List) customerInfo.get("faceDetectImageDatails")).stream().forEach(i -> {
             FaceDetectImageDatail faceDetectImageDatail = (FaceDetectImageDatail) i;
             if (null == firstFaceTime.get()) {
                 firstFaceTime.set(faceDetectImageDatail.getSnapDate());
                 imgUrl.set(faceDetectImageDatail.getPanoramicView());
+                videoUrl.set(faceDetectImageDatail.getVideo());
             } else if (faceDetectImageDatail.getSnapDate().compareTo(firstFaceTime.get()) < 0) {
                 firstFaceTime.set(faceDetectImageDatail.getSnapDate());
                 imgUrl.set(faceDetectImageDatail.getPanoramicView());
+                videoUrl.set(faceDetectImageDatail.getVideo());
             }
         });
         result.put("firstFaceTime", firstFaceTime.get());
         result.put("imgUrl", imgUrl.get());
+        result.put("videoUrl", videoUrl.get());
         return result;
     }
 

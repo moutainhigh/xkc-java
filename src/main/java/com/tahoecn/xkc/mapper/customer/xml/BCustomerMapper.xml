@@ -1493,7 +1493,10 @@ FROM (
 	</select>
 
     <select id="getCustomerForSingle" resultType="java.util.HashMap">
-        select projectId,name,mobile,idNumber,salerName,firstReadTime,reportTime,RTrim(channelCompany) channelCompany,agent,finishTime,finishNo
-        from V_CustomerForSingle order by ReportTime
+     	select projectId,name,mobile,idNumber,salerName,firstReadTime,
+     	reportTime,RTrim(channelCompany) channelCompany,
+     	agent,finishTime,finishNo,orderGUID,subscriptionTime
+        from V_CustomerForSingle v where not exists(select 1 from B_WxbInfoLog g where g.OrderGUID=v.OrderGUID and g.status=0)
+		order by ReportTime
     </select>
 </mapper>

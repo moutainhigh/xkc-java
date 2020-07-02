@@ -704,4 +704,23 @@
 			AND clue.Status in (1,2)
 	</select>
 
+    <!--查当前的置业顾问和报备人-->
+    <select id="fkSearchCurrentInfoById" parameterType="java.lang.String" resultType="java.util.Map">
+	    SELECT
+			clue.ReportUserID,
+			clue.ReportUserName,
+			opp.SaleUserID,
+			opp.SaleUserName,
+			org.OrgName,
+		    org.ID OrgID,
+			dbo.F_GetDictionaryName(clue.AdviserGroupID) as adviserGroupName
+		FROM
+			B_Clue clue
+		LEFT JOIN B_Opportunity opp ON opp.ClueID = clue.ID
+		LEFT JOIN B_ChannelOrg org on clue.ReportUserOrg = org.ID
+		WHERE
+			clue.ID = #{id}
+	</select>
+
+
 </mapper>

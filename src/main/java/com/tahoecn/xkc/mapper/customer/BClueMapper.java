@@ -111,4 +111,13 @@ public interface BClueMapper extends BaseMapper<BClue> {
 	 */
 	Map<String, Object> fkSearchCurrentInfo(@Param("mobile") String mobile, @Param("projectId") String projectId);
 
+
+	/**
+	 * @description: 查当前的置业顾问和报备人
+	 * @return:
+	 * @author: 张晓东
+	 * @time: 2020/5/23 14:53
+	 */
+	Map<String, Object> fkSearchCurrentInfoById(@Param("id") String id);
+
 }
