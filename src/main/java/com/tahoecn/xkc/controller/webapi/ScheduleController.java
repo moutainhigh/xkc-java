@@ -22,7 +22,7 @@ public class ScheduleController {
     private CustomerTask customerTask;
 
     @RequestMapping(value = "/pushCustomerToWxb", method = {RequestMethod.GET})
-    public void pushCustomerToWxb() throws Exception {
+    public void pushCustomerToWxb() {
         customerTask.pushCustomerToWxb();
     }
 }
