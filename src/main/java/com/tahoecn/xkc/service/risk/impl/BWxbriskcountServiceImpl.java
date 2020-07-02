@@ -80,7 +80,8 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                     break;
             }
         }
-
+        vo.setDictId(dictId);
+        vo.setChannelCompanyId(channelCompanyId);
         Long total = this.baseMapper.pageCount(vo);
         List<Map> tmpData = this.baseMapper.pageList(vo);
         List<WxbRiskStatisticalResultVO> data = tmpData.stream().map(i -> {
@@ -133,20 +134,60 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             if (wxbRiskStatisticalResultVO.getCardCustomers() > 0) {
                 NumberFormat numberFormat = NumberFormat.getInstance();
                 numberFormat.setMaximumFractionDigits(2);
-                result = numberFormat.format(wxbRiskStatisticalResultVO.getOk() / wxbRiskStatisticalResultVO.getCardCustomers() * 100);
+                result = numberFormat.format((float) wxbRiskStatisticalResultVO.getOk() / (float) wxbRiskStatisticalResultVO.getCardCustomers() * 100);
             }
             wxbRiskStatisticalResultVO.setRate(result);//风险率
             return wxbRiskStatisticalResultVO;
         }).collect(Collectors.toList());
         return new Page() {{
+            setCurrent(vo.getPageNum());
+            setSize(vo.getPageSize());
             setRecords(data);
             setTotal(total);
         }};
     }
 
-
     @Override
     public Map list(WxbRiskInfoPageVO vo) {
+        Map result = label(vo);
+        Wrapper wrapper = (Wrapper) result.get("wrapper");
+        List<BWxbriskcount> list = this.baseMapper.selectList(wrapper);
+        WxbLabelVO wxbLabel = new WxbLabelVO();
+        list.forEach(i -> {
+            wxbLabel.setAllCustomer(wxbLabel.getAllCustomer() + 1);//全部客户
+            if (null != i.getFreshCardTime())
+                wxbLabel.setFreshCardCustomer(wxbLabel.getFreshCardCustomer() + 1);//刷证客户
+            if (null == i.getHasPass() || i.getHasPass() < 1)
+                wxbLabel.setAttestFail(wxbLabel.getAttestFail() + 1);//认证失败
+            if (null != i.getReportTime())
+                wxbLabel.setReportCustomer(wxbLabel.getReportCustomer() + 1);//报备客户
+            if (null != i.getFinishTime())
+                wxbLabel.setDealCustomer(wxbLabel.getDealCustomer() + 1);//成交客户
+            if (null != i.getRiskStatus() && i.getRiskStatus() == 3)
+                wxbLabel.setUnknownCustomer(wxbLabel.getUnknownCustomer() + 1);//未知客户
+            if (null != i.getRiskStatus() && i.getRiskStatus() == 0)
+                wxbLabel.setYsdqz(wxbLabel.getYsdqz() + 1);//疑似待确认
+            if (null != i.getRiskStatus() && i.getRiskStatus() == 2)
+                wxbLabel.setOk(wxbLabel.getOk() + 1);//确认风险
+            if (null != i.getRiskStatus() && i.getRiskStatus() == 1)
+                wxbLabel.setNoOk(wxbLabel.getNoOk() + 1);//确认无风险
+        });
+        wxbLabel.setYsqz(wxbLabel.getOk() + wxbLabel.getNoOk() + wxbLabel.getYsdqz());//疑似确认风险
+        String rate = "0";
+        if (wxbLabel.getFreshCardCustomer() > 0) {
+            NumberFormat numberFormat = NumberFormat.getInstance();
+            numberFormat.setMaximumFractionDigits(2);
+            rate = numberFormat.format((float) wxbLabel.getOk() / (float) wxbLabel.getFreshCardCustomer() * 100);
+        }
+        wxbLabel.setRate(rate);//风险率
+        result.put("label", wxbLabel);
+        result.remove("wrapper");
+        return result;
+    }
+
+
+    @Override
+    public Map label(WxbRiskInfoPageVO vo) {
         Wrapper<BWxbriskcount> wrapper = new QueryWrapper<BWxbriskcount>() {{
             if (StringUtils.isNotEmpty(vo.getRegionalId()))
                 eq("RegionalId", vo.getRegionalId());//区域主键
@@ -171,7 +212,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             if (null != vo.getFinishStartTime() && null != vo.getFinishEndTime())
                 between("FinishTime", vo.getFinishStartTime(), vo.getFinishEndTime());//签约时间
             if (null != vo.getFreshCardStartTime() && null != vo.getFreshCardEndTime())
-                between("FinishTime", vo.getFreshCardStartTime(), vo.getFreshCardEndTime());//统计(刷证)时间
+                between("FreshCardTime", vo.getFreshCardStartTime(), vo.getFreshCardEndTime());//统计(刷证)时间
             if (StringUtils.isNotEmpty(vo.getType()) || StringUtils.isNotEmpty(vo.getSourceType())) {
                 switch (vo.getType()) {
                     case "one":
@@ -193,6 +234,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         break;
                 }
             }
+            boolean flag = false;
             if (null != vo.getStyle()) {
                 switch (vo.getStyle()) {
                     case 1://全部客户
@@ -202,7 +244,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         isNotNull("FreshCardTime");
                         break;
                     case 3://认证失败
-                        lambda().and(wrapper -> wrapper.isNotNull(BWxbriskcount::getHasPass).or().gt(BWxbriskcount::getHasPass, 0));
+                        and(wrapper -> wrapper.isNull("HasPass").or().le("HasPass", 0));
                         break;
                     case 4://报备客户
                         isNotNull("ReportTime");
@@ -229,25 +271,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             }
         }};
         IPage<BWxbriskcount> pages = super.page(new Page(vo.getPageNum(), vo.getPageSize()), wrapper);
-        WxbLabelVO wxbLabel = new WxbLabelVO();
         List<WxbRiskInfoResultVO> data = pages.getRecords().stream().map(i -> {
-            wxbLabel.setAllCustomer(wxbLabel.getAllCustomer() + 1);//全部客户
-            if (null != i.getFreshCardTime())
-                wxbLabel.setFreshCardCustomer(wxbLabel.getFreshCardCustomer() + 1);//刷证客户
-            if (null == i.getHasPass() || i.getHasPass() < 1)
-                wxbLabel.setAttestFail(wxbLabel.getAttestFail() + 1);//认证失败
-            if (null != i.getReportTime())
-                wxbLabel.setReportCustomer(wxbLabel.getReportCustomer() + 1);//报备客户
-            if (null != i.getFinishTime())
-                wxbLabel.setDealCustomer(wxbLabel.getDealCustomer() + 1);//成交客户
-            if (null != i.getRiskStatus() && i.getRiskStatus() == 3)
-                wxbLabel.setUnknownCustomer(wxbLabel.getUnknownCustomer() + 1);//未知客户
-            if (null != i.getRiskStatus() && i.getRiskStatus() == 0)
-                wxbLabel.setYsdqz(wxbLabel.getYsdqz() + 1);//疑似待确认
-            if (null != i.getRiskStatus() && i.getRiskStatus() == 2)
-                wxbLabel.setOk(wxbLabel.getOk() + 1);//确认风险
-            if (null != i.getRiskStatus() && i.getRiskStatus() == 1)
-                wxbLabel.setNoOk(wxbLabel.getNoOk() + 1);//确认无风险
             WxbRiskInfoResultVO wxbRiskInfoResult = new WxbRiskInfoResultVO() {{
                 setRegionalName(i.getRegionalName());//区域
                 setCityName(i.getCityName());//城市
@@ -278,6 +302,9 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 setFreshCardTime(i.getFreshCardTime());//刷证时间
                 setSubscribeTime(i.getSubscribeTime());//认购时间
                 setFinishTime(i.getFinishTime());//签约时间
+                setCustomerId(i.getCustomerId());
+                setProjectId(i.getProjectId());
+                setOpportunityId(i.getOpportunityId());
                 setRiskStatus(null != i.getRiskStatus()
                         ? i.getRiskStatus() == 0
                         ? "疑似风险"
@@ -292,21 +319,13 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             }};
             return wxbRiskInfoResult;
         }).collect(Collectors.toList());
-        wxbLabel.setYsqz(wxbLabel.getOk() + wxbLabel.getNoOk() + wxbLabel.getYsdqz());//疑似确认风险
-        String result = "0";
-        if (wxbLabel.getFreshCardCustomer() > 0) {
-            NumberFormat numberFormat = NumberFormat.getInstance();
-            numberFormat.setMaximumFractionDigits(2);
-            result = numberFormat.format(wxbLabel.getOk() / wxbLabel.getFreshCardCustomer() * 100);
-        }
-        wxbLabel.setRate(result);//风险率
         return new HashMap() {{
             put("records", data);
             put("size", pages.getSize());
             put("total", pages.getTotal());
             put("current", pages.getCurrent());
             put("pages", pages.getPages());
-            put("label", wxbLabel);
+            put("wrapper", wrapper);
         }};
     }
 }

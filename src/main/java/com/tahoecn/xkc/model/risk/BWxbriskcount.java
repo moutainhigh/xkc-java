@@ -52,6 +52,9 @@ public class BWxbriskcount implements Serializable {
     @TableField("CustomerCardId")
     private String CustomerCardId;
 
+    @TableField("CustomerId")
+    private String CustomerId;
+
     @TableField("DictId")
     private String DictId;
 
@@ -173,6 +176,15 @@ public class BWxbriskcount implements Serializable {
     public void setCustomerCardId(String CustomerCardId) {
         this.CustomerCardId = CustomerCardId;
     }
+
+    public String getCustomerId() {
+        return CustomerId;
+    }
+
+    public void setCustomerId(String CustomerId) {
+        this.CustomerId = CustomerId;
+    }
+
     public String getDictName() {
         return DictName;
     }
