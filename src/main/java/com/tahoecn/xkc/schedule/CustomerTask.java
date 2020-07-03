@@ -45,7 +45,7 @@ public class CustomerTask {
     @Resource
     BWxbInfoLogMapper bWxbInfoLogMapper;
 
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
     public void pushCustomerToWxb(){
        if (StringUtils.isNotBlank(bindHost)) {
             Boolean flg = false;
