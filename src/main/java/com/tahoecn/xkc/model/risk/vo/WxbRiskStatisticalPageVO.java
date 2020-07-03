@@ -1,9 +1,11 @@
 package com.tahoecn.xkc.model.risk.vo;
 
 import com.tahoecn.core.date.DateUtil;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -76,7 +78,7 @@ public class WxbRiskStatisticalPageVO implements Serializable {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Date startTime) throws Exception{
         this.startTime = startTime;
         if (null != startTime) {
             this.startTime = startDate(startTime);
@@ -87,7 +89,7 @@ public class WxbRiskStatisticalPageVO implements Serializable {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Date endTime) throws Exception {
         this.endTime = endTime;
         if (null != endTime) {
             this.endTime = endDate(endTime);
@@ -126,21 +128,25 @@ public class WxbRiskStatisticalPageVO implements Serializable {
         this.channelCompanyId = channelCompanyId;
     }
 
-    public static Date startDate(Date startDate) {
-        Calendar cal = Calendar.getInstance();
+    public static Date startDate(Date startDate) throws Exception {
+        /*Calendar cal = Calendar.getInstance();
         cal.setTime(startDate);
         cal.add(Calendar.HOUR, 0);
         cal.add(Calendar.MINUTE, 0);
         cal.add(Calendar.SECOND, 0);
-        return cal.getTime();
+        return cal.getTime();*/
+        String s = DateUtil.formatDate(startDate);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s + " 00:00:00");
     }
 
-    public static Date endDate(Date endDate) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endDate);
-        cal.add(Calendar.HOUR, 23);
-        cal.add(Calendar.MINUTE, 59);
-        cal.add(Calendar.SECOND, 59);
-        return cal.getTime();
+    public static Date endDate(Date endDate) throws Exception {
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(endDate);
+//        cal.add(Calendar.HOUR, 23);
+//        cal.add(Calendar.MINUTE, 59);
+//        cal.add(Calendar.SECOND, 59);
+//        return cal.getTime();
+        String s = DateUtil.formatDate(endDate);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s + " 23:59:59");
     }
 }

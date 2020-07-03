@@ -121,7 +121,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return reportStartTime;
     }
 
-    public void setReportStartTime(Date reportStartTime) {
+    public void setReportStartTime(Date reportStartTime) throws Exception{
         this.reportStartTime = reportStartTime;
         if (null != reportStartTime) {
             this.reportStartTime = WxbRiskStatisticalPageVO.startDate(reportStartTime);
@@ -132,7 +132,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return reportEndTime;
     }
 
-    public void setReportEndTime(Date reportEndTime) {
+    public void setReportEndTime(Date reportEndTime)throws Exception {
         this.reportEndTime = reportEndTime;
         if (null != reportEndTime) {
             this.reportEndTime = WxbRiskStatisticalPageVO.endDate(reportEndTime);
@@ -143,7 +143,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return firstPhotoStartTime;
     }
 
-    public void setFirstPhotoStartTime(Date firstPhotoStartTime) {
+    public void setFirstPhotoStartTime(Date firstPhotoStartTime) throws Exception{
         this.firstPhotoStartTime = firstPhotoStartTime;
         if (null != firstPhotoStartTime) {
             this.firstPhotoStartTime = WxbRiskStatisticalPageVO.startDate(firstPhotoStartTime);
@@ -154,7 +154,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return firstPhotoEndTime;
     }
 
-    public void setFirstPhotoEndTime(Date firstPhotoEndTime) {
+    public void setFirstPhotoEndTime(Date firstPhotoEndTime) throws Exception{
         this.firstPhotoEndTime = firstPhotoEndTime;
         if (null != firstPhotoEndTime) {
             this.firstPhotoEndTime = WxbRiskStatisticalPageVO.endDate(firstPhotoEndTime);
@@ -165,7 +165,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return subscribeStartTime;
     }
 
-    public void setSubscribeStartTime(Date subscribeStartTime) {
+    public void setSubscribeStartTime(Date subscribeStartTime) throws Exception{
         this.subscribeStartTime = subscribeStartTime;
         if (null != subscribeStartTime) {
             this.subscribeStartTime = WxbRiskStatisticalPageVO.startDate(subscribeStartTime);
@@ -176,7 +176,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return subscribeEndTime;
     }
 
-    public void setSubscribeEndTime(Date subscribeEndTime) {
+    public void setSubscribeEndTime(Date subscribeEndTime) throws Exception{
         this.subscribeEndTime = subscribeEndTime;
         if (null != subscribeEndTime) {
             this.subscribeEndTime = WxbRiskStatisticalPageVO.endDate(subscribeEndTime);
@@ -187,7 +187,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return finishStartTime;
     }
 
-    public void setFinishStartTime(Date finishStartTime) {
+    public void setFinishStartTime(Date finishStartTime) throws Exception{
         this.finishStartTime = finishStartTime;
         if (null != finishStartTime) {
             this.finishStartTime = WxbRiskStatisticalPageVO.startDate(finishStartTime);
@@ -198,7 +198,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return finishEndTime;
     }
 
-    public void setFinishEndTime(Date finishEndTime) {
+    public void setFinishEndTime(Date finishEndTime) throws Exception{
         this.finishEndTime = finishEndTime;
         if (null != finishEndTime) {
             this.finishEndTime = WxbRiskStatisticalPageVO.endDate(finishEndTime);
@@ -209,7 +209,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return freshCardStartTime;
     }
 
-    public void setFreshCardStartTime(Date freshCardStartTime) {
+    public void setFreshCardStartTime(Date freshCardStartTime) throws Exception{
         this.freshCardStartTime = freshCardStartTime;
         if (null != freshCardStartTime) {
             this.freshCardStartTime = WxbRiskStatisticalPageVO.startDate(freshCardStartTime);
@@ -220,7 +220,7 @@ public class WxbRiskInfoPageVO implements Serializable {
         return freshCardEndTime;
     }
 
-    public void setFreshCardEndTime(Date freshCardEndTime) {
+    public void setFreshCardEndTime(Date freshCardEndTime) throws Exception{
         this.freshCardEndTime = freshCardEndTime;
         if (null != freshCardEndTime) {
             this.freshCardEndTime = WxbRiskStatisticalPageVO.endDate(freshCardEndTime);
