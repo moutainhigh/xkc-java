@@ -793,10 +793,18 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
         } else {
             wrapper.notIn("riskType", 6);
         }
-        if (StringUtils.isNotEmpty(vo.getReportUserName()))
-            wrapper.like("ReportUserName", "%" + vo.getReportUserName() + "%");
-        if (null != vo.getCustomerStatus())
-            wrapper.eq("CustomerStatus", vo.getCustomerStatus());
+        if (StringUtils.isNotEmpty(vo.getReportUserName())){
+            wrapper.and(w -> w.like("ReportUserName", "%" + vo.getReportUserName() + "%")
+                    .or().like("SaleUserName","%" + vo.getReportUserName() + "%"));
+        }
+        if (null != vo.getCustomerStatus()){
+            if (vo.getCustomerStatus() == 2) {
+                wrapper.in("CustomerStatus", vo.getCustomerStatus(), 3);
+            }else {
+                wrapper.eq("CustomerStatus", vo.getCustomerStatus());
+            }
+        }
+
 
         /*Map<Integer, List<BRiskinfo>> datasMap = this.baseMapper.selectList(wrapper).stream().
                 collect(Collectors.groupingBy(BRiskinfo::getRiskType));*/
@@ -869,6 +877,8 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
                 setAdviserGroupName((String) map.get("AdviserGroupName"));
                 setReportUserName((String) map.get("ReportUserName"));
                 setOrgId((String) map.get("OrgId"));
+                setClueId((String) map.get("ClueId"));
+                setOpportunityId((String) map.get("OpportunityId"));
             }};
         } else {
             bRiskinfo = (BRiskinfo) o;
