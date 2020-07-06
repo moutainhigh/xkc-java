@@ -877,6 +877,8 @@ public class BRiskinfoServiceImpl extends ServiceImpl<BRiskinfoMapper, BRiskinfo
                 setAdviserGroupName((String) map.get("AdviserGroupName"));
                 setReportUserName((String) map.get("ReportUserName"));
                 setOrgId((String) map.get("OrgId"));
+                setClueId((String) map.get("ClueId"));
+                setOpportunityId((String) map.get("OpportunityId"));
             }};
         } else {
             bRiskinfo = (BRiskinfo) o;
