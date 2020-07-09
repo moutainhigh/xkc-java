@@ -1,11 +1,15 @@
 package com.tahoecn.xkc.service.risk.impl;
 
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.tahoecn.core.date.DateUtil;
+import com.tahoecn.xkc.common.utils.ExcelUtil;
 import com.tahoecn.xkc.mapper.risk.BWxbriskcountMapper;
 import com.tahoecn.xkc.model.risk.BWxbriskcount;
 import com.tahoecn.xkc.model.risk.vo.*;
@@ -13,7 +17,10 @@ import com.tahoecn.xkc.service.risk.IBWxbriskcountService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,12 +93,41 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
         List<Map> tmpData = this.baseMapper.pageList(vo);
         List<WxbRiskStatisticalResultVO> data = tmpData.stream().map(i -> {
             List<BWxbriskcount> bWxbriskcounts = this.baseMapper.selectList(new QueryWrapper<BWxbriskcount>() {{
-                eq("RegionalId", i.get("RegionalId"));
-                eq("CityId", i.get("CityId"));
-                eq("ProjectId", i.get("ProjectId"));
-                eq("DictId", i.get("DictId"));
-                if (StringUtils.isNotEmpty((String) i.get("ChannelCompanyId")))
+                if (null == i.get("RegionalId")) {
+                    isNull("RegionalId");
+                } else {
+                    eq("RegionalId", i.get("RegionalId"));
+                }
+                if (null == i.get("CityId")) {
+                    isNull("CityId");
+                } else {
+                    eq("CityId", i.get("CityId"));
+                }
+                if (null == i.get("ProjectId")) {
+                    isNull("ProjectId");
+                } else {
+                    eq("ProjectId", i.get("ProjectId"));
+                }
+                if (null == i.get("DictId")) {
+                    isNull("DictId");
+                } else {
+                    eq("DictId", i.get("DictId"));
+                }
+                if (null == i.get("DictName")) {
+                    isNull("DictName");
+                } else {
+                    eq("DictName", i.get("DictName"));
+                }
+                if (null == i.get("ChannelCompanyId")) {
+                    isNull("ChannelCompanyId");
+                } else {
                     eq("ChannelCompanyId", i.get("ChannelCompanyId"));
+                }
+                if (null == i.get("ChannelCompany")) {
+                    isNull("ChannelCompany");
+                } else {
+                    eq("ChannelCompany", i.get("ChannelCompany"));
+                }
                 if (null != vo.getStartTime() && null != vo.getEndTime())
                     between("FreshCardTime", vo.getStartTime(), vo.getEndTime());
             }});
@@ -188,7 +224,139 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
 
     @Override
     public Map label(WxbRiskInfoPageVO vo) {
-        Wrapper<BWxbriskcount> wrapper = new QueryWrapper<BWxbriskcount>() {{
+        Wrapper<BWxbriskcount> wrapper = getWrapper(vo);
+        IPage<BWxbriskcount> pages = super.page(new Page(vo.getPageNum(), vo.getPageSize()), wrapper);
+        List<WxbRiskInfoResultVO> data = pages.getRecords().stream().map(i -> {
+            WxbRiskInfoResultVO wxbRiskInfoResult = new WxbRiskInfoResultVO() {{
+                setRegionalName(i.getRegionalName());//区域
+                setCityName(i.getCityName());//城市
+                setProjectName(i.getProjectName());//项目
+                setHouse(i.getHouse());//房间编号
+                setCustomerName(i.getCustomerName());//客户姓名
+                if (StringUtils.isNotEmpty(i.getDictId())) {
+                    if (zyqd.contains(i.getDictId())) {
+                        setDictName("自有渠道"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    } else if (fxzj.equals(i.getDictId())) {
+                        setDictName("分销中介"); //渠道来源名称
+                        setChannelCompany(i.getChannelCompany());// 渠道机构
+                    } else if (tjqd.contains(i.getDictId())) {
+                        setDictName("推荐渠道"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    } else if (zyfk.equals(i.getDictId())) {
+                        setDictName("自然访客"); //渠道来源名称
+                        setChannelCompany(i.getDictName());// 渠道机构
+                    }
+                }
+                setAgent(i.getAgent());//经纪人
+                setSalerName(i.getSalerName());//置业顾问
+                setSubscribeMoney(i.getSubscribeMoney());//认购金额
+                setContractMoney(i.getContractMoney());//签约金额
+                setReportTime(i.getReportTime());//报备时间
+                setFirstPhotoTime(i.getFirstPhotoTime());//首次抓拍时间
+                setFreshCardTime(i.getFreshCardTime());//刷证时间
+                setSubscribeTime(i.getSubscribeTime());//认购时间
+                setFinishTime(i.getFinishTime());//签约时间
+                setCustomerId(i.getCustomerId());
+                setProjectId(i.getProjectId());
+                setOpportunityId(i.getOpportunityId());
+                setRiskStatus(null != i.getRiskStatus()
+                        ? i.getRiskStatus() == 0
+                        ? "疑似风险"
+                        : i.getRiskStatus() == 1
+                        ? "无风险"
+                        : i.getRiskStatus() == 2
+                        ? "确认风险"
+                        : i.getRiskStatus() == 3
+                        ? "未知客户"
+                        : ""
+                        : "");//风险类别:0疑似风险1无风险2确认风险3未知客户
+            }};
+            return wxbRiskInfoResult;
+        }).collect(Collectors.toList());
+        return new HashMap() {{
+            put("records", data);
+            put("size", pages.getSize());
+            put("total", pages.getTotal());
+            put("current", pages.getCurrent());
+            put("pages", pages.getPages());
+            put("wrapper", wrapper);
+        }};
+    }
+
+
+    @Override
+    public void export(WxbRiskInfoPageVO vo, HttpServletResponse response) throws Exception {
+        List<BWxbriskcount> bWxbriskcounts = this.baseMapper.selectList(getWrapper(vo));
+        List<Map<String, Object>> maps = bWxbriskcounts.stream().map(i -> {
+            HashMap<String, Object> data = Maps.newHashMap();
+            data.put("regionalName", i.getRegionalName());//区域
+            data.put("cityName", i.getCityName());//城市
+            data.put("rrojectName", i.getProjectName());//项目
+            data.put("house", i.getHouse());//房间编号
+            data.put("customerName", i.getCustomerName());//客户姓名
+            if (StringUtils.isNotEmpty(i.getDictId())) {
+                if (zyqd.contains(i.getDictId())) {
+                    data.put("dictName", "自有渠道"); //渠道来源名称
+                    data.put("channelCompany", i.getDictName());// 渠道机构
+                } else if (fxzj.equals(i.getDictId())) {
+                    data.put("dictName", "分销中介"); //渠道来源名称
+                    data.put("channelCompany", i.getChannelCompany());// 渠道机构
+                } else if (tjqd.contains(i.getDictId())) {
+                    data.put("dictName", "推荐渠道"); //渠道来源名称
+                    data.put("channelCompany", i.getDictName());// 渠道机构
+                } else if (zyfk.equals(i.getDictId())) {
+                    data.put("dictName", "自然访客"); //渠道来源名称
+                    data.put("channelCompany", i.getDictName());// 渠道机构
+                }
+            }
+            data.put("agent", i.getAgent());//经纪人
+            data.put("salerName", i.getSalerName());//置业顾问
+            data.put("subscribeMoney", i.getSubscribeMoney());//认购金额
+            data.put("contractMoney", i.getContractMoney());//签约金额
+            data.put("reportTime", null != i.getReportTime() ? DateUtil.formatDateTime(i.getReportTime()) : "");//报备时间
+            data.put("firstPhotoTime", null != i.getFirstPhotoTime() ? DateUtil.formatDateTime(i.getFirstPhotoTime()) : "");//首次抓拍时间
+            data.put("freshCardTime", null != i.getFreshCardTime() ? DateUtil.formatDateTime(i.getFreshCardTime()) : "");//刷证时间
+            data.put("subscribeTime", null != i.getSubscribeTime() ? DateUtil.formatDateTime(i.getSubscribeTime()) : "");//认购时间
+            data.put("finishTime", null != i.getFinishTime() ? DateUtil.formatDateTime(i.getFinishTime()) : "");//签约时间
+            data.put("riskStatus", null != i.getRiskStatus()
+                    ? i.getRiskStatus() == 0
+                    ? "疑似风险"
+                    : i.getRiskStatus() == 1
+                    ? "无风险"
+                    : i.getRiskStatus() == 2
+                    ? "确认风险"
+                    : i.getRiskStatus() == 3
+                    ? "未知客户"
+                    : ""
+                    : "");//风险类别:0疑似风险1无风险2确认风险3未知客户
+            return data;
+        }).collect(Collectors.toList());
+        List<ExcelExportEntity> entity = new ArrayList<ExcelExportEntity>();
+        entity.add(new ExcelExportEntity("区域", "regionalName"));
+        entity.add(new ExcelExportEntity("城市", "cityName"));
+        entity.add(new ExcelExportEntity("项目", "projectName"));
+        entity.add(new ExcelExportEntity("房间编号", "house"));
+        entity.add(new ExcelExportEntity("客户姓名", "customerName"));
+        entity.add(new ExcelExportEntity("渠道来源名称", "dictName"));
+        entity.add(new ExcelExportEntity("渠道机构", "channelCompany"));
+        entity.add(new ExcelExportEntity("经纪人", "agent"));
+        entity.add(new ExcelExportEntity("置业顾问", "salerName"));
+        entity.add(new ExcelExportEntity("认购金额", "subscribeMoney"));
+        entity.add(new ExcelExportEntity("签约金额", "contractMoney"));
+        entity.add(new ExcelExportEntity("报备时间", "reportTime"));
+        entity.add(new ExcelExportEntity("首次抓拍时间", "firstPhotoTime"));
+        entity.add(new ExcelExportEntity("刷证时间", "freshCardTime"));
+        entity.add(new ExcelExportEntity("认购时间", "subscribeTime"));
+        entity.add(new ExcelExportEntity("签约时间", "finishTime"));
+        entity.add(new ExcelExportEntity("风险类别", "riskStatus"));//0疑似风险1无风险2确认风险3未知客户
+        String name = "风控痛点列表" + DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss").format(LocalDateTime.now()) + ".xls";
+        ExcelUtil.exportExcel(entity, maps, name, response);
+    }
+
+
+    private Wrapper getWrapper(WxbRiskInfoPageVO vo) {
+        return new QueryWrapper<BWxbriskcount>() {{
             if (StringUtils.isNotEmpty(vo.getRegionalId()))
                 eq("RegionalId", vo.getRegionalId());//区域主键
             if (StringUtils.isNotEmpty(vo.getCityId()))
@@ -269,63 +437,6 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         break;
                 }
             }
-        }};
-        IPage<BWxbriskcount> pages = super.page(new Page(vo.getPageNum(), vo.getPageSize()), wrapper);
-        List<WxbRiskInfoResultVO> data = pages.getRecords().stream().map(i -> {
-            WxbRiskInfoResultVO wxbRiskInfoResult = new WxbRiskInfoResultVO() {{
-                setRegionalName(i.getRegionalName());//区域
-                setCityName(i.getCityName());//城市
-                setProjectName(i.getProjectName());//项目
-                setHouse(i.getHouse());//房间编号
-                setCustomerName(i.getCustomerName());//客户姓名
-                if (StringUtils.isNotEmpty(i.getDictId())) {
-                    if (zyqd.contains(i.getDictId())) {
-                        setDictName("自有渠道"); //渠道来源名称
-                        setChannelCompany(i.getDictName());// 渠道机构
-                    } else if (fxzj.equals(i.getDictId())) {
-                        setDictName("分销中介"); //渠道来源名称
-                        setChannelCompany(i.getChannelCompany());// 渠道机构
-                    } else if (tjqd.contains(i.getDictId())) {
-                        setDictName("推荐渠道"); //渠道来源名称
-                        setChannelCompany(i.getDictName());// 渠道机构
-                    } else if (zyfk.equals(i.getDictId())) {
-                        setDictName("自然访客"); //渠道来源名称
-                        setChannelCompany(i.getDictName());// 渠道机构
-                    }
-                }
-                setAgent(i.getAgent());//经纪人
-                setSalerName(i.getSalerName());//置业顾问
-                setSubscribeMoney(i.getSubscribeMoney());//认购金额
-                setContractMoney(i.getContractMoney());//签约金额
-                setReportTime(i.getReportTime());//报备时间
-                setFirstPhotoTime(i.getFirstPhotoTime());//首次抓拍时间
-                setFreshCardTime(i.getFreshCardTime());//刷证时间
-                setSubscribeTime(i.getSubscribeTime());//认购时间
-                setFinishTime(i.getFinishTime());//签约时间
-                setCustomerId(i.getCustomerId());
-                setProjectId(i.getProjectId());
-                setOpportunityId(i.getOpportunityId());
-                setRiskStatus(null != i.getRiskStatus()
-                        ? i.getRiskStatus() == 0
-                        ? "疑似风险"
-                        : i.getRiskStatus() == 1
-                        ? "无风险"
-                        : i.getRiskStatus() == 2
-                        ? "确认风险"
-                        : i.getRiskStatus() == 3
-                        ? "未知客户"
-                        : ""
-                        : "");//风险类别:0疑似风险1无风险2确认风险3未知客户
-            }};
-            return wxbRiskInfoResult;
-        }).collect(Collectors.toList());
-        return new HashMap() {{
-            put("records", data);
-            put("size", pages.getSize());
-            put("total", pages.getTotal());
-            put("current", pages.getCurrent());
-            put("pages", pages.getPages());
-            put("wrapper", wrapper);
         }};
     }
 }

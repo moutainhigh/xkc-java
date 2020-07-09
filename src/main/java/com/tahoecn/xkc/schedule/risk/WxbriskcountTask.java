@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tahoecn.core.date.DateUtil;
 import com.tahoecn.xkc.mapper.customer.STrade2CstMapper;
-import com.tahoecn.xkc.mapper.dict.SDictionaryMapper;
 import com.tahoecn.xkc.mapper.opportunity.BOpportunityMapper;
 import com.tahoecn.xkc.mapper.risk.BCustomerattachMapper;
 import com.tahoecn.xkc.mapper.risk.BMongotosqlservererrorlogMapper;
@@ -16,6 +15,7 @@ import com.tahoecn.xkc.model.risk.BCustomerattach;
 import com.tahoecn.xkc.model.risk.BMongotosqlservererrorlog;
 import com.tahoecn.xkc.model.risk.BWxbriskcount;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @description:
@@ -51,9 +48,6 @@ public class WxbriskcountTask {
     private BOpportunityMapper bOpportunityMapper;
 
     @Resource
-    private SDictionaryMapper sDictionaryMapper;
-
-    @Resource
     private BCustomerattachMapper bCustomerattachMapper;
 
     @Autowired
@@ -62,21 +56,21 @@ public class WxbriskcountTask {
     @Resource
     private STrade2CstMapper sTrade2CstMapper;
 
+    private static final Date AFRESH_PULL_TIME = null;//new Date(1594137610000l);//重新刷数据设置为昨天时间
+
     public void task() {
         List<FaceDetectCustomer> faceDetectCustomers = null;
         BWxbriskcount bWxbriskcount = bWxbriskcountMapper.one();
-        if (null != bWxbriskcount) {
-            Date startTime = JointNameTask.getMinAndMaxDate().get("min");
-            Date endTime = JointNameTask.getMinAndMaxDate().get("max");
-//            Date startTime = new Date(1592928000000l);
-//            Date endTime = new Date(1593014399000l);
+        Date startTime = JointNameTask.getMinAndMaxDate().get("min");
+        Date endTime = JointNameTask.getMinAndMaxDate().get("max");
+        if (null == bWxbriskcount || (null != AFRESH_PULL_TIME  && isEffectiveDate(AFRESH_PULL_TIME, startTime, endTime))) {
+            faceDetectCustomers = this.mongoTemplate.findAll(FaceDetectCustomer.class);
+        } else {
             faceDetectCustomers = mongoTemplate.find(
                     new Query(new Criteria().orOperator(
                             Criteria.where("createTime").exists(true).gte(startTime).lte(endTime),
                             Criteria.where("updateTime").exists(true).gte(startTime).lte(endTime))),
                     FaceDetectCustomer.class);
-        } else {
-            faceDetectCustomers = this.mongoTemplate.find(new Query(), FaceDetectCustomer.class);
         }
         faceDetectCustomers.forEach(i -> {
             try {
@@ -100,7 +94,7 @@ public class WxbriskcountTask {
                         }
                         List<Map<String, Object>> subscribeCopy = subscribe;
                         List<Map<String, Object>> agreementCopy = agreement;
-                        Long fdcfciCount = mongoTemplate.count(new Query(Criteria.where("customerId").is(i.getId())), FaceDetectCustomerFreshCardInfo.class);
+                        Long fdcfciCount = mongoTemplate.count(new Query(Criteria.where("customerId").is(new ObjectId(i.getId()))), FaceDetectCustomerFreshCardInfo.class);
                         BWxbriskcount target = new BWxbriskcount() {{
                             setId(i.getId());//主键
                             setCustomerName(i.getName());//客户姓名
@@ -159,4 +153,34 @@ public class WxbriskcountTask {
         });
     }
 
+    /**
+     * @param nowTime   当前时间
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     * @description: 判断当前时间在时间区间内
+     * @return:
+     * @author: 张晓东
+     * @time: 2020/7/9 16:15
+     */
+    public static boolean isEffectiveDate(Date nowTime, Date startTime, Date endTime) {
+        if (nowTime.getTime() == startTime.getTime()
+                || nowTime.getTime() == endTime.getTime()) {
+            return true;
+        }
+
+        Calendar date = Calendar.getInstance();
+        date.setTime(nowTime);
+
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(startTime);
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(endTime);
+
+        if (date.after(begin) && date.before(end)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
