@@ -288,14 +288,6 @@ public class RuleAppController extends TahoeBaseController {
         String IsUpdateGroup = bClueruleVo.getIsUpdateGroup();
         String grouplist = bClueruleVo.getGrouplist();
 
-        if (bCluerule.getProtectSource() == 1)//自有渠道
-        {
-            if (bCluerule.getFollowUpOverdueDays() <= 3)
-            {
-                return Result.errormsg(9527,"保护期需大于3天");
-            }
-        }
-
         if (bCluerule.getProtectSource()==null)
         {
             bCluerule.setProtectSource(0);
