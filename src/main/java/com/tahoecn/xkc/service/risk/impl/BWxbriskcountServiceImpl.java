@@ -292,7 +292,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
             HashMap<String, Object> data = Maps.newHashMap();
             data.put("regionalName", i.getRegionalName());//区域
             data.put("cityName", i.getCityName());//城市
-            data.put("rrojectName", i.getProjectName());//项目
+            data.put("projectName", i.getProjectName());//项目
             data.put("house", i.getHouse());//房间编号
             data.put("customerName", i.getCustomerName());//客户姓名
             if (StringUtils.isNotEmpty(i.getDictId())) {
@@ -350,7 +350,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
         entity.add(new ExcelExportEntity("认购时间", "subscribeTime"));
         entity.add(new ExcelExportEntity("签约时间", "finishTime"));
         entity.add(new ExcelExportEntity("风险类别", "riskStatus"));//0疑似风险1无风险2确认风险3未知客户
-        String name = "风控痛点列表" + DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss").format(LocalDateTime.now()) + ".xls";
+        String name = "风控人脸识别[旺小宝]-" + DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss").format(LocalDateTime.now()) + ".xls";
         ExcelUtil.exportExcel(entity, maps, name, response);
     }
 
