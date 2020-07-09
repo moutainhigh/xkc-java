@@ -61,10 +61,10 @@
         </choose>
 
         <if test="userName != null and '' != userName">
-            and CustomerName like %#{userName}%
+            and CustomerName like concat('%',#{userName},'%')
         </if>
         <if test="saleUserName != null and '' != saleUserName">
-            and SaleUserName like %#{saleUserName}%
+            and SaleUserName like concat('%',#{saleUserName},'%')
         </if>
 
         <if test="adviserGroupID != null and '' != adviserGroupID">
@@ -76,11 +76,18 @@
         </if>
 
         <if test="reportUserName != null and '' != reportUserName">
-            and ReportUserName like %#{reportUserName}%
+            and (ReportUserName like concat('%',#{reportUserName},'%') or SaleUserName like concat('%',#{reportUserName},'%'))
         </if>
 
         <if test="customerStatus != null and '' != customerStatus">
-            and CustomerStatus = #{customerStatus}
+            <choose>
+                <when test="customerStatus == 2">
+                    and CustomerStatus in (#{customerStatus}, 3)
+                </when>
+                <otherwise>
+                    and CustomerStatus = #{customerStatus}
+                </otherwise>
+            </choose>
         </if>
 
         <if test="startTime != null and endTime != null">
