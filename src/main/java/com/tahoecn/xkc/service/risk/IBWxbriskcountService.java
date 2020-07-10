@@ -6,6 +6,7 @@ import com.tahoecn.xkc.model.risk.BWxbriskcount;
 import com.tahoecn.xkc.model.risk.vo.WxbRiskInfoPageVO;
 import com.tahoecn.xkc.model.risk.vo.WxbRiskStatisticalPageVO;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -24,4 +25,6 @@ public interface IBWxbriskcountService extends IService<BWxbriskcount> {
     Map list(WxbRiskInfoPageVO vo);
 
     Map label(WxbRiskInfoPageVO vo);
+
+    void export(WxbRiskInfoPageVO vo, HttpServletResponse response) throws Exception;
 }

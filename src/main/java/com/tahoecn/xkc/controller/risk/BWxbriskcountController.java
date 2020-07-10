@@ -15,11 +15,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,6 +88,22 @@ public class BWxbriskcountController extends TahoeBaseController {
             Map label = this.service.label(vo);
             label.remove("wrapper");
             return ResultUtil.setJsonResult(TipsEnum.Success.getCode(), label);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "旺小宝-风控-导出", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "vo", value = "旺小宝-风控-导出",
+                    paramType = "query", required = true, dataType = "WxbRiskInfoPageVO")
+    })
+    @GetMapping(value = "/export")
+    public JSONResult export(HttpServletResponse response, WxbRiskInfoPageVO vo) {
+        try {
+            this.service.export(vo, response);
+            return ResultUtil.setJsonResult(TipsEnum.Success.getCode());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultUtil.setJsonResult(TipsEnum.Failed.getCode(), e.getMessage());
