@@ -1114,7 +1114,8 @@
                                                           a.TheLatestFollowUpDate)) < GETDATE()
                                 AND a.status IN ( 1, 2 )
                                 AND a.ID = t.ID
-                                AND ISNULL(c.Status,0) != 5 );
+                                AND ISNULL(c.Status,0) <> 5
+                                AND ISNULL(c.Status,0) <> 4);
 		UPDATE  b_clue
 		SET     status = 3 ,
 		        Editor = 'sys' ,
@@ -1135,7 +1136,8 @@
 		                                                  a.TheLatestFollowUpDate)) < GETDATE()
 		                        AND a.status IN ( 1, 2 )
 		                        AND B_Clue.ID = a.ID
-		                        AND ISNULL(c.Status,0) != 5 );
+		                        AND ISNULL(c.Status,0) <> 5
+		                        AND ISNULL(c.Status,0) <> 4);
 		INSERT  INTO S_Message
 		        ( ID ,
 		          ProjectID ,
