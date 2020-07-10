@@ -56,7 +56,7 @@ public class WxbriskcountTask {
     @Resource
     private STrade2CstMapper sTrade2CstMapper;
 
-    private static final Date AFRESH_PULL_TIME = null;//new Date(1594137610000l);//重新刷数据设置为昨天时间
+    private static final Date AFRESH_PULL_TIME = new Date(1594224001000l);//重新刷数据设置为昨天时间
 
     public void task() {
         List<FaceDetectCustomer> faceDetectCustomers = null;
