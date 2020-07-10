@@ -28,6 +28,9 @@ public class BWxbInfoLog implements Serializable {
     @TableField("OrderGUID")
     private String OrderGUID;
 
+    @TableField("ContractGUID")
+    private String ContractGUID;
+
     @TableField("ProjectId")
     private String ProjectId;
 
@@ -209,11 +212,20 @@ public class BWxbInfoLog implements Serializable {
         Status = status;
     }
 
+    public String getContractGUID() {
+        return ContractGUID;
+    }
+
+    public void setContractGUID(String contractGUID) {
+        ContractGUID = contractGUID;
+    }
+
     @Override
     public String toString() {
         return "BWxbInfoLog{" +
                 "id=" + id +
                 ", OrderGUID=" + OrderGUID +
+                ", ContractGUID=" + ContractGUID +
                 ", ProjectId=" + ProjectId +
                 ", Name=" + Name +
                 ", Mobile=" + Mobile +
