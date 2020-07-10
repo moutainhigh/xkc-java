@@ -95,7 +95,7 @@ public class CustomerTask {
                     bWxbInfoLog.setReportTime(      params.get("reportTime")!=null?params.get("reportTime").toString():null);
                     bWxbInfoLog.setSalerName(       params.get("salerName")!=null?params.get("salerName").toString():null);
                     bWxbInfoLog.setOrderGUID(       params.get("orderGUID")!=null?params.get("orderGUID").toString():null);
-
+                    bWxbInfoLog.setContractGUID(    params.get("contractGUID")!=null?params.get("contractGUID").toString():null);
                     params.put("ak",ak);
                     params.put("ts",ts);
                     params.put("nonce",nonce);
