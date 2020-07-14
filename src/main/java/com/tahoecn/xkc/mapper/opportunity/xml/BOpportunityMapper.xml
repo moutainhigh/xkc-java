@@ -560,7 +560,7 @@
 	</select>
 
 	<select id="wxbriskcountTaskInfo" resultType="java.util.Map">
-		SELECT
+		SELECT TOP 1
 			opp.ID,
 			city.ID AS CityId,
 			city.OrgName AS CityName,

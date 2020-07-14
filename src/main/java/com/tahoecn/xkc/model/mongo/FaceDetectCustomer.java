@@ -22,6 +22,7 @@ public class FaceDetectCustomer implements Serializable {
     private String agent;//经纪人
     private String channelCompany;//所属渠道公司
     private Date firstReadTime;//首次带看时间
+    private Date subscriptionTime;//认购时间
     private Date finishTime;//签约时间
     private String finishNo;//签约房号
     private String mobile;//移动电话
@@ -121,6 +122,14 @@ public class FaceDetectCustomer implements Serializable {
 
     public void setFirstReadTime(Date firstReadTime) {
         this.firstReadTime = firstReadTime;
+    }
+
+    public Date getSubscriptionTime() {
+        return subscriptionTime;
+    }
+
+    public void setSubscriptionTime(Date subscriptionTime) {
+        this.subscriptionTime = subscriptionTime;
     }
 
     public Date getFinishTime() {

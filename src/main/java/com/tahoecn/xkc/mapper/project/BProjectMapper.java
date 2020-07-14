@@ -95,4 +95,6 @@ public interface BProjectMapper extends BaseMapper<BProject> {
     int findAllProject_count(@Param("Name") String Name,@Param("PageIndex") int PageIndex,@Param("PageSize") int PageSize, @Param("userId") Object userId);
 
 	List<Map<String, Object>> searchProject();
+
+	Map<String, Object> searchProjectNexus(@Param("id") String id);
 }

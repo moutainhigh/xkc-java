@@ -1778,5 +1778,20 @@
             AND project.Status = 1
     </select>
 
+    <select id="searchProjectNexus" resultType="java.util.Map">
+		SELECT
+			project.ID AS ProjectId,
+			project.Name AS ProjectName,
+			city.ID AS CityId,
+			city.OrgName AS CityName,
+			area.ID AS RegionalId,
+			area.OrgName AS RegionalName
+		FROM
+			B_Project project
+		INNER JOIN S_Organization city ON project.BUGUID = city.ID
+		INNER JOIN S_Organization area ON area.ID = city.PID
+		WHERE
+			project.ID = #{id}
+    </select>
 
 </mapper>
