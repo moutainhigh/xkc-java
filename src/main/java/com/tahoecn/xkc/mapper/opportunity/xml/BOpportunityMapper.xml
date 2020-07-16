@@ -560,7 +560,7 @@
 	</select>
 
 	<select id="wxbriskcountTaskInfo" resultType="java.util.Map">
-		SELECT TOP 1
+		SELECT
 			opp.ID,
 			city.ID AS CityId,
 			city.OrgName AS CityName,
@@ -583,6 +583,7 @@
 		WHERE
 			opp.ProjectID = #{projectId}
 		AND cust.CardID = #{cardId}
+		ORDER BY opp.CreateTime DESC
 	</select>
 
 </mapper>

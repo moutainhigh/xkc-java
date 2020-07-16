@@ -17,6 +17,15 @@ public class WxbLabelVO {
     private int ok = 0;//确认风险
     private int noOk = 0;//确认无风险
     private String rate;//风险率
+    private int unverified = 0;//未刷证
+
+    public int getUnverified() {
+        return unverified;
+    }
+
+    public void setUnverified(int unverified) {
+        this.unverified = unverified;
+    }
 
     public int getAllCustomer() {
         return allCustomer;

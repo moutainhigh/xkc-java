@@ -60,14 +60,14 @@ public class WxbriskcountTask {
     @Resource
     private BProjectMapper bProjectMapper;
 
-    private static final Date AFRESH_PULL_TIME = new Date(1594717847788l);//重新刷数据设置跑数据前一天时间
+    private static final Date AFRESH_PULL_TIME = new Date(1594883999455l);//重新刷数据设置跑数据前一天时间
 
     public void task() {
         List<FaceDetectCustomer> faceDetectCustomers = null;
         BWxbriskcount bWxbriskcount = bWxbriskcountMapper.one();
         Date startTime = JointNameTask.getMinAndMaxDate().get("min");
         Date endTime = JointNameTask.getMinAndMaxDate().get("max");
-        if (null == bWxbriskcount || (null != AFRESH_PULL_TIME  && isEffectiveDate(AFRESH_PULL_TIME, startTime, endTime))) {
+        if (null == bWxbriskcount || (null != AFRESH_PULL_TIME && isEffectiveDate(AFRESH_PULL_TIME, startTime, endTime))) {
             faceDetectCustomers = this.mongoTemplate.findAll(FaceDetectCustomer.class);
         } else {
             faceDetectCustomers = mongoTemplate.find(
@@ -82,10 +82,11 @@ public class WxbriskcountTask {
                 if (null != faceDetectProjectThirdMappings && faceDetectProjectThirdMappings.size() > 0) {
                     String projectId = faceDetectProjectThirdMappings.get(0).getOuterProjectId();
                     String projectName = faceDetectProjectThirdMappings.get(0).getProjectName();
-                    Map<String, Object> fkSearchFaceInfo = bOpportunityMapper.wxbriskcountTaskInfo(projectId, i.getIdNumber());
+                    List<Map<String, Object>> fkSearchFaceInfos = bOpportunityMapper.wxbriskcountTaskInfo(projectId, i.getIdNumber());
                     BWxbriskcount target = null;
                     Long fdcfciCount = mongoTemplate.count(new Query(Criteria.where("customerId").is(new ObjectId(i.getId()))), FaceDetectCustomerFreshCardInfo.class);
-                    if (null != fkSearchFaceInfo) {
+                    if (null != fkSearchFaceInfos && fkSearchFaceInfos.size() > 0 && StringUtils.isNotEmpty(i.getFinishNo())) {
+                        Map<String, Object> fkSearchFaceInfo = fkSearchFaceInfos.get(0);
                         BCustomerattach bCustomerattach = bCustomerattachMapper.selectOne(new QueryWrapper<BCustomerattach>() {{
                             eq("OpportunityID", (String) fkSearchFaceInfo.get("ID"));
                             gt("SalesStatus", 2);
@@ -112,7 +113,12 @@ public class WxbriskcountTask {
                             setSubscribeTime(i.getSubscriptionTime());//认购时间
                             setFinishTime(i.getFinishTime());//签约时间
                             setCreateTime(DateUtil.date());//创建时间
-                            setHasPass(fdcfciCount.intValue());//认证数量,0为认证失败
+                            if (null != i.getFreshCardTime()) {
+                                setHasPass(fdcfciCount.intValue());//认证数量,0为未刷证,-1为认证失败
+                            } else {
+                                setHasPass(0);
+                                if (fdcfciCount.intValue() > 0) setHasPass(-1);
+                            }
                             setOpportunityId((String) fkSearchFaceInfo.get("ID"));//机会id
                             setRegionalId((String) fkSearchFaceInfo.get("RegionalId"));//区域主键
                             setRegionalName((String) fkSearchFaceInfo.get("RegionalName"));//区域名称
@@ -152,7 +158,12 @@ public class WxbriskcountTask {
                             setSubscribeTime(i.getFinishTime());//认购时间
                             setFinishTime(i.getFinishTime());//签约时间
                             setCreateTime(DateUtil.date());//创建时间
-                            setHasPass(fdcfciCount.intValue());//认证数量,0为认证失败
+                            if (null != i.getFreshCardTime()) {
+                                setHasPass(fdcfciCount.intValue());//认证数量,0为未刷证,-1为认证失败
+                            } else {
+                                setHasPass(0);
+                                if (fdcfciCount.intValue() > 0) setHasPass(-1);
+                            }
                             if (null != searchProjectNexus) {
                                 setRegionalId((String) searchProjectNexus.get("RegionalId"));//区域主键
                                 setRegionalName((String) searchProjectNexus.get("RegionalName"));//区域名称

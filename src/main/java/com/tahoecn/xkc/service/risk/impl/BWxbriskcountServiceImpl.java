@@ -151,7 +151,7 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         wxbRiskStatisticalResultVO.setChannelCompany(bWxbriskcount.getDictName());// 渠道机构
                     }
                 }
-                if (null != bWxbriskcount.getFreshCardTime())
+                if (null != bWxbriskcount.getHasPass() && bWxbriskcount.getHasPass() > 0)
                     wxbRiskStatisticalResultVO.setCardCustomers(wxbRiskStatisticalResultVO.getCardCustomers() + 1);//刷证客户
                 if (null != bWxbriskcount.getSubscribeTime())
                     wxbRiskStatisticalResultVO.setSubscribeCustomers(wxbRiskStatisticalResultVO.getSubscribeCustomers() + 1);
@@ -191,13 +191,13 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
         WxbLabelVO wxbLabel = new WxbLabelVO();
         list.forEach(i -> {
             wxbLabel.setAllCustomer(wxbLabel.getAllCustomer() + 1);//全部客户
-            if (null != i.getFreshCardTime())
+            if (null != i.getHasPass() && i.getHasPass() > 0)
                 wxbLabel.setFreshCardCustomer(wxbLabel.getFreshCardCustomer() + 1);//刷证客户
-            if (null == i.getHasPass() || i.getHasPass() < 1)
+            if (null != i.getHasPass() && i.getHasPass() == -1)
                 wxbLabel.setAttestFail(wxbLabel.getAttestFail() + 1);//认证失败
-            if (null != i.getReportTime())
+            if (null == i.getSubscribeTime() && null == i.getFinishTime())
                 wxbLabel.setReportCustomer(wxbLabel.getReportCustomer() + 1);//报备客户
-            if (null != i.getFinishTime())
+            if (null != i.getSubscribeTime())
                 wxbLabel.setDealCustomer(wxbLabel.getDealCustomer() + 1);//成交客户
             if (null != i.getRiskStatus() && i.getRiskStatus() == 3)
                 wxbLabel.setUnknownCustomer(wxbLabel.getUnknownCustomer() + 1);//未知客户
@@ -207,6 +207,8 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                 wxbLabel.setOk(wxbLabel.getOk() + 1);//确认风险
             if (null != i.getRiskStatus() && i.getRiskStatus() == 1)
                 wxbLabel.setNoOk(wxbLabel.getNoOk() + 1);//确认无风险
+            if (null != i.getHasPass() && i.getHasPass() <= 0)//未刷证
+                wxbLabel.setUnverified(wxbLabel.getUnverified() + 1);
         });
         wxbLabel.setYsqz(wxbLabel.getOk() + wxbLabel.getNoOk() + wxbLabel.getYsdqz());//疑似确认风险
         String rate = "0";
@@ -409,16 +411,18 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         //全部客户不处理
                         break;
                     case 2://刷证客户
-                        isNotNull("FreshCardTime");
+//                        isNotNull("FreshCardTime");
+                        gt("HasPass", 0);
                         break;
-                    case 3://认证失败
+                    case 3://未刷证
                         and(wrapper -> wrapper.isNull("HasPass").or().le("HasPass", 0));
                         break;
                     case 4://报备客户
-                        isNotNull("ReportTime");
+                        isNull("SubscribeTime");
+                        isNull("FinishTime");
                         break;
                     case 5://成交客户
-                        isNotNull("FinishTime");
+                        isNotNull("SubscribeTime");
                         break;
                     case 6://未知客户
                         eq("RiskStatus", 3);
@@ -434,6 +438,9 @@ public class BWxbriskcountServiceImpl extends ServiceImpl<BWxbriskcountMapper, B
                         break;
                     case 10://确认无风险
                         eq("RiskStatus", 1);
+                        break;
+                    case 11://认证失败
+                        eq("HasPass", -1);
                         break;
                 }
             }

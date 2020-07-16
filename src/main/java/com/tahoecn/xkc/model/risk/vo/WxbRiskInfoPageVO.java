@@ -30,7 +30,7 @@ public class WxbRiskInfoPageVO implements Serializable {
     private Date finishEndTime;//签约结束时间
     private Date freshCardStartTime;//统计(刷证)起始时间
     private Date freshCardEndTime;//统计(刷证)结束时间
-    private Integer style;//1全部客户2刷证客户3认证失败4报备客户5成交客户6未知客户7疑似风险8疑似待确认9确认风险10确认无风险
+    private Integer style;//1全部客户2刷证客户3认证失败4报备客户5成交客户6未知客户7疑似风险8疑似待确认9确认风险10确认无风险11未刷证
 
     @NotNull(message = "起始页不能为空")
     private Integer pageNum;
