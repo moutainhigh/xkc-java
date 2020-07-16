@@ -159,6 +159,6 @@ public interface BOpportunityMapper extends BaseMapper<BOpportunity> {
      * @author: 张晓东
      * @time: 2020/6/22 15:55
      */
-    Map<String, Object> wxbriskcountTaskInfo(@Param("projectId") String projectId, @Param("cardId") String cardId);
+    List<Map<String, Object>> wxbriskcountTaskInfo(@Param("projectId") String projectId, @Param("cardId") String cardId);
 
 }

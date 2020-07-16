@@ -60,14 +60,14 @@ public class WxbriskcountTask {
     @Resource
     private BProjectMapper bProjectMapper;
 
-    private static final Date AFRESH_PULL_TIME = new Date(1594310401000l);//重新刷数据设置为昨天时间
+    private static final Date AFRESH_PULL_TIME = new Date(1594883999455l);//重新刷数据设置跑数据前一天时间
 
     public void task() {
         List<FaceDetectCustomer> faceDetectCustomers = null;
         BWxbriskcount bWxbriskcount = bWxbriskcountMapper.one();
         Date startTime = JointNameTask.getMinAndMaxDate().get("min");
         Date endTime = JointNameTask.getMinAndMaxDate().get("max");
-        if (null == bWxbriskcount || (null != AFRESH_PULL_TIME  && isEffectiveDate(AFRESH_PULL_TIME, startTime, endTime))) {
+        if (null == bWxbriskcount || (null != AFRESH_PULL_TIME && isEffectiveDate(AFRESH_PULL_TIME, startTime, endTime))) {
             faceDetectCustomers = this.mongoTemplate.findAll(FaceDetectCustomer.class);
         } else {
             faceDetectCustomers = mongoTemplate.find(
@@ -82,10 +82,11 @@ public class WxbriskcountTask {
                 if (null != faceDetectProjectThirdMappings && faceDetectProjectThirdMappings.size() > 0) {
                     String projectId = faceDetectProjectThirdMappings.get(0).getOuterProjectId();
                     String projectName = faceDetectProjectThirdMappings.get(0).getProjectName();
-                    Map<String, Object> fkSearchFaceInfo = bOpportunityMapper.wxbriskcountTaskInfo(projectId, i.getIdNumber());
+                    List<Map<String, Object>> fkSearchFaceInfos = bOpportunityMapper.wxbriskcountTaskInfo(projectId, i.getIdNumber());
                     BWxbriskcount target = null;
                     Long fdcfciCount = mongoTemplate.count(new Query(Criteria.where("customerId").is(new ObjectId(i.getId()))), FaceDetectCustomerFreshCardInfo.class);
-                    if (null != fkSearchFaceInfo) {
+                    if (null != fkSearchFaceInfos && fkSearchFaceInfos.size() > 0 && StringUtils.isNotEmpty(i.getFinishNo())) {
+                        Map<String, Object> fkSearchFaceInfo = fkSearchFaceInfos.get(0);
                         BCustomerattach bCustomerattach = bCustomerattachMapper.selectOne(new QueryWrapper<BCustomerattach>() {{
                             eq("OpportunityID", (String) fkSearchFaceInfo.get("ID"));
                             gt("SalesStatus", 2);
@@ -109,10 +110,15 @@ public class WxbriskcountTask {
                             setReportTime(i.getReportTime());//报备时间
                             setFirstPhotoTime(i.getFirstPhotoTime());//首次抓拍时间
                             setFreshCardTime(i.getFreshCardTime());//刷证时间
-                            setSubscribeTime(i.getFinishTime());//认购时间
+                            setSubscribeTime(i.getSubscriptionTime());//认购时间
                             setFinishTime(i.getFinishTime());//签约时间
                             setCreateTime(DateUtil.date());//创建时间
-                            setHasPass(fdcfciCount.intValue());//认证数量,0为认证失败
+                            if (null != i.getFreshCardTime()) {
+                                setHasPass(fdcfciCount.intValue());//认证数量,0为未刷证,-1为认证失败
+                            } else {
+                                setHasPass(0);
+                                if (fdcfciCount.intValue() > 0) setHasPass(-1);
+                            }
                             setOpportunityId((String) fkSearchFaceInfo.get("ID"));//机会id
                             setRegionalId((String) fkSearchFaceInfo.get("RegionalId"));//区域主键
                             setRegionalName((String) fkSearchFaceInfo.get("RegionalName"));//区域名称
@@ -138,7 +144,7 @@ public class WxbriskcountTask {
                                 setRiskStatus(3);//风险类别:3未知客户
                             }
                         }};
-                    }/* else {
+                    } else {
                         Map<String, Object> searchProjectNexus = this.bProjectMapper.searchProjectNexus(projectId);
                         target = new BWxbriskcount() {{
                             setId(i.getId());//主键
@@ -152,17 +158,26 @@ public class WxbriskcountTask {
                             setSubscribeTime(i.getFinishTime());//认购时间
                             setFinishTime(i.getFinishTime());//签约时间
                             setCreateTime(DateUtil.date());//创建时间
-                            setHasPass(fdcfciCount.intValue());//认证数量,0为认证失败
-                            setRegionalId((String) searchProjectNexus.get("RegionalId"));//区域主键
-                            setRegionalName((String) searchProjectNexus.get("RegionalName"));//区域名称
-                            setCityId((String) searchProjectNexus.get("CityId"));//城市主键
-                            setCityName((String) searchProjectNexus.get("CityName"));//城市名称
+                            if (null != i.getFreshCardTime()) {
+                                setHasPass(fdcfciCount.intValue());//认证数量,0为未刷证,-1为认证失败
+                            } else {
+                                setHasPass(0);
+                                if (fdcfciCount.intValue() > 0) setHasPass(-1);
+                            }
+                            if (null != searchProjectNexus) {
+                                setRegionalId((String) searchProjectNexus.get("RegionalId"));//区域主键
+                                setRegionalName((String) searchProjectNexus.get("RegionalName"));//区域名称
+                                setCityId((String) searchProjectNexus.get("CityId"));//城市主键
+                                setCityName((String) searchProjectNexus.get("CityName"));//城市名称
+                            }
                             setProjectId(projectId);//项目主键
                             setProjectName(projectName);//项目名称
-                            *//*setDictId((String) fkSearchFaceInfo.get("DictId"));//渠道来源
-                            setDictName((String) fkSearchFaceInfo.get("DictName"));//渠道来源
-                            setChannelCompanyId((String) fkSearchFaceInfo.get("ReportUserOrg"));//渠道机构ID
-                            setChannelCompany((String) fkSearchFaceInfo.get("OrgName"));//渠道机构*//*
+                            /*
+                                setDictId((String) fkSearchFaceInfo.get("DictId"));//渠道来源
+                                setDictName((String) fkSearchFaceInfo.get("DictName"));//渠道来源
+                                setChannelCompanyId((String) fkSearchFaceInfo.get("ReportUserOrg"));//渠道机构ID
+                                setChannelCompany((String) fkSearchFaceInfo.get("OrgName"));//渠道机构
+                            */
                             setHouse(i.getFinishNo());//房间编号
                             if (StringUtils.isNotEmpty(i.getRiskStatus()) && i.getRiskStatus().equals("RISK") && StringUtils.isEmpty(i.getRiskApproveStatus())) {
                                 setRiskStatus(0);//风险类别:0疑似风险
@@ -174,7 +189,7 @@ public class WxbriskcountTask {
                                 setRiskStatus(3);//风险类别:3未知客户
                             }
                         }};
-                    }*/
+                    }
                     if (null == bWxbriskcountMapper.selectById(i.getId())) {
                         bWxbriskcountMapper.insert(target);
                     } else {
